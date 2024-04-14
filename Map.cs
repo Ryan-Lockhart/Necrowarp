@@ -344,6 +344,9 @@ namespace Necrowarp
 
         public void Clash(Adventurer adventurer, Skeleton skeleton)
         {
+            if (!adventurer.Alive || !skeleton.Alive)
+                return;
+
             this[adventurer.Position, EntityType.Skull] = true;
             adventurer.Alive = false;
             ++killCount;
