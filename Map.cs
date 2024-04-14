@@ -114,8 +114,8 @@ namespace Necrowarp
 
             player = new Necromancer(FindOpen());
 
-            SpawnAdventurers(3);
-            SpawnSkulls(5);
+            SpawnAdventurers(5);
+            SpawnSkulls(10);
         }
 
         public void Restart()
@@ -164,8 +164,8 @@ namespace Necrowarp
 
             player = new Necromancer(FindOpen());
 
-            SpawnAdventurers(3);
-            SpawnSkulls(5);
+            SpawnAdventurers(5);
+            SpawnSkulls(10);
         }
 
         public void Draw(RenderTarget target, RenderStates states)
@@ -264,7 +264,7 @@ namespace Necrowarp
             }
         }
 
-        public static uint Distance(Vector2u a, Vector2u b) => (uint)(Math.Max(Math.Abs(a.X - b.X), Math.Abs(a.Y - b.Y)));
+        public static uint Distance(Vector2u a, Vector2u b) => (uint)(Math.Max(Math.Abs((long)a.X - b.X), Math.Abs((long)a.Y - b.Y)));
 
         private Vector2u RandomPosition() => new Vector2u((uint)(Random.Shared.Next() % size.X), (uint)(Random.Shared.Next() % size.Y));
         private Vector2u RandomPosition(Random generator) => new Vector2u((uint)(generator.Next() % size.X), (uint)(generator.Next() % size.Y));
@@ -364,7 +364,10 @@ namespace Necrowarp
                 adventurer.Update(this);
 
             if (Adventurers.Count <= 0)
-                SpawnAdventurers(3);
+            {
+				SpawnAdventurers(5 + (int)(KillCount * 0.1f));
+                SpawnSkulls((int)(SummonCount * 0.1f));
+			}
 
             Adventurers.RemoveAll(adventurer => !adventurer.Alive);
             Skeletons.RemoveAll(skeleton => !skeleton.Alive);
