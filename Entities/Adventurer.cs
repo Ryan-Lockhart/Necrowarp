@@ -3,7 +3,7 @@ using SFML.Graphics;
 
 namespace Necrowarp.Entities
 {
-    class Adventurer : Actor
+	public class Adventurer : Actor
     {
         public Adventurer(Vector2u startingPosition) : base(startingPosition, new Texture("Assets\\adventurer.png"))
         {
@@ -15,25 +15,35 @@ namespace Necrowarp.Entities
             if (!Alive)
                 return;
 
-            if (Map.Distance(map.Player.Position, Position) <= 1)
+            if (AStar.Distance(map.Player.Position, Position) <= 1)
             {
                 map.GameOver = true;
                 return;
-            }
+			}
 
-            Vector2u newPos = Position;
+			if (AStar.HasLineOfSight(Position, map.Player.Position, map))
+			{
+				Vector2u newPos = Position;
 
-            if (map.Player.Position.X < Position.X)
-                newPos.X--;
-            else if (map.Player.Position.X > Position.X)
-                newPos.X++;
-            if (map.Player.Position.Y < Position.Y)
-                newPos.Y--;
-            else if (map.Player.Position.Y > Position.Y)
-                newPos.Y++;
+				if (map.Player.Position.X < Position.X)
+					newPos.X--;
+				else if (map.Player.Position.X > Position.X)
+					newPos.X++;
+				if (map.Player.Position.Y < Position.Y)
+					newPos.Y--;
+				else if (map.Player.Position.Y > Position.Y)
+					newPos.Y++;
 
-            if (!map[newPos, Map.EntityType.Wall])
-                Position = newPos;
-        }
+				if (!map[newPos, Map.EntityType.All])
+					Position = newPos;
+			}
+			else
+			{
+				var path = AStar.CalculatePath(Position, map.Player.Position, map);
+
+				if (path != null)
+					Position = path.Pop();
+			}
+		}
     }
 }

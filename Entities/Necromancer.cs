@@ -3,7 +3,7 @@ using SFML.Graphics;
 
 namespace Necrowarp.Entities
 {
-    class Necromancer : Actor
+	public class Necromancer : Actor
     {
         private int energy;
         private bool acted;

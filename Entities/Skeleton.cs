@@ -1,11 +1,12 @@
 ﻿using SFML.System;
 using SFML.Graphics;
+using System.IO;
 
 namespace Necrowarp.Entities
 {
-    class Skeleton : Actor
-    {
-        Adventurer? target = null;
+	public class Skeleton : Actor
+	{
+		private Adventurer? target = null;
 
         public Skeleton(Vector2u startingPosition) : base(startingPosition, new Texture("Assets\\skeleton.png"))
         {
@@ -17,57 +18,60 @@ namespace Necrowarp.Entities
             if (!Alive)
                 return;
 
-            // Escape if no adventurers left
             if (map.Adventurers.Count <= 0)
             {
                 target = null;
                 return;
             }
 
-            // Find closest adventurer
-            if (target == null)
-            {
-                uint closest = uint.MaxValue;
+			uint closest = uint.MaxValue;
 
-                foreach (var adventurer in map.Adventurers)
-                {
-                    if (!adventurer.Alive)
-                        continue;
+			foreach (var adventurer in map.Adventurers)
+			{
+				if (!adventurer.Alive)
+					continue;
 
-                    uint distance = Map.Distance(adventurer.Position, Position);
+				uint distance = AStar.Distance(adventurer.Position, Position);
 
-                    if (distance < closest)
-                    {
-                        target = adventurer;
-                        closest = distance;
-                    }
-                }
-            }
+				if (distance < closest)
+				{
+					target = adventurer;
+					closest = distance;
+				}
+			}
 
-            // Move towards target with Chebyshev distance
-            if (target != null)
-            {
-                if (Map.Distance(target.Position, Position) <= 1)
-                {
-                    map.Clash(target, this);
-                    return;
-                }
+			if (target == null)
+				return;
 
-                Vector2u newPos = Position;
+			if (AStar.Distance(target.Position, Position) <= 1)
+			{
+				map.Clash(target, this);
+				return;
+			}
 
-                if (target.Position.X < Position.X)
-                    newPos.X--;
-                else if (target.Position.X > Position.X)
-                    newPos.X++;
+			if (AStar.HasLineOfSight(Position, target.Position, map))
+			{
+				Vector2u newPos = Position;
 
-                if (target.Position.Y < Position.Y)
-                    newPos.Y--;
-                else if (target.Position.Y > Position.Y)
-                    newPos.Y++;
+				if (target.Position.X < Position.X)
+					newPos.X--;
+				else if (target.Position.X > Position.X)
+					newPos.X++;
+				if (target.Position.Y < Position.Y)
+					newPos.Y--;
+				else if (target.Position.Y > Position.Y)
+					newPos.Y++;
 
-                if (!map[newPos, Map.EntityType.Wall])
-                    Position = newPos;
-            }
+				if (!map[newPos, Map.EntityType.All])
+					Position = newPos;
+			}
+			else
+			{
+				var path = AStar.CalculatePath(Position, target.Position, map);
+
+				if (path != null)
+					Position = path.Pop();
+			}
         }
     }
 }
