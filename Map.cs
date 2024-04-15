@@ -365,10 +365,15 @@ namespace Necrowarp
                 skeletons.Add(new Skeleton(newPos));
                 ++summonCount;
 
-                ++Player.Energy;
-                Player.Position = FindOpen(Player.Position, 8);
+				try { Player.Position = FindOpen(Player.Position, 8, true); }
+				catch
+				{
+					Player.Position = FindOpen(Player.Position, 8);
+					++Player.Energy;
+				}
 
-                Player.Acted = true;
+				++Player.Energy;
+				Player.Acted = true;
             }
             else if (!this[newPos, EntityType.Wall] && !this[newPos, EntityType.Occupant])
             {

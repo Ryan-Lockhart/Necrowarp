@@ -63,15 +63,16 @@ namespace Necrowarp.Entities
 					newPos.Y++;
 
 				if (!map[newPos, Map.EntityType.All])
+				{
 					Position = newPos;
+					return;
+				}
 			}
-			else
-			{
-				var path = AStar.CalculatePath(Position, target.Position, map);
 
-				if (path != null)
-					Position = path.Pop();
-			}
-        }
+			var path = AStar.CalculatePath(Position, target.Position, map);
+
+			if (path != null)
+				Position = path.Pop();
+		}
     }
 }

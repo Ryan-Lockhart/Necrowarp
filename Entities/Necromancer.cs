@@ -11,7 +11,7 @@ namespace Necrowarp.Entities
         public int Energy
         {
             get => energy;
-            set => energy = Math.Clamp(value, 0, 3);
+            set => energy = Math.Clamp(value, 0, 5);
         }
 
         public bool Acted
