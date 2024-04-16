@@ -8,7 +8,7 @@ namespace Necrowarp.Entities
 	{
 		private Adventurer? target = null;
 
-        public Skeleton(Vector2u startingPosition) : base(startingPosition, new Texture("Assets\\skeleton.png"))
+        public Skeleton(Vector2u startingPosition) : base(startingPosition, "Assets\\skeleton.png")
         {
             Alive = true;
         }
@@ -64,7 +64,7 @@ namespace Necrowarp.Entities
 
 				if (!map[newPos, Map.EntityType.All])
 				{
-					Position = newPos;
+					map.Move(this, newPos);
 					return;
 				}
 			}
@@ -72,7 +72,7 @@ namespace Necrowarp.Entities
 			var path = AStar.CalculatePath(Position, target.Position, map);
 
 			if (path != null)
-				Position = path.Pop();
+				map.Move(this, path.Pop());
 		}
     }
 }

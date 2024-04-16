@@ -5,7 +5,7 @@ namespace Necrowarp.Entities
 {
 	public class Adventurer : Actor
     {
-        public Adventurer(Vector2u startingPosition) : base(startingPosition, new Texture("Assets\\adventurer.png"))
+        public Adventurer(Vector2u startingPosition) : base(startingPosition, "Assets\\adventurer.png")
         {
             Alive = true;
         }
@@ -17,7 +17,7 @@ namespace Necrowarp.Entities
 
             if (AStar.Distance(map.Player.Position, Position) <= 1)
             {
-                map.GameOver = true;
+				map.Clash(this, map.Player);
                 return;
 			}
 
@@ -36,7 +36,7 @@ namespace Necrowarp.Entities
 
 				if (!map[newPos, Map.EntityType.All])
 				{
-					Position = newPos;
+					map.Move(this, newPos);
 					return;
 				}
 			}
@@ -44,7 +44,7 @@ namespace Necrowarp.Entities
 			var path = AStar.CalculatePath(Position, map.Player.Position, map);
 
 			if (path != null)
-				Position = path.Pop();
+				map.Move(this, path.Pop());
 		}
     }
 }

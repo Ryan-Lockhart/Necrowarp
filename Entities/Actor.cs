@@ -59,9 +59,11 @@ namespace Necrowarp.Entities
 			}
         }
 
-        public Actor(Vector2u startingPosition, Texture texture)
+        public Sprite Sprite => sprite;
+
+        public Actor(Vector2u startingPosition, string spritePath)
         {
-            sprite = new Sprite(texture);
+            sprite = new Sprite(new Texture(spritePath));
             Position = startingPosition;
         }
 

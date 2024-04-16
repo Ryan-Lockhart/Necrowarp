@@ -21,15 +21,56 @@ namespace Necrowarp
         static Font font = new Font("Assets\\undead_pixel.ttf");
 
         static Sprite energySprite = new Sprite(new Texture("Assets\\energy.png"));
+		static Sprite armorSprite = new Sprite(new Texture("Assets\\armor.png"));
 
-        static GamePhase phase = GamePhase.Start;
+		static GamePhase phase = GamePhase.Start;
+
+        static RectangleShape cursorShape = new RectangleShape(new Vector2f(16.0f, 16.0f))
+        {
+            OutlineColor = new Color(255, 215, 0),
+            FillColor = Color.Transparent,
+
+            OutlineThickness = 2.0f
+        };
+
+        static Vector2f mousePosition = new Vector2f(0.0f, 0.0f);
+        static Vector2f MousePosition
+        {
+			get => mousePosition;
+			set
+            {
+                if (value == mousePosition)
+                    return;
+
+                mousePosition.X = Math.Clamp(value.X, 0, WindowSize.X - 1.0f);
+				mousePosition.Y = Math.Clamp(value.Y, 0, WindowSize.Y - 1.0f);
+			}
+        }
+
+        static Vector2u cursorPosition = new Vector2u(0, 0);
+        static Vector2u CursorPosition
+        {
+            get => cursorPosition;
+            set
+            {
+                if (value == cursorPosition)
+					return;
+
+                cursorPosition.X = Math.Clamp(value.X, 0, map.Size.X - 1);
+				cursorPosition.Y = Math.Clamp(value.Y, 0, map.Size.Y - 1);
+
+                cursorShape.Position = (Vector2f)cursorPosition * 16.0f;
+            }
+        }
 
         static void Main(string[] args)
 		{
             window.SetIcon(16, 16, new Image("Assets\\icon.png").Pixels);
 
 			window.Closed += OnClosed;
+
 			window.KeyPressed += OnKeyPressed;
+            window.MouseMoved += OnMouseMoved;
 
             map.GameOverEvent += () => phase = GamePhase.End;
 
@@ -42,7 +83,7 @@ namespace Necrowarp
 			window.Close();
 		}
 
-        static void Update()
+		static void Update()
         {
             window.DispatchEvents();
 
@@ -78,14 +119,22 @@ namespace Necrowarp
                 case GamePhase.Play:
                     window.Draw(map);
 
+                    window.Draw(cursorShape);
+
                     for (int i = 0; i < map.Player.Energy; ++i)
                     {
                         energySprite.Position = new Vector2f(i * 16, 0);
                         window.Draw(energySprite);
                     }
+
+                    for (int i = 0; i < map.Player.ArmorDurability; ++i)
+                    {
+						armorSprite.Position = new Vector2f(i * 16, 16);
+						window.Draw(armorSprite);
+					}
                     break;
                 case GamePhase.End:
-                    Text gameSummaryText = new Text($"You summoned {map.SummonCount} skeletons from beyond the mortal coil.\n\n\tYour skeletons slew {map.KillCount} arrogant adventurers!", font, 16)
+                    Text gameSummaryText = new Text($"You summoned {map.SummonCount} skeletons from beyond the mortal coil.\n\n\tYour skeletons slew {map.SkeletonKillCount} arrogant adventurers!", font, 16)
                     {
                         FillColor = Color.White
                     };
@@ -153,7 +202,10 @@ namespace Necrowarp
                     switch (e.Code)
                     {
                         case Keyboard.Key.Space:
-                            map.TryWarp();
+                            map.Warp();
+                            return;
+                        case Keyboard.Key.Tab:
+                            map.Warp(CursorPosition);
                             return;
                         case Keyboard.Key.Numpad5:
                             map.Pass();
@@ -174,7 +226,7 @@ namespace Necrowarp
                         movement.X++;
 
                     if (movement != new Vector2i(0, 0))
-                        map.TryMove(movement);
+                        map.Move(map.Player, movement);
                     return;
                 case GamePhase.End:
                     switch (e.Code)
@@ -187,7 +239,13 @@ namespace Necrowarp
                             break;
                     }
                     return;
-            }
-        }
+			}
+		}
+
+		static void OnMouseMoved(object? sender, MouseMoveEventArgs e)
+		{
+            MousePosition = new Vector2f(e.X, e.Y);
+			CursorPosition = new Vector2u((uint)MousePosition.X / 16, (uint)MousePosition.Y / 16);
+		}
 	}
 }

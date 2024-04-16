@@ -2,6 +2,7 @@
 using SFML.Graphics;
 
 using Necrowarp.Entities;
+using System.Numerics;
 
 namespace Necrowarp
 {
@@ -19,13 +20,14 @@ namespace Necrowarp
         public Vector2u Size => size;
         public uint Area => size.X * size.Y;
 
-        private bool[,] walls;
-        private bool[,] occupants;
-        private bool[,] skulls;
+        private Grid<bool> walls;
+        private Grid<bool> skulls;
 
-        private uint[,] safeDistances;
+        private Grid<uint> safeDistances;
 
-        private Necromancer player;
+		private Grid<Actor?> occupants;
+
+		private Necromancer player;
 
         private List<Adventurer> adventurers = new List<Adventurer>();
         private List<Skeleton> skeletons = new List<Skeleton>();
@@ -33,10 +35,12 @@ namespace Necrowarp
         private bool gameOver = false;
 
         private int summonCount = 0;
-        private int killCount = 0;
+		private int necromancerKillCount = 0;
+		private int skeletonKillCount = 0;
 
         public int SummonCount => summonCount;
-        public int KillCount => killCount;
+		public int NecromancerKillCount => necromancerKillCount;
+		public int SkeletonKillCount => skeletonKillCount;
 
         public bool GameOver
         {
@@ -72,16 +76,12 @@ namespace Necrowarp
         private void SpawnAdventurers(int count)
         {
             for (int i = 0; i < count; ++i)
-                adventurers.Add(new Adventurer(FindOpen(Player.Position, 8)));
+            {
+                var adventurer = new Adventurer(FindOpen(Player.Position, 8));
 
-            foreach (var adventurer in adventurers)
-                adventurer.PositionChangedEvent += OnActorPositionChanged;
-        }
-
-		private void OnActorPositionChanged(object? sender, PositionEventArgs e)
-		{
-            this[e.LastPosition, EntityType.Occupant] = false;
-            this[e.CurrentPosition, EntityType.Occupant] = true;
+				adventurers.Add(adventurer);
+                Occupy(adventurer, adventurer.Position);
+            }
 		}
 
 		private void CalculateSafeDistances()
@@ -105,13 +105,17 @@ namespace Necrowarp
 
 		public Map(uint width, uint height)
         {
+            if (width % 16 != 0 || height % 16 != 0)
+                throw new Exception("Map dimensions must be divisible by 16!");
+
             size = new Vector2u(width / 16, height / 16);
 
-            walls = new bool[size.X, size.Y];
-            occupants = new bool[size.X, size.Y];
-            skulls = new bool[size.X, size.Y];
+            walls = new Grid<bool>(size);
+            skulls = new Grid<bool>(size);
 
-            safeDistances = new uint[size.X, size.Y];
+            safeDistances = new Grid<uint>(size);
+
+            occupants = new Grid<Actor?>(size);
 
             Random random = new Random();
 
@@ -135,9 +139,16 @@ namespace Necrowarp
 
                         int neighbours = 0;
 
-                        for (int ny = y > 0 ? -1 : 0; ny <= (y < size.Y - 1 ? 1 : 0); ++ny)
-                            for (int nx = x > 0 ? -1 : 0; nx <= (x < size.X - 1 ? 1 : 0); ++nx)
-                                neighbours += walls[x + nx, y + ny] ? 1 : 0;
+                        for (int dy = -1; dy <= 1; ++dy)
+                        {
+							for (int dx = -1; dx <= 1; ++dx)
+							{
+                                if (dx == 0 && dy == 0) continue;
+
+                                if (walls[(uint)(x + dx), (uint)(y + dy)])
+									++neighbours;
+							}
+						}
 
                         if (neighbours > 4)
                             walls[x, y] = true;
@@ -159,7 +170,8 @@ namespace Necrowarp
             gameOver = false;
 
             summonCount = 0;
-            killCount = 0;
+            necromancerKillCount = 0;
+            skeletonKillCount = 0;
 
             skeletons.Clear();
             adventurers.Clear();
@@ -172,6 +184,7 @@ namespace Necrowarp
                 {
                     bool isBorder = x == 0 || y == 0 || x == size.X - 1 || y == size.Y - 1;
                     walls[x, y] = isBorder ? true : random.Next() % 4 == 0;
+                    occupants[x, y] = null;
                 }
             }
 
@@ -185,11 +198,18 @@ namespace Necrowarp
 
                         int neighbours = 0;
 
-                        for (int ny = y > 0 ? -1 : 0; ny <= (y < size.Y - 1 ? 1 : 0); ++ny)
-                            for (int nx = x > 0 ? -1 : 0; nx <= (x < size.X - 1 ? 1 : 0); ++nx)
-                                neighbours += walls[x + nx, y + ny] ? 1 : 0;
+						for (int dy = -1; dy <= 1; ++dy)
+						{
+							for (int dx = -1; dx <= 1; ++dx)
+							{
+								if (dx == 0 && dy == 0) continue;
 
-                        if (neighbours > 4)
+								if (walls[(uint)(x + dx), (uint)(y + dy)])
+									++neighbours;
+							}
+						}
+
+						if (neighbours > 4)
                             walls[x, y] = true;
                         else if (neighbours < 4)
                             walls[x, y] = false;
@@ -199,7 +219,6 @@ namespace Necrowarp
             }
 
             player = new Necromancer(FindOpen());
-            player.PositionChangedEvent += OnActorPositionChanged;
 
             SpawnAdventurers(5);
             SpawnSkulls(10);
@@ -217,8 +236,6 @@ namespace Necrowarp
                     {
                         wallShape.Position = pos;
                         target.Draw(wallShape, states);
-
-                        continue;
                     }
                     else
                     {
@@ -241,7 +258,7 @@ namespace Necrowarp
                 target.Draw(adventurer, states);
 
             target.Draw(player, states);
-        }
+		}
 
         public Necromancer Player => player;
         public List<Adventurer> Adventurers => adventurers;
@@ -253,8 +270,8 @@ namespace Necrowarp
             {
                 EntityType.Wall => walls[pos.X, pos.Y],
                 EntityType.Skull => skulls[pos.X, pos.Y],
-                EntityType.Occupant => occupants[pos.X, pos.Y],
-                EntityType.All => walls[pos.X, pos.Y] || skulls[pos.X, pos.Y] || occupants[pos.X, pos.Y],
+				EntityType.Occupant => occupants[pos.X, pos.Y] != null,
+				EntityType.All => walls[pos.X, pos.Y] || skulls[pos.X, pos.Y] || occupants[pos.X, pos.Y] != null,
                 _ => throw new Exception("Invalid entity type!")
             };
 
@@ -267,9 +284,6 @@ namespace Necrowarp
                         return;
                     case EntityType.Skull:
                         skulls[pos.X, pos.Y] = value;
-                        return;
-                    case EntityType.Occupant:
-                        occupants[pos.X, pos.Y] = value;
                         return;
                     case EntityType.All:
                     default:
@@ -284,8 +298,8 @@ namespace Necrowarp
             {
                 EntityType.Wall => walls[x, y],
                 EntityType.Skull => skulls[x, y],
-                EntityType.Occupant => occupants[x, y],
-                EntityType.All => walls[x, y] || skulls[x, y] || occupants[x, y],
+                EntityType.Occupant => occupants[x, y] != null,
+                EntityType.All => walls[x, y] || skulls[x, y] || occupants[x, y] != null,
                 _ => throw new Exception("Invalid entity type!")
             };
 
@@ -299,9 +313,6 @@ namespace Necrowarp
                     case EntityType.Skull:
                         skulls[x, y] = value;
                         return;
-                    case EntityType.Occupant:
-                        occupants[x, y] = value;
-						return;
                     case EntityType.All:
                     default:
                         throw new Exception("Invalid entity type!");
@@ -355,49 +366,108 @@ namespace Necrowarp
             throw new Exception("No open space found!");
         }
 
-        public void TryMove(Vector2i movement)
+        private void Occupy(Actor actor, in Vector2u position)
         {
-            Vector2u newPos = Player.Position + (Vector2u)movement;
+            if (occupants[position] != null)
+                throw new Exception("Position already occupied!");
 
-            if (this[newPos, EntityType.Skull])
-            {
-                this[newPos, EntityType.Skull] = false;
-                skeletons.Add(new Skeleton(newPos));
-                ++summonCount;
+            (occupants[position], occupants[actor.Position]) = (actor, null);
+            actor.Position = position;
+		}
 
-				try { Player.Position = FindOpen(Player.Position, 8, true); }
-				catch
+        public void Move(Actor actor, in Vector2i movement)
+        {
+            Vector2u newPos = new Vector2u((uint)(actor.Position.X + movement.X), (uint)(actor.Position.Y + movement.Y));
+
+			if (actor is Necromancer necromancer)
+			{
+				if (this[newPos, EntityType.Skull])
 				{
-					Player.Position = FindOpen(Player.Position, 8);
+					this[newPos, EntityType.Skull] = false;
+
+					skeletons.Add(new Skeleton(newPos));
+
+					++summonCount;
+
+					try { Occupy(necromancer, FindOpen(necromancer.Position, 8, true)); }
+					catch
+					{
+						Occupy(necromancer, FindOpen(necromancer.Position, 8));
+						++necromancer.Energy;
+					}
+
 					++Player.Energy;
+					Player.Acted = true;
+					return;
+				}
+                else if (this[newPos, EntityType.Occupant] && necromancer.BoneArmor && occupants[newPos] is Adventurer adventurer)
+                {
+                    Clash(adventurer, necromancer);
+					Player.Acted = true;
+                }
+
+				if (!this[newPos, EntityType.All])
+				{
+                    Occupy(necromancer, newPos);
+					necromancer.Acted = true;
+                    return;
 				}
 
-				++Player.Energy;
-				Player.Acted = true;
-            }
-            else if (!this[newPos, EntityType.Wall] && !this[newPos, EntityType.Occupant])
-            {
-                Player.Position = newPos;
-                Player.Acted = true;
-            }
-        }
+                return;
+			}
 
-        public void TryWarp()
+			if (!this[newPos, EntityType.All])
+				Occupy(actor, newPos);
+		}
+
+
+		public void Move(Actor actor, in Vector2u position)
+		{
+			if (!this[position, EntityType.All])
+				Occupy(actor, position);
+		}
+
+		public void Warp()
         {
             if (Player.HasEnergy)
             {
-                try { Player.Position = FindOpen(Player.Position, 8, true); }
-                catch
-                {
-					Player.Position = FindOpen(Player.Position, 8);
-                    player.Acted = true;
+				try { Occupy(Player, FindOpen(Player.Position, 8, true)); }
+				catch
+				{
+					Occupy(Player, FindOpen(Player.Position, 8));
+					player.Acted = true;
                     return;
 				}
 
 				--Player.Energy;
 				Player.Acted = true;
             }
-        }
+		}
+
+		public void Warp(in Vector2u position)
+		{
+			if (Player.Energy >= 2)
+			{
+                bool discount = false;
+
+                if (this[position, EntityType.Occupant])
+                {
+                    if (occupants[position] is Skeleton skeleton)
+                    {
+						discount = Player.BoneArmor;
+
+						Skeletons.Remove(skeleton);
+                        occupants[position] = null;
+                        Player.ArmorDurability = 3;
+                    }
+                    else return;
+				}
+
+				Occupy(Player, position);
+				Player.Energy -= discount ? 1 : 2;
+				player.Acted = true;
+			}
+		}
 
 		public void Pass() => Player.Acted = true;
 
@@ -406,12 +476,28 @@ namespace Necrowarp
             if (!adventurer.Alive || !skeleton.Alive)
                 return;
 
-            this[adventurer.Position, EntityType.Skull] = true;
             adventurer.Alive = false;
-            ++killCount;
+			skeleton.Alive = false;
 
-            skeleton.Alive = false;
-        }
+			++skeletonKillCount;
+		}
+
+        public void Clash(Adventurer adventurer, Necromancer necromancer)
+        {
+            if (!adventurer.Alive || !necromancer.Alive)
+				return;
+
+            if (necromancer.BoneArmor)
+			{
+				this[adventurer.Position, EntityType.Skull] = true;
+
+				adventurer.Alive = false;
+
+				--necromancer.ArmorDurability;
+				++necromancerKillCount;
+			}
+			else GameOver = true;
+		}
 
 		public void Update()
         {
@@ -427,12 +513,34 @@ namespace Necrowarp
             CalculateSafeDistances();
 
             if (Adventurers.Count <= 0)
-				SpawnAdventurers(5 + KillCount / 2);
+				SpawnAdventurers(5 + SkeletonKillCount / 2);
 
-			Adventurers.RemoveAll(adventurer => !adventurer.Alive);
-            Skeletons.RemoveAll(skeleton => !skeleton.Alive);
+            for (int i = Adventurers.Count - 1; i >= 0; --i)
+            {
+                var adventurer = Adventurers[i];
 
-            Player.Acted = false;
+                if (adventurer.Alive)
+                    continue;
+
+                this[adventurer.Position, EntityType.Skull] = true;
+                occupants[adventurer.Position] = null;
+
+                Adventurers.RemoveAt(i);
+			}
+
+			for (int i = Skeletons.Count - 1; i >= 0; --i)
+			{
+				var skeleton = Skeletons[i];
+
+				if (skeleton.Alive)
+					continue;
+
+				occupants[skeleton.Position] = null;
+
+				Skeletons.RemoveAt(i);
+			}
+
+			Player.Acted = false;
         }
     }
 }
