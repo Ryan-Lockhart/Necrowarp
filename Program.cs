@@ -134,12 +134,26 @@ namespace Necrowarp
 					}
                     break;
                 case GamePhase.End:
-                    Text gameSummaryText = new Text($"You summoned {map.SummonCount} skeletons from beyond the mortal coil.\n\n\tYour skeletons slew {map.SkeletonKillCount} arrogant adventurers!", font, 16)
+					string rating;
+
+                    var totalKillCount = map.NecromancerKillCount + map.SkeletonKillCount;
+
+                    if (totalKillCount == 0) rating = "very disappointing...";
+                    else if (totalKillCount >= 500) rating = "your throne awaits in hell...";
+					else if (totalKillCount >= 350) rating = "you are death incarnate!";
+                    else if (totalKillCount >= 200) rating = "you are the reaper of souls!";
+                    else if (totalKillCount >= 100) rating = "you have the devil's own luck...";
+                    else if (totalKillCount >= 50) rating = "the necromantic artistry!";
+                    else if (totalKillCount >= 25) rating = "quite impressive...";
+                    else if (totalKillCount >= 10) rating = "I'm chilled to the bone!";
+                    else rating = "that was a mild macabre...";
+
+					Text gameSummaryText = new Text($"You summoned {map.SummonCount} skeletons from beyond the mortal coil.\n\n\tYour skeletons slew {map.SkeletonKillCount} arrogant adventurers!\n\nYou personally felled {map.NecromancerKillCount} adventurers, {rating}", font, 16)
                     {
                         FillColor = Color.White
                     };
                     bounds = gameSummaryText.GetLocalBounds();
-                    gameSummaryText.Position = window.GetView().Center - new Vector2f(bounds.Width / 2, -bounds.Height * 4);
+                    gameSummaryText.Position = window.GetView().Center - new Vector2f(bounds.Width / 2, bounds.Height * 4);
 
                     Text gameOverText = new Text("Game Over", font, 64)
                     {
