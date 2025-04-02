@@ -26,7 +26,7 @@ cxx = meson.get_compiler('cpp')
 
 if target_machine.system() == 'windows'
 
-    includes = include_directories(['../libbleak', 'src', '? (SDL2)'])
+    includes = include_directories(['src', '? (SDL2)'])
 
     std_deps = [
         cxx.find_library('gcc_s', required: true, static: false),
@@ -43,28 +43,25 @@ if target_machine.system() == 'windows'
         dependency('SDL2_ttf', required: true, static: false),
     ]
 
-    bleak_dep = cxx.find_library('bleak', dirs: '? (bleak)', required: true, static: false)
-
 elif target_machine.system() == 'linux'
 
-    includes = include_directories(['../libbleak', 'src', '/usr/local/include/SDL2'])
+    includes = include_directories(['src', '/usr/local/include/SDL2', 'subprojects/libbleak'])
 
     std_deps = [
+        cxx.find_library('gcc', required: true, static: true),
         cxx.find_library('gcc_s', required: true, static: false),
-        cxx.find_library('stdc++', required: true, static: false),
-        cxx.find_library('pthread', required: true, static: false),
+        cxx.find_library('stdc++', required: true, static: true),
+        cxx.find_library('pthread', required: true, static: true),
         cxx.find_library('steam_api', required: true, static: false),
     ]
 
     sdl_deps = [
-        cxx.find_library('SDL2', dirs: '/usr/local/lib', required: true, static: false),
-        cxx.find_library('SDL2_image', dirs: '/usr/local/lib', required: true, static: false),
-        cxx.find_library('SDL2_mixer', dirs: '/usr/local/lib', required: true, static: false),
-        cxx.find_library('SDL2_net', dirs: '/usr/local/lib', required: true, static: false),
-        cxx.find_library('SDL2_ttf', dirs: '/usr/local/lib', required: true, static: false),
+        cxx.find_library('SDL2', dirs: '/usr/local/lib', required: true, static: true),
+        cxx.find_library('SDL2_image', dirs: '/usr/local/lib', required: true, static: true),
+        cxx.find_library('SDL2_mixer', dirs: '/usr/local/lib', required: true, static: true),
+        cxx.find_library('SDL2_net', dirs: '/usr/local/lib', required: true, static: true),
+        cxx.find_library('SDL2_ttf', dirs: '/usr/local/lib', required: true, static: true),
     ]
-
-    bleak_dep = cxx.find_library('bleak', dirs: '/usr/lib64', required: true, static: false)
 
     dyn_libs = [
         '/usr/lib/libgcc_s.so.1',
@@ -112,12 +109,18 @@ elif target_machine.system() == 'linux'
 
 endif
 
+libbleak = subproject('libbleak', required: true)
+
+libbleak_both = libbleak.get_variable('libbleak')
+
 executable(
     'necrowarp',
 
     'src/program.cpp',
 
-    dependencies: [std_deps, sdl_deps, bleak_dep],
+    dependencies: [std_deps, sdl_deps],
+
+    link_whole: [libbleak_both.get_static_lib()],
 
     include_directories: includes,
 
