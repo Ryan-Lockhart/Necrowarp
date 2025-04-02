@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"mesonbuild.buildFolder": "build",
+		"task.quickOpen.showAll": true,
+		"task.autoDetect": "on",
+		"clangd.path": "/usr/bin/clangd",
+	}
+}
