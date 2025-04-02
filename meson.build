@@ -29,19 +29,18 @@ if target_machine.system() == 'windows'
     includes = include_directories(['src', 'c:/dev/msys64/ucrt64/include', 'subprojects/libbleak', 'c:/dev/steam/sdk/public'])
 
     std_deps = [
-        cxx.find_library('gcc', required: true, static: true),
-        cxx.find_library('gcc_s', required: true, static: true),
-        cxx.find_library('stdc++', required: true, static: true),
-        cxx.find_library('winpthread', required: true, static: true),
+        cxx.find_library('gcc_s', required: true, static: false),
+        cxx.find_library('stdc++', required: true, static: false),
+        cxx.find_library('winpthread', required: true, static: false),
         cxx.find_library('steam_api', dirs: 'c:/dev/steam/sdk/redistributable_bin/win64', required: true, static: false),
     ]
 
     sdl_deps = [
-        dependency('SDL2', required: true, static: true),
-        dependency('SDL2_image', required: true, static: true),
-        dependency('SDL2_mixer', required: true, static: true),
-        dependency('SDL2_net', required: true, static: true),
-        dependency('SDL2_ttf', required: true, static: true),
+        dependency('SDL2', required: true, static: false),
+        dependency('SDL2_image', required: true, static: false),
+        dependency('SDL2_mixer', required: true, static: false),
+        dependency('SDL2_net', required: true, static: false),
+        dependency('SDL2_ttf', required: true, static: false),
     ]
 
     dyn_libs = []
@@ -51,19 +50,18 @@ elif target_machine.system() == 'linux'
     includes = include_directories(['src', '/usr/local/include/SDL2', 'subprojects/libbleak'])
 
     std_deps = [
-        cxx.find_library('gcc', required: true, static: true),
         cxx.find_library('gcc_s', required: true, static: false),
-        cxx.find_library('stdc++', required: true, static: true),
-        cxx.find_library('pthread', required: true, static: true),
+        cxx.find_library('stdc++', required: true, static: false),
+        cxx.find_library('pthread', required: true, static: false),
         cxx.find_library('steam_api', required: true, static: false),
     ]
 
     sdl_deps = [
-        cxx.find_library('SDL2', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_image', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_mixer', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_net', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_ttf', dirs: '/usr/local/lib', required: true, static: true),
+        cxx.find_library('SDL2', dirs: '/usr/local/lib', required: true, static: false),
+        cxx.find_library('SDL2_image', dirs: '/usr/local/lib', required: true, static: false),
+        cxx.find_library('SDL2_mixer', dirs: '/usr/local/lib', required: true, static: false),
+        cxx.find_library('SDL2_net', dirs: '/usr/local/lib', required: true, static: false),
+        cxx.find_library('SDL2_ttf', dirs: '/usr/local/lib', required: true, static: false),
     ]
 
     dyn_libs = [
@@ -123,7 +121,7 @@ executable(
 
     dependencies: [std_deps, sdl_deps],
 
-    link_whole: [libbleak_both.get_static_lib()],
+    link_with: [libbleak_both.get_shared_lib()],
 
     include_directories: includes,
 
