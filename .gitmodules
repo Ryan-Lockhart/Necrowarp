@@ -1,0 +1,3 @@
+[submodule "subprojects/libbleak"]
+	path = subprojects/libbleak
+	url = https://github.com/ryan-lockhart/libbleak.git
