@@ -10,6 +10,9 @@ install_dir = '@0@/install/@1@/@2@'.format(
 	target_machine.cpu_family()
 )
 
+bin_install_dir = install_dir + '/bin'
+log_install_dir = install_dir + '/log'
+
 build_type = get_option('buildtype')
 
 if build_type == 'debug'
@@ -129,7 +132,7 @@ executable(
     cpp_args: args,
 
     install: true,
-    install_dir: install_dir,
+    install_dir: bin_install_dir,
 
     win_subsystem: subsystem,
 )
@@ -140,4 +143,4 @@ install_subdir('res', install_dir: install_dir)
 install_data('log/message.log', install_dir: install_dir + '/log')
 install_data('log/error.log', install_dir: install_dir + '/log')
 
-install_data(dyn_libs, install_dir: install_dir, follow_symlinks: true)
+install_data(dyn_libs, install_dir: bin_install_dir, follow_symlinks: true)

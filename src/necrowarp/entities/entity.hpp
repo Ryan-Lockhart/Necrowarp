@@ -198,6 +198,22 @@ namespace necrowarp {
 
 	template<typename T> concept PlayerEntity = is_entity<T>::value && is_player<T>::value;
 
+	template<typename T> struct is_fodder {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_fodder_v = is_fodder<T>::value;
+
+	template<typename T> concept FodderEntity = is_entity<T>::value && is_fodder<T>::value;
+
+	template<typename T> struct is_bleeder {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_bleeder_v = is_fodder<T>::value;
+
+	template<typename T> concept BleederEntity = is_entity<T>::value && is_bleeder<T>::value;
+
 	enum struct command_type_t : u8 {
 		None = 0,
 		Move,

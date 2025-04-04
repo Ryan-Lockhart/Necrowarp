@@ -132,6 +132,8 @@ namespace necrowarp {
 			}
 			
 			shackle = (shackle_type_t)std::uniform_int_distribution<u16>{ (u16)shackle_type_t::Calcitic, (u16)shackle_type_t::Sanguine }(random_engine);
+
+			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
 		}
 
 		inline void enshackle(shackle_type_t type) noexcept {
@@ -140,6 +142,8 @@ namespace necrowarp {
 			}
 			
 			shackle = type;
+
+			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
 		}
 
 		inline void unshackle() noexcept {
@@ -148,6 +152,8 @@ namespace necrowarp {
 			}
 
 			shackle = shackle_type_t::None;
+
+			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled, i32>;
 		};
 
 		inline void draw() const noexcept {

@@ -12,6 +12,9 @@
 #include <necrowarp/ui_state.hpp>
 #include <necrowarp/globals.hpp>
 
+#include <steam/steam_api.h>
+#include <magic_enum/magic_enum_all.hpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -159,6 +162,10 @@ namespace necrowarp {
 		}
 
 		static inline void startup() noexcept {
+			api_state.user_id = fetch_user_id();
+
+			SteamAPI_ManualDispatch_Init();
+
 			Mouse::initialize();
 			Keyboard::initialize();
 
@@ -178,6 +185,7 @@ namespace necrowarp {
 			input_timer.reset();
 			cursor_timer.reset();
 			epoch_timer.reset();
+			stat_store_timer.reset();
 		}
 
 		static inline void load() noexcept {
@@ -262,14 +270,23 @@ namespace necrowarp {
 
 		static inline void descend() noexcept {
 			terminate_process_turn();
+			
+			steam_stats::store();
+
+			stat_store_timer.record();
 
 			descent_flag = false;
 
 			++game_stats.game_depth;
 
+			if (steam_stats_s::stats<steam_stat_e::LowestDepth, i32>.get_value() > -static_cast<i32>(game_stats.game_depth)) {
+				steam_stats_s::stats<steam_stat_e::LowestDepth, i32> = -static_cast<i32>(game_stats.game_depth);
+			}
+
 			game_map.reset<zone_region_t::All>();
 
-			entity_registry.reset();
+			entity_registry.reset<ALL_NON_PLAYER>();
+			entity_registry.reset_goal_map<player_t>();
 
 			constexpr cell_state_t open_state{ cell_trait_t::Open, cell_trait_t::Transperant, cell_trait_t::Seen, cell_trait_t::Explored };
 			constexpr cell_state_t closed_state{ cell_trait_t::Solid, cell_trait_t::Opaque, cell_trait_t::Seen, cell_trait_t::Explored };
@@ -303,15 +320,20 @@ namespace necrowarp {
 				}
 			}
 
-			cauto player_pos{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open) };
+			if (game_map[player.position].solid) {
+				cauto player_pos{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open) };
 
-			if (!player_pos.has_value()) {
-				error_log.add("could not find open position for player!");
-				terminate_prematurely();
+				if (!player_pos.has_value()) {
+					error_log.add("could not find open position for player!");
+					terminate_prematurely();
+				}
+
+				steam_stats_s::stats<steam_stat_e::MetersMoved, f32> += offset_t::distance<f32>(player.position, player_pos.value());
+
+				player.position = player_pos.value();
 			}
-
-			player.position = player_pos.value();
-			good_goal_map.add(player_pos.value());
+			
+			good_goal_map.add(player.position);
 
 			entity_registry.spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_up_ladders),
@@ -542,6 +564,12 @@ namespace necrowarp {
 
 				unload_async();
 			}
+
+			if (stat_store_timer.ready()) {
+				steam_stats::store();
+
+				stat_store_timer.record();
+			}
 		}
 
 		static inline void render() noexcept {
@@ -583,6 +611,10 @@ namespace necrowarp {
 			game_map.reset<zone_region_t::All>();
 			
 			entity_registry.reset();
+
+			steam_stats::store();
+
+			stat_store_timer.record();
 		}
 
 		static inline void unload_async() noexcept {
@@ -599,8 +631,29 @@ namespace necrowarp {
 			Keyboard::terminate();
 			Mouse::terminate();
 
+			magic_enum::enum_for_each<steam_stat_e>([] (auto val) {
+				constexpr steam_stat_e Stat{ val };
+
+				using Type = to_stat_type<Stat>::type;
+
+				message_log.add("\"{}\" ({}): {}",
+					steam_stats::stats<Stat, Type>.api_name,
+					steam_stats::stats<Stat, Type>.display_name,
+					std::to_string(steam_stats::stats<Stat, Type>.get_value())
+				);
+			});
+
+#if defined (BLEAK_DEBUG)
+
+			message_log.flush_to_console();
+			error_log.flush_to_console();
+
+#else
+
 			message_log.flush_to_file();
 			error_log.flush_to_file();
+
+#endif
 		}
 
 		static inline void terminate_prematurely() noexcept {

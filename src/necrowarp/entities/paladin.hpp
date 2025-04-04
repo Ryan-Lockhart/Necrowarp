@@ -27,6 +27,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_bleeder<paladin_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<paladin_t>{ glyphs::Paladin };
 
 	struct paladin_t {

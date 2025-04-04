@@ -133,5 +133,10 @@ namespace necrowarp {
 		constexpr i16 FloorsPerReinforcement{ 8 };
 
 		constexpr bool CheatsAllowed{ false };
+
+		constexpr f32 BloodPoolMinimumVolume{ 4.5f };
+		constexpr f32 BloodPoolMaximumVolume{ 5.7f };
+
+		static inline std::uniform_real_distribution<f32> blood_pool_dis{ BloodPoolMinimumVolume, BloodPoolMaximumVolume };
 	} // namespace globals
 } // namespace necrowarp
