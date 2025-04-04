@@ -10,9 +10,6 @@ install_dir = '@0@/install/@1@/@2@'.format(
 	target_machine.cpu_family()
 )
 
-bin_install_dir = install_dir + '/bin'
-log_install_dir = install_dir + '/log'
-
 build_type = get_option('buildtype')
 
 if build_type == 'debug'
@@ -29,7 +26,7 @@ cxx = meson.get_compiler('cpp')
 
 if target_machine.system() == 'windows'
 
-    includes = include_directories(['src', 'c:/dev/msys64/ucrt64/include', 'subprojects/libbleak', 'c:/dev/steam/sdk/public'])
+    includes = include_directories(['src', 'c:/dev/msys64/ucrt64/include', 'c:/dev/steam/sdk/public'])
 
     std_deps = [
         cxx.find_library('gcc_s', required: true, static: false),
@@ -50,7 +47,7 @@ if target_machine.system() == 'windows'
 
 elif target_machine.system() == 'linux'
 
-    includes = include_directories(['src', '/usr/local/include/SDL2', 'subprojects/libbleak'])
+    includes = include_directories(['src', '/usr/local/include/SDL2'])
 
     std_deps = [
         cxx.find_library('gcc_s', required: true, static: false),
@@ -113,18 +110,16 @@ elif target_machine.system() == 'linux'
 
 endif
 
-libbleak = subproject('libbleak', required: true)
+subproject('libbleak', required: true)
 
-libbleak_both = libbleak.get_variable('libbleak')
+libbleak_dep = dependency('libbleak', required: true, static: true)
 
 executable(
     'necrowarp',
 
     'src/program.cpp',
 
-    dependencies: [std_deps, sdl_deps],
-
-    link_with: [libbleak_both.get_shared_lib()],
+    dependencies: [std_deps, sdl_deps, libbleak_dep],
 
     include_directories: includes,
 
@@ -132,7 +127,7 @@ executable(
     cpp_args: args,
 
     install: true,
-    install_dir: bin_install_dir,
+    install_dir: install_dir,
 
     win_subsystem: subsystem,
 )
@@ -143,4 +138,4 @@ install_subdir('res', install_dir: install_dir)
 install_data('log/message.log', install_dir: install_dir + '/log')
 install_data('log/error.log', install_dir: install_dir + '/log')
 
-install_data(dyn_libs, install_dir: bin_install_dir, follow_symlinks: true)
+install_data(dyn_libs, install_dir: install_dir, follow_symlinks: true)
