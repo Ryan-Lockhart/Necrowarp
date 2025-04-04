@@ -73,10 +73,6 @@ namespace necrowarp {
 					++x;
 				}
 
-				if (gamepad_enabled && x == 0 && y == 0) {
-					return static_cast<offset_t>(primary_gamepad->right_stick.current_state);
-				}
-
 				return offset_t{ x, y };
 			}();
 
@@ -135,10 +131,6 @@ namespace necrowarp {
 					++x;
 				}
 
-				if (gamepad_enabled && x == 0 && y == 0) {
-					return static_cast<offset_t>(primary_gamepad->dpad.current_state);
-				}
-
 				return offset_t{ x, y };
 			}();
 
@@ -164,7 +156,7 @@ namespace necrowarp {
 		static inline void startup() noexcept {
 			api_state.user_id = fetch_user_id();
 
-			SteamAPI_ManualDispatch_Init();
+			steam_stats::transcribe();
 
 			Mouse::initialize();
 			Keyboard::initialize();
@@ -630,18 +622,6 @@ namespace necrowarp {
 
 			Keyboard::terminate();
 			Mouse::terminate();
-
-			magic_enum::enum_for_each<steam_stat_e>([] (auto val) {
-				constexpr steam_stat_e Stat{ val };
-
-				using Type = to_stat_type<Stat>::type;
-
-				message_log.add("\"{}\" ({}): {}",
-					steam_stats::stats<Stat, Type>.api_name,
-					steam_stats::stats<Stat, Type>.display_name,
-					std::to_string(steam_stats::stats<Stat, Type>.get_value())
-				);
-			});
 
 #if defined (BLEAK_DEBUG)
 

@@ -12,6 +12,7 @@
 #include <steam/steamclientpublic.h>
 #include <steam/steamtypes.h>
 #include <steam/isteamuserstats.h>
+#include <magic_enum/magic_enum_utility.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -404,6 +405,7 @@ namespace necrowarp {
 		static inline constexpr cstr display_name{ to_display_str(Type) };
 
 		static inline value_type cached_value;
+		static inline value_type initial_value;
 		
 		inline value_type get_value() const noexcept;
 
@@ -499,6 +501,16 @@ namespace necrowarp {
 		}
 
 		static inline bool store() noexcept { return user_stats()->StoreStats(); }
+
+		static inline void transcribe() noexcept {
+			magic_enum::enum_for_each<steam_stat_e>([] (auto val) {
+				constexpr steam_stat_e Stat{ val };
+
+				using Type = to_stat_type<Stat>::type;
+				
+				stats<Stat, Type>.initial_value = stats<Stat, Type>.get_value();
+			});
+		}
 
 		static inline bool is_valid(CSteamID user_id) noexcept { return translate_user_id(user_id) == api_state.user_id; }
 

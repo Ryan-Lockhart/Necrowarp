@@ -6,6 +6,8 @@
 #include <necrowarp/game_state.hpp>
 #include <necrowarp/entity_state.cpp>
 
+#include <magic_enum/magic_enum_utility.hpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -209,6 +211,19 @@ namespace necrowarp {
 		}
 	};
 
+	constexpr cstr help_hidden_text{ "F1: Show Controls" };
+
+	constexpr cstr help_expanded_text{
+		" Movement:  WASD / Numpad \n\n\n"
+		" Random Warp:           Q\n\n"
+		" Target Warp:           E\n\n\n"
+		" Calcitic Invocation:   1\n\n"
+		" Spectral Invocation:   2\n\n"
+		" Sanguine Invocation:   3\n\n"
+		" Necromantic Ascension: 4\n\n\n"
+		"F1: Hide Controls"
+	};
+
 	template<> struct phase_state_t<game_phase_t::Paused> {
 		static inline labeled_button_t resume_button{
 			anchor_t{ offset_t{ globals::ui_grid_size() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
@@ -228,12 +243,23 @@ namespace necrowarp {
 			}
 		};
 
+		static inline bool show_help{ true };
+
+		static inline label_t help_label{
+			anchor_t{ offset_t{ 1, globals::ui_grid_size().h }, cardinal_e::Southwest },
+			embedded_label_t{
+				runes_t{ show_help ? help_expanded_text : help_hidden_text, colors::White },
+				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				extent_t{ 1, 1 }
+			}
+		};
+
 		static inline bool any_hovered() noexcept {
 			if (phase.current_phase != game_phase_t::Paused) {
 				return false;
 			}
 
-			return resume_button.is_hovered() || quit_button.is_hovered();
+			return resume_button.is_hovered() || quit_button.is_hovered() || help_label.is_hovered();
 		}
 
 		static inline void update(Mouse::button_t button) noexcept {
@@ -243,6 +269,12 @@ namespace necrowarp {
 
 			resume_button.update(Mouse::button_t::Left);
 			quit_button.update(Mouse::button_t::Left);
+
+			if (Keyboard::is_key_down(bindings::ToggleControls)) {
+				show_help = !show_help;
+
+				help_label.text = runes_t{ show_help ? help_expanded_text : help_hidden_text, colors::White };
+			}
 
 			if (resume_button.is_active()) {
 				phase.transition(game_phase_t::Playing);
@@ -254,6 +286,7 @@ namespace necrowarp {
 		static inline void draw(ref<renderer_t> renderer) noexcept {
 			resume_button.draw(renderer);
 			quit_button.draw(renderer);
+			help_label.draw(renderer);
 		}
 	};
 
@@ -350,25 +383,18 @@ namespace necrowarp {
 		};
 
 		static inline label_t statistics_hidden_label{
-			anchor_t{ offset_t{ globals::ui_grid_size().w / 2, globals::ui_grid_size().h }, cardinal_e::South },
+			anchor_t{ offset_t{ 1, globals::ui_grid_size().h }, cardinal_e::Southwest },
 			embedded_label_t{
-				runes_t{ "Statistics", colors::White },
+				runes_t{ " Statistics ", colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
 
 		static inline label_t statistics_expanded_label{
-			anchor_t{ offset_t{ globals::ui_grid_size().w / 2, globals::ui_grid_size().h }, cardinal_e::South },
+			anchor_t{ offset_t{ 1, globals::ui_grid_size().h }, cardinal_e::Southwest },
 			embedded_label_t{
-				runes_t{
-					"Depth Reached:  000\n\n\n"
-					"Player Kills: 0000\n\n"
-					"Minion Kills: 0000\n\n\n"
-					"Total Kills:  0000\n\n\n"
-					"    Statistics    ",
-					colors::White
-				},
+				runes_t{ " Statistics ", colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
@@ -409,14 +435,27 @@ namespace necrowarp {
 			show_statistics = show_statistics ? statistics_expanded_label.is_hovered() : statistics_hidden_label.is_hovered();
 
 			if (show_statistics) {
-				statistics_expanded_label.text = runes_t{
-					"Depth Reached: " + std::format("{:3}", game_stats.game_depth) + "\n\n\n"
-					"Player Kills: " + std::format("{:4}", game_stats.player_kills) + "\n\n"
-					"Minion Kills: " + std::format("{:4}", game_stats.minion_kills) + "\n\n\n"
-					"Total Kills:  " + std::format("{:4}", game_stats.total_kills()) + "\n\n\n"
-					"    Statistics    ",
-					colors::White
-				};
+				runes_t stats_str{ "\n" };
+
+				magic_enum::enum_for_each<steam_stat_e>([&stats_str] (auto val) {
+					constexpr steam_stat_e Stat{ val };
+
+					using Type = to_stat_type<Stat>::type;
+
+					const Type current_value{ steam_stats::stats<Stat, Type>.get_value() };
+					const Type delta_value{ steam_stats::stats<Stat, Type>.get_value() - steam_stats::stats<Stat, Type>.initial_value };
+
+					stats_str.concatenate(std::format(" {}: {} ({}{}) \n\n",
+						steam_stats::stats<Stat, Type>.display_name,
+						std::to_string(current_value),
+						delta_value > 0 ? "+" : "",
+						std::to_string(delta_value)
+					));
+				});
+
+				stats_str.concatenate(runes_t{"\n Statistics "});
+
+				statistics_expanded_label.text = stats_str;
 			}
 		}
 
@@ -508,19 +547,6 @@ namespace necrowarp {
 		"    Depth: 000    "
 	};
 
-	constexpr cstr help_hidden_text{ "F1: Show Controls" };
-
-	constexpr cstr help_expanded_text{
-		" Movement:  WASD / Numpad \n\n\n"
-		" Random Warp:           Q\n\n"
-		" Target Warp:           E\n\n\n"
-		" Calcitic Invocation:   1\n\n"
-		" Spectral Invocation:   2\n\n"
-		" Sanguine Invocation:   3\n\n"
-		" Necromantic Ascension: 4\n\n\n"
-		"F1: Hide Controls"
-	};
-
 	template<> struct phase_state_t<game_phase_t::Playing> {
 		static inline status_bar_t<2> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
@@ -550,13 +576,12 @@ namespace necrowarp {
 			}
 		};
 
-		static inline label_t help_label{
-			anchor_t{ offset_t{ 1, globals::ui_grid_size().h }, cardinal_e::Southwest },
-			embedded_label_t{
-				runes_t{ help_hidden_text, colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
-				extent_t{ 1, 1 }
-			}
+		static inline label_t favor_hidden_label{
+
+		};
+
+		static inline label_t favor_expanded_label{
+
 		};
 
 		static inline label_t tooltip_label{
@@ -577,10 +602,10 @@ namespace necrowarp {
 			}
 		};
 
-		static inline bool show_help{ false };
 		static inline bool show_tooltip{ false };
 		static inline bool show_command{ false };		
 		static inline bool show_depth{ false };
+		static inline bool show_favor{ false };
 
 		static constexpr offset_t random_warp_icon_position() { return offset_t{ 0, globals::icon_grid_size().h / 2 - 4 }; }
 		static constexpr offset_t target_warp_icon_position() { return offset_t{ 0, globals::icon_grid_size().h / 2 - 3 }; }
@@ -610,10 +635,7 @@ namespace necrowarp {
 				return true;
 			}
 			
-			return
-				player_statuses.is_hovered() ||
-				help_label.is_hovered() ||				
-				(show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered());
+			return player_statuses.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered());
 		}
 
 		static inline void update() noexcept {
@@ -715,12 +737,6 @@ namespace necrowarp {
 				};
 			} else {
 				depth_hidden_label.text = runes_t{ std::format("Depth: {:3}", (isize)game_stats.game_depth * -1) };
-			}
-
-			if (Keyboard::is_key_down(bindings::ToggleControls)) {
-				show_help = !show_help;
-
-				help_label.text = runes_t{ show_help ? help_expanded_text : help_hidden_text, colors::White };
 			}
 
 			if (gamepad_enabled && gamepad_active) {
@@ -829,8 +845,6 @@ namespace necrowarp {
 			show_depth ?
 				depth_expanded_label.draw(renderer) :
 				depth_hidden_label.draw(renderer);
-
-			help_label.draw(renderer);
 
 			if (!draw_cursor && show_tooltip) {
 				tooltip_label.draw(renderer);

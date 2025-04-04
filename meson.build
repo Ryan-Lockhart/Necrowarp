@@ -112,7 +112,7 @@ endif
 
 subproject('libbleak', required: true)
 
-libbleak_dep = dependency('libbleak', required: true, static: true)
+libbleak_dep = dependency('bleak', required: true)
 
 executable(
     'necrowarp',
