@@ -60,7 +60,8 @@ namespace necrowarp {
 		
 		constexpr i8 current(i8 relation) const noexcept {
 			return map<i8>(relation,
-				std::numeric_limits<i8>::lowest(), std::numeric_limits<i8>::max(),
+				std::numeric_limits<i8>::lowest() / 4,
+				std::numeric_limits<i8>::max() / 4,
 				minimum, maximum
 			);
 		} 
@@ -94,7 +95,7 @@ namespace necrowarp {
 			{ -4, 4 },
 			{ -2, 6 },
 		},
-		{
+		{ // Akurakhaithan
 			std::numeric_limits<i8>::max(),
 			{ 0, 1 },
 			{ 0, 3 },
@@ -103,7 +104,7 @@ namespace necrowarp {
 			{ -4, 0 },
 			{ 0, 8 },
 		},
-		{
+		{ // Merirfin
 			std::numeric_limits<i8>::max(),
 			{ 0, 1 },
 			{ 0, 3 },
@@ -112,7 +113,7 @@ namespace necrowarp {
 			{ 0, 4 },
 			{ -2, 6 },
 		},
-		{
+		{ // Saeiligarkeuss
 			std::numeric_limits<i8>::max(),
 			{ 0, 1 },
 			{ 0, 4 },

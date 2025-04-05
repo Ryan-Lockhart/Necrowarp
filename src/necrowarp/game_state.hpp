@@ -12,7 +12,7 @@
 #include <steam/steamclientpublic.h>
 #include <steam/steamtypes.h>
 #include <steam/isteamuserstats.h>
-#include <magic_enum/magic_enum_utility.hpp>
+#include <magic_enum_utility.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -35,7 +35,7 @@ namespace necrowarp {
 		return translate_user_id(interface->GetSteamID());
 	}
 
-	static inline subsystem_s subsystem{ api_state.app_id };
+	static inline subsystem_s subsystem{};
 
 	static inline phase_t phase{};
 

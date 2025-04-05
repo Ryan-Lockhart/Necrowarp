@@ -27,15 +27,25 @@ namespace necrowarp {
 		bool force_width{ globals::MapSize.w <= globals::game_grid_size().w };
 		bool force_height{ globals::MapSize.h <= globals::game_grid_size().h };
 
+		bool moved{ false };
+
 		if (force_width || force_height) {
-			return camera.center_on(
+			moved = camera.center_on(
 				force_width, force_width ? globals::MapCenter.x : player.position.x,
 				force_height, force_height ? globals::MapCenter.y : player.position.y
 			);
+
+			grid_cursor.update(camera.get_position());
+
+			return moved;
 		}
 
 		if (camera_locked) {
-			return camera.center_on(player.position);
+			moved = camera.center_on(player.position);
+
+			grid_cursor.update(camera.get_position());
+
+			return moved;
 		}
 
 		return false;

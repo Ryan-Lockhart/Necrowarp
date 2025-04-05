@@ -6,7 +6,7 @@
 #include <necrowarp/game_state.hpp>
 #include <necrowarp/entity_state.cpp>
 
-#include <magic_enum/magic_enum_utility.hpp>
+#include <magic_enum_utility.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -737,16 +737,6 @@ namespace necrowarp {
 				};
 			} else {
 				depth_hidden_label.text = runes_t{ std::format("Depth: {:3}", (isize)game_stats.game_depth * -1) };
-			}
-
-			if (gamepad_enabled && gamepad_active) {
-				if (primary_gamepad->left_stick.current_state != cardinal_e::Central && cursor_timer.ready()) {
-					grid_cursor.update(primary_gamepad->left_stick.current_state);
-
-					cursor_timer.record();
-				}
-			} else {
-				grid_cursor.update(camera.get_position());
 			}
 
 			const entity_type_t entity_type{ entity_registry.at(grid_cursor.position) };

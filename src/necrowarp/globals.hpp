@@ -1,10 +1,21 @@
 #pragma once
 
+#include "bleak/extent.hpp"
 #include <bleak.hpp>
 
 namespace necrowarp {
 	namespace globals {
 		using namespace bleak;
+
+		constexpr bool IsReleaseBuild{
+#if defined (BLEAK_DEBUG)
+			false
+#elif defined(BLEAK_RELEASE)
+			true
+#else
+	#error project error: a debug or release symbol must be defined...
+#endif
+		};
 
 		constexpr std::string GameName{ "Necrowarp" };
 		constexpr std::string GameVersion{ "0.0.1" };
@@ -19,6 +30,83 @@ namespace necrowarp {
 
 		static inline u32 frame_limit{ 60u };
 		static inline f32 frame_time() { return 1000.0f / frame_limit; }
+		
+		static constexpr extent_t MinimumWindowSize{ 640, 480 }; // VGA
+		static constexpr extent_t MaximumWindowSize{ 7680, 4320 }; //  8K
+
+		static inline constexpr bool is_valid_window_size(extent_t size) noexcept {
+			return !between<extent_t::scalar_t>(size.w, MinimumWindowSize.w, MaximumWindowSize.w) || !between<extent_t::scalar_t>(size.h, MinimumWindowSize.h, MaximumWindowSize.h);
+		}
+
+		enum class resolution_e : u8 {
+			// 4:3 resolutions
+
+			Resolution640x480,
+			ResolutionVGA = Resolution640x480,
+			
+			Resolution800x600,
+			ResolutionSVGA = Resolution800x600,
+			
+			Resolution1024x768,
+			ResolutionXGA = Resolution1024x768,
+
+			Resolution2048x1536,
+			ResolutionQXGA = Resolution2048x1536,
+
+			// 16:9 resolutions
+
+			Resolution1280x720,
+			ResolutionHD = Resolution1280x720,
+
+			Resolution1920x1080,
+			ResolutionUHD = Resolution1920x1080,
+
+			Resolution2560x1440,
+			ResolutionQHD = Resolution2560x1440,
+
+			Resolution3840x2160,
+			Resolution4KHD = Resolution3840x2160,
+
+			Resolution7680x4320,
+			Resolution8KHD = Resolution7680x4320,
+
+			// 16:10 resolutions
+
+			Resolution1280x800,
+			ResolutionSteamDeck = Resolution1280x800,
+
+			// Ultra wide 16:9 resolutions
+
+			Resolution3840x1080,
+			ResolutionUHDUW = Resolution3840x1080,
+
+			Resolution5120x1440,
+			ResolutionQHDUW = Resolution5120x1440,
+
+			Resolution7680x2160,
+			Resolution4KHDUW = Resolution7680x2160,
+
+			FirstResolution = Resolution640x480,
+			LastResolution = Resolution7680x2160
+		};
+
+		static constexpr usize ResolutionCount{ static_cast<usize>(resolution_e::Resolution7680x2160) + 1ULL };
+
+		static constexpr lut_t<resolution_e, extent_t, ResolutionCount> Resolutions{
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution640x480, extent_t{ 640, 480 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution800x600, extent_t{ 800, 600 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1024x768, extent_t{ 1024, 768 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution2048x1536, extent_t{ 2048, 1536 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1280x720, extent_t{ 1280, 720 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1920x1080, extent_t{ 1920, 1080 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution2560x1440, extent_t{ 2560, 1440 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution3840x2160, extent_t{ 3840, 2160 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution7680x4320, extent_t{ 7680, 4320 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1280x800, extent_t{ 1280, 800 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution3840x1080, extent_t{ 3840, 1080 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution5120x1440, extent_t{ 5120, 1440 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution7680x2160, extent_t{ 7680, 2160 } }
+		};
 		
 		static inline extent_t window_size{ 1280, 720 };
 

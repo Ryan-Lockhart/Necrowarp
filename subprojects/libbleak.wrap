@@ -2,4 +2,5 @@
 directory = libbleak
 
 [provide]
-bleak = libbleak_dep
+bleak_include = libbleak_include
+bleak_args = args

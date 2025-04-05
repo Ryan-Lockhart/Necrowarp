@@ -6,18 +6,17 @@
             "type": "lldb",
             "request": "launch",
             "windows": {
-                "program": "${workspaceFolder}/build/necrowarp.exe",
+                "program": "${workspaceFolder}/install/windows/x86_64/necrowarp.exe",
                 "args": [],
-                "cwd": "${workspaceFolder}",
+                "cwd": "${workspaceFolder}/install/windows/x86_64",
                 "expressions": "native"
             },
             "linux": {
-                "program": "${workspaceFolder}/build/necrowarp",
+                "program": "${workspaceFolder}/install/linux/x86_64/necrowarp",
                 "args": [],
-                "cwd": "${workspaceFolder}",
+                "cwd": "${workspaceFolder}/install/linux/x86_64",
                 "expressions": "native"
             },
-            
         }
     ]
 }

@@ -3,6 +3,7 @@
 #include <bleak.hpp>
 
 #include <cstdlib>
+#include <steam/isteamutils.h>
 #include <thread>
 
 #include <necrowarp/entities.hpp>
@@ -13,7 +14,7 @@
 #include <necrowarp/globals.hpp>
 
 #include <steam/steam_api.h>
-#include <magic_enum/magic_enum_all.hpp>
+#include <magic_enum_all.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -21,6 +22,12 @@ namespace necrowarp {
 	class Game {
 	  public:
 		static inline int run() noexcept {
+			if constexpr (globals::IsReleaseBuild) {
+				subsystem.initialize(api_state.app_id);
+			} else {
+				subsystem.initialize();
+			}
+
 			if (!subsystem.is_initialized()) {
 				error_log.add("[ERROR]: a subsystem failed to initialize! see error(s) above for details...");
 
@@ -154,6 +161,11 @@ namespace necrowarp {
 		}
 
 		static inline void startup() noexcept {
+			if (SteamUtils()->IsSteamRunningOnSteamDeck()) {
+				window.set_size(globals::Resolutions[globals::resolution_e::ResolutionSteamDeck]);
+				window.set_fullscreen();
+			}
+
 			api_state.user_id = fetch_user_id();
 
 			steam_stats::transcribe();
