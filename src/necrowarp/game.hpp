@@ -44,6 +44,8 @@ namespace necrowarp {
 
 			shutdown();
 
+			subsystem.terminate();
+
 			return EXIT_SUCCESS;
 		};
 

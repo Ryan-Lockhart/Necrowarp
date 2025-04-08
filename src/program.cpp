@@ -1,3 +1,12 @@
+#define SDL_MAIN_HANDLED
+#undef main
+
+#if defined(__WIN32__)
+	#define main WinMain
+#else
+	#define main main
+#endif
+
 #include <necrowarp/game.hpp>
 
 int main(int argc, char* argv[]) {
