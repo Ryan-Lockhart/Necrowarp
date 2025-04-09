@@ -1,6 +1,0 @@
-[wrap-file]
-directory = libbleak
-
-[provide]
-bleak_include = libbleak_include
-bleak_args = args
