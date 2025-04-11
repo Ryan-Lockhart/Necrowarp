@@ -197,6 +197,18 @@ namespace bleak {
 
 	template<typename... Params> constexpr bool is_plurary_v = is_plurary<Params...>::value;
 
+	template<typename T, typename... Params> struct is_none_of {
+		static bool constexpr value = (!std::is_same<T, Params>::value && ...);
+	};
+
+	template<typename... Params> constexpr bool is_none_of_v = is_none_of<Params...>::value;
+
+	template<typename T, typename... Params> struct is_one_of {
+		static bool constexpr value = (std::is_same<T, Params>::value || ...);
+	};
+
+	template<typename... Params> constexpr bool is_one_of_v = is_one_of<Params...>::value;
+
 	template<typename T>
 	concept Hashable = requires(T t) {
 		{ T::hasher::operator()(t) } -> std::convertible_to<usize>;

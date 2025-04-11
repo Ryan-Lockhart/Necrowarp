@@ -3,18 +3,16 @@
 #include <bleak.hpp>
 
 #include <cstdlib>
-#include <steam/isteamutils.h>
 #include <thread>
 
 #include <necrowarp/entities.hpp>
 #include <necrowarp/entity_state.hpp>
-#include <necrowarp/entity_state.cpp>
+#include <necrowarp/entity_state.tpp>
 #include <necrowarp/game_state.hpp>
 #include <necrowarp/ui_state.hpp>
 #include <necrowarp/globals.hpp>
 
-#include <steam/steam_api.h>
-#include <magic_enum_all.hpp>
+#include <magic_enum/magic_enum_all.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -50,16 +48,6 @@ namespace necrowarp {
 		};
 
 	  private:
-		static inline void primary_gamepad_disconnected() noexcept {
-			gamepad_enabled = false;
-			primary_gamepad = nullptr;
-		}
-
-		static inline void primary_gamepad_reconnected(cptr<gamepad_t> gamepad) noexcept {
-			gamepad_enabled = true;
-			primary_gamepad = gamepad;
-		}
-
 		static inline bool camera_input() noexcept {
 			if (update_camera()) {
 				return true;
@@ -168,23 +156,14 @@ namespace necrowarp {
 				window.set_fullscreen();
 			}
 
-			api_state.user_id = fetch_user_id();
+			api_state.user_id = steam::user::get_steam_id();
 
 			steam_stats::transcribe();
 
 			Mouse::initialize();
 			Keyboard::initialize();
 
-			GamepadManager::initialize();
-
 			Mouse::hide_cursor();
-
-			primary_gamepad = GamepadManager::lease(0, &primary_gamepad_disconnected, &primary_gamepad_reconnected);
-			gamepad_enabled = primary_gamepad != nullptr;
-
-			if (primary_gamepad == nullptr) {
-				message_log.add("no gamepad detected\n");
-			}
 
 			Clock::tick();
 
@@ -628,12 +607,6 @@ namespace necrowarp {
 		}
 
 		static inline void shutdown() noexcept {
-			if (primary_gamepad != nullptr) {
-				GamepadManager::release(0);
-			}
-
-			GamepadManager::terminate();
-
 			Keyboard::terminate();
 			Mouse::terminate();
 

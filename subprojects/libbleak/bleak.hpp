@@ -18,7 +18,6 @@
 #include <bleak/cursor.hpp>
 #include <bleak/extent.hpp>
 #include <bleak/field.hpp>
-#include <bleak/gamepad.hpp>
 #include <bleak/glyph.hpp>
 #include <bleak/hash.hpp>
 #include <bleak/input.hpp>

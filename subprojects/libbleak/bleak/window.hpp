@@ -7,7 +7,6 @@
 #include <SDL.h>
 
 #include <bleak/extent.hpp>
-#include <bleak/gamepad.hpp>
 #include <bleak/keyboard.hpp>
 #include <bleak/log.hpp>
 #include <bleak/mouse.hpp>
@@ -119,17 +118,11 @@ namespace bleak {
 					Mouse::process_event(event);
 					break;
 
-				case SDL_JOYDEVICEADDED:
-				case SDL_JOYDEVICEREMOVED:
-					GamepadManager::process_event(event);
-					break;
-
 				default:
 					break;
 				}
 			}
-
-			GamepadManager::update();
+			
 			Keyboard::update();
 			Mouse::update();
 		}

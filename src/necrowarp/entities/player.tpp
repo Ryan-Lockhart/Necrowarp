@@ -3,7 +3,7 @@
 #include <necrowarp/entities/player.hpp>
 
 #include <necrowarp/entity_state.hpp>
-#include <necrowarp/entity_state.cpp>
+#include <necrowarp/entity_state.tpp>
 
 namespace necrowarp {
 	template<entity_type_t EntityType> inline bool player_t::will_perish() const noexcept {

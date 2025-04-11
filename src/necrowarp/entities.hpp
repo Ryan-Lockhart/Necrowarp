@@ -11,14 +11,14 @@
 #include <necrowarp/entities/skull.hpp>
 #include <necrowarp/entities/wraith.hpp>
 
-#include <necrowarp/entities/adventurer.cpp>
-#include <necrowarp/entities/flesh_golem.cpp>
-#include <necrowarp/entities/ladder.cpp>
-#include <necrowarp/entities/paladin.cpp>
-#include <necrowarp/entities/player.cpp>
-#include <necrowarp/entities/priest.cpp>
-#include <necrowarp/entities/skeleton.cpp>
-#include <necrowarp/entities/skull.cpp>
-#include <necrowarp/entities/wraith.cpp>
+#include <necrowarp/entities/adventurer.tpp>
+#include <necrowarp/entities/flesh_golem.tpp>
+#include <necrowarp/entities/ladder.tpp>
+#include <necrowarp/entities/paladin.tpp>
+#include <necrowarp/entities/player.tpp>
+#include <necrowarp/entities/priest.tpp>
+#include <necrowarp/entities/skeleton.tpp>
+#include <necrowarp/entities/skull.tpp>
+#include <necrowarp/entities/wraith.tpp>
 
 // IWYU pragma: end_exports

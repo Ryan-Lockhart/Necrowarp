@@ -4,9 +4,9 @@
 
 #include <necrowarp/ui.hpp>
 #include <necrowarp/game_state.hpp>
-#include <necrowarp/entity_state.cpp>
+#include <necrowarp/entity_state.tpp>
 
-#include <magic_enum_utility.hpp>
+#include <magic_enum/magic_enum_utility.hpp>
 
 namespace necrowarp {
 	using namespace bleak;

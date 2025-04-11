@@ -1,4 +1,4 @@
-project('necrowarp', 'cpp', version: '0.0.1')
+project('necrowarp', 'cpp', version: '0.0.1', meson_version: '>=1.3.0')
 
 install_dir = '@0@/install/@1@/@2@'.format(
 	meson.project_source_root(),
@@ -20,45 +20,43 @@ cxx = meson.get_compiler('cpp')
 
 if target_machine.system() == 'windows'
 
-    includes = include_directories(['src', '/home/balin/Projects/quasi-msys2/root/ucrt64/include/SDL2', '/home/balin/Projects/sdk/public'])
+    includes = include_directories(['src', 'C:/dev/msys64/ucrt64/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include'])
 
     std_deps = [
-        cxx.find_library('gcc_s', dirs: '/home/balin/Projects/quasi-msys2/root/ucrt64/lib', required: true, static: true),
-        cxx.find_library('stdc++', dirs: '/home/balin/Projects/quasi-msys2/root/ucrt64/lib', required: true, static: true),
-        cxx.find_library('winpthread', dirs: '/home/balin/Projects/quasi-msys2/root/ucrt64/lib', required: true, static: true),
-        cxx.find_library('steam_api64', dirs: '/home/balin/Projects/sdk/redistributable_bin/win64', required: true, static: false),
+        cxx.find_library('gcc_s', dirs: 'C:/dev/msys64/ucrt64/bin', required: true, static: true),
+        cxx.find_library('stdc++', dirs: 'C:/dev/msys64/ucrt64/bin', required: true, static: true),
+        cxx.find_library('winpthread', dirs: 'C:/dev/msys64/ucrt64/bin', required: true, static: true),
+        cxx.find_library('steam_api64', dirs: 'C:/dev/steam/bin/win64', required: true, static: false),
     ]
 
     sdl_deps = [
-        cxx.find_library('SDL2', dirs: '/home/balin/Projects/quasi-msys2/root/ucrt64/lib', required: true, static: true),
-        cxx.find_library('SDL2_image', dirs: '/home/balin/Projects/quasi-msys2/root/ucrt64/lib', required: true, static: true),
-        cxx.find_library('SDL2_mixer', dirs: '/home/balin/Projects/quasi-msys2/root/ucrt64/lib', required: true, static: true),
-        cxx.find_library('SDL2_net', dirs: '/home/balin/Projects/quasi-msys2/root/ucrt64/lib', required: true, static: true),
-        cxx.find_library('SDL2_ttf', dirs: '/home/balin/Projects/quasi-msys2/root/ucrt64/lib', required: true, static: true),
+        dependency('SDL2', required: true, static: true),
+        dependency('SDL2_image', required: true, static: true),
+        dependency('SDL2_mixer', required: true, static: true),
     ]
 
-    dyn_libs = ['/home/balin/Projects/sdk/redistributable_bin/win64/steam_api64.dll']
+    dyn_libs = ['C:/dev/steam/bin/win64/steam_api64.dll']
 
 elif target_machine.system() == 'linux'
 
-    includes = include_directories(['src', '/usr/include/magic_enum', '/usr/local/include/SDL2'])
+    root_dir = 'L:/'
+
+    includes = include_directories(['src', root_dir + 'usr/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include'])
 
     std_deps = [
-        cxx.find_library('gcc_eh', required: true, static: true),
-        cxx.find_library('stdc++', required: true, static: true),
-        cxx.find_library('pthread', required: true, static: true),
-        cxx.find_library('steam_api', dirs: '/home/balin/Projects/sdk/redistributable_bin/win64', required: true, static: false),
+        cxx.find_library('gcc_eh', dirs: root_dir + 'usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1', required: true, static: true),
+        cxx.find_library('stdc++', dirs: root_dir + 'usr/lib', required: true, static: true),
+        cxx.find_library('pthread', dirs: root_dir + 'usr/lib', required: true, static: true),
+        cxx.find_library('steam_api', dirs: 'C:/dev/steam/bin/linux64', required: true, static: false),
     ]
 
     sdl_deps = [
-        cxx.find_library('SDL2', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_image', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_mixer', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_net', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_ttf', dirs: '/usr/local/lib', required: true, static: true),
+        cxx.find_library('SDL2', dirs: root_dir + 'usr/lib', required: true, static: true),
+        cxx.find_library('SDL2_image', dirs: root_dir + 'usr/lib', required: true, static: true),
+        cxx.find_library('SDL2_mixer', dirs: root_dir + 'usr/lib', required: true, static: true),
     ]
 
-    dyn_libs = ['/home/balin/Projects/sdk/redistributable_bin/linux64/libsteam_api.so']
+    dyn_libs = ['C:/dev/steam/bin/linux64/libsteam_api.so']
 
 endif
 

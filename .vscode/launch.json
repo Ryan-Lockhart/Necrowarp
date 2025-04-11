@@ -2,12 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(lldb) Launch (Linux)",
+            "name": "(lldb) Launch (Windows)",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/install/linux/x86_64/necrowarp",
-            "args": [],
-            "cwd": "${workspaceFolder}/install/linux/x86_64",
+            "program": "${workspaceFolder}/install/windows/x86_64/necrowarp.exe",
+            "args": ["--stop-at-entry"],
+            "cwd": "${workspaceFolder}/install/windows/x86_64",
             "expressions": "native"
         }
     ]

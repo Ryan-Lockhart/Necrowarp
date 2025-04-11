@@ -3,7 +3,7 @@
 #include <necrowarp/entities/priest.hpp>
 
 #include <necrowarp/entity_state.hpp>
-#include <necrowarp/entity_state.cpp>
+#include <necrowarp/entity_state.tpp>
 
 namespace necrowarp {
 	inline entity_command_t priest_t::think() const noexcept {

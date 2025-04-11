@@ -3,7 +3,7 @@
 #include <necrowarp/entities/flesh_golem.hpp>
 
 #include <necrowarp/entity_state.hpp>
-#include <necrowarp/entity_state.cpp>
+#include <necrowarp/entity_state.tpp>
 
 namespace necrowarp {
 	inline entity_command_t flesh_golem_t::think() const noexcept {

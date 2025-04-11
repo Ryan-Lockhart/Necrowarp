@@ -1,5 +1,6 @@
 [wrap-file]
 directory = libbleak
+method = meson
 
 [provide]
 bleak_include = libbleak_include

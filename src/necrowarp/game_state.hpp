@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bleak/concepts.hpp"
 #include <bleak.hpp>
 
 #include <atomic>
@@ -8,11 +9,7 @@
 #include <necrowarp/globals.hpp>
 #include <necrowarp/phase.hpp>
 
-#include <steam/steam_api_common.h>
-#include <steam/steamclientpublic.h>
-#include <steam/steamtypes.h>
-#include <steam/isteamuserstats.h>
-#include <magic_enum_utility.hpp>
+#include <magic_enum/magic_enum_utility.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -22,18 +19,6 @@ namespace necrowarp {
 		static inline usize user_id{ 0 };
 		static inline i32 pipe_id{ 0 };
 	} static inline api_state;
-
-	static inline usize translate_user_id(CSteamID steam_id) noexcept { return std::bit_cast<usize>(steam_id); }
-
-	static inline usize fetch_user_id() noexcept {
-		ptr<ISteamUser> interface = SteamUser();
-
-		if (interface == nullptr) {
-			error_log.add("[ERROR]: unable to access steam user api!");
-		}
-
-		return translate_user_id(interface->GetSteamID());
-	}
 
 	static inline subsystem_s subsystem{};
 
@@ -57,12 +42,6 @@ namespace necrowarp {
 
 	static inline bool draw_cursor{ true };
 	static inline bool draw_warp_cursor{ false };
-
-	static inline bool gamepad_enabled{ true };
-
-	static inline cptr<gamepad_t> primary_gamepad{ nullptr };
-
-	static inline bool gamepad_active{ false };
 
 	static inline camera_t camera{ globals::game_grid_size(), extent_t::Zero, globals::camera_extent() };
 
@@ -395,7 +374,7 @@ namespace necrowarp {
 	}
 
 	template<steam_stat_e Type, typename T>
-		requires (std::is_same<T, i32>::value || std::is_same<T, f32>::value)
+		requires is_one_of<T, i32, f32>::value
 	struct steam_stat_t {
 		using value_type = T;
 
@@ -412,16 +391,12 @@ namespace necrowarp {
 		inline bool set_value(value_type value) noexcept;
 
 		inline ref<steam_stat_t<Type, T>> operator=(T other) noexcept {
-			message_log.add("setting \"{}\" to {}", api_name, other);
-
 			set_value(other);
 
 			return *this;
 		}
 
 		inline ref<steam_stat_t<Type, T>> operator+=(T other) noexcept {
-			message_log.add("incrementing \"{}\" by {}", api_name, other);
-			
 			const T value = get_value();
 
 			set_value(value + other);
@@ -430,8 +405,6 @@ namespace necrowarp {
 		}
 
 		inline ref<steam_stat_t<Type, T>> operator-=(T other) noexcept {
-			message_log.add("decrementing \"{}\" by {}", api_name, other);
-			
 			const T value = get_value();
 			
 			set_value(value - other);
@@ -440,8 +413,6 @@ namespace necrowarp {
 		}
 
 		inline ref<steam_stat_t<Type, T>> operator++() noexcept {
-			message_log.add("incrementing \"{}\"", api_name);
-			
 			const T value = get_value();
 
 			set_value(value + 1);
@@ -450,8 +421,6 @@ namespace necrowarp {
 		}
 
 		inline ref<steam_stat_t<Type, T>> operator--() noexcept {
-			message_log.add("decrementing \"{}\"", api_name);
-			
 			const T value = get_value();
 			
 			set_value(value - 1);
@@ -460,8 +429,6 @@ namespace necrowarp {
 		}
 
 		inline T operator++(int) noexcept {
-			message_log.add("incrementing \"{}\"", api_name);
-			
 			const T value = get_value();
 
 			set_value(value + 1);
@@ -470,8 +437,6 @@ namespace necrowarp {
 		}
 
 		inline T operator--(int) noexcept {
-			message_log.add("decrementing \"{}\"", api_name);
-			
 			const T value = get_value();
 			
 			set_value(value - 1);
@@ -512,66 +477,54 @@ namespace necrowarp {
 			});
 		}
 
-		static inline bool is_valid(CSteamID user_id) noexcept { return translate_user_id(user_id) == api_state.user_id; }
+		static inline bool is_user_id_valid(usize user_id) noexcept { return user_id == api_state.user_id; }
 
-		static inline bool is_valid(usize game_id) noexcept { return game_id == api_state.app_id; }
+		static inline bool is_user_id_valid(CSteamID user_id) noexcept { return steam::user::cast_steam_id(user_id) == api_state.user_id; }
 
-		static inline bool is_valid(usize game_id, CSteamID user_id) noexcept { return game_id == api_state.app_id && translate_user_id(user_id) == api_state.user_id; }
+		static inline bool is_game_id_valid(usize game_id) noexcept { return game_id == api_state.app_id; }
+
+		static inline bool is_valid(usize game_id, CSteamID user_id) noexcept { return game_id == api_state.app_id && user_id == api_state.user_id; }
 	};
 
 	using steam_stats = steam_stats_s;
 
 	inline void steam_stats_s::on_user_stats_unloaded(ptr<UserStatsUnloaded_t> callback) {
-		if (callback == nullptr || !is_valid(callback->m_steamIDUser)) {
+		if (callback == nullptr || !is_user_id_valid(callback->m_steamIDUser)) {
 			return;
 		}
 	}
 
 	inline void steam_stats_s::on_user_stats_received(ptr<UserStatsReceived_t> callback) {
-		if (callback == nullptr || !is_valid(callback->m_steamIDUser) || callback->m_eResult == k_EResultFail) {
+		if (callback == nullptr || !is_user_id_valid(callback->m_steamIDUser) || callback->m_eResult == k_EResultFail) {
 			return;
 		}
 	}
 
 	inline void steam_stats_s::on_user_stats_stored(ptr<UserStatsStored_t> callback) {
-		if (callback == nullptr || !is_valid(callback->m_nGameID) || callback->m_eResult == k_EResultFail) {
+		if (callback == nullptr || !is_game_id_valid(callback->m_nGameID) || callback->m_eResult == k_EResultFail) {
 			return;
 		}
 	}
 
 	inline void steam_stats_s::on_global_stats_received(ptr<GlobalStatsReceived_t> callback) {
-		if (callback == nullptr || !is_valid(callback->m_nGameID) || callback->m_eResult == k_EResultFail) {
+		if (callback == nullptr || !is_game_id_valid(callback->m_nGameID) || callback->m_eResult == k_EResultFail) {
 			return;
 		}
 	}
 	
 	template<steam_stat_e Type, typename T>
-		requires (std::is_same<T, i32>::value || std::is_same<T, f32>::value)
+		requires is_one_of<T, i32, f32>::value
 	inline T steam_stat_t<Type, T>::get_value() const noexcept  {
-		T value{};
+		std::optional<T> maybe_value{ steam::user_stats::get_stat<T>(api_name) };
 
-		bool success = steam_stats_s::user_stats()->GetUserStat(api_state.user_id, api_name, &value);
-
-		if (!success) {
-			error_log.add("[ERROR]: failed to read from user stats! returning cached value of \"{}\"...", api_name);
+		if (!maybe_value.has_value()) {
+			error_log.add("[WARNING]: returning cached value of \"{}\"...", api_name);
 
 			return cached_value;
 		}
 
-		cached_value = value;
-
-		return value;
+		return cached_value = maybe_value.value();
 	}
 	
-	template<steam_stat_e Type, typename T>
-		requires (std::is_same<T, i32>::value || std::is_same<T, f32>::value)
-	inline bool steam_stat_t<Type, T>::set_value(value_type value) noexcept {
-		bool success = steam_stats::user_stats()->SetStat(api_name, value);
-
-		if (!success) {
-			error_log.add("[ERROR]: failed to write value of \"{}\" to user stat \"{}\"!", value, api_name);
-		}
-
-		return success;
-	}
+	template<steam_stat_e Type, typename T> requires is_one_of<T, i32, f32>::value inline bool steam_stat_t<Type, T>::set_value(value_type value) noexcept { return steam::user_stats::set_stat(api_name, value); }
 } // namespace necrowarp
