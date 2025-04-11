@@ -20,6 +20,8 @@ cxx = meson.get_compiler('cpp')
 
 if target_machine.system() == 'windows'
 
+    args = []
+
     includes = include_directories(['src', 'C:/dev/msys64/ucrt64/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include'])
 
     std_deps = [
@@ -39,43 +41,38 @@ if target_machine.system() == 'windows'
 
 elif target_machine.system() == 'linux'
 
-    root_dir = 'L:/'
+    args = []
 
-    includes = include_directories(['src', root_dir + 'usr/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include'])
+    includes = include_directories(['src', '/usr/include/SDL2', '/usr/local/include/steam/include', '/usr/local/include/magic_enum/include'])
 
     std_deps = [
-        cxx.find_library('gcc_eh', dirs: root_dir + 'usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1', required: true, static: true),
-        cxx.find_library('stdc++', dirs: root_dir + 'usr/lib', required: true, static: true),
-        cxx.find_library('pthread', dirs: root_dir + 'usr/lib', required: true, static: true),
-        cxx.find_library('steam_api', dirs: 'C:/dev/steam/bin/linux64', required: true, static: false),
+        cxx.find_library('gcc_eh', dirs: '/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1', required: true, static: true),
+        cxx.find_library('stdc++', dirs: '/usr/lib', required: true, static: true),
+        cxx.find_library('pthread', dirs: '/usr/lib', required: true, static: true),
+        cxx.find_library('steam_api', dirs: '/usr/local/lib', required: true, static: false),
     ]
 
     sdl_deps = [
-        cxx.find_library('SDL2', dirs: root_dir + 'usr/lib', required: true, static: true),
-        cxx.find_library('SDL2_image', dirs: root_dir + 'usr/lib', required: true, static: true),
-        cxx.find_library('SDL2_mixer', dirs: root_dir + 'usr/lib', required: true, static: true),
+        cxx.find_library('SDL2', dirs: '/usr/lib', required: true, static: true),
+        cxx.find_library('SDL2_image', dirs: '/usr/lib', required: true, static: true),
+        cxx.find_library('SDL2_mixer', dirs: '/usr/lib', required: true, static: true),
     ]
 
-    dyn_libs = ['C:/dev/steam/bin/linux64/libsteam_api.so']
+    dyn_libs = ['/usr/local/lib/libsteam_api.so']
 
 endif
-
-bleak = subproject('libbleak', required: true)
-
-bleak_include = bleak.get_variable('libbleak_include')
-bleak_args = bleak.get_variable('libbleak_args')
 
 executable(
     'necrowarp',
 
     'src/program.cpp',
 
-    dependencies: [std_deps, sdl_deps],
+    dependencies: [std_deps, sdl_deps, dependency('bleak', required: true, fallback: ['libbleak', 'bleak_dep'])],
 
-    include_directories: [includes, bleak_include],
+    include_directories: [includes],
 
-    c_args: bleak_args,
-    cpp_args: bleak_args,
+    c_args: args,
+    cpp_args: args,
 
     install: true,
     install_dir: install_dir,

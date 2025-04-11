@@ -15,3 +15,5 @@ else
 endif
 
 libbleak_include = include_directories(['.'])
+
+bleak_dep = declare_dependency(compile_args: libbleak_args, include_directories: libbleak_include)

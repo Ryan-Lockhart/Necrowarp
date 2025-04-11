@@ -1,12 +1,154 @@
 {
 	"folders": [
 		{
-			"path": ".."
+			"name": "necrowarp",
+			"path": "..",
 		}
 	],
 	"settings": {
 		"mesonbuild.buildFolder": "build",
 		"task.quickOpen.showAll": true,
 		"task.autoDetect": "on",
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "(lldb) Launch",
+				"type": "lldb",
+				"request": "launch",
+				"windows": {
+					"program": "${workspaceFolder}/install/windows/x86_64/necrowarp.exe",
+					"cwd": "${workspaceFolder}/install/windows/x86_64",
+					"args": [],
+				},
+				"linux": {
+					"program": "${workspaceFolder}/install/linux/x86_64/necrowarp",
+					"cwd": "${workspaceFolder}/install/linux/x86_64",
+					"args": [],
+				},
+				"expressions": "native"
+			}
+		]
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "meson-clean",
+				"group": "build",
+				"type": "shell",
+				"command": "meson",
+				"args": ["compile", "-C", "${workspaceFolder}/build", "necrowarp:executable", "--clean"],
+				"detail": "cleans the project of its current configuration",
+			},
+			{
+				"label": "meson-build",
+				"group": "build",
+				"type": "shell",
+				"command": "meson",
+				"args": ["compile", "-C", "${workspaceFolder}/build", "necrowarp:executable"],
+				"detail": "builds the project in the current configuration",
+			},
+			{
+				"label": "meson-rebuild",
+				"group": "build",
+				"type": "shell",
+				"command": "meson",
+				"args": ["compile", "-C", "${workspaceFolder}/build", "necrowarp:executable"],
+				"detail": "rebuilds the project in the current configuration",
+				"dependsOn": ["meson-clean"],
+			},
+			{
+				"label": "meson-install",
+				"group": "build",
+				"type": "shell",
+				"command": "meson",
+				"args": ["install", "-C", "${workspaceFolder}/build", "--only-changed"],
+				"detail": "builds the project in the current configuration and then installs it",
+			},
+			{
+				"label": "meson-reconfigure-debug",
+				"group": "build",
+				"type": "shell",
+				"command": "meson",
+				"windows": {
+					"args": [
+						"setup",
+						"--reconfigure",
+						"${workspaceFolder}/build",
+						"${workspaceFolder}",
+						"--native-file",
+						"${workspaceFolder}/native.ini",
+						"--cross-file",
+						"${workspaceFolder}/cross/x86_64-windows.ini",
+						"--buildtype",
+						"debug",
+						"--wipe"
+					],
+				},
+				"linux": {
+					"args": [
+						"setup",
+						"--reconfigure",
+						"${workspaceFolder}/build",
+						"${workspaceFolder}",
+						"--native-file",
+						"${workspaceFolder}/native.ini",
+						"--cross-file",
+						"${workspaceFolder}/cross/x86_64-linux.ini",
+						"--buildtype",
+						"debug",
+						"--wipe"
+					],
+				},
+				"detail": "reconfigures the project for building debug binaries",
+			},
+			{
+				"label": "meson-reconfigure-release",
+				"group": "build",
+				"type": "shell",
+				"command": "meson",
+				"windows": {
+					"args": [
+						"setup",
+						"--reconfigure",
+						"${workspaceFolder}/build",
+						"${workspaceFolder}",
+						"--native-file",
+						"${workspaceFolder}/native.ini",
+						"--cross-file",
+						"${workspaceFolder}/cross/x86_64-windows.ini",
+						"--buildtype",
+						"release",
+						"--wipe"
+					],
+				},
+				"linux": {
+					"args": [
+						"setup",
+						"--reconfigure",
+						"${workspaceFolder}/build",
+						"${workspaceFolder}",
+						"--native-file",
+						"${workspaceFolder}/native.ini",
+						"--cross-file",
+						"${workspaceFolder}/cross/x86_64-linux.ini",
+						"--buildtype",
+						"release",
+						"--wipe"
+					],
+				},
+				"detail": "reconfigures the project for building release binaries",
+			},
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"vadimcn.vscode-lldb",
+			"llvm-vs-code-extensions.vscode-clangd",
+			"seaube.clangformat",
+			"mesonbuild.mesonbuild",
+		]
 	}
 }
