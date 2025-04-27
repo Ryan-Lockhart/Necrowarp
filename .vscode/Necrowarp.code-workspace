@@ -14,17 +14,33 @@
 		"version": "0.2.0",
 		"configurations": [
 			{
-				"name": "(lldb) Launch",
+				"name": "(lldb) Launch Debug",
 				"type": "lldb",
 				"request": "launch",
 				"windows": {
-					"program": "${workspaceFolder}/install/windows/x86_64/necrowarp.exe",
-					"cwd": "${workspaceFolder}/install/windows/x86_64",
+					"program": "${workspaceFolder}/install/windows/x86_64/debug/necrowarp.exe",
+					"cwd": "${workspaceFolder}/install/windows/x86_64/debug",
 					"args": [],
 				},
 				"linux": {
-					"program": "${workspaceFolder}/install/linux/x86_64/necrowarp",
-					"cwd": "${workspaceFolder}/install/linux/x86_64",
+					"program": "${workspaceFolder}/install/linux/x86_64/debug/necrowarp",
+					"cwd": "${workspaceFolder}/install/linux/x86_64/debug",
+					"args": [],
+				},
+				"expressions": "native"
+			},
+			{
+				"name": "(lldb) Launch Release",
+				"type": "lldb",
+				"request": "launch",
+				"windows": {
+					"program": "${workspaceFolder}/install/windows/x86_64/release/necrowarp.exe",
+					"cwd": "${workspaceFolder}/install/windows/x86_64/release",
+					"args": [],
+				},
+				"linux": {
+					"program": "${workspaceFolder}/install/linux/x86_64/release/necrowarp",
+					"cwd": "${workspaceFolder}/install/linux/x86_64/release",
 					"args": [],
 				},
 				"expressions": "native"

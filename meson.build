@@ -1,19 +1,22 @@
 project('necrowarp', 'cpp', version: '0.0.1', meson_version: '>=1.3.0')
 
-install_dir = '@0@/install/@1@/@2@'.format(
-	meson.project_source_root(),
-	target_machine.system(),
-	target_machine.cpu_family()
-)
-
 build_type = get_option('buildtype')
 
 if build_type == 'debug'
     subsystem = 'console'
-
-	install_data('steam_appid.txt', install_dir: install_dir)
 else
     subsystem = 'windows'
+endif
+
+install_dir = '@0@/install/@1@/@2@/@3@'.format(
+	meson.project_source_root(),
+	target_machine.system(),
+	target_machine.cpu_family(),
+    build_type
+)
+
+if build_type == 'debug'
+	install_data('steam_appid.txt', install_dir: install_dir)
 endif
 
 cxx = meson.get_compiler('cpp')
@@ -25,9 +28,9 @@ if target_machine.system() == 'windows'
     includes = include_directories(['src', 'C:/dev/msys64/ucrt64/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include'])
 
     std_deps = [
-        cxx.find_library('gcc_s', dirs: 'C:/dev/msys64/ucrt64/bin', required: true, static: true),
-        cxx.find_library('stdc++', dirs: 'C:/dev/msys64/ucrt64/bin', required: true, static: true),
-        cxx.find_library('winpthread', dirs: 'C:/dev/msys64/ucrt64/bin', required: true, static: true),
+        cxx.find_library('gcc_eh', dirs: 'C:/dev/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/14.2.0', required: true, static: true),
+        cxx.find_library('stdc++', dirs: 'C:/dev/msys64/ucrt64/lib', required: true, static: true),
+        cxx.find_library('winpthread', dirs: 'C:/dev/msys64/ucrt64/lib', required: true, static: true),
         cxx.find_library('steam_api64', dirs: 'C:/dev/steam/bin/win64', required: true, static: false),
     ]
 
@@ -53,9 +56,9 @@ elif target_machine.system() == 'linux'
     ]
 
     sdl_deps = [
-        cxx.find_library('SDL2', dirs: '/usr/lib', required: true, static: true),
-        cxx.find_library('SDL2_image', dirs: '/usr/lib', required: true, static: true),
-        cxx.find_library('SDL2_mixer', dirs: '/usr/lib', required: true, static: true),
+        dependency('SDL2', required: true, static: true),
+        dependency('SDL2_image', required: true, static: true),
+        dependency('SDL2_mixer', required: true, static: true),
     ]
 
     dyn_libs = ['/usr/local/lib/libsteam_api.so']
