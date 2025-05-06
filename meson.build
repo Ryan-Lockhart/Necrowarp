@@ -22,9 +22,6 @@ endif
 cxx = meson.get_compiler('cpp')
 
 if target_machine.system() == 'windows'
-
-    args = []
-
     includes = include_directories(['src', 'C:/dev/msys64/ucrt64/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include'])
 
     std_deps = [
@@ -34,18 +31,8 @@ if target_machine.system() == 'windows'
         cxx.find_library('steam_api64', dirs: 'C:/dev/steam/bin/win64', required: true, static: false),
     ]
 
-    sdl_deps = [
-        dependency('SDL2', required: true, static: true),
-        dependency('SDL2_image', required: true, static: true),
-        dependency('SDL2_mixer', required: true, static: true),
-    ]
-
     dyn_libs = ['C:/dev/steam/bin/win64/steam_api64.dll']
-
 elif target_machine.system() == 'linux'
-
-    args = []
-
     includes = include_directories(['src', '/usr/include/SDL2', '/usr/local/include/steam/include', '/usr/local/include/magic_enum/include'])
 
     std_deps = [
@@ -55,27 +42,23 @@ elif target_machine.system() == 'linux'
         cxx.find_library('steam_api', dirs: '/usr/local/lib', required: true, static: false),
     ]
 
-    sdl_deps = [
-        dependency('SDL2', required: true, static: true),
-        dependency('SDL2_image', required: true, static: true),
-        dependency('SDL2_mixer', required: true, static: true),
-    ]
-
     dyn_libs = ['/usr/local/lib/libsteam_api.so']
-
 endif
 
-executable(
-    'necrowarp',
+sdl_deps = [
+	dependency('SDL2', required: true, static: true),
+	dependency('SDL2_image', required: true, static: true),
+	dependency('SDL2_mixer', required: true, static: true),
+	dependency('SDL2_net', required: true, static: true),
+]
 
-    'src/program.cpp',
+bleak_dep = dependency('bleak', required: true, fallback: ['libbleak', 'bleak_dep'])
 
-    dependencies: [std_deps, sdl_deps, dependency('bleak', required: true, fallback: ['libbleak', 'bleak_dep'])],
+executable('necrowarp', 'src/program.cpp',
+	cpp_args: ['-DSTEAMLESS'],
 
     include_directories: [includes],
-
-    c_args: args,
-    cpp_args: args,
+    dependencies: [std_deps, sdl_deps, bleak_dep],
 
     install: true,
     install_dir: install_dir,

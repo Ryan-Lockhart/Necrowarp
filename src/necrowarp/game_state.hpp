@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bleak/concepts.hpp"
 #include <bleak.hpp>
 
 #include <atomic>
@@ -27,18 +26,18 @@ namespace necrowarp {
 	static inline window_t window{ globals::GameName.c_str(), globals::window_size, globals::WindowFlags };
 	static inline renderer_t renderer{ window, globals::RendererFlags };
 
-	static inline atlas_t<globals::GlyphsetSize> ui_atlas{ renderer, "res/glyphs/glyphs_8x8.png" };
-	static inline atlas_t<globals::TilesetSize> game_atlas{ renderer, "res/tiles/tileset_16x16.png" };
-	static inline atlas_t<globals::IconsetSize> icon_atlas{ renderer, "res/icons/icons_32x32.png" };
+	static inline atlas_t<globals::GlyphsetSize> ui_atlas{ renderer, "res/gfx/glyphs/glyphs_8x8.png" };
+	static inline atlas_t<globals::TilesetSize> game_atlas{ renderer, "res/gfx/tiles/tileset_16x16.png" };
+	static inline atlas_t<globals::IconsetSize> icon_atlas{ renderer, "res/gfx/icons/icons_32x32.png" };
 
 	static inline std::mt19937 random_engine{};
 
 	static inline zone_t<cell_state_t, globals::MapSize, globals::BorderSize> game_map{};
 
-	static inline cursor_t cursor{ renderer, "res/sprites/cursor.png", colors::White };
+	static inline cursor_t cursor{ renderer, "res/gfx/sprites/cursor.png", colors::White };
 
-	static inline grid_cursor_t<globals::CellSize> grid_cursor{ renderer, "res/sprites/grid_cursor.png", colors::metals::Gold, game_map.zone_origin, game_map.zone_extent };
-	static inline grid_cursor_t<globals::CellSize> warp_cursor{ renderer, "res/sprites/grid_cursor.png", colors::Magenta, game_map.zone_origin, game_map.zone_extent };
+	static inline grid_cursor_t<globals::CellSize> grid_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::metals::Gold, game_map.zone_origin, game_map.zone_extent };
+	static inline grid_cursor_t<globals::CellSize> warp_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::Magenta, game_map.zone_origin, game_map.zone_extent };
 
 	static inline bool draw_cursor{ true };
 	static inline bool draw_warp_cursor{ false };
@@ -48,11 +47,20 @@ namespace necrowarp {
 	static inline bool camera_locked{ true };
 
 	static inline bool camera_forced() noexcept { return globals::MapSize.w <= globals::game_grid_size().w || globals::MapSize.h <= globals::game_grid_size().h; }
+	
+	static constexpr usize input_interval{ 125ULL };
+	static inline bleak::timer_t input_timer{ input_interval };
 
-	static inline bleak::timer_t input_timer{ 125.0 };
-	static inline bleak::timer_t cursor_timer{ 125.0 };
-	static inline bleak::timer_t epoch_timer{ 250.0 };
-	static inline bleak::timer_t stat_store_timer{ 30000.0 };
+	static constexpr usize cursor_interval{ 125ULL };
+	static inline bleak::timer_t cursor_timer{ cursor_interval };
+
+	static constexpr usize epoch_interval{ 250ULL };
+	static inline bleak::timer_t epoch_timer{ epoch_interval };
+	
+#if !defined(STEAMLESS)
+	static constexpr usize stat_store_interval{ 30000ULL };
+	static inline bleak::timer_t stat_store_timer{ stat_store_interval };
+#endif
 
 	static inline wave_t sine_wave{ 1.0, 0.5, 1.0 };
 

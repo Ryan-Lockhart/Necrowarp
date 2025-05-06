@@ -290,6 +290,12 @@ namespace necrowarp {
 
 	template<Entity EntityType> inline constexpr glyph_t entity_glyphs;
 
+	template<AnimateEntity EntityType> static inline constexpr bool has_death_sound{ false };
+
+	template<AnimateEntity EntityType> static inline constexpr usize num_death_sounds{ 0 };
+
+	template<AnimateEntity EntityType> static inline clip_pool_t<num_death_sounds<EntityType>> death_sounds;
+
 	template<command_type_t> inline constexpr glyph_t command_icons;
 
 	template<> inline constexpr glyph_t entity_glyphs<std::nullptr_t>{ 0x40, colors::White };

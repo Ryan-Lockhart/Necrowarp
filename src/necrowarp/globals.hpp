@@ -1,21 +1,10 @@
 #pragma once
 
-#include "bleak/extent.hpp"
 #include <bleak.hpp>
 
 namespace necrowarp {
 	namespace globals {
 		using namespace bleak;
-
-		constexpr bool IsReleaseBuild{
-#if defined (BLEAK_DEBUG)
-			false
-#elif defined(BLEAK_RELEASE)
-			true
-#else
-	#error project error: a debug or release symbol must be defined...
-#endif
-		};
 
 		constexpr std::string GameName{ "Necrowarp" };
 		constexpr std::string GameVersion{ "0.0.1" };
@@ -70,12 +59,31 @@ namespace necrowarp {
 			Resolution7680x4320,
 			Resolution8KHD = Resolution7680x4320,
 
-			// 16:10 resolutions
+			// 8:5 resolutions
 
 			Resolution1280x800,
+			ResolutionWXGA = Resolution1280x800,
 			ResolutionSteamDeck = Resolution1280x800,
 
-			// Ultra wide 16:9 resolutions
+			Resolution1440x900,
+			ResolutionWXGAPlus = Resolution1440x900,
+
+			Resolution1680x1050,
+			ResolutionWSXGAPlus = Resolution1680x1050,
+
+			Resolution1920x1200,
+			ResolutionWUXGA = Resolution1920x1200,
+
+			Resolution2560x1600,
+			ResolutionWQXGA = Resolution2560x1600,
+
+			Resolution3840x2400,
+			ResolutionWQUXGA = Resolution3840x2400,
+
+			// 32:9 resolutions (Ultra-wide)
+
+			Resolution2560x720,
+			ResolutionHDUW = Resolution2560x720,
 
 			Resolution3840x1080,
 			ResolutionUHDUW = Resolution3840x1080,
@@ -97,16 +105,71 @@ namespace necrowarp {
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution800x600, extent_t{ 800, 600 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1024x768, extent_t{ 1024, 768 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution2048x1536, extent_t{ 2048, 1536 } },
+
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1280x720, extent_t{ 1280, 720 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1920x1080, extent_t{ 1920, 1080 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution2560x1440, extent_t{ 2560, 1440 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution3840x2160, extent_t{ 3840, 2160 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution7680x4320, extent_t{ 7680, 4320 } },
+
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1280x800, extent_t{ 1280, 800 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1440x900, extent_t{ 1440, 900 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1680x1050, extent_t{ 1680, 1050 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution1920x1200, extent_t{ 1920, 1200 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution2560x1600, extent_t{ 2560, 1600 } },
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution3840x2400, extent_t{ 3840, 2400 } },
+
+			pair_t<resolution_e, extent_t>{ resolution_e::Resolution2560x720, extent_t{ 2560, 720 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution3840x1080, extent_t{ 3840, 1080 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution5120x1440, extent_t{ 5120, 1440 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution7680x2160, extent_t{ 7680, 2160 } }
 		};
+
+		static constexpr cstr to_string(resolution_e resolution) noexcept {
+			switch (resolution) {
+				case resolution_e::Resolution640x480: {
+					return "4:3 - 640 x 480 (VGA)";
+				} case resolution_e::Resolution800x600: {
+					return "4:3 - 800 x 600 (SVGA)";
+				} case resolution_e::Resolution1024x768: {
+					return "4:3 - 1024 x 768 (XGA)";
+				} case resolution_e::Resolution2048x1536: {
+					return "4:3 - 2048 x 1536 (QXGA)";
+				} case resolution_e::Resolution1280x720: {
+					return "16:9 - 1280 x 720 (HD)";
+				} case resolution_e::Resolution1920x1080: {
+					return "16:9 - 1920 x 1080 (UHD)";
+				} case resolution_e::Resolution2560x1440: {
+					return "16:9 - 2560 x 1440 (QHD)";
+				} case resolution_e::Resolution3840x2160: {
+					return "16:9 - 3840 x 2160 (4KHD)";
+				} case resolution_e::Resolution7680x4320: {
+					return "16:9 - 7680 x 4320 (8KHD)";
+				} case resolution_e::Resolution1280x800: {
+					return "8:5 - 1280 x 800 (WXGA / Steam Deck)";
+				} case resolution_e::Resolution1440x900: {
+					return "8:5 - 1440 x 900 (WXGA+)";
+				} case resolution_e::Resolution1680x1050: {
+					return "8:5 - 1680 x 1050 (WSXGA+)";
+				} case resolution_e::Resolution1920x1200: {
+					return "8:5 - 1920 x 1200 (WUXGA)";
+				} case resolution_e::Resolution2560x1600: {
+					return "8:5 - 2560 x 1600 (WQXGA)";
+				} case resolution_e::Resolution3840x2400: {
+					return "8:5 - 3840 x 2400 (WQUXGA)";
+				} case resolution_e::Resolution2560x720: {
+					return "32:9 - 2560 x 720 (HD-UW)";
+				} case resolution_e::Resolution3840x1080: {
+					return "32:9 - 3840 x 1080 (UHD-UW)";
+				} case resolution_e::Resolution5120x1440: {
+					return "32:9 - 5120 x 1440 (QHD-UW)";
+				} case resolution_e::Resolution7680x2160: {
+					return "32:9 - 7680 x 2160 (4KHD-UW)";
+				} default: {
+					return "unknown resolution";
+				}
+			}
+		}
 		
 		static inline extent_t window_size{ 1280, 720 };
 

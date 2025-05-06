@@ -1,12 +1,10 @@
 #pragma once
 
-#include "necrowarp/entities/entity.hpp"
-#include "necrowarp/entities/flesh_golem.hpp"
-#include "necrowarp/game_state.hpp"
 #include <necrowarp/entities.hpp>
 
 #include <cstddef>
 #include <optional>
+#include <random>
 #include <type_traits>
 
 #include <bleak/sparse.hpp>
@@ -658,7 +656,7 @@ namespace necrowarp {
 		}
 
 		++steam_stats::stats<steam_stat_e::MetersMoved, f32>;
-		
+
 		descent_flag = true;
 	}
 
@@ -760,10 +758,24 @@ namespace necrowarp {
 			}
 		}
 
+		if constexpr (has_death_sound<entity_type>) {
+			static std::mt19937 gen{ std::random_device{}() };
+			static std::uniform_int_distribution<usize> dis{
+				static_cast<usize>(epoch_interval * 0.20),
+				static_cast<usize>(epoch_interval * 0.80)
+			};
+
+			const usize interval{ dis(gen) };
+
+			death_sounds<entity_type>.delay(interval, random_engine);
+		}
+
 		if constexpr (Victim == entity_type_t::Player) {
 			phase.transition(game_phase_t::GameOver);
 
+
 			++steam_stats::stats<steam_stat_e::PlayerDeaths, i32>;
+
 
 			return true;
 		} else if constexpr (Victim == entity_type_t::Skeleton) {

@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
+#include <SDL_net.h>
 
 #include <bleak/log.hpp>
 #include <bleak/steam.hpp>
@@ -17,6 +18,7 @@ namespace bleak {
 		static inline bool sdl_initialized{ false };
 		static inline bool sdl_image_initialized{ false };
 		static inline bool sdl_mixer_initialized{ false };
+		static inline bool sdl_net_initialized{ false };
 
 		static inline void initialize_steam() noexcept {
 			if (steam_initialized) {
@@ -55,7 +57,7 @@ namespace bleak {
 			sdl_initialized = SDL_Init(SDL_INIT_VIDEO) == 0;
 
 			if (!sdl_initialized) {
-				error_log.add("[ERROR]: failed to initialize sdl subsystem: {}", SDL_GetError());
+				error_log.add("[ERROR]: failed to initialize SDL subsystem: {}", SDL_GetError());
 			}
 		}
 
@@ -67,7 +69,7 @@ namespace bleak {
 			sdl_image_initialized = IMG_Init(IMG_INIT_PNG) != 0;
 
 			if (!sdl_image_initialized) {
-				error_log.add("[ERROR]: failed to initialize sdl-image subsystem: {}", IMG_GetError());
+				error_log.add("[ERROR]: failed to initialize SDL image subsystem: {}", IMG_GetError());
 			}
 		}
 
@@ -76,10 +78,22 @@ namespace bleak {
 				return;
 			}
 
-			sdl_mixer_initialized = Mix_Init(MIX_INIT_OPUS) != 0;
+			sdl_mixer_initialized = Mix_Init(MIX_INIT_FLAC | MIX_INIT_OPUS) != 0;
 
 			if (!sdl_mixer_initialized) {
-				error_log.add("[ERROR]: failed to initialize sdl-mixer subsystem: {}", Mix_GetError());
+				error_log.add("[ERROR]: failed to initialize SDL mixer subsystem: {}", Mix_GetError());
+			}
+		}
+
+		static inline void initialize_sdl_net() noexcept {
+			if (sdl_net_initialized) {
+				return;
+			}
+
+			sdl_net_initialized = SDLNet_Init() == 0;
+
+			if (!sdl_net_initialized) {
+				error_log.add("[ERROR]: failed to initialize SDL net subsystem: {}", Mix_GetError());
 			}
 		}
 
@@ -122,6 +136,16 @@ namespace bleak {
 			sdl_mixer_initialized = false;
 		}
 
+		static inline void terminate_sdl_net() noexcept {
+			if (!sdl_net_initialized) {
+				return;
+			}
+
+			SDLNet_Quit();
+
+			sdl_net_initialized = false;
+		}
+
 	  public:
 		static inline bool initialize() noexcept {
 			if (is_initialized()) {
@@ -133,6 +157,7 @@ namespace bleak {
 			initialize_sdl();
 			initialize_sdl_image();
 			initialize_sdl_mixer();
+			initialize_sdl_net();
 
 			return is_initialized();
 		}
@@ -147,6 +172,7 @@ namespace bleak {
 			initialize_sdl();
 			initialize_sdl_image();
 			initialize_sdl_mixer();
+			initialize_sdl_net();
 
 			return is_initialized();
 		}
@@ -156,6 +182,7 @@ namespace bleak {
 				return;
 			}
 
+			terminate_sdl_net();
 			terminate_sdl_mixer();
 			terminate_sdl_image();
 			terminate_sdl();
@@ -163,6 +190,6 @@ namespace bleak {
 			terminate_steam();
 		}
 
-		static inline bool is_initialized() noexcept { return steam_initialized && sdl_initialized && sdl_image_initialized && sdl_mixer_initialized; }
+		static inline bool is_initialized() noexcept { return steam_initialized && sdl_initialized && sdl_image_initialized && sdl_mixer_initialized && sdl_net_initialized; }
 	};
 } // namespace bleak

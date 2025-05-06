@@ -37,6 +37,19 @@ namespace necrowarp {
 
 	template<> inline constexpr glyph_t entity_glyphs<adventurer_t>{ glyphs::Adventurer };
 
+	template<> inline constexpr bool has_death_sound<adventurer_t>{ true };
+
+	template<> inline constexpr usize num_death_sounds<adventurer_t>{ 6 };
+
+	template<> inline clip_pool_t<num_death_sounds<adventurer_t>> death_sounds<adventurer_t>{
+		sound_t{ "res/sfx/clips/death/adv/adv_death_0.flac" },
+		sound_t{ "res/sfx/clips/death/adv/adv_death_1.flac" },
+		sound_t{ "res/sfx/clips/death/adv/adv_death_2.flac" },
+		sound_t{ "res/sfx/clips/death/adv/adv_death_3.flac" },
+		sound_t{ "res/sfx/clips/death/adv/adv_death_4.flac" },
+		sound_t{ "res/sfx/clips/death/adv/adv_death_5.flac" }
+	};
+
 	struct adventurer_t {
 		offset_t position;
 

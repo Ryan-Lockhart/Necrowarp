@@ -151,6 +151,7 @@ namespace necrowarp {
 		}
 
 		static inline void startup() noexcept {
+#if !defined(STEAMLESS)
 			if (SteamUtils()->IsSteamRunningOnSteamDeck()) {
 				window.set_size(globals::Resolutions[globals::resolution_e::ResolutionSteamDeck]);
 				window.set_fullscreen();
@@ -159,6 +160,7 @@ namespace necrowarp {
 			api_state.user_id = steam::user::get_steam_id();
 
 			steam_stats::transcribe();
+#endif
 
 			Mouse::initialize();
 			Keyboard::initialize();
@@ -170,7 +172,10 @@ namespace necrowarp {
 			input_timer.reset();
 			cursor_timer.reset();
 			epoch_timer.reset();
+			
+#if !defined(STEAMLESS)
 			stat_store_timer.reset();
+#endif
 		}
 
 		static inline void load() noexcept {
@@ -255,18 +260,22 @@ namespace necrowarp {
 
 		static inline void descend() noexcept {
 			terminate_process_turn();
-			
+
+#if !defined(STEAMLESS)
 			steam_stats::store();
 
 			stat_store_timer.record();
+#endif
 
 			descent_flag = false;
 
 			++game_stats.game_depth;
 
+#if !defined(STEAMLESS)
 			if (steam_stats_s::stats<steam_stat_e::LowestDepth, i32>.get_value() > -static_cast<i32>(game_stats.game_depth)) {
 				steam_stats_s::stats<steam_stat_e::LowestDepth, i32> = -static_cast<i32>(game_stats.game_depth);
 			}
+#endif
 
 			game_map.reset<zone_region_t::All>();
 
@@ -313,7 +322,9 @@ namespace necrowarp {
 					terminate_prematurely();
 				}
 
+#if !defined(STEAMLESS)
 				steam_stats_s::stats<steam_stat_e::MetersMoved, f32> += offset_t::distance<f32>(player.position, player_pos.value());
+#endif
 
 				player.position = player_pos.value();
 			}
@@ -550,11 +561,13 @@ namespace necrowarp {
 				unload_async();
 			}
 
+#if !defined(STEAMLESS)
 			if (stat_store_timer.ready()) {
 				steam_stats::store();
 
 				stat_store_timer.record();
 			}
+#endif
 		}
 
 		static inline void render() noexcept {
@@ -597,9 +610,11 @@ namespace necrowarp {
 			
 			entity_registry.reset();
 
+#if !defined(STEAMLESS)
 			steam_stats::store();
 
 			stat_store_timer.record();
+#endif
 		}
 
 		static inline void unload_async() noexcept {

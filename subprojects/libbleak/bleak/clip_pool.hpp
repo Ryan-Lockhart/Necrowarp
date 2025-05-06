@@ -23,7 +23,7 @@ namespace bleak {
 
 		template<typename... Sounds>
 			requires is_homogeneous<sound_t, Sounds...>::value && (sizeof...(Sounds) == Size)
-		constexpr clip_pool_t(rval<Sounds>... sounds) noexcept : sounds{ sounds... } {}
+		constexpr clip_pool_t(rval<Sounds>... sounds) noexcept : sounds{ std::move(sounds)... } {}
 
 		constexpr ref<sound_t> operator[](usize index) noexcept {
 			assert(index < Size);
@@ -49,6 +49,20 @@ namespace bleak {
 			requires is_random_engine<Generator>::value
 		constexpr void play(ref<Generator> generator) noexcept {
 			sounds[distribution(generator)].play();
+		}
+
+		constexpr void delay(usize interval) noexcept { sounds[std::random_device{}() % Size].delay(interval); }
+
+		constexpr void delay(usize interval, usize index) noexcept {
+			assert(index < Size);
+
+			sounds[index].delay(interval);
+		}
+
+		template<typename Generator>
+			requires is_random_engine<Generator>::value
+		constexpr void delay(usize interval, ref<Generator> generator) noexcept {
+			sounds[distribution(generator)].delay(interval);
 		}
 	};
 } // namespace bleak
