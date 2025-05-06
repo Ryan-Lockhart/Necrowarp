@@ -31,13 +31,6 @@ if target_machine.system() == 'windows'
         cxx.find_library('steam_api64', dirs: 'C:/dev/steam/bin/win64', required: true, static: false),
     ]
 
-    sdl_deps = [
-        dependency('SDL2', required: true, static: true),
-        dependency('SDL2_image', required: true, static: true),
-        dependency('SDL2_mixer', required: true, static: true),
-        dependency('SDL2_net', required: true, static: true),
-    ]
-
     dyn_libs = ['C:/dev/steam/bin/win64/steam_api64.dll']
 elif target_machine.system() == 'linux'
     includes = include_directories(['src', '/usr/local/include/SDL2', '/usr/local/include'])
@@ -49,19 +42,15 @@ elif target_machine.system() == 'linux'
         cxx.find_library('steam_api', dirs: '/usr/local/lib', required: true, static: false),
     ]
 
-    sdl_deps = [
-        cxx.find_library('SDL2', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_image', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_mixer', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('FLAC', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('ogg', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('opus', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('opusfile', dirs: '/usr/local/lib', required: true, static: true),
-        cxx.find_library('SDL2_net', dirs: '/usr/local/lib', required: true, static: true),
-    ]
-
     dyn_libs = ['/usr/local/lib/libsteam_api.so']
 endif
+
+sdl_deps = [
+    dependency('SDL2', required: true, static: true),
+    dependency('SDL2_image', required: true, static: true),
+    dependency('SDL2_mixer', required: true, static: true),
+    dependency('SDL2_net', required: true, static: true),
+]
 
 bleak_dep = dependency('bleak', required: true, fallback: ['libbleak', 'bleak_dep'])
 

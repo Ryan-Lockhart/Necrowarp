@@ -115,7 +115,9 @@
 						"cross/x86_64-linux.ini",
 						"--buildtype",
 						"debug",
-						"--wipe"
+						"--wipe",
+						"-Dpkg_config_path=/usr/local/lib/pkgconfig",
+						"-Dcmake_prefix_path=/usr/local/lib/cmake"
 					],
 				},
 			},
@@ -153,7 +155,9 @@
 						"cross/x86_64-linux.ini",
 						"--buildtype",
 						"release",
-						"--wipe"
+						"--wipe",
+						"-Dpkg_config_path=/usr/local/lib/pkgconfig",
+						"-Dcmake_prefix_path=/usr/local/lib/cmake"
 					],
 				},
 			},
