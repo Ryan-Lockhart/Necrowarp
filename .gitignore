@@ -29,3 +29,5 @@ build/**/*
 
 bin/*
 test/test_runner
+
+install/**
