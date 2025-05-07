@@ -16,9 +16,19 @@ namespace bleak {
 		using chunk_t = Mix_Chunk;
 
 		namespace chunk {
-            static inline ptr<chunk_t> load(cstr path) noexcept { return Mix_LoadWAV(path); }
+            static inline ptr<chunk_t> load(cstr path) noexcept {
+				if (!mixer_s::is_initialized()) {
+					mixer_s::initialize();
+				}
+
+				return Mix_LoadWAV(path);
+			}
 
             static inline void free(ref<ptr<chunk_t>> sound) noexcept {
+				if (!mixer_s::is_initialized()) {
+					mixer_s::initialize();
+				}
+
                 if (sound == nullptr) {
                     return;
                 }

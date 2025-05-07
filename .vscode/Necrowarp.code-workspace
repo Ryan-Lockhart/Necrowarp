@@ -97,7 +97,7 @@
 						"--native-file",
 						"${workspaceFolder}/native.ini",
 						"--cross-file",
-						"${workspaceFolder}/cross/x86_64-windows.ini",
+						"${workspaceFolder}/cross/x86_64-windows-debug.ini",
 						"--buildtype",
 						"debug",
 						"--wipe"
@@ -112,7 +112,7 @@
 						"--native-file",
 						"${workspaceFolder}/native.ini",
 						"--cross-file",
-						"${workspaceFolder}/cross/x86_64-linux.ini",
+						"${workspaceFolder}/cross/x86_64-linux-debug.ini",
 						"--buildtype",
 						"debug",
 						"--wipe"
@@ -134,7 +134,7 @@
 						"--native-file",
 						"${workspaceFolder}/native.ini",
 						"--cross-file",
-						"${workspaceFolder}/cross/x86_64-windows.ini",
+						"${workspaceFolder}/cross/x86_64-windows-release.ini",
 						"--buildtype",
 						"release",
 						"--wipe"
@@ -149,7 +149,7 @@
 						"--native-file",
 						"${workspaceFolder}/native.ini",
 						"--cross-file",
-						"${workspaceFolder}/cross/x86_64-linux.ini",
+						"${workspaceFolder}/cross/x86_64-linux-release.ini",
 						"--buildtype",
 						"release",
 						"--wipe"

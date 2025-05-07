@@ -106,7 +106,11 @@ namespace bleak {
 		static constexpr u16 default_format{ MIX_DEFAULT_FORMAT };
 		static constexpr i32 default_chunk_size{ 2048 };
 
-		inline mixer_s() noexcept {
+		static inline void initialize() noexcept {
+			if (initialized) {
+				return;
+			}
+
 			mixer_s::initialized = sdl::mixer::init_stereo(default_frequency, default_format, default_chunk_size);
 			
 			if (!mixer_s::initialized) {
@@ -119,7 +123,9 @@ namespace bleak {
 			if (!sdl::mixer::allocate_channels(num_channels)) {
 				error_log.add("failed to allocate channels: {}", Mix_GetError());
 			}
-		}
+		} 
+
+		inline mixer_s() noexcept { initialize(); }
 
 		inline mixer_s(i32 frequency, u16 format, channel_e channels, i32 chunk_size) noexcept {
 			mixer_s::initialized = sdl::mixer::init(frequency, format, (u8)channels, chunk_size);			
@@ -153,6 +159,10 @@ namespace bleak {
 		}
 
 		static inline i32 reserve_any() noexcept {
+			if (!is_initialized()) {
+				initialize();
+			}
+
 			if (channels.all()) {
 				return -1;
 			}
