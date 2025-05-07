@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bleak/constants.hpp"
 #include <bleak/typedef.hpp>
 
 #include <SDL.h>
@@ -25,10 +26,15 @@ namespace bleak {
 				return;
 			}
 
-			steam_initialized = steam::initialize() == steam::init_result::Ok;
+			steam::init_result result = steam::initialize();
+
+			steam_initialized = result == steam::init_result::Ok;
 
 			if (!steam_initialized) {
-				error_log.add("[ERROR]: failed to initialize steam subsystem: {}", steam::get_error());
+				error_log.add("[{}]: failed to initialize steam subsystem: {}",
+					result == steam::init_result::InvalidLaunch || (IsSteamless && result == steam::init_result::NoSteamClient) ? "WARNING" : "ERROR",
+					steam::get_error()
+				);
 			}
 		}
 
@@ -190,6 +196,12 @@ namespace bleak {
 			terminate_steam();
 		}
 
-		static inline bool is_initialized() noexcept { return steam_initialized && sdl_initialized && sdl_image_initialized && sdl_mixer_initialized && sdl_net_initialized; }
+		static inline bool is_initialized() noexcept {
+			if constexpr (IsSteamless) {
+				return sdl_initialized && sdl_image_initialized && sdl_mixer_initialized && sdl_net_initialized;
+			} else {
+				return steam_initialized && sdl_initialized && sdl_image_initialized && sdl_mixer_initialized && sdl_net_initialized;
+			}
+		}
 	};
 } // namespace bleak

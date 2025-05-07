@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bleak/constants.hpp"
 #include <bleak.hpp>
 
 #include <atomic>
@@ -464,6 +465,10 @@ namespace necrowarp {
 		static inline steam_stat_t<Type, T> stats{};
 		
 		static inline ptr<ISteamUserStats> user_stats() {
+			if constexpr (IsSteamless) {
+				return nullptr;
+			}
+
 			ptr<ISteamUserStats> interface = SteamUserStats();
 
 			if (interface == nullptr) {
@@ -473,9 +478,13 @@ namespace necrowarp {
 			return interface;
 		}
 
-		static inline bool store() noexcept { return user_stats()->StoreStats(); }
+		static inline bool store() noexcept { return IsSteamless || user_stats()->StoreStats(); }
 
 		static inline void transcribe() noexcept {
+			if constexpr (IsSteamless) {
+				return;
+			}
+
 			magic_enum::enum_for_each<steam_stat_e>([] (auto val) {
 				constexpr steam_stat_e Stat{ val };
 
@@ -523,6 +532,10 @@ namespace necrowarp {
 	template<steam_stat_e Type, typename T>
 		requires is_one_of<T, i32, f32>::value
 	inline T steam_stat_t<Type, T>::get_value() const noexcept  {
+		if constexpr (IsSteamless) {
+			return T{};
+		}
+
 		std::optional<T> maybe_value{ steam::user_stats::get_stat<T>(api_name) };
 
 		if (!maybe_value.has_value()) {
@@ -534,5 +547,13 @@ namespace necrowarp {
 		return cached_value = maybe_value.value();
 	}
 	
-	template<steam_stat_e Type, typename T> requires is_one_of<T, i32, f32>::value inline bool steam_stat_t<Type, T>::set_value(value_type value) noexcept { return steam::user_stats::set_stat(api_name, value); }
+	template<steam_stat_e Type, typename T>
+		requires is_one_of<T, i32, f32>::value
+	inline bool steam_stat_t<Type, T>::set_value(value_type value) noexcept {
+		if constexpr (IsSteamless) {
+			return false;
+		}
+
+		return steam::user_stats::set_stat(api_name, value);
+	}
 } // namespace necrowarp
