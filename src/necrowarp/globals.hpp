@@ -187,6 +187,11 @@ namespace necrowarp {
 
 		static constexpr extent_t MapSize{ 128, 128 };
 
+		static constexpr offset_t MapOrigin{ offset_t::Zero };
+		static constexpr offset_t MapExtent{ MapOrigin + MapSize - 1 };
+
+		static constexpr rect_t MapBounds{ MapOrigin, MapSize };
+
 		static inline rect_t map_bounds() {
 			const extent_t excess{ max<offset_t::scalar_t>(game_grid_size().w - MapSize.w, 0), max<offset_t::scalar_t>(game_grid_size().h - MapSize.h, 0) };
 

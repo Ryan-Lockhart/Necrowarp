@@ -739,8 +739,8 @@ namespace necrowarp {
 				depth_hidden_label.text = runes_t{ std::format("Depth: {:3}", (isize)game_stats.game_depth * -1) };
 			}
 
-			const entity_type_t entity_type{ entity_registry.at(grid_cursor.position) };
-			const bool bloodied{ game_map[grid_cursor.position].bloodied };
+			const entity_type_t entity_type{ entity_registry.at(grid_cursor.current_position) };
+			const bool bloodied{ game_map[grid_cursor.current_position].bloodied };
 
 			show_tooltip = entity_type != entity_type_t::None || bloodied;
 
@@ -751,11 +751,11 @@ namespace necrowarp {
 					if (entity_type == entity_type_t::Ladder) {
 						tooltip_label.text
 							.concatenate(runes_t{ " (" })
-							.concatenate(runes_t{ to_string(entity_registry.at<ladder_t>(grid_cursor.position)->verticality) })
+							.concatenate(runes_t{ to_string(entity_registry.at<ladder_t>(grid_cursor.current_position)->verticality) })
 							.concatenate({ " | " })
-							.concatenate(to_colored_string(entity_registry.at<ladder_t>(grid_cursor.position)->shackle))
+							.concatenate(to_colored_string(entity_registry.at<ladder_t>(grid_cursor.current_position)->shackle))
 							.concatenate(runes_t{ ")"});
-					} else if (entity_type == entity_type_t::Skull && entity_registry.at<skull_t>(grid_cursor.position)->fresh) {
+					} else if (entity_type == entity_type_t::Skull && entity_registry.at<skull_t>(grid_cursor.current_position)->fresh) {
 						tooltip_label.text
 							.concatenate(runes_t{ " (" })
 							.concatenate(runes_t{ "fresh", colors::light::Green })
@@ -774,11 +774,11 @@ namespace necrowarp {
 						if (entity_type == entity_type_t::Ladder) {
 							tooltip_label.text
 								.concatenate(runes_t{ " (" })
-								.concatenate(runes_t{ to_string(entity_registry.at<ladder_t>(grid_cursor.position)->verticality) })
+								.concatenate(runes_t{ to_string(entity_registry.at<ladder_t>(grid_cursor.current_position)->verticality) })
 								.concatenate({ " | " })
-								.concatenate(to_colored_string(entity_registry.at<ladder_t>(grid_cursor.position)->shackle))
+								.concatenate(to_colored_string(entity_registry.at<ladder_t>(grid_cursor.current_position)->shackle))
 								.concatenate(runes_t{ ")"});
-						} else if (entity_type == entity_type_t::Skull && entity_registry.at<skull_t>(grid_cursor.position)->fresh) {
+						} else if (entity_type == entity_type_t::Skull && entity_registry.at<skull_t>(grid_cursor.current_position)->fresh) {
 							tooltip_label.text
 								.concatenate(runes_t{ " (" })
 								.concatenate(runes_t{ "fresh", colors::light::Green })
@@ -788,7 +788,7 @@ namespace necrowarp {
 				}
 			}
 
-			switch (entity_registry.at(grid_cursor.position)) {
+			switch (entity_registry.at(grid_cursor.current_position)) {
 				case entity_type_t::Player: {
 					grid_cursor.color = colors::Magenta;
 					break;
@@ -880,9 +880,9 @@ namespace necrowarp {
 				colors::Green
 			};
 
-			draw_cursor = any_hovered() || !globals::map_bounds().within(cursor.get_position() / globals::CellSize);
+			draw_cursor = any_hovered() || !globals::map_bounds().within(ui_cursor.get_position() / globals::CellSize);
 
-			cursor.update();
+			ui_cursor.update();
 
 			if (phase.current_phase == game_phase_t::MainMenu) {
 				phase_state_t<game_phase_t::MainMenu>::update(Mouse::button_t::Left);
@@ -949,7 +949,7 @@ namespace necrowarp {
 			fps_label.draw(renderer);
 
 			if (phase.current_phase != game_phase_t::Playing || draw_cursor) {
-				cursor.draw();
+				ui_cursor.draw();
 			}
 		}
 	} static inline ui_registry;

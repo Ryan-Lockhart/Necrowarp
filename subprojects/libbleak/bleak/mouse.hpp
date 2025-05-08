@@ -64,6 +64,8 @@ namespace bleak {
 				return;
 			}
 
+			SDL_SetRelativeMouseMode(SDL_TRUE);
+
 			current_state.reset();
 			previous_state.reset();
 
@@ -95,18 +97,19 @@ namespace bleak {
 
 		static inline void process_event(ref<SDL_Event> event) noexcept {
 			switch (event.type) {
-			case SDL_MOUSEMOTION:
-				previous_position = current_position;
-				current_position = offset_t{ event.motion.x, event.motion.y };
-				break;
+				case SDL_MOUSEMOTION: {
+					previous_position = current_position;
+					current_position = offset_t{ event.motion.x, event.motion.y };
 
-			case SDL_MOUSEWHEEL:
-				previous_scroll = current_scroll;
-				current_scroll = offset_t{ event.wheel.x, event.wheel.y };
-				break;
+					break;
+				} case SDL_MOUSEWHEEL: {
+					previous_scroll = current_scroll;
+					current_scroll = offset_t{ event.wheel.x, event.wheel.y };
 
-			default:
-				break;
+					break;
+				} default: {
+					break;
+				}
 			}
 		}
 

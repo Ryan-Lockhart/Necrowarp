@@ -122,7 +122,7 @@ namespace bleak {
 					break;
 				}
 			}
-			
+
 			Keyboard::update();
 			Mouse::update();
 		}

@@ -14,6 +14,9 @@ namespace bleak {
 		offset_t position;
 		extent_t size;
 
+		constexpr offset_t origin() const noexcept { return position; }
+		constexpr offset_t extent() const noexcept { return position + size - 1; }
+
 		constexpr rect_t() noexcept : position{}, size{} {}
 
 		constexpr rect_t(cref<offset_t> position, cref<extent_t> size) noexcept : position{ position }, size{ size } {}

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bleak/constants.hpp"
 #include <bleak.hpp>
 
 #include <atomic>
@@ -35,7 +34,7 @@ namespace necrowarp {
 
 	static inline zone_t<cell_state_t, globals::MapSize, globals::BorderSize> game_map{};
 
-	static inline cursor_t cursor{ renderer, "res/gfx/sprites/cursor.png", colors::White };
+	static inline cursor_t ui_cursor{ renderer, "res/gfx/sprites/cursor.png", colors::White };
 
 	static inline grid_cursor_t<globals::CellSize> grid_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::metals::Gold, game_map.zone_origin, game_map.zone_extent };
 	static inline grid_cursor_t<globals::CellSize> warp_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::Magenta, game_map.zone_origin, game_map.zone_extent };

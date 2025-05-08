@@ -18,32 +18,36 @@ namespace bleak {
 	struct cursor_t {
 	  private:
 		texture_t texture;
-		offset_t position;
+		
+		offset_t current_position;
+		offset_t last_position;
 
 	  public:
 		color_t color;
 
 		inline cursor_t() = delete;
 
-		inline cursor_t(ref<renderer_t> renderer, cstr path) : texture{ renderer, path }, position{ 0, 0 }, color{ colors::White } {}
+		inline cursor_t(ref<renderer_t> renderer, cstr path) : texture{ renderer, path }, current_position{ 0, 0 }, color{ colors::White } {}
 
-		inline cursor_t(ref<renderer_t> renderer, cstr path, cref<color_t> color) : texture{ renderer, path }, position{ 0, 0 }, color{ color } {}
+		inline cursor_t(ref<renderer_t> renderer, cstr path, color_t color) : texture{ renderer, path }, current_position{ 0, 0 }, color{ color } {}
 
-		inline void update() { position = Mouse::get_position(); }
+		inline void update() { current_position = Mouse::get_position(); }
 
-		inline void update(cref<offset_t> pos) { position = pos; };
+		inline void update(offset_t pos) { current_position = pos; };
 
-		inline void draw() const { texture.draw(position, color); }
+		inline void draw() const { texture.draw(current_position, color); }
 
-		inline void draw(cref<offset_t> offset) const { texture.draw(position + offset, color); }
+		inline void draw(offset_t offset) const { texture.draw(current_position + offset, color); }
 
-		inline cref<offset_t> get_position() const { return position; }
+		inline offset_t get_position() const { return current_position; }
 	};
 
 	template<extent_t Size> struct grid_cursor_t {
+	  private:
 		texture_t texture;
-
-		offset_t position;
+		
+	  public:		
+		offset_t current_position;
 
 		const extent_t min;
 		const extent_t max;
@@ -56,33 +60,55 @@ namespace bleak {
 
 		inline grid_cursor_t() = delete;
 
-		inline grid_cursor_t(ref<renderer_t> renderer, cstr path) : texture{ renderer, path }, position{}, min{}, max{}, use_bounds{ false }, color{ colors::White } {}
+		inline grid_cursor_t(ref<renderer_t> renderer, cstr path) : texture{ renderer, path }, current_position{}, min{}, max{}, use_bounds{ false }, color{ colors::White } {}
 
-		inline grid_cursor_t(ref<renderer_t> renderer, cstr path, cref<color_t> color) : texture{ renderer, path }, position{}, min{}, max{}, use_bounds{ false }, color{ color } {}
+		inline grid_cursor_t(ref<renderer_t> renderer, cstr path, color_t color) : texture{ renderer, path }, current_position{}, min{}, max{}, use_bounds{ false }, color{ color } {}
 
-		inline grid_cursor_t(ref<renderer_t> renderer, cstr path, cref<offset_t> min, cref<offset_t> max) : texture{ renderer, path }, position{}, min{ min }, max{ max }, use_bounds{ true }, color{ colors::White } {}
+		inline grid_cursor_t(ref<renderer_t> renderer, cstr path, offset_t min, offset_t max) : texture{ renderer, path }, current_position{}, min{ min }, max{ max }, use_bounds{ true }, color{ colors::White } {}
 
-		inline grid_cursor_t(ref<renderer_t> renderer, cstr path, cref<color_t> color, cref<offset_t> min, cref<offset_t> max) : texture{ renderer, path }, position{}, min{ min }, max{ max }, use_bounds{ true }, color{ color } {}
+		inline grid_cursor_t(ref<renderer_t> renderer, cstr path, color_t color, offset_t min, offset_t max) : texture{ renderer, path }, current_position{}, min{ min }, max{ max }, use_bounds{ true }, color{ color } {}
 
-		inline void update() {
-			const offset_t pos{ Mouse::get_position() / size };
+		inline void update() noexcept {
+			const offset_t grid_pos{ Mouse::get_position() / size };
+
 			if (use_bounds) {
-				position = offset_t::clamp(pos, min, max);
+				current_position = offset_t::clamp(grid_pos, min, max);
 			} else {
-				position = pos;
+				current_position = grid_pos;
 			}
 		}
 
-		inline void update(cref<offset_t> offset) {
-			const offset_t pos{ Mouse::get_position() / size + offset };
+		inline void update(rect_t bounds) noexcept {
+			const offset_t grid_pos{ Mouse::get_position() / size };
+
 			if (use_bounds) {
-				position = offset_t::clamp(pos, min, max);
+				current_position = offset_t::clamp(grid_pos, bounds.origin(), bounds.extent());
 			} else {
-				position = pos;
+				current_position = grid_pos;
 			}
 		}
 
-		inline void update(cref<cardinal_t> direction) {
+		inline void update(offset_t offset) {
+			const offset_t grid_pos{ Mouse::get_position() / size + offset };
+
+			if (use_bounds) {
+				current_position = offset_t::clamp(grid_pos, min, max);
+			} else {
+				current_position = grid_pos;
+			}
+		}
+
+		inline void update(cref<camera_t> camera) {
+			const offset_t grid_pos{ Mouse::get_position() / size + camera.get_position() };
+
+			if (use_bounds) {
+				current_position = offset_t::clamp(grid_pos, min, max);
+			} else {
+				current_position = grid_pos;
+			}
+		}
+
+		inline void update(cardinal_t direction) {
 			if (direction == cardinal_e::Central) {
 				return;
 			}
@@ -90,13 +116,13 @@ namespace bleak {
 			const offset_t offset_dir{ direction };
 
 			if (use_bounds) {
-				position = offset_t::clamp(position + offset_dir, min, max);
+				current_position = offset_t::clamp(current_position + offset_dir, min, max);
 			} else {
-				position += offset_dir;
+				current_position += offset_dir;
 			}
 		}
 
-		inline void set(cref<offset_t> position) { this->position = use_bounds ? offset_t::clamp(position, min, max) : position; }
+		inline void set(offset_t position) { this->current_position = use_bounds ? offset_t::clamp(position, min, max) : position; }
 
 		inline offset_t midpoint() const { return offset_t{ (max - min) / 2 }; }
 
@@ -104,23 +130,23 @@ namespace bleak {
 
 		inline offset_t upper_third() const { return offset_t{ (max - min) / 3 * 2 }; }
 
-		inline void draw() const { texture.draw(position * size, color); }
+		inline void draw() const { texture.draw(current_position * size, color); }
 
-		inline void draw(cref<camera_t> camera) const { texture.draw((position - camera.get_position()) * size, color); }
+		inline void draw(cref<camera_t> camera) const { texture.draw((current_position - camera.get_position()) * size, color); }
 
-		inline void draw(cref<offset_t> offset) const { texture.draw(position * size + offset, color); }
+		inline void draw(cref<offset_t> offset) const { texture.draw(current_position * size + offset, color); }
 
-		inline void draw(cref<camera_t> camera, cref<offset_t> offset) const { texture.draw((position + camera.get_offset()) * size + offset, color); }
+		inline void draw(cref<camera_t> camera, cref<offset_t> offset) const { texture.draw((current_position - camera.get_position()) * size + offset, color); }
 
-		inline offset_t get_position() const { return position; }
+		inline offset_t get_position() const { return current_position; }
 
-		template<typename T, extent_t ZoneSize, extent_t BorderSize> inline ref<T> hovered(ref<zone_t<T, ZoneSize, BorderSize>> zone) { return zone[position]; };
+		template<typename T, extent_t ZoneSize, extent_t BorderSize> inline ref<T> hovered(ref<zone_t<T, ZoneSize, BorderSize>> zone) { return zone[current_position]; };
 
-		template<typename T, extent_t ZoneSize, extent_t BorderSize> inline cref<T> hovered(cref<zone_t<T, ZoneSize, BorderSize>> zone) const { return zone[position]; };
+		template<typename T, extent_t ZoneSize, extent_t BorderSize> inline cref<T> hovered(cref<zone_t<T, ZoneSize, BorderSize>> zone) const { return zone[current_position]; };
 
 		inline quadrant_t get_quadrant() const {
 			const auto mid{ midpoint() };
-			return quadrant_t{ position.y < mid.y, position.x < mid.x };
+			return quadrant_t{ current_position.y < mid.y, current_position.x < mid.x };
 		}
 
 		inline cardinal_t get_nonant() const {
@@ -128,7 +154,7 @@ namespace bleak {
 			const auto low{ lower_third() };
 			const auto up{ upper_third() };
 
-			return cardinal_t{ position.y < low.y ? cardinal_e::North : position.y < up.y ? cardinal_e::Central : cardinal_e::South, position.x < low.x ? cardinal_e::West : position.x < up.x ? cardinal_e::Central : cardinal_e::East };
+			return cardinal_t{ current_position.y < low.y ? cardinal_e::North : current_position.y < up.y ? cardinal_e::Central : cardinal_e::South, current_position.x < low.x ? cardinal_e::West : current_position.x < up.x ? cardinal_e::Central : cardinal_e::East };
 		}
 	};
 } // namespace bleak

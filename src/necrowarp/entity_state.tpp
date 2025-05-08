@@ -33,7 +33,7 @@ namespace necrowarp {
 				force_height, force_height ? globals::MapCenter.y : player.position.y
 			);
 
-			grid_cursor.update(camera.get_position());
+			grid_cursor.update(camera);
 
 			return moved;
 		}
@@ -41,10 +41,12 @@ namespace necrowarp {
 		if (camera_locked) {
 			moved = camera.center_on(player.position);
 
-			grid_cursor.update(camera.get_position());
+			grid_cursor.update(camera);
 
 			return moved;
 		}
+
+		grid_cursor.update();
 
 		return false;
 	}
