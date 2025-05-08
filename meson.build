@@ -25,7 +25,7 @@ if target_machine.system() == 'windows'
     includes = include_directories(['src', 'C:/dev/msys64/ucrt64/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include'])
 
     std_deps = [
-        cxx.find_library('gcc_eh', dirs: 'C:/dev/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/14.2.0', required: true, static: true),
+        cxx.find_library('gcc_eh', dirs: 'C:/dev/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/15.1.0', required: true, static: true),
         cxx.find_library('stdc++', dirs: 'C:/dev/msys64/ucrt64/lib', required: true, static: true),
         cxx.find_library('winpthread', dirs: 'C:/dev/msys64/ucrt64/lib', required: true, static: true),
         cxx.find_library('steam_api64', dirs: 'C:/dev/steam/bin/win64', required: true, static: false),
@@ -33,10 +33,10 @@ if target_machine.system() == 'windows'
 
     dyn_libs = ['C:/dev/steam/bin/win64/steam_api64.dll']
 elif target_machine.system() == 'linux'
-    includes = include_directories(['src', '/usr/include/SDL2', '/usr/local/include/steam/include', '/usr/local/include/magic_enum/include'])
+    includes = include_directories(['src', '/usr/local/include/SDL2', '/usr/local/include'])
 
     std_deps = [
-        cxx.find_library('gcc_eh', dirs: '/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1', required: true, static: true),
+        cxx.find_library('gcc_eh', dirs: '/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1', required: true, static: true),
         cxx.find_library('stdc++', dirs: '/usr/lib', required: true, static: true),
         cxx.find_library('pthread', dirs: '/usr/lib', required: true, static: true),
         cxx.find_library('steam_api', dirs: '/usr/local/lib', required: true, static: false),
@@ -46,17 +46,15 @@ elif target_machine.system() == 'linux'
 endif
 
 sdl_deps = [
-	dependency('SDL2', required: true, static: true),
-	dependency('SDL2_image', required: true, static: true),
-	dependency('SDL2_mixer', required: true, static: true),
-	dependency('SDL2_net', required: true, static: true),
+    dependency('SDL2', required: true, static: true),
+    dependency('SDL2_image', required: true, static: true),
+    dependency('SDL2_mixer', required: true, static: true),
+    dependency('SDL2_net', required: true, static: true),
 ]
 
 bleak_dep = dependency('bleak', required: true, fallback: ['libbleak', 'bleak_dep'])
 
 executable('necrowarp', 'src/program.cpp',
-	cpp_args: ['-DSTEAMLESS'],
-
     include_directories: [includes],
     dependencies: [std_deps, sdl_deps, bleak_dep],
 
