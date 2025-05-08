@@ -883,6 +883,8 @@ namespace necrowarp {
 			draw_cursor = any_hovered() || !globals::map_bounds().within(ui_cursor.get_position() / globals::CellSize);
 
 			ui_cursor.update();
+			
+			grid_cursor.update(camera);
 
 			if (phase.current_phase == game_phase_t::MainMenu) {
 				phase_state_t<game_phase_t::MainMenu>::update(Mouse::button_t::Left);

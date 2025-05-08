@@ -57,6 +57,10 @@ namespace necrowarp {
 				camera_locked = !camera_locked;
 			}
 
+			if (camera_locked) {
+				return false;
+			}
+
 			const offset_t direction = []() -> offset_t {
 				offset_t::scalar_t x{ 0 }, y{ 0 };
 
