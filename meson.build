@@ -55,6 +55,8 @@ sdl_deps = [
 bleak_dep = dependency('bleak', required: true, fallback: ['libbleak', 'bleak_dep'])
 
 executable('necrowarp', 'src/program.cpp',
+	cpp_args: ['-DSTEAMLESS'],
+
     include_directories: [includes],
     dependencies: [std_deps, sdl_deps, bleak_dep],
 
