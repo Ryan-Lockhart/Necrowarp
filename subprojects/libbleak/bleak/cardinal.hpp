@@ -76,7 +76,7 @@ namespace bleak {
 
 		constexpr cardinal_t operator-() const noexcept { return cardinal_t { static_cast<cardinal_e>(~value) }; }
 
-		constexpr cardinal_t operator+(cref<cardinal_t> other) const noexcept {
+		constexpr cardinal_t operator+(cardinal_t other) const noexcept {
 			cardinal_t sum { static_cast<cardinal_e>(value | other.value) };
 
 			sum.neutralize();
@@ -84,7 +84,7 @@ namespace bleak {
 			return sum;
 		}
 
-		constexpr cardinal_t operator-(cref<cardinal_t> other) const noexcept {
+		constexpr cardinal_t operator-(cardinal_t other) const noexcept {
 			cardinal_t diff { static_cast<cardinal_e>(value & ~other.value) };
 
 			diff.neutralize();
@@ -92,7 +92,7 @@ namespace bleak {
 			return diff;
 		}
 
-		constexpr ref<cardinal_t> operator+=(cref<cardinal_t> other) noexcept {
+		constexpr ref<cardinal_t> operator+=(cardinal_t other) noexcept {
 			if (*this == other) {
 				return *this;
 			}
@@ -104,7 +104,7 @@ namespace bleak {
 			return *this;
 		}
 
-		constexpr ref<cardinal_t> operator-=(cref<cardinal_t> other) noexcept {
+		constexpr ref<cardinal_t> operator-=(cardinal_t other) noexcept {
 			if (*this == other) {
 				return *this;
 			}

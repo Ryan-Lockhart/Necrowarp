@@ -134,9 +134,9 @@ namespace bleak {
 
 		inline void draw(cref<camera_t> camera) const { texture.draw((current_position - camera.get_position()) * size, color); }
 
-		inline void draw(cref<offset_t> offset) const { texture.draw(current_position * size + offset, color); }
+		inline void draw(offset_t offset) const { texture.draw(current_position * size + offset, color); }
 
-		inline void draw(cref<camera_t> camera, cref<offset_t> offset) const { texture.draw((current_position - camera.get_position()) * size + offset, color); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const { texture.draw((current_position - camera.get_position()) * size + offset, color); }
 
 		inline offset_t get_position() const { return current_position; }
 

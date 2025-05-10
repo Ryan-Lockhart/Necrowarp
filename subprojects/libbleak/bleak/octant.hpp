@@ -12,6 +12,6 @@ namespace bleak {
 
 		constexpr octant_t() : position{}, delta{} {}
 
-		constexpr octant_t(cref<offset_t> position, cref<offset_t> delta) : position{ position }, delta{ delta } {}
+		constexpr octant_t(offset_t position, offset_t delta) : position{ position }, delta{ delta } {}
 	};
 } // namespace bleak

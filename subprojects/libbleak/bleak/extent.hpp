@@ -2,11 +2,9 @@
 
 #include <bleak/primitive.hpp> // IWYU pragma: export
 
-#include <cmath>
 #include <format>
 #include <limits>
 #include <string>
-#include <type_traits>
 
 #include <SDL.h>
 
@@ -36,45 +34,41 @@ namespace bleak {
 
 		constexpr extent_t() noexcept {}
 
-		constexpr explicit extent_t(scalar_t scalar) noexcept : c_extent_t{ scalar, scalar } {}
+		constexpr explicit extent_t(scalar_t scalar) noexcept : underlying_t{ scalar, scalar } {}
 
-		constexpr explicit extent_t(scalar_t width, scalar_t height) noexcept : c_extent_t{ width, height } {}
+		constexpr explicit extent_t(scalar_t width, scalar_t height) noexcept : underlying_t{ width, height } {}
 
-		template<typename T>
-			requires std::is_convertible<T, scalar_t>::value
-		constexpr explicit extent_t(T width, T height) noexcept : underlying_t{ scalar_cast(width), scalar_cast(height) } {}
+		template<Numeric D> constexpr explicit extent_t(D width, D height) noexcept : underlying_t{ scalar_cast(width), scalar_cast(height) } {}
 
-		template<typename W, typename H>
-			requires std::is_convertible<W, scalar_t>::value && std::is_convertible<H, scalar_t>::value
-		constexpr explicit extent_t(W width, H height) noexcept : underlying_t{ scalar_cast(width), scalar_cast(height) } {}
+		template<Numeric W, Numeric H> constexpr explicit extent_t(W width, H height) noexcept : underlying_t{ scalar_cast(width), scalar_cast(height) } {}
 
 		constexpr product_t area() const noexcept { return product_cast(w) * product_cast(h); }
 
 		constexpr product_t size() const noexcept { return area(); }
 
-		constexpr bool operator==(cref<extent_t> other) const noexcept { return w == other.w && h == other.h; }
+		constexpr bool operator==(extent_t other) const noexcept { return w == other.w && h == other.h; }
 
-		constexpr bool operator!=(cref<extent_t> other) const noexcept { return w != other.w || h != other.h; }
+		constexpr bool operator!=(extent_t other) const noexcept { return w != other.w || h != other.h; }
 
-		constexpr bool operator<(cref<extent_t> other) const { return area() < other.area(); }
+		constexpr bool operator<(extent_t other) const { return area() < other.area(); }
 
-		constexpr bool operator>(cref<extent_t> other) const { return area() > other.area(); }
+		constexpr bool operator>(extent_t other) const { return area() > other.area(); }
 
-		constexpr bool operator<=(cref<extent_t> other) const { return area() <= other.area(); }
+		constexpr bool operator<=(extent_t other) const { return area() <= other.area(); }
 
-		constexpr bool operator>=(cref<extent_t> other) const { return area() >= other.area(); }
+		constexpr bool operator>=(extent_t other) const { return area() >= other.area(); }
 
 		constexpr offset_t operator-() const noexcept;
 
-		constexpr extent_t operator+(cref<extent_t> other) const noexcept { return extent_t{ scalar_cast(w + other.w), scalar_cast(h + other.h) }; }
+		constexpr extent_t operator+(extent_t other) const noexcept { return extent_t{ scalar_cast(w + other.w), scalar_cast(h + other.h) }; }
 
-		constexpr extent_t operator-(cref<extent_t> other) const noexcept { return extent_t{ scalar_cast(w - other.w), scalar_cast(h - other.h) }; }
+		constexpr extent_t operator-(extent_t other) const noexcept { return extent_t{ scalar_cast(w - other.w), scalar_cast(h - other.h) }; }
 
-		constexpr extent_t operator*(cref<extent_t> other) const noexcept { return extent_t{ scalar_cast(w * other.w), scalar_cast(h * other.h) }; }
+		constexpr extent_t operator*(extent_t other) const noexcept { return extent_t{ scalar_cast(w * other.w), scalar_cast(h * other.h) }; }
 
-		constexpr extent_t operator/(cref<extent_t> other) const noexcept { return extent_t{ scalar_cast(w / other.w), scalar_cast(h / other.h) }; }
+		constexpr extent_t operator/(extent_t other) const noexcept { return extent_t{ scalar_cast(w / other.w), scalar_cast(h / other.h) }; }
 
-		constexpr extent_t operator%(cref<extent_t> other) const noexcept { return extent_t{ scalar_cast(w % other.w), scalar_cast(h % other.h) }; }
+		constexpr extent_t operator%(extent_t other) const noexcept { return extent_t{ scalar_cast(w % other.w), scalar_cast(h % other.h) }; }
 
 		constexpr extent_t operator+(scalar_t scalar) const noexcept { return extent_t{ scalar_cast(w + scalar), scalar_cast(h + scalar) }; }
 
@@ -86,45 +80,55 @@ namespace bleak {
 
 		constexpr extent_t operator%(scalar_t scalar) const noexcept { return extent_t{ scalar_cast(w % scalar), scalar_cast(h % scalar) }; }
 
-		constexpr extent_t operator+(cref<offset_t> other) const noexcept;
+		template<Numeric D> constexpr extent_t operator+(D scalar) const noexcept { return extent_t{ scalar_cast(w + scalar), scalar_cast(h + scalar) }; }
 
-		constexpr extent_t operator-(cref<offset_t> other) const noexcept;
+		template<Numeric D> constexpr extent_t operator-(D scalar) const noexcept { return extent_t{ scalar_cast(w - scalar), scalar_cast(h - scalar) }; }
 
-		constexpr extent_t operator*(cref<offset_t> other) const noexcept;
+		template<Numeric D> constexpr extent_t operator*(D scalar) const noexcept { return extent_t{ scalar_cast(w * scalar), scalar_cast(h * scalar) }; }
 
-		constexpr extent_t operator/(cref<offset_t> other) const noexcept;
+		template<Numeric D> constexpr extent_t operator/(D scalar) const noexcept { return extent_t{ scalar_cast(w / scalar), scalar_cast(h / scalar) }; }
 
-		constexpr extent_t operator%(cref<offset_t> other) const noexcept;
+		template<Numeric D> constexpr extent_t operator%(D scalar) const noexcept { return extent_t{ scalar_cast(w % scalar), scalar_cast(h % scalar) }; }
 
-		constexpr ref<extent_t> operator+=(cref<extent_t> other) noexcept {
+		constexpr extent_t operator+(offset_t other) const noexcept;
+
+		constexpr extent_t operator-(offset_t other) const noexcept;
+
+		constexpr extent_t operator*(offset_t other) const noexcept;
+
+		constexpr extent_t operator/(offset_t other) const noexcept;
+
+		constexpr extent_t operator%(offset_t other) const noexcept;
+
+		constexpr ref<extent_t> operator+=(extent_t other) noexcept {
 			w += other.w;
 			h += other.h;
 
 			return *this;
 		}
 
-		constexpr ref<extent_t> operator-=(cref<extent_t> other) noexcept {
+		constexpr ref<extent_t> operator-=(extent_t other) noexcept {
 			w -= other.w;
 			h -= other.h;
 
 			return *this;
 		}
 
-		constexpr ref<extent_t> operator*=(cref<extent_t> other) noexcept {
+		constexpr ref<extent_t> operator*=(extent_t other) noexcept {
 			w *= other.w;
 			h *= other.h;
 
 			return *this;
 		}
 
-		constexpr ref<extent_t> operator/=(cref<extent_t> other) noexcept {
+		constexpr ref<extent_t> operator/=(extent_t other) noexcept {
 			w /= other.w;
 			h /= other.h;
 
 			return *this;
 		}
 
-		constexpr ref<extent_t> operator%=(cref<extent_t> other) noexcept {
+		constexpr ref<extent_t> operator%=(extent_t other) noexcept {
 			w %= other.w;
 			h %= other.h;
 
@@ -166,15 +170,60 @@ namespace bleak {
 			return *this;
 		}
 
-		constexpr ref<extent_t> operator+=(cref<offset_t> other) noexcept;
+		template<Numeric D> constexpr ref<extent_t> operator+=(D scalar) noexcept {
+			const scalar_t num{ scalar_cast(scalar) };
 
-		constexpr ref<extent_t> operator-=(cref<offset_t> other) noexcept;
+			w += num;
+			h += num;
 
-		constexpr ref<extent_t> operator*=(cref<offset_t> other) noexcept;
+			return *this;
+		}
 
-		constexpr ref<extent_t> operator/=(cref<offset_t> other) noexcept;
+		template<Numeric D> constexpr ref<extent_t> operator-=(D scalar) noexcept {
+			const scalar_t num{ scalar_cast(scalar) };
 
-		constexpr ref<extent_t> operator%=(cref<offset_t> other) noexcept;
+			w -= num;
+			h -= num;
+
+			return *this;
+		}
+
+		template<Numeric D> constexpr ref<extent_t> operator*=(D scalar) noexcept {
+			const scalar_t num{ scalar_cast(scalar) };
+
+			w *= num;
+			h *= num;
+
+			return *this;
+		}
+
+		template<Numeric D> constexpr ref<extent_t> operator/=(D scalar) noexcept {
+			const scalar_t num{ scalar_cast(scalar) };
+
+			w /= num;
+			h /= num;
+
+			return *this;
+		}
+
+		template<Numeric D> constexpr ref<extent_t> operator%=(D scalar) noexcept {
+			const scalar_t num{ scalar_cast(scalar) };
+
+			w %= num;
+			h %= num;
+
+			return *this;
+		}
+
+		constexpr ref<extent_t> operator+=(offset_t other) noexcept;
+
+		constexpr ref<extent_t> operator-=(offset_t other) noexcept;
+
+		constexpr ref<extent_t> operator*=(offset_t other) noexcept;
+
+		constexpr ref<extent_t> operator/=(offset_t other) noexcept;
+
+		constexpr ref<extent_t> operator%=(offset_t other) noexcept;
 
 		constexpr operator std::string() const noexcept { return std::format("[{} x {}]", w, h); }
 
@@ -185,7 +234,7 @@ namespace bleak {
 		constexpr explicit operator offset_t() const noexcept;
 
 		struct hasher {
-			static constexpr usize operator()(cref<extent_t> extent) noexcept { return hash_combine(extent.w, extent.h); }
+			static constexpr usize operator()(extent_t extent) noexcept { return hash_combine(extent.w, extent.h); }
 		};
 	};
 } // namespace bleak
@@ -195,45 +244,45 @@ namespace bleak {
 namespace bleak {
 	constexpr const extent_t extent_t::Zero { 0, 0 };
 
-	constexpr extent_t extent_t::operator+(cref<offset_t> other) const noexcept { return extent_t{ scalar_cast(w + other.x), scalar_cast(h + other.y) }; }
+	constexpr extent_t extent_t::operator+(offset_t other) const noexcept { return extent_t{ scalar_cast(w + other.x), scalar_cast(h + other.y) }; }
 
-	constexpr extent_t extent_t::operator-(cref<offset_t> other) const noexcept { return extent_t{ scalar_cast(w - other.x), scalar_cast(h - other.y) }; }
+	constexpr extent_t extent_t::operator-(offset_t other) const noexcept { return extent_t{ scalar_cast(w - other.x), scalar_cast(h - other.y) }; }
 
-	constexpr extent_t extent_t::operator*(cref<offset_t> other) const noexcept { return extent_t{ scalar_cast(w * other.x), scalar_cast(h * other.y) }; }
+	constexpr extent_t extent_t::operator*(offset_t other) const noexcept { return extent_t{ scalar_cast(w * other.x), scalar_cast(h * other.y) }; }
 
-	constexpr extent_t extent_t::operator/(cref<offset_t> other) const noexcept { return extent_t{ scalar_cast(w / other.x), scalar_cast(h / other.y) }; }
+	constexpr extent_t extent_t::operator/(offset_t other) const noexcept { return extent_t{ scalar_cast(w / other.x), scalar_cast(h / other.y) }; }
 
-	constexpr extent_t extent_t::operator%(cref<offset_t> other) const noexcept { return extent_t{ scalar_cast(w % other.x), scalar_cast(h % other.y) }; }
+	constexpr extent_t extent_t::operator%(offset_t other) const noexcept { return extent_t{ scalar_cast(w % other.x), scalar_cast(h % other.y) }; }
 
-	constexpr ref<extent_t> extent_t::operator+=(cref<offset_t> other) noexcept {
+	constexpr ref<extent_t> extent_t::operator+=(offset_t other) noexcept {
 		w += other.x;
 		h += other.y;
 
 		return *this;
 	}
 
-	constexpr ref<extent_t> extent_t::operator-=(cref<offset_t> other) noexcept {
+	constexpr ref<extent_t> extent_t::operator-=(offset_t other) noexcept {
 		w -= other.x;
 		h -= other.y;
 
 		return *this;
 	}
 
-	constexpr ref<extent_t> extent_t::operator*=(cref<offset_t> other) noexcept {
+	constexpr ref<extent_t> extent_t::operator*=(offset_t other) noexcept {
 		w *= other.x;
 		h *= other.y;
 
 		return *this;
 	}
 
-	constexpr ref<extent_t> extent_t::operator/=(cref<offset_t> other) noexcept {
+	constexpr ref<extent_t> extent_t::operator/=(offset_t other) noexcept {
 		w /= other.x;
 		h /= other.y;
 
 		return *this;
 	}
 
-	constexpr ref<extent_t> extent_t::operator%=(cref<offset_t> other) noexcept {
+	constexpr ref<extent_t> extent_t::operator%=(offset_t other) noexcept {
 		w %= other.x;
 		h %= other.y;
 

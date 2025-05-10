@@ -199,7 +199,7 @@ namespace necrowarp {
 	  public:
 		inline player_t() noexcept : command{}, position{}, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
 
-		inline player_t(cref<offset_t> position) noexcept : command{}, position{ position }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+		inline player_t(offset_t position) noexcept : command{}, position{ position }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
 
 		inline i8 get_energy() const noexcept { return energy; }
 
@@ -456,7 +456,7 @@ namespace necrowarp {
 
 		template<entity_type_t EntityType> inline void receive_death_boon() noexcept;
 
-		inline command_type_t clash_or_consume(cref<offset_t> position) const noexcept;
+		inline command_type_t clash_or_consume(offset_t position) const noexcept;
 
 		inline void bolster_armor(i8 value) noexcept { set_armor(armor + value); }
 
@@ -466,11 +466,11 @@ namespace necrowarp {
 
 		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
 
-		inline void draw(cref<offset_t> offset) const noexcept { game_atlas.draw(current_glyph(), position + offset); }
+		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + offset); }
 
 		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, cref<offset_t> offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset() + offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset() + offset); }
 
 		constexpr operator entity_type_t() const noexcept { return entity_type_t::Player; }
 	};

@@ -43,7 +43,7 @@ namespace necrowarp {
 
 		constexpr i8 armor_boon() const noexcept { return max<i8>(health, 1) * 2; }
 		
-		inline wraith_t(cref<offset_t> position, i8 health) noexcept : position{ position }, health{ health } {}
+		inline wraith_t(offset_t position, i8 health) noexcept : position{ position }, health{ health } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -59,11 +59,11 @@ namespace necrowarp {
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position); }
 
-		inline void draw(cref<offset_t> offset) const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position + offset); }
+		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position + offset); }
 
 		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, cref<offset_t> offset) const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position + camera.get_offset() + offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position + camera.get_offset() + offset); }
 
 		constexpr operator entity_type_t() const noexcept { return entity_type_t::Wraith; }
 
@@ -73,7 +73,7 @@ namespace necrowarp {
 
 				static constexpr usize operator()(cref<wraith_t> wraith) noexcept { return offset_t::hasher::operator()(wraith.position); }
 
-				static constexpr usize operator()(cref<offset_t> position) noexcept { return offset_t::hasher::operator()(position); }
+				static constexpr usize operator()(offset_t position) noexcept { return offset_t::hasher::operator()(position); }
 			};
 		};
 
@@ -83,9 +83,9 @@ namespace necrowarp {
 
 				static constexpr bool operator()(cref<wraith_t> lhs, cref<wraith_t> rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs.position); }
 
-				static constexpr bool operator()(cref<wraith_t> lhs, cref<offset_t> rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs); }
+				static constexpr bool operator()(cref<wraith_t> lhs, offset_t rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs); }
 
-				static constexpr bool operator()(cref<offset_t> lhs, cref<wraith_t> rhs) noexcept { return offset_t::hasher::operator()(lhs) == offset_t::hasher::operator()(rhs.position); }
+				static constexpr bool operator()(offset_t lhs, cref<wraith_t> rhs) noexcept { return offset_t::hasher::operator()(lhs) == offset_t::hasher::operator()(rhs.position); }
 			};
 		};
 	};

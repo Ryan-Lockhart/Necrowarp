@@ -86,7 +86,7 @@ namespace bleak {
 			requires std::is_convertible<X, scalar_t>::value && std::is_convertible<Y, scalar_t>::value && is_numeric<X>::value && is_numeric<Y>::value
 		constexpr explicit offset_t(X x, Y y) noexcept : underlying_t{ scalar_cast(x), scalar_cast(y) } {}
 
-		constexpr explicit offset_t(cref<cardinal_t> direction) noexcept : underlying_t{} {
+		constexpr explicit offset_t(cardinal_t direction) noexcept : underlying_t{} {
 			if (direction == cardinal_e::Central) {
 				return;
 			} else {
@@ -129,9 +129,9 @@ namespace bleak {
 			return (product_t)((float_t)v.i);
 		}
 
-		template<FloatingPoint T> static constexpr T distance(cref<offset_t> start, cref<offset_t> end) noexcept { return (end - start).length<T>(); }
+		template<FloatingPoint T> static constexpr T distance(offset_t start, offset_t end) noexcept { return (end - start).length<T>(); }
 
-		template<distance_function_t Distance> static constexpr product_t distance(cref<offset_t> start, cref<offset_t> end) noexcept {
+		template<distance_function_t Distance> static constexpr product_t distance(offset_t start, offset_t end) noexcept {
 			if constexpr (Distance == distance_function_t::Manhattan) {
 				return std::abs(end.x - start.x) + std::abs(end.y - start.y);
 			} else if constexpr (Distance == distance_function_t::Chebyshev) {
@@ -145,7 +145,7 @@ namespace bleak {
 			}
 		}
 
-		static constexpr cardinal_t direction(cref<offset_t> start, cref<offset_t> end) noexcept { return static_cast<cardinal_t>(end - start); }
+		static constexpr cardinal_t direction(offset_t start, offset_t end) noexcept { return static_cast<cardinal_t>(end - start); }
 
 		template<typename T = product_t> constexpr ref<offset_t> normalize() noexcept {
 			const auto len = length<T>();
@@ -168,42 +168,42 @@ namespace bleak {
 			}
 		}
 
-		constexpr ref<offset_t> clamp(cref<offset_t> min, cref<offset_t> max) {
+		constexpr ref<offset_t> clamp(offset_t min, offset_t max) {
 			x = x < min.x ? min.x : x > max.x ? max.x : x;
 			y = y < min.y ? min.y : y > max.y ? max.y : y;
 
 			return *this;
 		}
 
-		static constexpr offset_t clamp(offset_t value, cref<offset_t> min, cref<offset_t> max) { return value.clamp(min, max); }
+		static constexpr offset_t clamp(offset_t value, offset_t min, offset_t max) { return value.clamp(min, max); }
 
-		constexpr ref<offset_t> clamp(cref<extent_t> min, cref<extent_t> max);
+		constexpr ref<offset_t> clamp(extent_t min, extent_t max);
 
-		static constexpr offset_t clamp(offset_t value, cref<extent_t> min, cref<extent_t> max);
+		static constexpr offset_t clamp(offset_t value, extent_t min, extent_t max);
 
-		constexpr bool operator==(cref<offset_t> other) const noexcept { return x == other.x && y == other.y; }
+		constexpr bool operator==(offset_t other) const noexcept { return x == other.x && y == other.y; }
 
-		constexpr bool operator!=(cref<offset_t> other) const noexcept { return x != other.x || y != other.y; }
+		constexpr bool operator!=(offset_t other) const noexcept { return x != other.x || y != other.y; }
 
-		constexpr bool operator<(cref<offset_t> other) const { return x < other.x && y < other.y; }
+		constexpr bool operator<(offset_t other) const { return x < other.x && y < other.y; }
 
-		constexpr bool operator>(cref<offset_t> other) const { return x > other.x && y > other.y; }
+		constexpr bool operator>(offset_t other) const { return x > other.x && y > other.y; }
 
-		constexpr bool operator<=(cref<offset_t> other) const { return x <= other.x && y <= other.y; }
+		constexpr bool operator<=(offset_t other) const { return x <= other.x && y <= other.y; }
 
-		constexpr bool operator>=(cref<offset_t> other) const { return x >= other.x && y >= other.y; }
+		constexpr bool operator>=(offset_t other) const { return x >= other.x && y >= other.y; }
 
 		constexpr offset_t operator-() const noexcept { return offset_t{ scalar_cast(-x), scalar_cast(-y) }; }
 
-		constexpr offset_t operator+(cref<offset_t> other) const noexcept { return offset_t{ scalar_cast(x + other.x), scalar_cast(y + other.y) }; }
+		constexpr offset_t operator+(offset_t other) const noexcept { return offset_t{ scalar_cast(x + other.x), scalar_cast(y + other.y) }; }
 
-		constexpr offset_t operator-(cref<offset_t> other) const noexcept { return offset_t{ scalar_cast(x - other.x), scalar_cast(y - other.y) }; }
+		constexpr offset_t operator-(offset_t other) const noexcept { return offset_t{ scalar_cast(x - other.x), scalar_cast(y - other.y) }; }
 
-		constexpr offset_t operator*(cref<offset_t> other) const noexcept { return offset_t{ scalar_cast(x * other.x), scalar_cast(y * other.y) }; }
+		constexpr offset_t operator*(offset_t other) const noexcept { return offset_t{ scalar_cast(x * other.x), scalar_cast(y * other.y) }; }
 
-		constexpr offset_t operator/(cref<offset_t> other) const noexcept { return offset_t{ scalar_cast(x / other.x), scalar_cast(y / other.y) }; }
+		constexpr offset_t operator/(offset_t other) const noexcept { return offset_t{ scalar_cast(x / other.x), scalar_cast(y / other.y) }; }
 
-		constexpr offset_t operator%(cref<offset_t> other) const noexcept { return offset_t{ scalar_cast(x % other.x), scalar_cast(y % other.y) }; }
+		constexpr offset_t operator%(offset_t other) const noexcept { return offset_t{ scalar_cast(x % other.x), scalar_cast(y % other.y) }; }
 
 		constexpr offset_t operator+(scalar_t scalar) const noexcept { return offset_t{ scalar_cast(x + scalar), scalar_cast(y + scalar) }; }
 
@@ -215,45 +215,45 @@ namespace bleak {
 
 		constexpr offset_t operator%(scalar_t scalar) const noexcept { return offset_t{ scalar_cast(x % scalar), scalar_cast(y % scalar) }; }
 
-		constexpr offset_t operator+(cref<extent_t> extent) const noexcept;
+		constexpr offset_t operator+(extent_t extent) const noexcept;
 
-		constexpr offset_t operator-(cref<extent_t> extent) const noexcept;
+		constexpr offset_t operator-(extent_t extent) const noexcept;
 
-		constexpr offset_t operator*(cref<extent_t> extent) const noexcept;
+		constexpr offset_t operator*(extent_t extent) const noexcept;
 
-		constexpr offset_t operator/(cref<extent_t> extent) const noexcept;
+		constexpr offset_t operator/(extent_t extent) const noexcept;
 
-		constexpr offset_t operator%(cref<extent_t> extent) const noexcept;
+		constexpr offset_t operator%(extent_t extent) const noexcept;
 
-		constexpr ref<offset_t> operator+=(cref<offset_t> other) noexcept {
+		constexpr ref<offset_t> operator+=(offset_t other) noexcept {
 			x += other.x;
 			y += other.y;
 
 			return *this;
 		}
 
-		constexpr ref<offset_t> operator-=(cref<offset_t> other) noexcept {
+		constexpr ref<offset_t> operator-=(offset_t other) noexcept {
 			x -= other.x;
 			y -= other.y;
 
 			return *this;
 		}
 
-		constexpr ref<offset_t> operator*=(cref<offset_t> other) noexcept {
+		constexpr ref<offset_t> operator*=(offset_t other) noexcept {
 			x *= other.x;
 			y *= other.y;
 
 			return *this;
 		}
 
-		constexpr ref<offset_t> operator/=(cref<offset_t> other) noexcept {
+		constexpr ref<offset_t> operator/=(offset_t other) noexcept {
 			x /= other.x;
 			y /= other.y;
 
 			return *this;
 		}
 
-		constexpr ref<offset_t> operator%=(cref<offset_t> other) noexcept {
+		constexpr ref<offset_t> operator%=(offset_t other) noexcept {
 			x %= other.x;
 			y %= other.y;
 
@@ -295,15 +295,15 @@ namespace bleak {
 			return *this;
 		}
 
-		constexpr ref<offset_t> operator+=(cref<extent_t> extent) noexcept;
+		constexpr ref<offset_t> operator+=(extent_t extent) noexcept;
 
-		constexpr ref<offset_t> operator-=(cref<extent_t> extent) noexcept;
+		constexpr ref<offset_t> operator-=(extent_t extent) noexcept;
 
-		constexpr ref<offset_t> operator*=(cref<extent_t> extent) noexcept;
+		constexpr ref<offset_t> operator*=(extent_t extent) noexcept;
 
-		constexpr ref<offset_t> operator/=(cref<extent_t> extent) noexcept;
+		constexpr ref<offset_t> operator/=(extent_t extent) noexcept;
 
-		constexpr ref<offset_t> operator%=(cref<extent_t> extent) noexcept;
+		constexpr ref<offset_t> operator%=(extent_t extent) noexcept;
 
 		constexpr operator std::string() const noexcept { return std::format("[{}, {}]", x, y); }
 
@@ -331,7 +331,7 @@ namespace bleak {
 		constexpr explicit operator extent_t() const noexcept;
 
 		struct hasher {
-			static constexpr usize operator()(cref<offset_t> offset) noexcept { return hash_combine(offset.x, offset.y); }
+			static constexpr usize operator()(offset_t offset) noexcept { return hash_combine(offset.x, offset.y); }
 		};
 	};
 } // namespace bleak
@@ -355,54 +355,54 @@ namespace bleak {
 	constexpr const offset_t offset_t::Southwest{ offset_t::South + offset_t::West };
 	constexpr const offset_t offset_t::Southeast{ offset_t::South + offset_t::East };
 
-	constexpr offset_t offset_t::clamp(offset_t value, cref<extent_t> min, cref<extent_t> max) { return value.clamp(min, max); }
+	constexpr offset_t offset_t::clamp(offset_t value, extent_t min, extent_t max) { return value.clamp(min, max); }
 
-	constexpr ref<offset_t> offset_t::clamp(cref<extent_t> min, cref<extent_t> max) {
+	constexpr ref<offset_t> offset_t::clamp(extent_t min, extent_t max) {
 		x = x < min.w ? min.w : x > max.w ? max.w : x;
 		y = y < min.h ? min.h : y > max.h ? max.h : y;
 
 		return *this;
 	}
 
-	constexpr offset_t offset_t::operator+(cref<extent_t> extent) const noexcept { return offset_t{ scalar_cast(x + extent.w), scalar_cast(y + extent.h) }; }
+	constexpr offset_t offset_t::operator+(extent_t extent) const noexcept { return offset_t{ scalar_cast(x + extent.w), scalar_cast(y + extent.h) }; }
 
-	constexpr offset_t offset_t::operator-(cref<extent_t> extent) const noexcept { return offset_t{ scalar_cast(x - extent.w), scalar_cast(y - extent.h) }; }
+	constexpr offset_t offset_t::operator-(extent_t extent) const noexcept { return offset_t{ scalar_cast(x - extent.w), scalar_cast(y - extent.h) }; }
 
-	constexpr offset_t offset_t::operator*(cref<extent_t> extent) const noexcept { return offset_t{ scalar_cast(x * extent.w), scalar_cast(y * extent.h) }; }
+	constexpr offset_t offset_t::operator*(extent_t extent) const noexcept { return offset_t{ scalar_cast(x * extent.w), scalar_cast(y * extent.h) }; }
 
-	constexpr offset_t offset_t::operator/(cref<extent_t> extent) const noexcept { return offset_t{ scalar_cast(x / extent.w), scalar_cast(y / extent.h) }; }
+	constexpr offset_t offset_t::operator/(extent_t extent) const noexcept { return offset_t{ scalar_cast(x / extent.w), scalar_cast(y / extent.h) }; }
 
-	constexpr offset_t offset_t::operator%(cref<extent_t> extent) const noexcept { return offset_t{ scalar_cast(x % extent.w), scalar_cast(y % extent.h) }; }
+	constexpr offset_t offset_t::operator%(extent_t extent) const noexcept { return offset_t{ scalar_cast(x % extent.w), scalar_cast(y % extent.h) }; }
 
-	constexpr ref<offset_t> offset_t::operator+=(cref<extent_t> extent) noexcept {
+	constexpr ref<offset_t> offset_t::operator+=(extent_t extent) noexcept {
 		x = scalar_cast(x + extent.w);
 		y = scalar_cast(y + extent.h);
 
 		return *this;
 	}
 
-	constexpr ref<offset_t> offset_t::operator-=(cref<extent_t> extent) noexcept {
+	constexpr ref<offset_t> offset_t::operator-=(extent_t extent) noexcept {
 		x = scalar_cast(x - extent.w);
 		y = scalar_cast(y - extent.h);
 
 		return *this;
 	}
 
-	constexpr ref<offset_t> offset_t::operator*=(cref<extent_t> extent) noexcept {
+	constexpr ref<offset_t> offset_t::operator*=(extent_t extent) noexcept {
 		x = scalar_cast(x * extent.w);
 		y = scalar_cast(y * extent.h);
 
 		return *this;
 	}
 
-	constexpr ref<offset_t> offset_t::operator/=(cref<extent_t> extent) noexcept {
+	constexpr ref<offset_t> offset_t::operator/=(extent_t extent) noexcept {
 		x = scalar_cast(x / extent.w);
 		y = scalar_cast(y / extent.h);
 
 		return *this;
 	}
 
-	constexpr ref<offset_t> offset_t::operator%=(cref<extent_t> extent) noexcept {
+	constexpr ref<offset_t> offset_t::operator%=(extent_t extent) noexcept {
 		x = scalar_cast(x % extent.w);
 		y = scalar_cast(y % extent.h);
 

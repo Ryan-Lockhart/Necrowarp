@@ -20,7 +20,7 @@ namespace necrowarp {
 	class Game {
 	  public:
 		static inline int run() noexcept {
-			if constexpr (globals::IsReleaseBuild) {
+			if constexpr (IsReleaseBuild) {
 				subsystem.initialize(api_state.app_id);
 			} else {
 				subsystem.initialize();
@@ -453,6 +453,12 @@ namespace necrowarp {
 
 			const u8 spawn_chance{ static_cast<u8>(spawn_distribution(random_engine)) };
 
+			if constexpr (globals::OopsAllPriests) {
+				entity_registry.add<true>(priest_t{ spawn_pos.value() });
+
+				return true;
+			}
+
 			if (game_stats.wave_size >= globals::HugeWaveSize) {
 				if (spawn_chance < 60) {
 					entity_registry.add<true>(adventurer_t{ spawn_pos.value() });
@@ -505,11 +511,11 @@ namespace necrowarp {
 				globals::MaximumWaveSize
 			);
 
-			if (entity_registry.empty<ALL_GOOD_NPCS>() && game_stats.spawns_remaining <= 0) {
+			if (entity_registry.empty<ALL_GOOD_NPCS>() && !game_stats.has_spawns()) {
 				game_stats.spawns_remaining = game_stats.wave_size;
 			}
 
-			while (game_stats.spawns_remaining > 0) {
+			while (game_stats.has_spawns()) {
 				if (!spawn_random()) {
 					break;
 				}
@@ -517,9 +523,11 @@ namespace necrowarp {
 				--game_stats.spawns_remaining;
 			}
 
-			if (game_stats.has_reinforcements()) {
+			if (game_stats.has_reinforcements() && !game_stats.has_spawns()) {
 				for (i16 i{ 0 }; i < game_stats.current_reinforcements(); ++i) {
-					spawn_random();
+					if (!spawn_random()) {
+						break;
+					}
 				}
 			}
 			
@@ -582,10 +590,10 @@ namespace necrowarp {
 			renderer.clear(colors::Black);
 
 			if (phase.current_phase == game_phase_t::Playing) {
-				bool exceeds_width{ globals::MapSize.w <= globals::game_grid_size().w };
-				bool exceeds_height{ globals::MapSize.h <= globals::game_grid_size().h };
+				bool exceeds_width{ globals::MapSize.w <= globals::grid_size<grid_type_e::Game>().w };
+				bool exceeds_height{ globals::MapSize.h <= globals::grid_size<grid_type_e::Game>().h };
 
-				const extent_t excess_size{ (globals::game_grid_size() - globals::MapSize + 1) * globals::CellSize / 2 };
+				const extent_t excess_size{ (globals::grid_size<grid_type_e::Game>() - globals::MapSize + 1) * globals::cell_size<grid_type_e::Game> / 2 };
 
 				if (exceeds_width) {
 					renderer.draw_fill_rect(rect_t{ offset_t::Zero, extent_t{ excess_size.w, globals::window_size.h } }, color_t { 0xC0 });
@@ -597,9 +605,9 @@ namespace necrowarp {
 					renderer.draw_fill_rect(rect_t{ offset_t{ 0, globals::window_size.h - excess_size.h - 1 }, extent_t{ globals::window_size.w, excess_size.h } }, color_t { 0xC0 });
 				}
 
-				game_map.draw(game_atlas, camera);
-				
-				entity_registry.draw(camera);
+				game_map.draw(game_atlas, camera, globals::grid_origin<grid_type_e::Game>());
+
+				entity_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
 			}
 
 			ui_registry.render();

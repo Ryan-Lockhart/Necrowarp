@@ -19,7 +19,7 @@ namespace bleak {
 
 		constexpr rect_t() noexcept : position{}, size{} {}
 
-		constexpr rect_t(cref<offset_t> position, cref<extent_t> size) noexcept : position{ position }, size{ size } {}
+		constexpr rect_t(offset_t position, extent_t size) noexcept : position{ position }, size{ size } {}
 
 		constexpr rect_t(cref<rect_t> other) noexcept : position{ other.position }, size{ other.size } {}
 
@@ -103,49 +103,49 @@ namespace bleak {
 			return *this;
 		}
 
-		constexpr rect_t operator+(cref<offset_t> offset) const noexcept { return rect_t{ position + offset, size }; }
+		constexpr rect_t operator+(offset_t offset) const noexcept { return rect_t{ position + offset, size }; }
 
-		constexpr rect_t operator-(cref<offset_t> offset) const noexcept { return rect_t{ position - offset, size }; }
+		constexpr rect_t operator-(offset_t offset) const noexcept { return rect_t{ position - offset, size }; }
 
-		constexpr rect_t operator+(cref<extent_t> extent) const noexcept { return rect_t{ position, size + extent }; }
+		constexpr rect_t operator+(extent_t extent) const noexcept { return rect_t{ position, size + extent }; }
 
-		constexpr rect_t operator-(cref<extent_t> extent) const noexcept { return rect_t{ position, size - extent }; }
+		constexpr rect_t operator-(extent_t extent) const noexcept { return rect_t{ position, size - extent }; }
 
-		constexpr rect_t operator*(cref<extent_t> extent) const noexcept { return rect_t{ position, size * extent }; }
+		constexpr rect_t operator*(extent_t extent) const noexcept { return rect_t{ position, size * extent }; }
 
-		constexpr rect_t operator/(cref<extent_t> extent) const noexcept { return rect_t{ position, size / extent }; }
+		constexpr rect_t operator/(extent_t extent) const noexcept { return rect_t{ position, size / extent }; }
 
-		constexpr ref<rect_t> operator+=(cref<offset_t> offset) noexcept {
+		constexpr ref<rect_t> operator+=(offset_t offset) noexcept {
 			position += offset;
 
 			return *this;
 		}
 
-		constexpr ref<rect_t> operator-=(cref<offset_t> offset) noexcept {
+		constexpr ref<rect_t> operator-=(offset_t offset) noexcept {
 			position -= offset;
 
 			return *this;
 		}
 
-		constexpr ref<rect_t> operator+=(cref<extent_t> extent) noexcept {
+		constexpr ref<rect_t> operator+=(extent_t extent) noexcept {
 			size += extent;
 
 			return *this;
 		}
 
-		constexpr ref<rect_t> operator-=(cref<extent_t> extent) noexcept {
+		constexpr ref<rect_t> operator-=(extent_t extent) noexcept {
 			size -= extent;
 
 			return *this;
 		}
 
-		constexpr ref<rect_t> operator*=(cref<extent_t> extent) noexcept {
+		constexpr ref<rect_t> operator*=(extent_t extent) noexcept {
 			size *= extent;
 
 			return *this;
 		}
 
-		constexpr ref<rect_t> operator/=(cref<extent_t> extent) noexcept {
+		constexpr ref<rect_t> operator/=(extent_t extent) noexcept {
 			size /= extent;
 
 			return *this;

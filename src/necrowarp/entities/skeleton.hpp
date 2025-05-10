@@ -42,7 +42,7 @@ namespace necrowarp {
 		
 		constexpr i8 armor_boon() const noexcept { return rotted ? 1 : 2; }
 
-		inline skeleton_t(cref<offset_t> position, bool rotted) noexcept : position{ position }, rotted{ rotted } {}
+		inline skeleton_t(offset_t position, bool rotted) noexcept : position{ position }, rotted{ rotted } {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
@@ -50,11 +50,11 @@ namespace necrowarp {
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position); }
 
-		inline void draw(cref<offset_t> offset) const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position + offset); }
+		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position + offset); }
 
 		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, cref<offset_t> offset) const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position + camera.get_offset() + offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position + camera.get_offset() + offset); }
 
 		constexpr operator entity_type_t() const noexcept { return entity_type_t::Skeleton; }
 
@@ -64,7 +64,7 @@ namespace necrowarp {
 
 				static constexpr usize operator()(cref<skeleton_t> skeleton) noexcept { return offset_t::hasher::operator()(skeleton.position); }
 
-				static constexpr usize operator()(cref<offset_t> position) noexcept { return offset_t::hasher::operator()(position); }
+				static constexpr usize operator()(offset_t position) noexcept { return offset_t::hasher::operator()(position); }
 			};
 		};
 
@@ -74,9 +74,9 @@ namespace necrowarp {
 
 				static constexpr bool operator()(cref<skeleton_t> lhs, cref<skeleton_t> rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs.position); }
 
-				static constexpr bool operator()(cref<skeleton_t> lhs, cref<offset_t> rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs); }
+				static constexpr bool operator()(cref<skeleton_t> lhs, offset_t rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs); }
 
-				static constexpr bool operator()(cref<offset_t> lhs, cref<skeleton_t> rhs) noexcept { return offset_t::hasher::operator()(lhs) == offset_t::hasher::operator()(rhs.position); }
+				static constexpr bool operator()(offset_t lhs, cref<skeleton_t> rhs) noexcept { return offset_t::hasher::operator()(lhs) == offset_t::hasher::operator()(rhs.position); }
 			};
 		};
 	};

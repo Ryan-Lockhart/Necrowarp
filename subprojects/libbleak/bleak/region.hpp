@@ -34,9 +34,9 @@ namespace bleak {
 
 		static constexpr extent_t zone_size{ ZoneSize };
 
-		static constexpr offset_t zone_origin(cref<offset_t> position) noexcept { return position * zone_size; }
+		static constexpr offset_t zone_origin(offset_t position) noexcept { return position * zone_size; }
 
-		static constexpr offset_t zone_extent(cref<offset_t> position) noexcept { return zone_origin(position) + zone_size - 1; }
+		static constexpr offset_t zone_extent(offset_t position) noexcept { return zone_origin(position) + zone_size - 1; }
 
 		static constexpr auto zone_area{ zone_size.area() };
 
@@ -100,17 +100,17 @@ namespace bleak {
 
 		constexpr cref<zone_t<T, ZoneSize, ZoneBorder>> operator[](offset_t::product_t position) const noexcept { return zones[position]; }
 
-		constexpr ref<zone_t<T, ZoneSize, ZoneBorder>> operator[](cref<offset_t> position) noexcept { return zones[position]; }
+		constexpr ref<zone_t<T, ZoneSize, ZoneBorder>> operator[](offset_t position) noexcept { return zones[position]; }
 
-		constexpr cref<zone_t<T, ZoneSize, ZoneBorder>> operator[](cref<offset_t> position) const noexcept { return zones[position]; }
+		constexpr cref<zone_t<T, ZoneSize, ZoneBorder>> operator[](offset_t position) const noexcept { return zones[position]; }
 
 		constexpr ref<zone_t<T, ZoneSize, ZoneBorder>> operator[](offset_t::product_t zone_position, offset_t::product_t cell_position) noexcept { return zones[zone_position][cell_position]; }
 
 		constexpr cref<zone_t<T, ZoneSize, ZoneBorder>> operator[](offset_t::product_t zone_position, offset_t::product_t cell_position) const noexcept { return zones[zone_position][cell_position]; }
 
-		constexpr ref<T> operator[](cref<offset_t> zone_position, cref<offset_t> cell_position) noexcept { return zones[zone_position][cell_position]; }
+		constexpr ref<T> operator[](offset_t zone_position, offset_t cell_position) noexcept { return zones[zone_position][cell_position]; }
 
-		constexpr cref<T> operator[](cref<offset_t> zone_position, cref<offset_t> cell_position) const noexcept { return zones[zone_position][cell_position]; }
+		constexpr cref<T> operator[](offset_t zone_position, offset_t cell_position) const noexcept { return zones[zone_position][cell_position]; }
 
 		constexpr ref<T> operator[](cref<region_offset_t> position) noexcept { return zones[position.zone][position.cell]; }
 
@@ -161,7 +161,7 @@ namespace bleak {
 
 		template<extent_t AtlasSize>
 			requires is_drawable<T>::value
-		constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<offset_t> offset) const noexcept {
+		constexpr void draw(cref<atlas_t<AtlasSize>> atlas, offset_t offset) const noexcept {
 			for (extent_t::scalar_t y{ 0 }; y < region_size.h; ++y) {
 				for (extent_t::scalar_t x{ 0 }; x < region_size.w; ++x) {
 					const offset_t pos{ x, y };
@@ -172,7 +172,7 @@ namespace bleak {
 
 		template<extent_t AtlasSize>
 			requires is_drawable<T>::value
-		constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<offset_t> offset, cref<extent_t> scale) const noexcept {
+		constexpr void draw(cref<atlas_t<AtlasSize>> atlas, offset_t offset, extent_t scale) const noexcept {
 			for (extent_t::scalar_t y{ 0 }; y < region_size.h; ++y) {
 				for (extent_t::scalar_t x{ 0 }; x < region_size.w; ++x) {
 					const offset_t pos{ x, y };

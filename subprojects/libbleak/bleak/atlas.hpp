@@ -18,25 +18,25 @@
 #include <bleak/texture.hpp>
 
 namespace bleak {
-	static constexpr offset_t generate_alignment_offset(cref<runes_t> runes, cref<offset_t> position, cref<cardinal_t> alignment) {
+	static constexpr offset_t generate_alignment_offset(cref<runes_t> runes, offset_t position, cardinal_t alignment) {
 		const offset_t size_offs{ static_cast<offset_t>(alignment) * text::calculate_size(runes) };
 
 		return offset_t{ size_offs - size_offs / 2 };
 	}
 
-	static constexpr offset_t generate_alignment_offset(cref<std::string> text, cref<offset_t> position, cref<cardinal_t> alignment) {
+	static constexpr offset_t generate_alignment_offset(cref<std::string> text, offset_t position, cardinal_t alignment) {
 		const offset_t size_offs{ static_cast<offset_t>(alignment) * text::calculate_size(text) };
 		
 		return offset_t{ size_offs - size_offs / 2 };
 	}
 
-	static constexpr offset_t generate_alignment_offset(cref<runes_t> runes, cref<offset_t> position, cref<cardinal_t> alignment, cref<extent_t> size) {
+	static constexpr offset_t generate_alignment_offset(cref<runes_t> runes, offset_t position, cardinal_t alignment, extent_t size) {
 		const offset_t size_offs{ static_cast<offset_t>(alignment) * size };
 
 		return offset_t{ size_offs - size_offs / 2 };
 	}
 
-	static constexpr offset_t generate_alignment_offset(cref<std::string> text, cref<offset_t> position, cref<cardinal_t> alignment, cref<extent_t> size) {
+	static constexpr offset_t generate_alignment_offset(cref<std::string> text, offset_t position, cardinal_t alignment, extent_t size) {
 		const offset_t size_offs{ static_cast<offset_t>(alignment) * size };
 		
 		return offset_t{ size_offs - size_offs / 2 };
@@ -87,7 +87,7 @@ namespace bleak {
 			}
 		}
 
-		inline atlas_t(ref<renderer_t> renderer, cstr path, cref<offset_t> offset) :
+		inline atlas_t(ref<renderer_t> renderer, cstr path, offset_t offset) :
 			rects{},
 			texture{ renderer, path },
 
@@ -122,7 +122,7 @@ namespace bleak {
 
 		inline ~atlas_t() = default;
 
-		inline void draw(cref<glyph_t> glyph, cref<offset_t> position) const noexcept {
+		inline void draw(glyph_t glyph, offset_t position) const noexcept {
 			if (glyph.index < 0 || glyph.index >= rects.size) {
 				error_log.add("glyph index {} is out of range!", glyph.index);
 				return;
@@ -131,7 +131,7 @@ namespace bleak {
 			texture.draw(rects[glyph.index], rect_t{ position * glyph_size, glyph_size } + universal_offset, glyph.color);
 		}
 
-		inline void draw(cref<glyph_t> glyph, cref<offset_t> position, cref<offset_t> offset) const noexcept {
+		inline void draw(glyph_t glyph, offset_t position, offset_t offset) const noexcept {
 			if (glyph.index < 0 || glyph.index >= rects.size) {
 				error_log.add("glyph index {} is out of range!", glyph.index);
 				return;
@@ -140,7 +140,7 @@ namespace bleak {
 			texture.draw(rects[glyph.index], rect_t{ position * glyph_size + offset, glyph_size } + universal_offset, glyph.color);
 		}
 
-		inline void draw(cref<runes_t> runes, cref<offset_t> position) const {
+		inline void draw(cref<runes_t> runes, offset_t position) const {
 			if (runes.empty()) {
 				return;
 			}
@@ -170,7 +170,7 @@ namespace bleak {
 			}
 		}
 
-		inline void draw(cref<runes_t> runes, cref<offset_t> position, cref<cardinal_t> alignment) const {
+		inline void draw(cref<runes_t> runes, offset_t position, cardinal_t alignment) const {
 			if (runes.empty()) {
 				return;
 			}
@@ -207,7 +207,7 @@ namespace bleak {
 			}
 		}
 
-		inline void draw(cref<runes_t> runes, cref<offset_t> position, cref<cardinal_t> alignment, cref<offset_t> offset) const {
+		inline void draw(cref<runes_t> runes, offset_t position, cardinal_t alignment, offset_t offset) const {
 			if (runes.empty()) {
 				return;
 			}
@@ -244,7 +244,7 @@ namespace bleak {
 			}
 		}
 
-		inline void draw(cref<std::string> text, cref<color_t> color, cref<offset_t> position) const {
+		inline void draw(cref<std::string> text, color_t color, offset_t position) const {
 			if (text.empty()) {
 				return;
 			}
@@ -277,7 +277,7 @@ namespace bleak {
 			}
 		}
 
-		inline void draw(cref<std::string> text, cref<color_t> color, cref<offset_t> position, cref<cardinal_t> alignment) const {
+		inline void draw(cref<std::string> text, color_t color, offset_t position, cardinal_t alignment) const {
 			if (text.empty()) {
 				return;
 			}
@@ -314,7 +314,7 @@ namespace bleak {
 			}
 		}
 
-		inline void draw(cref<std::string> text, cref<color_t> color, cref<offset_t> position, cref<cardinal_t> alignment, cref<offset_t> offset) const {
+		inline void draw(cref<std::string> text, color_t color, offset_t position, cardinal_t alignment, offset_t offset) const {
 			if (text.empty()) {
 				return;
 			}
@@ -351,7 +351,7 @@ namespace bleak {
 			}
 		}
 
-		inline void draw_label(ref<renderer_t> renderer, cref<runes_t> runes, cref<offset_t> position, cref<extent_t> padding, cref<color_t> background, cref<color_t> outline) const {
+		inline void draw_label(ref<renderer_t> renderer, cref<runes_t> runes, offset_t position, extent_t padding, color_t background, color_t outline) const {
 			if (runes.empty()) {
 				return;
 			}
@@ -361,7 +361,7 @@ namespace bleak {
 			draw(runes, position);
 		}
 
-		inline void draw_label(ref<renderer_t> renderer, cref<runes_t> runes, cref<offset_t> position, cref<cardinal_t> alignment, cref<extent_t> padding, cref<color_t> background, cref<color_t> outline) const {
+		inline void draw_label(ref<renderer_t> renderer, cref<runes_t> runes, offset_t position, cardinal_t alignment, extent_t padding, color_t background, color_t outline) const {
 			if (runes.empty()) {
 				return;
 			}
@@ -376,7 +376,7 @@ namespace bleak {
 			draw(runes, position, alignment);
 		}
 
-		inline void draw_label(ref<renderer_t> renderer, cref<runes_t> runes, cref<offset_t> position, cref<cardinal_t> alignment, cref<offset_t> offset, cref<extent_t> padding, cref<color_t> background, cref<color_t> outline) const {
+		inline void draw_label(ref<renderer_t> renderer, cref<runes_t> runes, offset_t position, cardinal_t alignment, offset_t offset, extent_t padding, color_t background, color_t outline) const {
 			if (runes.empty()) {
 				return;
 			}
@@ -391,7 +391,7 @@ namespace bleak {
 			draw(runes, position, alignment, offset);
 		}
 
-		inline void draw_label(ref<renderer_t> renderer, cref<std::string> text, cref<color_t> color, cref<offset_t> position, cref<extent_t> padding, cref<color_t> background, cref<color_t> outline) const {
+		inline void draw_label(ref<renderer_t> renderer, cref<std::string> text, color_t color, offset_t position, extent_t padding, color_t background, color_t outline) const {
 			if (text.empty()) {
 				return;
 			}
@@ -401,7 +401,7 @@ namespace bleak {
 			draw(text, position, color);
 		}
 
-		inline void draw_label(ref<renderer_t> renderer, cref<std::string> text, cref<color_t> color, cref<offset_t> position, cref<cardinal_t> alignment, cref<extent_t> padding, cref<color_t> background, cref<color_t> outline) const {
+		inline void draw_label(ref<renderer_t> renderer, cref<std::string> text, color_t color, offset_t position, cardinal_t alignment, extent_t padding, color_t background, color_t outline) const {
 			if (text.empty()) {
 				return;
 			}
@@ -416,7 +416,7 @@ namespace bleak {
 			draw(text, position, color, alignment);
 		}
 
-		inline void draw_label(ref<renderer_t> renderer, cref<std::string> text, cref<color_t> color, cref<offset_t> position, cref<cardinal_t> alignment, cref<offset_t> offset, cref<extent_t> padding, cref<color_t> background, cref<color_t> outline) const {
+		inline void draw_label(ref<renderer_t> renderer, cref<std::string> text, color_t color, offset_t position, cardinal_t alignment, offset_t offset, extent_t padding, color_t background, color_t outline) const {
 			if (text.empty()) {
 				return;
 			}

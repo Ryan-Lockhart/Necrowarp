@@ -132,6 +132,8 @@ namespace necrowarp {
 
 		template<NonPlayerEntity EntityType> inline void draw(cref<camera_t> camera) const noexcept;
 
+		template<NonPlayerEntity EntityType> inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
+
 		template<NonPlayerEntity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void draw() const noexcept;
@@ -140,8 +142,14 @@ namespace necrowarp {
 			requires is_plurary<EntityTypes...>::value
 		inline void draw(cref<camera_t> camera) const noexcept;
 
+		template<NonPlayerEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
+
 		inline void draw() const noexcept;
 
 		inline void draw(cref<camera_t> camera) const noexcept;
+
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
 	} static inline entity_registry{};
 } // namespace necrowarp

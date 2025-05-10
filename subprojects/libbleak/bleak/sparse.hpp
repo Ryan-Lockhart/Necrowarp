@@ -14,11 +14,11 @@ namespace bleak {
 		T value;
 		offset_t position;
 
-		constexpr sparseling_t(cref<offset_t> position) : value{}, position{ position } {}
+		constexpr sparseling_t(offset_t position) : value{}, position{ position } {}
 
-		constexpr sparseling_t(cref<T> value, cref<offset_t> position) : value{ value }, position{ position } {}
+		constexpr sparseling_t(cref<T> value, offset_t position) : value{ value }, position{ position } {}
 
-		constexpr sparseling_t(rval<T> value, cref<offset_t> position) : value{ std::move(value) }, position{ position } {}
+		constexpr sparseling_t(rval<T> value, offset_t position) : value{ std::move(value) }, position{ position } {}
 
 		constexpr sparseling_t(cref<sparseling_t> other) : value{ other.value }, position{ other.position } {}
 
@@ -44,7 +44,7 @@ namespace bleak {
 
 				static constexpr size_t operator()(cref<sparseling_t> sparseling) noexcept { return offset_t::hasher::operator()(sparseling.position); }
 
-				static constexpr size_t operator()(cref<offset_t> position) noexcept { return offset_t::hasher::operator()(position); }
+				static constexpr size_t operator()(offset_t position) noexcept { return offset_t::hasher::operator()(position); }
 			};
 		};
 
@@ -54,9 +54,9 @@ namespace bleak {
 
 				static constexpr bool operator()(cref<sparseling_t> lhs, cref<sparseling_t> rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs.position); }
 
-				static constexpr bool operator()(cref<sparseling_t> lhs, cref<offset_t> rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs); }
+				static constexpr bool operator()(cref<sparseling_t> lhs, offset_t rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs); }
 
-				static constexpr bool operator()(cref<offset_t> lhs, cref<sparseling_t> rhs) noexcept { return offset_t::hasher::operator()(lhs) == offset_t::hasher::operator()(rhs.position); }
+				static constexpr bool operator()(offset_t lhs, cref<sparseling_t> rhs) noexcept { return offset_t::hasher::operator()(lhs) == offset_t::hasher::operator()(rhs.position); }
 			};
 		};
 	};
@@ -71,7 +71,7 @@ namespace bleak {
 
 		constexpr sparse_t() : values{} {}
 
-		constexpr bool contains(cref<offset_t> position) const noexcept {
+		constexpr bool contains(offset_t position) const noexcept {
 			if (values.empty()) {
 				return false;
 			}
@@ -85,7 +85,7 @@ namespace bleak {
 
 		constexpr void clear() noexcept { values.clear(); }
 
-		constexpr ptr<T> operator[](cref<offset_t> position) noexcept {
+		constexpr ptr<T> operator[](offset_t position) noexcept {
 			auto iter{ values.find(position) };
 
 			if (iter == values.end()) {
@@ -95,7 +95,7 @@ namespace bleak {
 			return &cast_away(*iter);
 		}
 
-		constexpr cptr<T> operator[](cref<offset_t> position) const noexcept {
+		constexpr cptr<T> operator[](offset_t position) const noexcept {
 			cauto iter{ values.find(position) };
 
 			if (iter == values.end()) {
@@ -105,7 +105,7 @@ namespace bleak {
 			return &(*iter);
 		}
 
-		constexpr ref<T> at(cref<offset_t> position) {
+		constexpr ref<T> at(offset_t position) {
 			auto iter{ values.find(position) };
 
 			if (iter == values.end()) {
@@ -115,7 +115,7 @@ namespace bleak {
 			return *iter;
 		}
 
-		constexpr cref<T> at(cref<offset_t> position) const {
+		constexpr cref<T> at(offset_t position) const {
 			cauto iter{ values.find(position) };
 
 			if (iter == values.end()) {
@@ -125,7 +125,7 @@ namespace bleak {
 			return *iter;
 		}
 
-		constexpr bool move(cref<offset_t> from, cref<offset_t> to) noexcept {
+		constexpr bool move(offset_t from, offset_t to) noexcept {
 			if (cauto to_iter{ values.find(to) }; to_iter != values.end()) {
 				return false;
 			}
@@ -163,7 +163,7 @@ namespace bleak {
 			return true;
 		}
 
-		constexpr bool remove(cref<offset_t> position) noexcept {
+		constexpr bool remove(offset_t position) noexcept {
 			cauto iter{ values.find(position) };
 
 			if (iter == values.end()) {
@@ -175,7 +175,7 @@ namespace bleak {
 			return true;
 		}
 
-		constexpr rval<T> extract(cref<offset_t> position) {
+		constexpr rval<T> extract(offset_t position) {
 			cauto iter{ values.find(position) };
 
 			if (iter == values.end()) {

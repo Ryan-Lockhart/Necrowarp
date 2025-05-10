@@ -286,7 +286,7 @@ namespace bleak {
 		}
 
 		template<zone_region_t Region, distance_function_t Distance, dense_args>
-		inline ref<path_t> generate(cref<offset_t> origin, cref<offset_t> destination, cref<dense_t> zone, cref<T> value) {
+		inline ref<path_t> generate(offset_t origin, offset_t destination, cref<dense_t> zone, cref<T> value) {
 			if (!empty()) {
 				clear();
 			}
@@ -336,7 +336,7 @@ namespace bleak {
 
 		template<zone_region_t Region, distance_function_t Distance, dense_args, typename U>
 			requires is_equatable<T, U>::value
-		inline ref<path_t> generate(cref<offset_t> origin, cref<offset_t> destination, cref<dense_t> zone, cref<U> value) {
+		inline ref<path_t> generate(offset_t origin, offset_t destination, cref<dense_t> zone, cref<U> value) {
 			if (!empty()) {
 				clear();
 			}
@@ -385,7 +385,7 @@ namespace bleak {
 		}
 
 		template<zone_region_t Region, distance_function_t Distance, bool Inclusive = false, dense_args>
-		inline ref<path_t> generate(cref<offset_t> origin, cref<offset_t> destination, cref<dense_t> zone, cref<T> value, cref<sparse_t> sparse_blockage) {
+		inline ref<path_t> generate(offset_t origin, offset_t destination, cref<dense_t> zone, cref<T> value, cref<sparse_t> sparse_blockage) {
 			if (!empty()) {
 				clear();
 			}
@@ -441,7 +441,7 @@ namespace bleak {
 
 		template<zone_region_t Region, distance_function_t Distance, bool Inclusive = false, dense_args, typename U>
 			requires is_equatable<T, U>::value
-		inline ref<path_t> generate(cref<offset_t> origin, cref<offset_t> destination, cref<dense_t> zone, cref<U> value, cref<sparse_t> sparse_blockage) {
+		inline ref<path_t> generate(offset_t origin, offset_t destination, cref<dense_t> zone, cref<U> value, cref<sparse_t> sparse_blockage) {
 			if (!empty()) {
 				clear();
 			}
@@ -499,9 +499,9 @@ namespace bleak {
 
 		inline usize size() const { return points.size(); }
 
-		inline cref<offset_t> top() const { return points.top(); }
+		inline offset_t top() const { return points.top(); }
 
-		inline void push(cref<offset_t> point) { points.push(point); }
+		inline void push(offset_t point) { points.push(point); }
 
 		inline void push(rval<offset_t> point) { points.push(std::move(point)); }
 
@@ -532,7 +532,7 @@ namespace bleak {
 			std::swap(points, reversed);
 		}
 
-		template<extent_t AtlasSize> inline void draw(cref<atlas_t<AtlasSize>> atlas, cref<glyph_t> glyph, cref<offset_t> offset) const {
+		template<extent_t AtlasSize> inline void draw(cref<atlas_t<AtlasSize>> atlas, glyph_t glyph, offset_t offset) const {
 			if (points.empty()) {
 				return;
 			}
@@ -552,7 +552,7 @@ namespace bleak {
 		std::stack<offset_t> points;
 
 		template<zone_region_t Region, dense_args>
-		inline bool is_valid(cref<offset_t> origin, cref<offset_t> destination, cref<dense_t> zone, cref<T> value) const {
+		inline bool is_valid(offset_t origin, offset_t destination, cref<dense_t> zone, cref<T> value) const {
 			if (!zone.template within<Region>(origin) || !zone.template within<Region>(destination)) {
 				return false;
 			}
@@ -566,7 +566,7 @@ namespace bleak {
 
 		template<zone_region_t Region, typename T, typename U, extent_t Size, extent_t BorderSize>
 			requires is_equatable<T, U>::value
-		inline bool is_valid(cref<offset_t> origin, cref<offset_t> destination, cref<dense_t> zone, cref<U> value) const {
+		inline bool is_valid(offset_t origin, offset_t destination, cref<dense_t> zone, cref<U> value) const {
 			if (!zone.template within<Region>(origin) || !zone.template within<Region>(destination)) {
 				return false;
 			}
@@ -579,7 +579,7 @@ namespace bleak {
 		}
 
 		template<zone_region_t Region, dense_args>
-		inline bool is_valid(cref<offset_t> origin, cref<offset_t> destination, cref<dense_t> zone, cref<T> value, cref<sparse_t> blockage) const {
+		inline bool is_valid(offset_t origin, offset_t destination, cref<dense_t> zone, cref<T> value, cref<sparse_t> blockage) const {
 			if (!zone.template within<Region>(origin) || !zone.template within<Region>(destination)) {
 				return false;
 			}
@@ -597,7 +597,7 @@ namespace bleak {
 
 		template<zone_region_t Region, typename T, typename U, extent_t Size, extent_t BorderSize>
 			requires is_equatable<T, U>::value
-		inline bool is_valid(cref<offset_t> origin, cref<offset_t> destination, cref<dense_t> zone, cref<U> value, cref<sparse_t> blockage) const {
+		inline bool is_valid(offset_t origin, offset_t destination, cref<dense_t> zone, cref<U> value, cref<sparse_t> blockage) const {
 			if (!zone.template within<Region>(origin) || !zone.template within<Region>(destination)) {
 				return false;
 			}
@@ -614,7 +614,7 @@ namespace bleak {
 		}
 
 		template<zone_region_t Region, dense_args>
-		inline bool is_valid(cref<offset_t> position, cref<dense_t> zone, cref<T> value) const {
+		inline bool is_valid(offset_t position, cref<dense_t> zone, cref<T> value) const {
 			if (!zone.template within<Region>(position)) {
 				return false;
 			}
@@ -628,7 +628,7 @@ namespace bleak {
 
 		template<zone_region_t Region, dense_args, typename U>
 			requires is_equatable<T, U>::value
-		inline bool is_valid(cref<offset_t> position, cref<dense_t> zone, cref<U> value) const {
+		inline bool is_valid(offset_t position, cref<dense_t> zone, cref<U> value) const {
 			if (!zone.template within<Region>(position)) {
 				return false;
 			}
@@ -641,7 +641,7 @@ namespace bleak {
 		}
 
 		template<zone_region_t Region, dense_args>
-		inline bool is_valid(cref<offset_t> position, cref<dense_t> zone, cref<T> value, cref<sparse_t> visited) const {
+		inline bool is_valid(offset_t position, cref<dense_t> zone, cref<T> value, cref<sparse_t> visited) const {
 			if (!zone.template within<Region>(position)) {
 				return false;
 			}
@@ -659,7 +659,7 @@ namespace bleak {
 
 		template<zone_region_t Region, dense_args, typename U>
 			requires is_equatable<T, U>::value
-		inline bool is_valid(cref<offset_t> position, cref<dense_t> zone, cref<U> value, cref<sparse_t> visited) const {
+		inline bool is_valid(offset_t position, cref<dense_t> zone, cref<U> value, cref<sparse_t> visited) const {
 			if (!zone.template within<Region>(position)) {
 				return false;
 			}
@@ -676,7 +676,7 @@ namespace bleak {
 		}
 
 		template<zone_region_t Region, dense_args>
-		inline bool is_valid(cref<offset_t> position, cref<dense_t> zone, cref<T> value, cref<sparse_t> visited, cref<sparse_t> blockage) const {
+		inline bool is_valid(offset_t position, cref<dense_t> zone, cref<T> value, cref<sparse_t> visited, cref<sparse_t> blockage) const {
 			if (!zone.template within<Region>(position)) {
 				return false;
 			}
@@ -698,7 +698,7 @@ namespace bleak {
 
 		template<zone_region_t Region, dense_args, typename U>
 			requires is_equatable<T, U>::value
-		inline bool is_valid(cref<offset_t> position, cref<dense_t> zone, cref<U> value, cref<sparse_t> visited, cref<sparse_t> blockage) const {
+		inline bool is_valid(offset_t position, cref<dense_t> zone, cref<U> value, cref<sparse_t> visited, cref<sparse_t> blockage) const {
 			if (!zone.template within<Region>(position)) {
 				return false;
 			}
@@ -718,7 +718,7 @@ namespace bleak {
 			return true;
 		}
 
-		inline void unwind(cref<offset_t> origin, cref<offset_t> destination, cref<trail_t> trail) noexcept {
+		inline void unwind(offset_t origin, offset_t destination, cref<trail_t> trail) noexcept {
 			rememberance_t<offset_t> unwind{ trail.at(destination) };
 
 			points.push(destination);

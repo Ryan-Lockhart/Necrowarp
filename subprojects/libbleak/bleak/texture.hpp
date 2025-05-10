@@ -111,7 +111,7 @@ namespace bleak {
 
 		inline ~texture_t() noexcept { sdl::destroy_texture(texture); }
 
-		constexpr inline void set_color(cref<color_t> color) const {
+		constexpr inline void set_color(color_t color) const {
 			SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
 			SDL_SetTextureAlphaMod(texture, color.a);
 		}
@@ -124,22 +124,22 @@ namespace bleak {
 
 		constexpr cptr<sdl::texture> handle() const { return texture; }
 
-		constexpr void draw(cref<offset_t> pos) const {
+		constexpr void draw(offset_t pos) const {
 			const SDL_Rect dst{ static_cast<i32>(pos.x), static_cast<i32>(pos.y), static_cast<i32>(info.size.w), static_cast<i32>(info.size.h) };
 			copy(nullptr, &dst);
 		}
 
-		constexpr void draw(cref<offset_t> pos, cref<color_t> color) const {
+		constexpr void draw(offset_t pos, color_t color) const {
 			set_color(color);
 			draw(pos);
 		}
 
-		constexpr void draw(cref<offset_t> pos, cref<extent_t> size) const {
+		constexpr void draw(offset_t pos, extent_t size) const {
 			const SDL_Rect dst{ static_cast<i32>(pos.x), static_cast<i32>(pos.y), static_cast<i32>(size.w), static_cast<i32>(size.h) };
 			copy(nullptr, &dst);
 		}
 
-		constexpr void draw(cref<offset_t> pos, cref<extent_t> size, cref<color_t> color) const {
+		constexpr void draw(offset_t pos, extent_t size, color_t color) const {
 			set_color(color);
 			draw(pos, size);
 		}
@@ -149,7 +149,7 @@ namespace bleak {
 			copy(nullptr, &sdl_dst);
 		}
 
-		constexpr void draw(cref<rect_t> dst, cref<color_t> color) const {
+		constexpr void draw(cref<rect_t> dst, color_t color) const {
 			set_color(color);
 			draw(dst);
 		}
@@ -160,7 +160,7 @@ namespace bleak {
 			copy(&sdl_src, &sdl_dst);
 		}
 
-		constexpr void draw(cref<rect_t> src, cref<rect_t> dst, cref<color_t> color) const {
+		constexpr void draw(cref<rect_t> src, cref<rect_t> dst, color_t color) const {
 			set_color(color);
 			draw(src, dst);
 		}
@@ -207,7 +207,7 @@ namespace bleak {
 
 		inline ~target_texture_t() noexcept { sdl::destroy_texture(texture); }
 
-		constexpr inline void set_color(cref<color_t> color) const {
+		constexpr inline void set_color(color_t color) const {
 			SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
 			SDL_SetTextureAlphaMod(texture, color.a);
 		}
@@ -220,22 +220,22 @@ namespace bleak {
 
 		constexpr cptr<sdl::texture> handle() const { return texture; }
 
-		constexpr void draw(cref<offset_t> pos) const {
+		constexpr void draw(offset_t pos) const {
 			const SDL_Rect dst{ static_cast<i32>(pos.x), static_cast<i32>(pos.y), static_cast<i32>(info.size.w), static_cast<i32>(info.size.h) };
 			copy(nullptr, &dst);
 		}
 
-		constexpr void draw(cref<offset_t> pos, cref<color_t> color) const {
+		constexpr void draw(offset_t pos, color_t color) const {
 			set_color(color);
 			draw(pos);
 		}
 
-		constexpr void draw(cref<offset_t> pos, cref<extent_t> size) const {
+		constexpr void draw(offset_t pos, extent_t size) const {
 			const SDL_Rect dst{ static_cast<i32>(pos.x), static_cast<i32>(pos.y), static_cast<i32>(size.w), static_cast<i32>(size.h) };
 			copy(nullptr, &dst);
 		}
 
-		constexpr void draw(cref<offset_t> pos, cref<extent_t> size, cref<color_t> color) const {
+		constexpr void draw(offset_t pos, extent_t size, color_t color) const {
 			set_color(color);
 			draw(pos, size);
 		}
@@ -245,7 +245,7 @@ namespace bleak {
 			copy(nullptr, &sdl_dst);
 		}
 
-		constexpr void draw(cref<rect_t> dst, cref<color_t> color) const {
+		constexpr void draw(cref<rect_t> dst, color_t color) const {
 			set_color(color);
 			draw(dst);
 		}
@@ -256,7 +256,7 @@ namespace bleak {
 			copy(&sdl_src, &sdl_dst);
 		}
 
-		constexpr void draw(cref<rect_t> src, cref<rect_t> dst, cref<color_t> color) const {
+		constexpr void draw(cref<rect_t> src, cref<rect_t> dst, color_t color) const {
 			set_color(color);
 			draw(src, dst);
 		}

@@ -36,17 +36,17 @@ namespace necrowarp {
 
 	static inline cursor_t ui_cursor{ renderer, "res/gfx/sprites/cursor.png", colors::White };
 
-	static inline grid_cursor_t<globals::CellSize> grid_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::metals::Gold, game_map.zone_origin, game_map.zone_extent };
-	static inline grid_cursor_t<globals::CellSize> warp_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::Magenta, game_map.zone_origin, game_map.zone_extent };
+	static inline grid_cursor_t<globals::cell_size<grid_type_e::Game>> grid_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::metals::Gold, game_map.zone_origin, game_map.zone_extent };
+	static inline grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::Magenta, game_map.zone_origin, game_map.zone_extent };
 
 	static inline bool draw_cursor{ true };
 	static inline bool draw_warp_cursor{ false };
 
-	static inline camera_t camera{ globals::game_grid_size(), extent_t::Zero, globals::camera_extent() };
+	static inline camera_t camera{ globals::grid_size<grid_type_e::Game>(), extent_t::Zero, globals::camera_extent() };
 
 	static inline bool camera_locked{ true };
 
-	static inline bool camera_forced() noexcept { return globals::MapSize.w <= globals::game_grid_size().w || globals::MapSize.h <= globals::game_grid_size().h; }
+	static inline bool camera_forced() noexcept { return globals::MapSize.w <= globals::grid_size<grid_type_e::Game>().w || globals::MapSize.h <= globals::grid_size<grid_type_e::Game>().h; }
 	
 	static constexpr usize input_interval{ 125ULL };
 	static inline bleak::timer_t input_timer{ input_interval };
@@ -161,6 +161,8 @@ namespace necrowarp {
 
 		usize wave_size{ static_cast<usize>(globals::map_config.starting_adventurers) };
 		usize spawns_remaining{ static_cast<usize>(globals::map_config.starting_adventurers) };
+
+		usize has_spawns() const noexcept { return spawns_remaining > 0; }
 
 		i16	player_kills{ 0 };
 		i16	minion_kills{ 0 };

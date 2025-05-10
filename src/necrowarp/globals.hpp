@@ -3,9 +3,15 @@
 #include <bleak.hpp>
 
 namespace necrowarp {
-	namespace globals {
-		using namespace bleak;
+	using namespace bleak;
 
+	enum class grid_type_e : u8 {
+		UI,
+		Game,
+		Icon
+	};
+
+	namespace globals {
 		constexpr std::string GameName{ "Necrowarp" };
 		constexpr std::string GameVersion{ "0.0.1" };
 		constexpr std::string GameAuthor{ "Ryan Lockhart" };
@@ -171,15 +177,41 @@ namespace necrowarp {
 			}
 		}
 		
-		static inline extent_t window_size{ 1280, 720 };
+		static inline extent_t window_size{ 1920, 1080 };
 
-		static constexpr extent_t GlyphSize{ 8, 8 };
-		static constexpr extent_t CellSize{ 16, 16 };
-		static constexpr extent_t IconSize{ 32, 32 };
+		template<grid_type_e GridType> static constexpr extent_t cell_size;
 
-		static inline extent_t ui_grid_size() { return window_size / GlyphSize; }
-		static inline extent_t game_grid_size() { return window_size / CellSize; }
-		static inline extent_t icon_grid_size() { return window_size / IconSize; }
+		template<> inline constexpr extent_t cell_size<grid_type_e::UI>{ 8, 8 };
+		template<> inline constexpr extent_t cell_size<grid_type_e::Game>{ 16, 16 };
+		template<> inline constexpr extent_t cell_size<grid_type_e::Icon>{ 32, 32 };
+
+		template<grid_type_e GridType> inline extent_t grid_overflow() noexcept { return window_size % cell_size<GridType>; }
+
+		template<grid_type_e GridType> inline bool is_grid_flush() noexcept { return grid_overflow<GridType>() == extent_t::Zero; }
+
+		template<grid_type_e GridType> inline extent_t grid_size() noexcept { return window_size / cell_size<GridType>; }
+
+		template<grid_type_e GridType> constexpr bool use_grid_offset{ false };
+
+		template<> inline constexpr bool use_grid_offset<grid_type_e::UI>{ false };
+		template<> inline constexpr bool use_grid_offset<grid_type_e::Game>{ true };
+		template<> inline constexpr bool use_grid_offset<grid_type_e::Icon>{ false };
+
+		template<grid_type_e GridType> inline offset_t grid_origin() noexcept {
+			if constexpr (use_grid_offset<GridType>) {
+				return offset_t{ grid_overflow<GridType>() / 2 - 1 };
+			} else {
+				return offset_t::Zero;
+			}
+		}
+
+		template<grid_type_e GridType> inline offset_t grid_extent() noexcept {
+			if constexpr (use_grid_offset<GridType>) {
+				return offset_t{ window_size - grid_overflow<GridType>() / 2 - 1 };
+			} else {
+				return offset_t::Zero;
+			}
+		}
 
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
 		static constexpr extent_t TilesetSize{ 16, 5 };
@@ -193,9 +225,9 @@ namespace necrowarp {
 		static constexpr rect_t MapBounds{ MapOrigin, MapSize };
 
 		static inline rect_t map_bounds() {
-			const extent_t excess{ max<offset_t::scalar_t>(game_grid_size().w - MapSize.w, 0), max<offset_t::scalar_t>(game_grid_size().h - MapSize.h, 0) };
+			const extent_t excess{ max<offset_t::scalar_t>(grid_size<grid_type_e::Game>().w - MapSize.w, 0), max<offset_t::scalar_t>(grid_size<grid_type_e::Game>().h - MapSize.h, 0) };
 
-			return rect_t{ offset_t{ excess.w / 2, excess.h / 2 }, extent_t{ game_grid_size().w - excess.w - 1, game_grid_size().h - excess.h - 1 } };
+			return rect_t{ offset_t{ excess.w / 2, excess.h / 2 }, extent_t{ grid_size<grid_type_e::Game>().w - excess.w - 1, grid_size<grid_type_e::Game>().h - excess.h - 1 } };
 		}
 
 		static constexpr offset_t MapCenter{ MapSize / 2 };
@@ -205,17 +237,17 @@ namespace necrowarp {
 		static constexpr f32 CellToGlyphRatio{ 2.0f };
 		static constexpr f32 GlyphToCellRatio{ 0.5f };
 
-		static inline offset_t convert_cell_to_glyph(cref<offset_t> position) noexcept {
+		static inline offset_t convert_cell_to_glyph(offset_t position) noexcept {
 			return offset_t{ offset_t::scalar_cast(position.x * CellToGlyphRatio), offset_t::scalar_cast(position.y * CellToGlyphRatio) };
 		}
 
-		static inline offset_t convert_glyph_to_cell(cref<offset_t> position) noexcept {
+		static inline offset_t convert_glyph_to_cell(offset_t position) noexcept {
 			return offset_t{ offset_t::scalar_cast(position.x * GlyphToCellRatio), offset_t::scalar_cast(position.y * GlyphToCellRatio) };
 		}
 
-		constexpr offset_t CursorOffset{ CellSize / 4 };
+		constexpr offset_t CursorOffset{ cell_size<grid_type_e::Game> / 4 };
 
-		static inline extent_t camera_extent() { return MapSize - globals::game_grid_size(); }
+		static inline extent_t camera_extent() { return MapSize - globals::grid_size<grid_type_e::Game>(); }
 		static inline offset_t::scalar_t camera_speed{ 4 };
 
 		struct map_config_t {
@@ -294,5 +326,7 @@ namespace necrowarp {
 		constexpr f32 BloodPoolMaximumVolume{ 5.7f };
 
 		static inline std::uniform_real_distribution<f32> blood_pool_dis{ BloodPoolMinimumVolume, BloodPoolMaximumVolume };
+
+		constexpr bool OopsAllPriests{ true };
 	} // namespace globals
 } // namespace necrowarp

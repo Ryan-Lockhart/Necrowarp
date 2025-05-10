@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bleak/cell.hpp"
 #include <necrowarp/entities.hpp>
 
 #include <cstddef>
@@ -12,7 +13,7 @@
 namespace necrowarp {
 	constexpr distance_function_t DistanceFunction{ distance_function_t::Octile };
 	
-	extern grid_cursor_t<globals::CellSize> warp_cursor;
+	extern grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor;
 
 	extern bool draw_cursor;
 	extern bool draw_warp_cursor;
@@ -22,8 +23,8 @@ namespace necrowarp {
 	static inline player_t player{};
 
 	static inline bool update_camera() noexcept {
-		bool force_width{ globals::MapSize.w <= globals::game_grid_size().w };
-		bool force_height{ globals::MapSize.h <= globals::game_grid_size().h };
+		bool force_width{ globals::MapSize.w <= globals::grid_size<grid_type_e::Game>().w };
+		bool force_height{ globals::MapSize.h <= globals::grid_size<grid_type_e::Game>().h };
 
 		bool moved{ false };
 
@@ -526,7 +527,9 @@ namespace necrowarp {
 		if (source_type != entity_type_t::Priest) {
 			switch (command.type) {
 				case command_type_t::Exorcise:
-				case command_type_t::Resurrect: {
+				case command_type_t::Resurrect:
+				case command_type_t::Anoint:
+				case command_type_t::Suicide: {
 					return false;
 				} default: {
 					break;
@@ -539,7 +542,8 @@ namespace necrowarp {
 			case command_type_t::CalciticInvocation:
 			case command_type_t::SpectralInvocation:
 			case command_type_t::SanguineInvocation:
-			case command_type_t::NecromanticAscendance: {
+			case command_type_t::NecromanticAscendance:
+			case command_type_t::Suicide: {
 				return true;
 			}
 			default: {
@@ -1429,6 +1433,24 @@ namespace necrowarp {
 		priest->pay_ordain_cost();
 	}
 
+	template<> void entity_registry_t::process_command<command_type_t::Suicide>(cref<entity_command_t> command) noexcept {
+		const offset_t source_position{ command.source.value() };
+
+		if (!entity_registry.contains<entity_type_t::Priest>(source_position)) {
+			return;
+		}
+
+		entity_registry.remove<entity_type_t::Priest>(source_position);
+
+		entity_registry.add(skull_t{ source_position, true });
+
+		game_map[source_position].set(cell_trait_t::Bloodied);
+
+		++steam_stats::stats<steam_stat_e::PlayerKills, i32>;
+
+		++game_stats.player_kills;
+	}
+
 	inline void entity_registry_t::process_command(cref<entity_command_t> command) noexcept {
 		if (!is_command_valid(command)) {
 			return;
@@ -1463,6 +1485,8 @@ namespace necrowarp {
 				return process_command<command_type_t::Resurrect>(command);
 			} case command_type_t::Anoint: {
 				return process_command<command_type_t::Anoint>(command);
+			} case command_type_t::Suicide: {
+				return process_command<command_type_t::Suicide>(command);
 			} default: {
 				return;
 			}
@@ -1490,6 +1514,12 @@ namespace necrowarp {
 		}
 	}
 
+	template<NonPlayerEntity EntityType> inline void entity_registry_t::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+		for (crauto entity : entity_storage<EntityType>) {
+			entity.draw(camera, offset);
+		}
+	}
+
 	template<NonPlayerEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline void entity_registry_t::draw() const noexcept {
@@ -1500,6 +1530,12 @@ namespace necrowarp {
 		requires is_plurary<EntityTypes...>::value
 	inline void entity_registry_t::draw(cref<camera_t> camera) const noexcept {
 		(draw<EntityTypes>(camera), ...);
+	}
+
+	template<NonPlayerEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline void entity_registry_t::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+		(draw<EntityTypes>(camera, offset), ...);
 	}
 
 	inline void entity_registry_t::draw() const noexcept {
@@ -1514,5 +1550,12 @@ namespace necrowarp {
 		draw<ALL_NPCS>(camera);
 
 		player.draw(camera);
+	}
+
+	inline void entity_registry_t::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+		draw<ALL_INANIMATE>(camera, offset);
+		draw<ALL_NPCS>(camera, offset);
+
+		player.draw(camera, offset);
 	}
 } // namespace necrowarp

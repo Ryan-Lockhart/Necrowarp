@@ -45,7 +45,7 @@ namespace bleak {
 
 		static inline void set_render_draw_color(ptr<renderer> renderer, u8 r, u8 g, u8 b, u8 a) noexcept { SDL_SetRenderDrawColor(renderer, r, g, b, a); }
 
-		static inline void set_render_draw_color(ptr<renderer> renderer, cref<color_t> color) noexcept { SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a); }
+		static inline void set_render_draw_color(ptr<renderer> renderer, color_t color) noexcept { SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a); }
 	} // namespace sdl
 
 	struct target_texture_t;
@@ -69,11 +69,11 @@ namespace bleak {
 
 		inline void set_draw_color(u8 r, u8 g, u8 b, u8 a) noexcept { sdl::set_render_draw_color(renderer, r, g, b, a); }
 
-		inline void set_draw_color(cref<color_t> color) noexcept { sdl::set_render_draw_color(renderer, color); }
+		inline void set_draw_color(color_t color) noexcept { sdl::set_render_draw_color(renderer, color); }
 
 		inline void clear() noexcept { SDL_RenderClear(renderer); }
 
-		inline void clear(cref<color_t> color) noexcept {
+		inline void clear(color_t color) noexcept {
 			set_draw_color(color);
 			SDL_RenderClear(renderer);
 		}
@@ -138,26 +138,26 @@ namespace bleak {
 
 		inline void draw_point(offset_t::scalar_t x, offset_t::scalar_t y) noexcept { SDL_RenderDrawPoint(renderer, x, y); }
 
-		inline void draw_point(offset_t::scalar_t x, offset_t::scalar_t y, cref<color_t> color) noexcept {
+		inline void draw_point(offset_t::scalar_t x, offset_t::scalar_t y, color_t color) noexcept {
 			set_draw_color(color);
 			draw_point(x, y);
 		}
 
-		inline void draw_point(cref<offset_t> point) noexcept { SDL_RenderDrawPoint(renderer, point.x, point.y); }
+		inline void draw_point(offset_t point) noexcept { SDL_RenderDrawPoint(renderer, point.x, point.y); }
 
-		inline void draw_point(cref<offset_t> point, cref<color_t> color) noexcept {
+		inline void draw_point(offset_t point, color_t color) noexcept {
 			set_draw_color(color);
 			draw_point(point);
 		}
 
-		inline void draw_line(cref<offset_t> start, cref<offset_t> end) noexcept { SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y); }
+		inline void draw_line(offset_t start, offset_t end) noexcept { SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y); }
 
-		inline void draw_line(cref<offset_t> start, cref<offset_t> end, cref<color_t> color) noexcept {
+		inline void draw_line(offset_t start, offset_t end, color_t color) noexcept {
 			set_draw_color(color);
 			draw_line(start, end);
 		}
 
-		inline void draw_line(cref<offset_t> start, cref<offset_t> end, extent_t::scalar_t thickness) noexcept {
+		inline void draw_line(offset_t start, offset_t end, extent_t::scalar_t thickness) noexcept {
 			offset_t::product_t dst{ offset_t::distance<distance_function_t::Chebyshev>(start, end) };
 			offset_t dir{ offset_t::direction(start, end) };
 
@@ -168,25 +168,25 @@ namespace bleak {
 			SDL_RenderDrawRect(renderer, &rect);
 		}
 
-		inline void draw_line(cref<offset_t> start, cref<offset_t> end, cref<color_t> color, extent_t::scalar_t thickness) noexcept {
+		inline void draw_line(offset_t start, offset_t end, color_t color, extent_t::scalar_t thickness) noexcept {
 			set_draw_color(color);
 			draw_line(start, end, thickness);
 		}
 
 		inline void draw_line(cref<line_t> line) noexcept { draw_line(line.start, line.end); }
 
-		inline void draw_line(cref<line_t> line, cref<color_t> color) noexcept { draw_line(line.start, line.end, color); }
+		inline void draw_line(cref<line_t> line, color_t color) noexcept { draw_line(line.start, line.end, color); }
 
-		inline void draw_line(cref<line_t> line, cref<color_t> color, extent_t::scalar_t thickness) noexcept { draw_line(line.start, line.end, color, thickness); }
+		inline void draw_line(cref<line_t> line, color_t color, extent_t::scalar_t thickness) noexcept { draw_line(line.start, line.end, color, thickness); }
 
 		inline void draw_line(cref<line_t> line, extent_t::scalar_t thickness) noexcept { draw_line(line.start, line.end, thickness); }
 
-		inline void draw_outline_rect(cref<offset_t> position, cref<extent_t> size) noexcept {
+		inline void draw_outline_rect(offset_t position, extent_t size) noexcept {
 			sdl::rect sdl_rect{ static_cast<i32>(position.x), static_cast<i32>(position.y), static_cast<i32>(size.w), static_cast<i32>(size.h) };
 			SDL_RenderDrawRect(renderer, &sdl_rect);
 		}
 
-		inline void draw_outline_rect(cref<offset_t> position, cref<extent_t> size, cref<extent_t> thickness) noexcept {
+		inline void draw_outline_rect(offset_t position, extent_t size, extent_t thickness) noexcept {
 			extent_t dbl_thickness{ thickness * 2 };
 
 			extent_t vertical_size{ size.w, dbl_thickness.h };
@@ -198,57 +198,57 @@ namespace bleak {
 			draw_fill_rect(offset_t{ position.x + size.w - dbl_thickness.w, position.y + dbl_thickness.h }, horizontal_size); // right
 		}
 
-		inline void draw_outline_rect(cref<offset_t> position, cref<extent_t> size, cref<extent_t> thickness, cref<color_t> color) noexcept {
+		inline void draw_outline_rect(offset_t position, extent_t size, extent_t thickness, color_t color) noexcept {
 			set_draw_color(color);
 			draw_outline_rect(position, size, thickness);
 		}
 
-		inline void draw_outline_rect(cref<offset_t> position, cref<extent_t> size, cref<color_t> color) noexcept {
+		inline void draw_outline_rect(offset_t position, extent_t size, color_t color) noexcept {
 			set_draw_color(color);
 			draw_outline_rect(position, size);
 		}
 
 		inline void draw_outline_rect(cref<rect_t> rect) noexcept { draw_outline_rect(rect.position, rect.size); }
 
-		inline void draw_outline_rect(cref<rect_t> rect, cref<color_t> color) noexcept { draw_outline_rect(rect.position, rect.size, color); }
+		inline void draw_outline_rect(cref<rect_t> rect, color_t color) noexcept { draw_outline_rect(rect.position, rect.size, color); }
 
-		inline void draw_fill_rect(cref<offset_t> position, cref<extent_t> size) noexcept {
+		inline void draw_fill_rect(offset_t position, extent_t size) noexcept {
 			sdl::rect sdl_rect{ static_cast<i32>(position.x), static_cast<i32>(position.y), static_cast<i32>(size.w), static_cast<i32>(size.h) };
 			SDL_RenderFillRect(renderer, &sdl_rect);
 		}
 
-		inline void draw_fill_rect(cref<offset_t> position, cref<extent_t> size, cref<color_t> color) noexcept {
+		inline void draw_fill_rect(offset_t position, extent_t size, color_t color) noexcept {
 			set_draw_color(color);
 			draw_fill_rect(position, size);
 		}
 
 		inline void draw_fill_rect(cref<rect_t> rect) noexcept { draw_fill_rect(rect.position, rect.size); }
 
-		inline void draw_fill_rect(cref<rect_t> rect, cref<color_t> color) noexcept { draw_fill_rect(rect.position, rect.size, color); }
+		inline void draw_fill_rect(cref<rect_t> rect, color_t color) noexcept { draw_fill_rect(rect.position, rect.size, color); }
 
-		inline void draw_composite_rect(cref<offset_t> position, cref<extent_t> size, cref<color_t> fill_color, cref<color_t> outline_color, extent_t::scalar_t thickness) noexcept {
+		inline void draw_composite_rect(offset_t position, extent_t size, color_t fill_color, color_t outline_color, extent_t::scalar_t thickness) noexcept {
 			draw_fill_rect(position, size, outline_color);
 			draw_fill_rect(position + thickness, size - thickness * 2, fill_color);
 		}
 
-		inline void draw_composite_rect(cref<rect_t> rect, cref<color_t> fill_color, cref<color_t> outline_color, extent_t::scalar_t thickness) noexcept {
+		inline void draw_composite_rect(cref<rect_t> rect, color_t fill_color, color_t outline_color, extent_t::scalar_t thickness) noexcept {
 			draw_fill_rect(rect, outline_color);
 			draw_fill_rect(rect.position + thickness, rect.size - thickness * 2, fill_color);
 		}
 
-		inline void draw_composite_rect(cref<offset_t> position, cref<extent_t> size, cref<color_t> fill_color, cref<color_t> outline_color, extent_t::scalar_t thickness, bool) noexcept {
+		inline void draw_composite_rect(offset_t position, extent_t size, color_t fill_color, color_t outline_color, extent_t::scalar_t thickness, bool) noexcept {
 			draw_fill_rect(position - thickness, size + thickness * 2, outline_color);
 			draw_fill_rect(position, size, fill_color);
 		}
 
-		inline void draw_composite_rect(cref<rect_t> rect, cref<color_t> fill_color, cref<color_t> outline_color, extent_t::scalar_t thickness, bool) noexcept {
+		inline void draw_composite_rect(cref<rect_t> rect, color_t fill_color, color_t outline_color, extent_t::scalar_t thickness, bool) noexcept {
 			draw_fill_rect(rect.position - thickness, rect.size + thickness * 2, outline_color);
 			draw_fill_rect(rect, fill_color);
 		}
 
-		inline void draw_circle(cref<offset_t> position, extent_t::scalar_t radius) { error_log.add("draw_circle not implemented!"); }
+		inline void draw_circle(offset_t position, extent_t::scalar_t radius) { error_log.add("draw_circle not implemented!"); }
 
-		inline void draw_circle(cref<offset_t> position, extent_t::scalar_t radius, cref<color_t> color) {
+		inline void draw_circle(offset_t position, extent_t::scalar_t radius, color_t color) {
 			set_draw_color(color);
 			draw_circle(position, radius);
 		}

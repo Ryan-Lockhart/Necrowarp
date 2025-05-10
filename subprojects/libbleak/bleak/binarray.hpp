@@ -34,7 +34,7 @@ namespace bleak {
 		static constexpr extent_t::scalar_t width{ Size.w };
 		static constexpr extent_t::scalar_t height{ Size.h };
 
-		static inline constexpr extent_t::product_t flatten(cref<offset_t> offset) noexcept { return extent_t::product_cast(offset.y) * Size.w + offset.x; }
+		static inline constexpr extent_t::product_t flatten(offset_t offset) noexcept { return extent_t::product_cast(offset.y) * Size.w + offset.x; }
 
 		static inline constexpr extent_t::product_t flatten(cref<offset_t::scalar_t> i, cref<offset_t::scalar_t> j) noexcept { return extent_t::product_cast(j) * Size.w + i; }
 
@@ -115,9 +115,9 @@ namespace bleak {
 
 		inline constexpr ~binarray_t() noexcept {}
 
-		inline constexpr bit_ref operator[](cref<offset_t> offset) noexcept { return data[first + flatten(offset)]; }
+		inline constexpr bit_ref operator[](offset_t offset) noexcept { return data[first + flatten(offset)]; }
 
-		inline constexpr bool operator[](cref<offset_t> offset) const noexcept { return data[first + flatten(offset)]; }
+		inline constexpr bool operator[](offset_t offset) const noexcept { return data[first + flatten(offset)]; }
 
 		inline constexpr bit_ref operator[](cref<offset_t::product_t> index) noexcept { return data[first + index]; }
 
@@ -127,13 +127,13 @@ namespace bleak {
 
 		inline constexpr bool operator[](offset_t::scalar_t i, offset_t::scalar_t j) const noexcept { return data[first + flatten(i, j)]; }
 
-		inline constexpr bool valid(cref<offset_t> offset) const noexcept { return flatten(offset) < size; }
+		inline constexpr bool valid(offset_t offset) const noexcept { return flatten(offset) < size; }
 
 		inline constexpr bool valid(cref<offset_t::product_t> index) const noexcept { return index < size; }
 
 		inline constexpr bool valid(offset_t::scalar_t i, offset_t::scalar_t j) const noexcept { return flatten(i, j) < size; }
 
-		inline constexpr bit_ref at(cref<offset_t> offset) {
+		inline constexpr bit_ref at(offset_t offset) {
 			if (!valid(offset)) {
 				throw std::out_of_range("offset out of range!");
 			}
@@ -141,7 +141,7 @@ namespace bleak {
 			return data[first + flatten(offset)];
 		}
 
-		inline constexpr bool at(cref<offset_t> offset) const {
+		inline constexpr bool at(offset_t offset) const {
 			if (!valid(offset)) {
 				throw std::out_of_range("offset out of range!");
 			}

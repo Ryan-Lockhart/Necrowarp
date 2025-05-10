@@ -63,7 +63,7 @@ namespace bleak {
 			return *this;
 		}
 
-		template<typename T, extent_t Size, extent_t BorderSize, bool Defer = false> inline ref<area_t> flood(cref<zone_t<T, Size, BorderSize>> zone, cref<offset_t> position, cref<T> value, bool inclusive = false) {
+		template<typename T, extent_t Size, extent_t BorderSize, bool Defer = false> inline ref<area_t> flood(cref<zone_t<T, Size, BorderSize>> zone, offset_t position, cref<T> value, bool inclusive = false) {
 			if constexpr (!Defer) {
 				clear();
 			}
@@ -111,7 +111,7 @@ namespace bleak {
 
 		template<typename T, typename U, extent_t Size, extent_t BorderSize, bool Defer = false>
 			requires is_equatable<T, U>::value
-		inline ref<area_t> flood(cref<zone_t<T, Size, BorderSize>> zone, cref<offset_t> position, cref<U> value, bool inclusive = false) {
+		inline ref<area_t> flood(cref<zone_t<T, Size, BorderSize>> zone, offset_t position, cref<U> value, bool inclusive = false) {
 			if constexpr (!Defer) {
 				clear();
 			}
@@ -158,7 +158,7 @@ namespace bleak {
 		}
 
 		template<typename T, extent_t Size, extent_t BorderSize, bool Defer = false>
-		inline ref<area_t> flood(cref<zone_t<T, Size, BorderSize>> zone, cref<offset_t> position, cref<T> value, cref<extent_t::product_t> distance, bool inclusive = false) {
+		inline ref<area_t> flood(cref<zone_t<T, Size, BorderSize>> zone, offset_t position, cref<T> value, cref<extent_t::product_t> distance, bool inclusive = false) {
 			if constexpr (!Defer) {
 				clear();
 			}
@@ -206,7 +206,7 @@ namespace bleak {
 
 		template<typename T, typename U, extent_t Size, extent_t BorderSize, bool Defer = false>
 			requires is_equatable<T, U>::value
-		inline ref<area_t> flood(cref<zone_t<T, Size, BorderSize>> zone, cref<offset_t> position, cref<U> value, cref<extent_t::product_t> distance, bool inclusive = false) {
+		inline ref<area_t> flood(cref<zone_t<T, Size, BorderSize>> zone, offset_t position, cref<U> value, cref<extent_t::product_t> distance, bool inclusive = false) {
 			if constexpr (!Defer) {
 				clear();
 			}
@@ -252,7 +252,7 @@ namespace bleak {
 			return *this;
 		}
 
-		template<typename T, extent_t Size, extent_t BorderSize, bool Defer = false> inline ref<area_t> cast(cref<zone_t<T, Size, BorderSize>> zone, cref<T> value, cref<offset_t> position, u32 radius, bool inclusive = false) {
+		template<typename T, extent_t Size, extent_t BorderSize, bool Defer = false> inline ref<area_t> cast(cref<zone_t<T, Size, BorderSize>> zone, cref<T> value, offset_t position, u32 radius, bool inclusive = false) {
 			if constexpr (!Defer) {
 				clear();
 			}
@@ -294,7 +294,7 @@ namespace bleak {
 
 		template<typename T, typename U, extent_t Size, extent_t BorderSize, bool Defer = false>
 			requires is_equatable<T, U>::value
-		inline ref<area_t> cast(cref<zone_t<T, Size, BorderSize>> zone, cref<U> value, cref<offset_t> position, u32 radius, bool inclusive) {
+		inline ref<area_t> cast(cref<zone_t<T, Size, BorderSize>> zone, cref<U> value, offset_t position, u32 radius, bool inclusive) {
 			if constexpr (!Defer) {
 				clear();
 			}
@@ -416,7 +416,7 @@ namespace bleak {
 			return *this;
 		}
 
-		template<typename T, extent_t Size, extent_t BorderSize, bool Defer = false> inline ref<area_t> cast(cref<zone_t<T, Size, BorderSize>> zone, cref<T> value, cref<offset_t> position, u32 radius, f64 angle, f64 span, bool inclusive) {
+		template<typename T, extent_t Size, extent_t BorderSize, bool Defer = false> inline ref<area_t> cast(cref<zone_t<T, Size, BorderSize>> zone, cref<T> value, offset_t position, u32 radius, f64 angle, f64 span, bool inclusive) {
 			if constexpr (!Defer) {
 				clear();
 			}
@@ -466,7 +466,7 @@ namespace bleak {
 
 		template<typename T, typename U, extent_t Size, extent_t BorderSize, bool Defer = false>
 			requires is_equatable<T, U>::value
-		inline ref<area_t> cast(cref<zone_t<T, Size, BorderSize>> zone, cref<U> value, cref<offset_t> position, u32 radius, f64 angle, f64 span, bool inclusive) {
+		inline ref<area_t> cast(cref<zone_t<T, Size, BorderSize>> zone, cref<U> value, offset_t position, u32 radius, f64 angle, f64 span, bool inclusive) {
 			if constexpr (!Defer) {
 				clear();
 			}
@@ -670,10 +670,10 @@ namespace bleak {
 			return *this;
 		}
 
-		inline bool contains(cref<offset_t> position) const noexcept { return find(position) != end(); }
+		inline bool contains(offset_t position) const noexcept { return find(position) != end(); }
 
 		template<typename T, extent_t Size, extent_t BorderSize> inline cref<area_t> set(ref<zone_t<T, Size, BorderSize>> zone, cref<T> value) const noexcept {
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				zone[position] = value;
 			}
 
@@ -683,7 +683,7 @@ namespace bleak {
 		template<typename T, typename U, extent_t Size, extent_t BorderSize>
 			requires std::is_assignable<T, U>::value
 		inline cref<area_t> set(ref<zone_t<T, Size, BorderSize>> zone, cref<U> value) const noexcept {
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				zone[position] = value;
 			}
 
@@ -693,7 +693,7 @@ namespace bleak {
 		template<typename T, extent_t Size, extent_t BorderSize>
 			requires is_operable_unary<T, operator_t::Addition>::value
 		inline cref<area_t> apply(ref<zone_t<T, Size, BorderSize>> zone, cref<T> value) const noexcept {
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				zone[position] += value;
 			}
 
@@ -703,7 +703,7 @@ namespace bleak {
 		template<typename T, typename U, extent_t Size, extent_t BorderSize>
 			requires is_operable<T, U, operator_t::Addition>::value
 		inline cref<area_t> apply(ref<zone_t<T, Size, BorderSize>> zone, cref<U> value) const noexcept {
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				zone[position] += value;
 			}
 
@@ -713,7 +713,7 @@ namespace bleak {
 		template<typename T, extent_t Size, extent_t BorderSize, typename... Params>
 			requires(is_operable<T, Params, operator_t::Addition>::value, ...) && is_plurary<Params...>::value
 		inline cref<area_t> apply(ref<zone_t<T, Size, BorderSize>> zone, cref<Params>... values) const noexcept {
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				for (crauto value : { values... }) {
 					zone[position] += value;
 				}
@@ -725,7 +725,7 @@ namespace bleak {
 		template<typename T, extent_t Size, extent_t BorderSize>
 			requires is_operable_unary<T, operator_t::Subtraction>::value
 		inline cref<area_t> repeal(ref<zone_t<T, Size, BorderSize>> zone, cref<T> value) const noexcept {
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				zone[position] -= value;
 			}
 
@@ -735,7 +735,7 @@ namespace bleak {
 		template<typename T, typename U, extent_t Size, extent_t BorderSize>
 			requires is_operable<T, U, operator_t::Subtraction>::value
 		inline cref<area_t> repeal(ref<zone_t<T, Size, BorderSize>> zone, cref<U> value) const noexcept {
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				zone[position] -= value;
 			}
 
@@ -745,7 +745,7 @@ namespace bleak {
 		template<typename T, extent_t Size, extent_t BorderSize, typename... Params>
 			requires(is_operable<T, Params, operator_t::Subtraction>::value, ...) && is_plurary<Params...>::value
 		inline cref<area_t> repeal(ref<zone_t<T, Size, BorderSize>> zone, cref<Params>... values) const noexcept {
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				for (crauto value : { values... }) {
 					zone[position] -= value;
 				}
@@ -760,7 +760,7 @@ namespace bleak {
 		{
 			std::bernoulli_distribution dis{ probability };
 
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				zone[position] = applicator(generator, dis);
 			}
 
@@ -773,7 +773,7 @@ namespace bleak {
 		{
 			std::bernoulli_distribution dis{ probability };
 
-			for (cref<offset_t> position : *this) {
+			for (offset_t position : *this) {
 				zone[position] = dis(generator) ? true_value : false_value;
 			}
 
@@ -781,7 +781,7 @@ namespace bleak {
 		}
 
 		inline ref<area_t> add(cref<area_t> other) {
-			for (cref<offset_t> position : other) {
+			for (offset_t position : other) {
 				insert(position);
 			}
 
@@ -789,7 +789,7 @@ namespace bleak {
 		}
 
 		inline ref<area_t> remove(cref<area_t> other) {
-			for (cref<offset_t> position : other) {
+			for (offset_t position : other) {
 				erase(position);
 			}
 
@@ -835,7 +835,7 @@ namespace bleak {
 		}
 
 	  private:
-		template<typename T, extent_t Size, extent_t BorderSize> inline void shadow_cast(cref<zone_t<T, Size, BorderSize>> zone, cref<offset_t> origin, cref<T> value, i32 row, f64 start, f64 end, cref<octant_t> octant, f64 radius) {
+		template<typename T, extent_t Size, extent_t BorderSize> inline void shadow_cast(cref<zone_t<T, Size, BorderSize>> zone, offset_t origin, cref<T> value, i32 row, f64 start, f64 end, cref<octant_t> octant, f64 radius) {
 			if (start < end) {
 				return;
 			}
@@ -889,7 +889,7 @@ namespace bleak {
 
 		template<typename T, typename U, extent_t Size, extent_t BorderSize>
 			requires is_equatable<T, U>::value
-		inline void shadow_cast(cref<zone_t<T, Size, BorderSize>> zone, cref<offset_t> origin, cref<U> value, i32 row, f64 start, f64 end, cref<octant_t> octant, f64 radius) {
+		inline void shadow_cast(cref<zone_t<T, Size, BorderSize>> zone, offset_t origin, cref<U> value, i32 row, f64 start, f64 end, cref<octant_t> octant, f64 radius) {
 			if (start < end) {
 				return;
 			}
@@ -944,7 +944,7 @@ namespace bleak {
 		}
 
 		template<typename T, extent_t Size, extent_t BorderSize>
-		inline void shadow_cast(cref<zone_t<T, Size, BorderSize>> zone, cref<offset_t> origin, cref<T> value, i32 row, f64 start, f64 end, cref<octant_t> octant, f64 radius, f64 angle, f64 span) {
+		inline void shadow_cast(cref<zone_t<T, Size, BorderSize>> zone, offset_t origin, cref<T> value, i32 row, f64 start, f64 end, cref<octant_t> octant, f64 radius, f64 angle, f64 span) {
 			if (start < end) {
 				return;
 			}
@@ -1000,7 +1000,7 @@ namespace bleak {
 
 		template<typename T, typename U, extent_t Size, extent_t BorderSize>
 			requires is_equatable<T, U>::value
-		inline void shadow_cast(cref<zone_t<T, Size, BorderSize>> zone, cref<offset_t> origin, cref<U> value, i32 row, f64 start, f64 end, cref<octant_t> octant, f64 radius, f64 angle, f64 span) {
+		inline void shadow_cast(cref<zone_t<T, Size, BorderSize>> zone, offset_t origin, cref<U> value, i32 row, f64 start, f64 end, cref<octant_t> octant, f64 radius, f64 angle, f64 span) {
 			if (start < end) {
 				return;
 			}

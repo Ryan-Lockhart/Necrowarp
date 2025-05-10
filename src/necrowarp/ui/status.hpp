@@ -17,9 +17,9 @@ namespace necrowarp {
 		u8 max_value{ 16 };
 		u8 current_value;
 
-		constexpr status_t(u8 max_value, cref<glyph_t> active_glyph, cref<glyph_t> inactive_glyph) noexcept : active_glyph{ active_glyph }, inactive_glyph{ inactive_glyph }, max_value{ max_value }, current_value{} {}
+		constexpr status_t(u8 max_value, glyph_t active_glyph, glyph_t inactive_glyph) noexcept : active_glyph{ active_glyph }, inactive_glyph{ inactive_glyph }, max_value{ max_value }, current_value{} {}
 
-		constexpr status_t(u8 max_value, u8 current_value, cref<glyph_t> active_glyph, cref<glyph_t> inactive_glyph) noexcept : active_glyph{ active_glyph }, inactive_glyph{ inactive_glyph }, max_value{ max_value }, current_value{} {}
+		constexpr status_t(u8 max_value, u8 current_value, glyph_t active_glyph, glyph_t inactive_glyph) noexcept : active_glyph{ active_glyph }, inactive_glyph{ inactive_glyph }, max_value{ max_value }, current_value{} {}
 	};
 
 	template<usize Statuses> struct embedded_status_bar_t {

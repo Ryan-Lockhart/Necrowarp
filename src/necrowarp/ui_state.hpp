@@ -12,7 +12,7 @@ namespace necrowarp {
 	using namespace bleak;
 
 	static inline label_t title_label{
-		anchor_t{ { globals::ui_grid_size().w / 2, 1 }, cardinal_e::North },
+		anchor_t{ { globals::grid_size<grid_type_e::UI>().w / 2, 1 }, cardinal_e::North },
 		embedded_label_t{
 			runes_t{ globals::GameTitle, colors::Marble },
 			embedded_box_t{ colors::Black,
@@ -22,7 +22,7 @@ namespace necrowarp {
 	};
 
 	static inline label_t fps_label{
-		anchor_t{ { globals::ui_grid_size().w, 1 }, cardinal_e::Northeast },
+		anchor_t{ { globals::grid_size<grid_type_e::UI>().w, 1 }, cardinal_e::Northeast },
 		embedded_label_t{
 			runes_t{ "FPS: 0000", colors::Green },
 			embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -34,7 +34,7 @@ namespace necrowarp {
 
 	template<> struct phase_state_t<game_phase_t::MainMenu> {
 		static inline labeled_button_t credits_button{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 }, cardinal_e::Central },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 }, cardinal_e::Central },
 			embedded_label_t{
 				runes_t{ "Credits", colors::Orange },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -98,7 +98,7 @@ namespace necrowarp {
 
 	template<> struct phase_state_t<game_phase_t::NewGame> {
 		static inline label_t header_label{
-			anchor_t{ offset_t{ globals::ui_grid_size().w / 2, globals::ui_grid_size().h / 4 }, cardinal_e::Central },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h / 4 }, cardinal_e::Central },
 			embedded_label_t{
 				runes_t{ "Please select your desired environ and patron...", colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -107,7 +107,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t no_patron_label{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 }, cardinal_e::Central },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 }, cardinal_e::Central },
 			embedded_label_t{
 				runes_t{
 					"None",
@@ -119,7 +119,7 @@ namespace necrowarp {
 		};
 
 		static inline labeled_button_t play_button{
-			anchor_t{ offset_t{ globals::ui_grid_size().w / 2 - 1, globals::ui_grid_size().h - globals::ui_grid_size().h / 4 }, cardinal_e::East },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2 - 1, globals::grid_size<grid_type_e::UI>().h - globals::grid_size<grid_type_e::UI>().h / 4 }, cardinal_e::East },
 			embedded_label_t{
 				runes_t{ "Play", colors::White },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -128,7 +128,7 @@ namespace necrowarp {
 		};
 
 		static inline labeled_button_t back_button{
-			anchor_t{ offset_t{ globals::ui_grid_size().w / 2 + 1, globals::ui_grid_size().h - globals::ui_grid_size().h / 4 }, cardinal_e::West },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2 + 1, globals::grid_size<grid_type_e::UI>().h - globals::grid_size<grid_type_e::UI>().h / 4 }, cardinal_e::West },
 			embedded_label_t{
 				runes_t{ "Back", colors::White },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -184,7 +184,7 @@ namespace necrowarp {
 
 	template<> struct phase_state_t<game_phase_t::Loading> {
 		static inline label_t loading_label{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 }, cardinal_e::Central },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 }, cardinal_e::Central },
 			embedded_label_t{
 				runes_t{ "Loading...", colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -226,7 +226,7 @@ namespace necrowarp {
 
 	template<> struct phase_state_t<game_phase_t::Paused> {
 		static inline labeled_button_t resume_button{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{ "Resume", colors::Green },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -235,7 +235,7 @@ namespace necrowarp {
 		};
 
 		static inline labeled_button_t quit_button{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 + offset_t{ 0, 1 } }, cardinal_e::North },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 0, 1 } }, cardinal_e::North },
 			embedded_label_t{
 				runes_t{ "Quit", colors::White },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -246,7 +246,7 @@ namespace necrowarp {
 		static inline bool show_help{ true };
 
 		static inline label_t help_label{
-			anchor_t{ offset_t{ 1, globals::ui_grid_size().h }, cardinal_e::Southwest },
+			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ show_help ? help_expanded_text : help_hidden_text, colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -292,7 +292,7 @@ namespace necrowarp {
 
 	template<> struct phase_state_t<game_phase_t::Credits> {
 		static inline label_t credits_label{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 }, cardinal_e::Central },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 }, cardinal_e::Central },
 			embedded_label_t{
 				runes_t{
 				"                   Bjarne Stroustrup and the C++ standards committee for the C++ programming language                  \n\n\n"
@@ -307,7 +307,7 @@ namespace necrowarp {
 			}
 		};
 		static inline labeled_button_t back_button{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 + offset_t{ 0, credits_label.calculate_size().h / 2 } }, cardinal_e::North },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 0, credits_label.calculate_size().h / 2 } }, cardinal_e::North },
 			embedded_label_t{
 				runes_t{ "Back", colors::White },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -346,7 +346,7 @@ namespace necrowarp {
 		static inline bool show_statistics{ false };
 
 		static inline label_t game_over_label{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{
 					runes_t{
@@ -365,7 +365,7 @@ namespace necrowarp {
 		};
 
 		static inline labeled_button_t retry_button{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 + offset_t{ -1, 1 } }, cardinal_e::Northeast },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ -1, 1 } }, cardinal_e::Northeast },
 			embedded_label_t{
 				runes_t{ "Retry", colors::Green },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -374,7 +374,7 @@ namespace necrowarp {
 		};
 
 		static inline labeled_button_t quit_button{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 + offset_t{ 1, 1 } }, cardinal_e::Northwest },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 1, 1 } }, cardinal_e::Northwest },
 			embedded_label_t{
 				runes_t{ "Quit", colors::Red },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -383,7 +383,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t statistics_hidden_label{
-			anchor_t{ offset_t{ 1, globals::ui_grid_size().h }, cardinal_e::Southwest },
+			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ " Statistics ", colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -392,7 +392,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t statistics_expanded_label{
-			anchor_t{ offset_t{ 1, globals::ui_grid_size().h }, cardinal_e::Southwest },
+			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ " Statistics ", colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -472,7 +472,7 @@ namespace necrowarp {
 
 	template<> struct phase_state_t<game_phase_t::Exiting> {
 		static inline label_t confirm_quit_label{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{ "Are you sure you want to quit?", colors::White },
 				embedded_box_t{ colors::Red, { colors::White, 1 } },
@@ -481,7 +481,7 @@ namespace necrowarp {
 		};
 
 		static inline labeled_button_t confirm_quit_button{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 + offset_t{ -1, 2 } }, cardinal_e::East },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ -1, 2 } }, cardinal_e::East },
 			embedded_label_t{
 				runes_t{ "Yes", colors::Green },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -490,7 +490,7 @@ namespace necrowarp {
 		};
 
 		static inline labeled_button_t cancel_quit_button{
-			anchor_t{ offset_t{ globals::ui_grid_size() / 2 + offset_t{ 1, 2 } }, cardinal_e::West },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 1, 2 } }, cardinal_e::West },
 			embedded_label_t{
 				runes_t{ "No", colors::Red },
 				embedded_box_t{ colors::Grey, { colors::White, 1 } },
@@ -559,7 +559,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t depth_hidden_label{
-			anchor_t{ offset_t{ globals::ui_grid_size().w / 2, globals::ui_grid_size().h }, cardinal_e::South },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{ depth_hidden_text, colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -568,7 +568,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t depth_expanded_label{
-			anchor_t{ offset_t{ globals::ui_grid_size().w / 2, globals::ui_grid_size().h }, cardinal_e::South },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{ depth_expanded_text, colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -585,7 +585,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t tooltip_label{
-			anchor_t{ offset_t{ globals::ui_grid_size() }, cardinal_e::Southeast },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() }, cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{},
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -607,31 +607,31 @@ namespace necrowarp {
 		static inline bool show_depth{ false };
 		static inline bool show_favor{ false };
 
-		static constexpr offset_t random_warp_icon_position() { return offset_t{ 0, globals::icon_grid_size().h / 2 - 4 }; }
-		static constexpr offset_t target_warp_icon_position() { return offset_t{ 0, globals::icon_grid_size().h / 2 - 3 }; }
+		static constexpr offset_t random_warp_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 4 }; }
+		static constexpr offset_t target_warp_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 3 }; }
 
-		static constexpr offset_t calcitic_invocation_icon_position() { return offset_t{ 0, globals::icon_grid_size().h / 2 - 1 }; }
-		static constexpr offset_t spectral_invocation_icon_position() { return offset_t{ 0, globals::icon_grid_size().h / 2 }; }
-		static constexpr offset_t sanguine_invocation_icon_position() { return offset_t{ 0, globals::icon_grid_size().h / 2 + 1 }; }
+		static constexpr offset_t calcitic_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 1 }; }
+		static constexpr offset_t spectral_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 }; }
+		static constexpr offset_t sanguine_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 1 }; }
 
-		static constexpr offset_t necromantic_ascendance_icon_position() { return offset_t{ 0, globals::icon_grid_size().h / 2 + 3 }; }
+		static constexpr offset_t necromantic_ascendance_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 3 }; }
 
 		static inline bool any_hovered() noexcept {
 			if (phase.current_phase != game_phase_t::Playing) {
 				return false;
 			}
 
-			if (Mouse::is_inside(random_warp_icon_position() * globals::IconSize, globals::IconSize)) {
+			if (Mouse::is_inside(random_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				return true;
-			} else if (Mouse::is_inside(target_warp_icon_position() * globals::IconSize, globals::IconSize)) {
+			} else if (Mouse::is_inside(target_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				return true;
-			} else if (Mouse::is_inside(calcitic_invocation_icon_position() * globals::IconSize, globals::IconSize)) {
+			} else if (Mouse::is_inside(calcitic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				return true;
-			} else if (Mouse::is_inside(spectral_invocation_icon_position() * globals::IconSize, globals::IconSize)) {
+			} else if (Mouse::is_inside(spectral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				return true;
-			} else if (Mouse::is_inside(sanguine_invocation_icon_position() * globals::IconSize, globals::IconSize)) {
+			} else if (Mouse::is_inside(sanguine_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				return true;
-			} else if (Mouse::is_inside(necromantic_ascendance_icon_position() * globals::IconSize, globals::IconSize)) {
+			} else if (Mouse::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				return true;
 			}
 			
@@ -653,7 +653,7 @@ namespace necrowarp {
 
 			const offset_t mouse_pos{ Mouse::get_position() };
 
-			if (Mouse::is_inside(random_warp_icon_position() * globals::IconSize, globals::IconSize)) {
+			if (Mouse::is_inside(random_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				command_label.text = runes_t{ to_string(command_type_t::RandomWarp) };
 				command_label.text
 					.concatenate(runes_t{ " ["})
@@ -662,8 +662,8 @@ namespace necrowarp {
 					.concatenate(runes_t{ std::format("{}", player.random_warp_cost()) })
 					.concatenate(runes_t{ "]" });
 				
-				command_label.position = (random_warp_icon_position() + offset_t{ 1, 1 }) * globals::IconSize / globals::GlyphSize + offset_t{ 2, 0 };
-			} else if (Mouse::is_inside(target_warp_icon_position() * globals::IconSize, globals::IconSize)) {
+				command_label.position = (random_warp_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+			} else if (Mouse::is_inside(target_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				command_label.text = runes_t{ to_string(command_type_t::TargetWarp) };
 				command_label.text
 					.concatenate(runes_t{ " ["})
@@ -672,8 +672,8 @@ namespace necrowarp {
 					.concatenate(runes_t{ std::format("{}", player.target_warp_cost()) })
 					.concatenate(runes_t{ "]" });
 				
-					command_label.position = (target_warp_icon_position() + offset_t{ 1, 1 }) * globals::IconSize / globals::GlyphSize + offset_t{ 2, 0 };
-			} else if (Mouse::is_inside(calcitic_invocation_icon_position() * globals::IconSize, globals::IconSize)) {
+					command_label.position = (target_warp_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+			} else if (Mouse::is_inside(calcitic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				command_label.text = runes_t{ to_string(command_type_t::CalciticInvocation) };
 				command_label.text
 					.concatenate(runes_t{ " ["})
@@ -682,8 +682,8 @@ namespace necrowarp {
 					.concatenate(runes_t{ std::format("{}", player.calcitic_invocation_cost()) })
 					.concatenate(runes_t{ "]" });
 				
-					command_label.position = (calcitic_invocation_icon_position() + offset_t{ 1, 1 }) * globals::IconSize / globals::GlyphSize + offset_t{ 2, 0 };
-			} else if (Mouse::is_inside(spectral_invocation_icon_position() * globals::IconSize, globals::IconSize)) {
+					command_label.position = (calcitic_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+			} else if (Mouse::is_inside(spectral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				command_label.text = runes_t{ to_string(command_type_t::SpectralInvocation) };
 				command_label.text
 					.concatenate(runes_t{ " ["})
@@ -692,8 +692,8 @@ namespace necrowarp {
 					.concatenate(runes_t{ std::format("{}", player.spectral_invocation_cost()) })
 					.concatenate(runes_t{ "]" });
 				
-					command_label.position = (spectral_invocation_icon_position() + offset_t{ 1, 1 }) * globals::IconSize / globals::GlyphSize + offset_t{ 2, 0 };
-			} else if (Mouse::is_inside(sanguine_invocation_icon_position() * globals::IconSize, globals::IconSize)) {
+					command_label.position = (spectral_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+			} else if (Mouse::is_inside(sanguine_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				command_label.text = runes_t{ to_string(command_type_t::SanguineInvocation) };
 				command_label.text
 					.concatenate(runes_t{ " ["})
@@ -702,8 +702,8 @@ namespace necrowarp {
 					.concatenate(runes_t{ std::format("{}", player.sanguine_invocation_cost()) })
 					.concatenate(runes_t{ "]" });
 				
-					command_label.position = (sanguine_invocation_icon_position() + offset_t{ 1, 1 }) * globals::IconSize / globals::GlyphSize + offset_t{ 2, 0 };
-			} else if (Mouse::is_inside(necromantic_ascendance_icon_position() * globals::IconSize, globals::IconSize)) {
+					command_label.position = (sanguine_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+			} else if (Mouse::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				command_label.text = runes_t{ to_string(command_type_t::NecromanticAscendance) };
 				command_label.text
 					.concatenate(runes_t{ " ["})
@@ -712,12 +712,12 @@ namespace necrowarp {
 					.concatenate(runes_t{ std::format("{}", player.necromantic_ascendance_cost()) })
 					.concatenate(runes_t{ "]" });
 				
-					command_label.position = (necromantic_ascendance_icon_position() + offset_t{ 1, 1 }) * globals::IconSize / globals::GlyphSize + offset_t{ 2, 0 };
+					command_label.position = (necromantic_ascendance_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
 			} else {
 				show_command = false;
 			}
 			
-			command_label.position.y = mouse_pos.y / globals::GlyphSize.h;
+			command_label.position.y = mouse_pos.y / globals::cell_size<grid_type_e::UI>.h;
 
 			show_depth = show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered();
 
@@ -880,7 +880,7 @@ namespace necrowarp {
 				colors::Green
 			};
 
-			draw_cursor = any_hovered() || !globals::map_bounds().within(ui_cursor.get_position() / globals::CellSize);
+			draw_cursor = any_hovered() || !globals::map_bounds().within(ui_cursor.get_position() / globals::cell_size<grid_type_e::Game>);
 
 			ui_cursor.update();
 			

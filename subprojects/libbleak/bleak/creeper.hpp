@@ -16,7 +16,7 @@ namespace bleak {
 
 		constexpr creeper_t() : position{}, distance{} {}
 
-		constexpr creeper_t(cref<offset_t> position, cref<T> distance) : position{ position }, distance{ distance } {}
+		constexpr creeper_t(offset_t position, cref<T> distance) : position{ position }, distance{ distance } {}
 
 		struct hasher {
 			static constexpr usize operator()(cref<creeper_t<T>> creeper) noexcept { return hash_combine(creeper.position, creeper.distance); }
@@ -33,7 +33,7 @@ namespace bleak {
 
 		constexpr memory_creeper_t(cref<rememberance_t<offset_t>> memory, cref<T> distance) : position{ memory }, distance{ distance } {}
 
-		constexpr memory_creeper_t(cref<offset_t> current, cref<offset_t> previous, cref<T> distance) : position{ current, previous }, distance{ distance } {}
+		constexpr memory_creeper_t(offset_t current, offset_t previous, cref<T> distance) : position{ current, previous }, distance{ distance } {}
 
 		constexpr bool is_origin() const { return *this == memory_creeper_t<T>{}; }
 

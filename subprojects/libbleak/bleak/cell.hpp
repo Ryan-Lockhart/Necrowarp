@@ -488,7 +488,7 @@ namespace bleak {
 			);
 		}
 
-		/*template<extent_t AtlasSize> inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<offset_t> position) const noexcept {
+		/*template<extent_t AtlasSize> inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, offset_t position) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -504,7 +504,7 @@ namespace bleak {
 			atlas.draw(glyph_t{ characters::Wall, color_t{ 0xC0, alpha } }, position);
 		}
 
-		template<extent_t AtlasSize> inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<offset_t> position, cref<offset_t> offset) const noexcept {
+		template<extent_t AtlasSize> inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, offset_t position, offset_t offset) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -521,7 +521,7 @@ namespace bleak {
 		}*/
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, cref<offset_t> position) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -540,7 +540,7 @@ namespace bleak {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, cref<offset_t> position, cref<offset_t> offset) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -556,6 +556,25 @@ namespace bleak {
 			const u8 glyph{ characters::auto_set(smooth, protrudes, zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid)) };
 
 			atlas.draw(glyph_t{ glyph, color_t{ 0xC0, alpha } }, position + offset);
+		}
+
+		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+			if (!explored) {
+				return;
+			}
+
+			const u8 alpha{ seen ? u8{ 0xFF } : u8{ 0x80 } };
+
+			atlas.draw(glyph_t{ characters::Floor, bloodied ? seen ? colors::materials::LightBlood : colors::materials::DarkBlood : color_t{ 0x40, alpha } }, position + offset);
+
+			if (!solid) {
+				return;
+			}
+
+			const u8 glyph{ characters::auto_set(smooth, protrudes, zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid)) };
+
+			atlas.draw(glyph_t{ glyph, color_t{ 0xC0, alpha } }, position + offset, nudge);
 		}
 
 		struct hasher {

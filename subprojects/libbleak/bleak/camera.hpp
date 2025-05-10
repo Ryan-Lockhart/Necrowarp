@@ -12,13 +12,13 @@ namespace bleak {
 	  public:
 		constexpr camera_t() noexcept = delete;
 
-		constexpr camera_t(cref<extent_t> size) noexcept : position{}, size{ size }, min{}, max{} {}
+		constexpr camera_t(extent_t size) noexcept : position{}, size{ size }, min{}, max{} {}
 
-		constexpr camera_t(cref<extent_t> size, cref<offset_t> position) noexcept : position{ position }, size{ size }, min{}, max{} {}
+		constexpr camera_t(extent_t size, offset_t position) noexcept : position{ position }, size{ size }, min{}, max{} {}
 
-		constexpr camera_t(cref<extent_t> size, cref<extent_t> min, cref<extent_t> max) noexcept : position{}, size{ size }, min{ min }, max{ max } {}
+		constexpr camera_t(extent_t size, extent_t min, extent_t max) noexcept : position{}, size{ size }, min{ min }, max{ max } {}
 
-		constexpr camera_t(cref<extent_t> size, cref<offset_t> position, cref<extent_t> min, cref<extent_t> max) noexcept : position{ position }, size{ size }, min{ min }, max{ max } {}
+		constexpr camera_t(extent_t size, offset_t position, extent_t min, extent_t max) noexcept : position{ position }, size{ size }, min{ min }, max{ max } {}
 
 		constexpr void constrain() noexcept {
 			if (min == max) {
@@ -28,7 +28,7 @@ namespace bleak {
 			position.clamp(min, max);
 		}
 
-		constexpr void constrain(cref<extent_t> min, cref<extent_t> max) noexcept {
+		constexpr void constrain(extent_t min, extent_t max) noexcept {
 			if (min == max) {
 				return;
 			}
@@ -52,7 +52,7 @@ namespace bleak {
 			position.y = clamp<offset_t::scalar_t>(position.y, min.h, max.h);
 		}
 
-		constexpr bool set(cref<offset_t> position) noexcept {
+		constexpr bool set(offset_t position) noexcept {
 			if (this->position == position) {
 				return false;
 			}
@@ -65,7 +65,7 @@ namespace bleak {
 			return original_position != position;
 		}
 
-		constexpr bool set(cref<offset_t> position, cref<extent_t> min, cref<extent_t> max) noexcept {
+		constexpr bool set(offset_t position, extent_t min, extent_t max) noexcept {
 			if (this->position == position) {
 				return false;
 			}
@@ -78,7 +78,7 @@ namespace bleak {
 			return original_position != position;
 		}
 
-		constexpr bool move(cref<offset_t> offset) noexcept {
+		constexpr bool move(offset_t offset) noexcept {
 			if (offset == offset_t::Zero) {
 				return false;
 			}
@@ -90,7 +90,7 @@ namespace bleak {
 			return original_position != position;
 		}
 
-		constexpr bool move(cref<offset_t> offset, cref<extent_t> min, cref<extent_t> max) noexcept {
+		constexpr bool move(offset_t offset, extent_t min, extent_t max) noexcept {
 			if (offset == offset_t::Zero) {
 				return false;
 			}
@@ -102,7 +102,7 @@ namespace bleak {
 			return original_position != position;
 		}
 
-		template<bool Force = false> constexpr bool center_on(cref<offset_t> target) noexcept {
+		template<bool Force = false> constexpr bool center_on(offset_t target) noexcept {
 			const offset_t target_position{ target - half_size() };
 			
 			if (position == target_position) {
@@ -119,7 +119,7 @@ namespace bleak {
 			return original_position != position;
 		}
 
-		template<bool Force = false> constexpr bool center_on(cref<offset_t> target, cref<extent_t> min, cref<extent_t> max) noexcept {
+		template<bool Force = false> constexpr bool center_on(offset_t target, extent_t min, extent_t max) noexcept {
 			const offset_t target_position{ target - half_size() };
 
 			if (position == target_position) {

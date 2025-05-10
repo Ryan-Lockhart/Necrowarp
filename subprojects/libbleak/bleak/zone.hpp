@@ -150,17 +150,17 @@ namespace bleak {
 
 		constexpr cref<T> operator[](extent_t::scalar_t x, extent_t::scalar_t y) const noexcept { return cells[x, y]; }
 
-		constexpr ref<T> operator[](cref<offset_t> position) noexcept { return cells[position]; }
+		constexpr ref<T> operator[](offset_t position) noexcept { return cells[position]; }
 
-		constexpr cref<T> operator[](cref<offset_t> position) const noexcept { return cells[position]; }
+		constexpr cref<T> operator[](offset_t position) const noexcept { return cells[position]; }
 
-		constexpr bool on_x_edge(cref<offset_t> position) const noexcept { return position.x == zone_origin.x || position.x == zone_extent.x; }
+		constexpr bool on_x_edge(offset_t position) const noexcept { return position.x == zone_origin.x || position.x == zone_extent.x; }
 
-		constexpr bool on_y_edge(cref<offset_t> position) const noexcept { return position.y == zone_origin.y || position.y == zone_extent.y; }
+		constexpr bool on_y_edge(offset_t position) const noexcept { return position.y == zone_origin.y || position.y == zone_extent.y; }
 
-		constexpr bool on_edge(cref<offset_t> position) const noexcept { return on_x_edge(position) || on_y_edge(position); }
+		constexpr bool on_edge(offset_t position) const noexcept { return on_x_edge(position) || on_y_edge(position); }
 
-		constexpr cardinal_t edge_state(cref<offset_t> position) const noexcept {
+		constexpr cardinal_t edge_state(offset_t position) const noexcept {
 			cardinal_t state{ cardinal_e::Central };
 
 			if (!on_edge(position)) {
@@ -182,7 +182,7 @@ namespace bleak {
 			return state;
 		}
 
-		template<zone_region_t Region> constexpr bool within(cref<offset_t> position) const noexcept {
+		template<zone_region_t Region> constexpr bool within(offset_t position) const noexcept {
 			if constexpr (Region == zone_region_t::All) {
 				return cells.valid(position);
 			} else if constexpr (Region == zone_region_t::Interior) {
@@ -662,7 +662,7 @@ namespace bleak {
 			return *this;
 		}
 
-		template<bool Safe = false> constexpr u8 neighbour_count(cref<offset_t> position, cref<T> value) const noexcept {
+		template<bool Safe = false> constexpr u8 neighbour_count(offset_t position, cref<T> value) const noexcept {
 			u8 count{ 0 };
 
 			if constexpr (Safe) {
@@ -731,7 +731,7 @@ namespace bleak {
 
 		template<bool Safe = false, typename U>
 			requires is_equatable<T, U>::value
-		constexpr u8 neighbour_count(cref<offset_t> position, cref<U> value) const noexcept {
+		constexpr u8 neighbour_count(offset_t position, cref<U> value) const noexcept {
 			u8 count{ 0 };
 
 			if constexpr (Safe) {
@@ -798,7 +798,7 @@ namespace bleak {
 			return count;
 		}
 
-		template<neighbourhood_solver_t Solver, bool Safe = false> constexpr u8 calculate_index(cref<offset_t> position, cref<T> value) const noexcept {
+		template<neighbourhood_solver_t Solver, bool Safe = false> constexpr u8 calculate_index(offset_t position, cref<T> value) const noexcept {
 			u8 index{ 0 };
 
 			if constexpr (Solver == neighbourhood_solver_t::Melded) {
@@ -907,7 +907,7 @@ namespace bleak {
 
 		template<neighbourhood_solver_t Solver, bool Safe = false, typename U>
 			requires is_equatable<T, U>::value
-		constexpr u8 calculate_index(cref<offset_t> position, cref<U> value) const noexcept {
+		constexpr u8 calculate_index(offset_t position, cref<U> value) const noexcept {
 			u8 index{ 0 };
 
 			if constexpr (Solver == neighbourhood_solver_t::Melded) {
@@ -1302,7 +1302,7 @@ namespace bleak {
 			return *this;
 		}
 
-		template<bool Safe = false> constexpr void modulate(ref<array_t<T, Size>> buffer, cref<offset_t> position, u8 threshold, cref<T> true_state, cref<T> false_state) const noexcept {
+		template<bool Safe = false> constexpr void modulate(ref<array_t<T, Size>> buffer, offset_t position, u8 threshold, cref<T> true_state, cref<T> false_state) const noexcept {
 			u8 neighbours{ neighbour_count<Safe>(position, true_state) };
 
 			if (neighbours > threshold) {
@@ -1314,7 +1314,7 @@ namespace bleak {
 
 		template<bool Safe = false, typename U>
 			requires std::is_assignable<T, U>::value
-		constexpr void modulate(ref<array_t<T, Size>> buffer, cref<offset_t> position, u8 threshold, cref<U> true_state, cref<U> false_state) const noexcept {
+		constexpr void modulate(ref<array_t<T, Size>> buffer, offset_t position, u8 threshold, cref<U> true_state, cref<U> false_state) const noexcept {
 			u8 neighbours{ neighbour_count<Safe>(position, true_state) };
 
 			if (neighbours > threshold) {
@@ -1324,7 +1324,7 @@ namespace bleak {
 			}
 		}
 
-		template<bool Safe = false> constexpr void modulate(ref<array_t<T, Size>> buffer, cref<offset_t> position, u8 threshold, cref<binary_applicator_t<T>> applicator) const noexcept {
+		template<bool Safe = false> constexpr void modulate(ref<array_t<T, Size>> buffer, offset_t position, u8 threshold, cref<binary_applicator_t<T>> applicator) const noexcept {
 			u8 neighbours{ neighbour_count<Safe>(position, applicator.true_value) };
 
 			if (neighbours > threshold) {
@@ -1336,7 +1336,7 @@ namespace bleak {
 
 		template<bool Safe = false, typename U>
 			requires std::is_assignable<T, U>::value
-		constexpr void modulate(ref<array_t<T, Size>> buffer, cref<offset_t> position, u8 threshold, cref<binary_applicator_t<U>> applicator) const noexcept {
+		constexpr void modulate(ref<array_t<T, Size>> buffer, offset_t position, u8 threshold, cref<binary_applicator_t<U>> applicator) const noexcept {
 			u8 neighbours{ neighbour_count<Safe>(position, applicator.true_value) };
 
 			if (neighbours > threshold) {
@@ -1896,7 +1896,7 @@ namespace bleak {
 			return std::nullopt;
 		}
 
-		constexpr bool linear_blockage(cref<offset_t> origin, cref<offset_t> target, cref<T> value) const noexcept {
+		constexpr bool linear_blockage(offset_t origin, offset_t target, cref<T> value) const noexcept {
 			if (cells[origin] == value || cells[target] == value) {
 				return true;
 			}
@@ -2120,7 +2120,7 @@ namespace bleak {
 			return false;
 		}
 
-		constexpr bool linear_blockage(cref<offset_t> origin, cref<offset_t> target, cref<T> value, u32 distance) const noexcept {
+		constexpr bool linear_blockage(offset_t origin, offset_t target, cref<T> value, u32 distance) const noexcept {
 			if (cells[origin] == value || cells[target] == value) {
 				return true;
 			}
@@ -2186,7 +2186,7 @@ namespace bleak {
 		}
 
 		template<bool Simple = false, extent_t AtlasSize>
-		constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<offset_t> offset) const noexcept
+		constexpr void draw(cref<atlas_t<AtlasSize>> atlas, offset_t offset) const noexcept
 			requires is_drawable<T>::value
 		{
 			for (offset_t::scalar_t y{ 0 }; y < zone_size.h; ++y) {
@@ -2227,7 +2227,31 @@ namespace bleak {
 		}
 
 		template<bool Simple = false, extent_t AtlasSize>
-		constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<offset_t> offset, cref<offset_t> origin, cref<extent_t> size) const noexcept
+		constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<camera_t> camera, offset_t offset) const noexcept
+			requires is_drawable<T>::value
+		{
+			const offset_t origin{ camera.get_position() };
+			const extent_t camera_extent{ camera.get_extent() };
+
+			if (camera_extent.w == 0 || camera_extent.h == 0 || origin.x > zone_extent.x || origin.y > zone_extent.y) {
+				return;
+			}
+
+			for (offset_t::scalar_t y{ max(offset_t::scalar_t{ 0 }, origin.y) }; y < min(zone_size.h, camera_extent.h); ++y) {
+				for (offset_t::scalar_t x{ max(offset_t::scalar_t{ 0 }, origin.x) }; x < min(zone_size.w, camera_extent.w); ++x) {
+					const offset_t pos{ x, y };
+
+					if constexpr (Simple) {
+						(*this)[pos].draw(atlas, pos, -origin, offset);
+					} else {
+						(*this)[pos].draw(atlas, *this, pos, -origin, offset);
+					}
+				}
+			}
+		}
+
+		template<bool Simple = false, extent_t AtlasSize>
+		constexpr void draw(cref<atlas_t<AtlasSize>> atlas, offset_t offset, offset_t origin, extent_t size) const noexcept
 			requires is_drawable<T>::value
 		{
 			const extent_t camera_extent{ origin + size };

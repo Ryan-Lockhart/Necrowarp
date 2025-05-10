@@ -21,7 +21,7 @@ namespace bleak {
 		constexpr glyph_t(u32 index, color_t color) noexcept : color{ color }, index{ index } {}
 
 		struct hasher {
-			static constexpr size_t operator()(cref<glyph_t> glyph) noexcept { return hash_combine(glyph.color, glyph.index); }
+			static constexpr size_t operator()(glyph_t glyph) noexcept { return hash_combine(glyph.color, glyph.index); }
 		};
 	};
 

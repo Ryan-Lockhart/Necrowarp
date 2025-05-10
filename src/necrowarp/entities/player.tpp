@@ -46,7 +46,7 @@ namespace necrowarp {
 		}
 	}
 
-	inline command_type_t player_t::clash_or_consume(cref<offset_t> position) const noexcept {
+	inline command_type_t player_t::clash_or_consume(offset_t position) const noexcept {
 		const entity_type_t type{ entity_registry.at(position) };
 		
 		switch (type) {

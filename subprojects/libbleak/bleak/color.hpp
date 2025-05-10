@@ -49,15 +49,15 @@ namespace bleak {
 		constexpr color_t(f64 r, f64 g, f64 b, f64 a = 1.0) noexcept :
 			c_color_t{ .r = wrap_cast(r), .g = wrap_cast(g), .b = wrap_cast(b), .a = wrap_cast(a) } {}
 
-		constexpr bool operator==(cref<color_t> other) const noexcept { return packed == other.packed; }
+		constexpr bool operator==(color_t other) const noexcept { return packed == other.packed; }
 
-		constexpr bool operator!=(cref<color_t> other) const noexcept { return packed != other.packed; }
+		constexpr bool operator!=(color_t other) const noexcept { return packed != other.packed; }
 
-		constexpr bool operator<(cref<color_t> other) const noexcept = delete;
-		constexpr bool operator<=(cref<color_t> other) const noexcept = delete;
+		constexpr bool operator<(color_t other) const noexcept = delete;
+		constexpr bool operator<=(color_t other) const noexcept = delete;
 
-		constexpr bool operator>(cref<color_t> other) const noexcept = delete;
-		constexpr bool operator>=(cref<color_t> other) const noexcept = delete;
+		constexpr bool operator>(color_t other) const noexcept = delete;
+		constexpr bool operator>=(color_t other) const noexcept = delete;
 
 		constexpr void set_rgb(f32 red, f32 green, f32 blue) noexcept {
 			r = wrap_cast(red);
@@ -100,7 +100,7 @@ namespace bleak {
 		inline operator std::string() const noexcept { return std::format("[{}, {}, {}, {}]", r, g, b, a); }
 
 		struct hasher {
-			static constexpr usize operator()(cref<color_t> color) noexcept { return hash_combine(color.r, color.g, color.b, color.a); }
+			static constexpr usize operator()(color_t color) noexcept { return hash_combine(color.r, color.g, color.b, color.a); }
 		};
 	};
 } // namespace bleak

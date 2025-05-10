@@ -31,7 +31,7 @@ namespace bleak {
 			SDL_HideWindow(handle);
 		}
 
-		static inline ptr<window> create_window(cstr title, cref<extent_t> size) noexcept {
+		static inline ptr<window> create_window(cstr title, extent_t size) noexcept {
 			ptr<window> handle = SDL_CreateWindow(title, WINDOW_POSITION_CENTERED, WINDOW_POSITION_CENTERED, static_cast<i32>(size.w), static_cast<i32>(size.h), WINDOW_FLAGS_NONE);
 
 			if (handle == nullptr) {
@@ -41,7 +41,7 @@ namespace bleak {
 			return handle;
 		}
 
-		static inline ptr<window> create_window(cstr title, cref<extent_t> size, window_flags flags) noexcept {
+		static inline ptr<window> create_window(cstr title, extent_t size, window_flags flags) noexcept {
 			ptr<window> handle = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, static_cast<i32>(size.w), static_cast<i32>(size.h), flags);
 
 			if (handle == nullptr) {
@@ -51,7 +51,7 @@ namespace bleak {
 			return handle;
 		}
 
-		static inline ptr<window> create_window(cstr title, cref<extent_t> size, cref<offset_t> position, window_flags flags) noexcept {
+		static inline ptr<window> create_window(cstr title, extent_t size, offset_t position, window_flags flags) noexcept {
 			ptr<window> handle = SDL_CreateWindow(title, static_cast<i32>(position.x), static_cast<i32>(position.y), static_cast<i32>(size.w), static_cast<i32>(size.h), flags);
 
 			if (handle == nullptr) {
@@ -86,9 +86,9 @@ namespace bleak {
 	  public:
 		inline window_t() = delete;
 
-		inline window_t(cstr title, cref<extent_t> size, sdl::window_flags flags) noexcept : window{ sdl::create_window(title, size, flags) }, flags{ flags } {}
+		inline window_t(cstr title, extent_t size, sdl::window_flags flags) noexcept : window{ sdl::create_window(title, size, flags) }, flags{ flags } {}
 
-		inline window_t(cstr title, cref<offset_t> position, cref<extent_t> size, sdl::window_flags flags) noexcept : window{ sdl::create_window(title, size, position, flags) }, flags{ flags } {}
+		inline window_t(cstr title, offset_t position, extent_t size, sdl::window_flags flags) noexcept : window{ sdl::create_window(title, size, position, flags) }, flags{ flags } {}
 
 		inline window_t(cref<window_t> other) noexcept = delete;
 

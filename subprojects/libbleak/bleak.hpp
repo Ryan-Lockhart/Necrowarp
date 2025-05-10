@@ -1,10 +1,13 @@
 #pragma once
 
- // IWYU pragma: begin_exports
+// IWYU pragma: begin_exports
 #include <bleak/applicator.hpp>
 #include <bleak/arc.hpp>
 #include <bleak/area.hpp>
 #include <bleak/array.hpp>
+#include <bleak/atlas.hpp>
+#include <bleak/binarray.hpp>
+#include <bleak/bitdef.hpp>
 #include <bleak/camera.hpp>
 #include <bleak/cardinal.hpp>
 #include <bleak/cell.hpp>
@@ -29,20 +32,23 @@
 #include <bleak/memory.hpp>
 #include <bleak/mixer.hpp>
 #include <bleak/mouse.hpp>
+#include <bleak/music.hpp>
 #include <bleak/octant.hpp>
 #include <bleak/offset.hpp>
 #include <bleak/path.hpp>
-#include <bleak/primitive.hpp>
 #include <bleak/primitive_types.hpp>
+#include <bleak/primitive.hpp>
 #include <bleak/quadrant.hpp>
 #include <bleak/random.hpp>
 #include <bleak/rect.hpp>
 #include <bleak/region.hpp>
 #include <bleak/renderer.hpp>
 #include <bleak/sound.hpp>
+#include <bleak/sparse.hpp>
 #include <bleak/sprite.hpp>
 #include <bleak/steam.hpp>
 #include <bleak/subsystem.hpp>
+#include <bleak/text.hpp>
 #include <bleak/texture.hpp>
 #include <bleak/timer.hpp>
 #include <bleak/tree.hpp>

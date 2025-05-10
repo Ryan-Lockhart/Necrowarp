@@ -229,43 +229,47 @@ namespace necrowarp {
 		NecromanticAscendance,
 		Exorcise,
 		Resurrect,
-		Anoint
+		Anoint,
+		Suicide
 	};
 
 	static constexpr cstr to_string(cref<command_type_t> command) noexcept {
 		switch (command) {
-		case command_type_t::None:
-			return "none";
-		case command_type_t::Move:
-			return "move";
-		case command_type_t::Descend:
-			return "descend";
-		case command_type_t::Consume:
-			return "consume";
-		case command_type_t::Clash:
-			return "clash";
-		case command_type_t::RandomWarp:
-			return "random warp";
-		case command_type_t::TargetWarp:
-			return "target warp";
-		case command_type_t::ConsumeWarp:
-			return "consume warp";
-		case command_type_t::CalciticInvocation:
-			return "calcitic invocation";
-		case command_type_t::SpectralInvocation:
-			return "spectral invocation";
-		case command_type_t::SanguineInvocation:
-			return "sanguine invocation";
-		case command_type_t::NecromanticAscendance:
-			return "necromantic ascendance";
-		case command_type_t::Exorcise:
-			return "exorcise";
-		case command_type_t::Resurrect:
-			return "resurrect";
-		case command_type_t::Anoint:
-			return "anoint";
-		default:
-			return "unknown";
+			case command_type_t::None: {
+				return "none";
+			} case command_type_t::Move: {
+				return "move";
+			} case command_type_t::Descend: {
+				return "descend";
+			} case command_type_t::Consume: {
+				return "consume";
+			} case command_type_t::Clash: {
+				return "clash";
+			} case command_type_t::RandomWarp: {
+				return "random warp";
+			} case command_type_t::TargetWarp: {
+				return "target warp";
+			} case command_type_t::ConsumeWarp: {
+				return "consume warp";
+			} case command_type_t::CalciticInvocation: {
+				return "calcitic invocation";
+			} case command_type_t::SpectralInvocation: {
+				return "spectral invocation";
+			} case command_type_t::SanguineInvocation: {
+				return "sanguine invocation";
+			} case command_type_t::NecromanticAscendance: {
+				return "necromantic ascendance";
+			} case command_type_t::Exorcise: {
+				return "exorcise";
+			} case command_type_t::Resurrect: {
+				return "resurrect";
+			} case command_type_t::Anoint: {
+				return "anoint";
+			} case command_type_t::Suicide: {
+				return "suicide";
+			} default: {
+				return "unknown";
+			}
 		}
 	}
 

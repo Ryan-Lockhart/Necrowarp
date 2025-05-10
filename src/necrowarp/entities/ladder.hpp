@@ -102,9 +102,9 @@ namespace necrowarp {
 		verticality_t verticality;
 		shackle_type_t shackle;
 
-		inline ladder_t(cref<offset_t> position) noexcept : position{ position }, verticality{ verticality_t::Up }, shackle{ shackle_type_t::None } {}
+		inline ladder_t(offset_t position) noexcept : position{ position }, verticality{ verticality_t::Up }, shackle{ shackle_type_t::None } {}
 
-		inline ladder_t(cref<offset_t> position, verticality_t verticality, bool random = false) noexcept :
+		inline ladder_t(offset_t position, verticality_t verticality, bool random = false) noexcept :
 			position{ position },
 			verticality{ verticality },
 			shackle{
@@ -116,7 +116,7 @@ namespace necrowarp {
 			}
 		{}
 
-		inline ladder_t(cref<offset_t> position, verticality_t verticality, shackle_type_t shackle) noexcept : position{ position }, verticality{ verticality }, shackle{ shackle } {}
+		inline ladder_t(offset_t position, verticality_t verticality, shackle_type_t shackle) noexcept : position{ position }, verticality{ verticality }, shackle{ shackle } {}
 
 		inline bool is_up_ladder() const noexcept { return verticality == verticality_t::Up; }
 
@@ -166,7 +166,7 @@ namespace necrowarp {
 			draw_shackle(position);
 		}
 
-		inline void draw(cref<offset_t> offset) const noexcept {
+		inline void draw(offset_t offset) const noexcept {
 			const offset_t draw_position{ position + offset };
 
 			game_atlas.draw(current_glyph(), draw_position);
@@ -190,7 +190,7 @@ namespace necrowarp {
 			draw_shackle(draw_position);
 		}
 
-		inline void draw(cref<camera_t> camera, cref<offset_t> offset) const noexcept {
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept {
 			const offset_t draw_position{ position + camera.get_offset() + offset };
 
 			game_atlas.draw(current_glyph(), draw_position);
@@ -210,7 +210,7 @@ namespace necrowarp {
 
 				static constexpr usize operator()(cref<ladder_t> ladder) noexcept { return offset_t::hasher::operator()(ladder.position); }
 
-				static constexpr usize operator()(cref<offset_t> position) noexcept { return offset_t::hasher::operator()(position); }
+				static constexpr usize operator()(offset_t position) noexcept { return offset_t::hasher::operator()(position); }
 			};
 		};
 
@@ -220,9 +220,9 @@ namespace necrowarp {
 			
 				static constexpr bool operator()(cref<ladder_t> lhs, cref<ladder_t> rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs.position); }
 
-				static constexpr bool operator()(cref<ladder_t> lhs, cref<offset_t> rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs); }
+				static constexpr bool operator()(cref<ladder_t> lhs, offset_t rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs); }
 
-				static constexpr bool operator()(cref<offset_t> lhs, cref<ladder_t> rhs) noexcept { return offset_t::hasher::operator()(lhs) == offset_t::hasher::operator()(rhs.position); }
+				static constexpr bool operator()(offset_t lhs, cref<ladder_t> rhs) noexcept { return offset_t::hasher::operator()(lhs) == offset_t::hasher::operator()(rhs.position); }
 			};
 		};
 	};

@@ -15,11 +15,11 @@ namespace bleak {
 
 		constexpr inline sprite_t() noexcept = delete;
 
-		constexpr inline sprite_t(cref<glyph_t> glyph) noexcept : position{ 0, 0 }, glyph{ glyph } {}
+		constexpr inline sprite_t(glyph_t glyph) noexcept : position{ 0, 0 }, glyph{ glyph } {}
 
 		constexpr inline sprite_t(rval<glyph_t> glyph) noexcept : position{ 0, 0 }, glyph{ std::move(glyph) } {}
 
-		constexpr inline sprite_t(cref<glyph_t> glyph, cref<offset_t> position) noexcept : position{ position }, glyph{ glyph } {}
+		constexpr inline sprite_t(glyph_t glyph, offset_t position) noexcept : position{ position }, glyph{ glyph } {}
 
 		constexpr inline sprite_t(rval<glyph_t> glyph, rval<offset_t> position) noexcept : position{ std::move(position) }, glyph{ std::move(glyph) } {}
 
@@ -49,7 +49,7 @@ namespace bleak {
 
 		template<extent_t AtlasSize> constexpr inline void draw(cref<atlas_t<AtlasSize>> atlas) const { atlas.draw(glyph, position); }
 
-		template<extent_t AtlasSize> constexpr inline void draw(cref<atlas_t<AtlasSize>> atlas, cref<offset_t> offset) const { atlas.draw((glyph_t)glyph, position + offset); }
+		template<extent_t AtlasSize> constexpr inline void draw(cref<atlas_t<AtlasSize>> atlas, offset_t offset) const { atlas.draw((glyph_t)glyph, position + offset); }
 
 		struct hasher {
 			static constexpr inline size_t operator()(cref<sprite_t> sprite) noexcept { return hash_combine(sprite.position, sprite.glyph); }
@@ -68,7 +68,7 @@ namespace bleak {
 
 		constexpr inline animated_sprite_t(rval<animated_glyph_t<Length>> glyph) noexcept : glyph{ std::move(glyph) }, position{ 0, 0 } {}
 
-		constexpr inline animated_sprite_t(rval<animated_glyph_t<Length>> glyph, cref<offset_t> position) noexcept : glyph{ std::move(glyph) }, position{ position } {}
+		constexpr inline animated_sprite_t(rval<animated_glyph_t<Length>> glyph, offset_t position) noexcept : glyph{ std::move(glyph) }, position{ position } {}
 
 		constexpr inline animated_sprite_t(rval<animated_glyph_t<Length>> glyph, rval<offset_t> position) noexcept : glyph{ std::move(glyph) }, position{ std::move(position) } {}
 
@@ -102,7 +102,7 @@ namespace bleak {
 
 		template<extent_t AtlasSize> constexpr inline void draw(cref<atlas_t<AtlasSize>> atlas) const { atlas.draw(glyph.current(), position); }
 
-		template<extent_t AtlasSize> constexpr inline void draw(cref<atlas_t<AtlasSize>> atlas, cref<offset_t> offset) const { atlas.draw(glyph.current(), position + offset); }
+		template<extent_t AtlasSize> constexpr inline void draw(cref<atlas_t<AtlasSize>> atlas, offset_t offset) const { atlas.draw(glyph.current(), position + offset); }
 
 		struct hasher {
 			static constexpr inline size_t operator()(cref<animated_sprite_t> sprite) noexcept { return hash_combine(sprite.position, sprite.glyph); }
