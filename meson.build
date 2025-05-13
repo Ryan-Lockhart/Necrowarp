@@ -39,7 +39,7 @@ endif
 
 subproject('bleak')
 
-bleak_dep = dependency('bleak', required: true)
+bleak_dep = dependency('bleak', required: true, fallback: ['bleak', 'bleak_dep'])
 
 subdir('inc')
 
