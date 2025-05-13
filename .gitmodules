@@ -1,0 +1,3 @@
+[submodule "subprojects/bleak"]
+	path = subprojects/bleak
+	url = https://github.com/ryan-lockhart/bleak
