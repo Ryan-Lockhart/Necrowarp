@@ -1,6 +1,6 @@
 #pragma once
 
-#include <necrowarp/entities/skull.hpp>
+#include <necrowarp/entities/inanimate/ladder.hpp>
 
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>

@@ -4,8 +4,10 @@ build_type = get_option('buildtype')
 
 if build_type == 'debug'
     subsystem = 'console'
+    necrowarp_args = ['-DBLEAK_DEBUG']
 else
     subsystem = 'windows'
+    necrowarp_args = ['-DBLEAK_RELEASE', '-DNDEBUG']
 endif
 
 install_dir = '@0@/install/@1@/@2@/@3@'.format(
@@ -22,43 +24,30 @@ endif
 cxx = meson.get_compiler('cpp')
 
 if target_machine.system() == 'windows'
-    includes = include_directories(['src', 'C:/dev/msys64/ucrt64/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include'])
 
-    std_deps = [
-        cxx.find_library('gcc_eh', dirs: 'C:/dev/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/15.1.0', required: true, static: true),
-        cxx.find_library('stdc++', dirs: 'C:/dev/msys64/ucrt64/lib', required: true, static: true),
-        cxx.find_library('winpthread', dirs: 'C:/dev/msys64/ucrt64/lib', required: true, static: true),
-        cxx.find_library('steam_api64', dirs: 'C:/dev/steam/bin/win64', required: true, static: false),
-    ]
+    necrowarp_private_includes = include_directories('src', 'C:/dev/msys64/ucrt64/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include')
 
     dyn_libs = ['C:/dev/steam/bin/win64/steam_api64.dll']
-elif target_machine.system() == 'linux'
-    includes = include_directories(['src', '/usr/local/include/SDL2', '/usr/local/include'])
 
-    std_deps = [
-        cxx.find_library('gcc_eh', dirs: '/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1', required: true, static: true),
-        cxx.find_library('stdc++', dirs: '/usr/lib', required: true, static: true),
-        cxx.find_library('pthread', dirs: '/usr/lib', required: true, static: true),
-        cxx.find_library('steam_api', dirs: '/usr/local/lib', required: true, static: false),
-    ]
+elif target_machine.system() == 'linux'
+
+    necrowarp_private_includes = include_directories('src', '/usr/local/include/SDL2', '/usr/local/include')
 
     dyn_libs = ['/usr/local/lib/libsteam_api.so']
+
 endif
 
-sdl_deps = [
-    dependency('SDL2', required: true, static: true),
-    dependency('SDL2_image', required: true, static: true),
-    dependency('SDL2_mixer', required: true, static: true),
-    dependency('SDL2_net', required: true, static: true),
-]
+subproject('bleak')
 
-bleak_dep = dependency('bleak', required: true, fallback: ['libbleak', 'bleak_dep'])
+bleak_dep = dependency('bleak', required: true)
+
+subdir('inc')
 
 executable('necrowarp', 'src/program.cpp',
-	cpp_args: ['-DSTEAMLESS'],
+	cpp_args: ['-DSTEAMLESS', necrowarp_args],
 
-    include_directories: [includes],
-    dependencies: [std_deps, sdl_deps, bleak_dep],
+    include_directories: [necrowarp_private_includes, necrowarp_internal_includes],
+    dependencies: bleak_dep,
 
     install: true,
     install_dir: install_dir,

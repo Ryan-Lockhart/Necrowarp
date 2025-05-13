@@ -39,11 +39,11 @@ namespace necrowarp {
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<skull_t>, position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + offset); }
+		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
 
 		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset() + offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator entity_type_t() const noexcept { return entity_type_t::Skull; }
 

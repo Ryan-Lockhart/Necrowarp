@@ -198,6 +198,14 @@ namespace necrowarp {
 
 	template<typename T> concept PlayerEntity = is_entity<T>::value && is_player<T>::value;
 
+	template<typename T> struct is_docile {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_docile_v = is_docile<T>::value;
+
+	template<typename T> concept DocileEntity = is_entity<T>::value && is_docile<T>::value;
+
 	template<typename T> struct is_fodder {
 		static constexpr bool value = false;
 	};
@@ -278,6 +286,14 @@ namespace necrowarp {
 
 		std::optional<offset_t> source;
 		std::optional<offset_t> target;
+
+		inline bool has_source() const noexcept { return source.has_value(); }
+		inline bool has_target() const noexcept { return source.has_value(); }
+
+		inline bool is_empty() const noexcept { return !has_source() && !has_target(); }
+
+		inline bool is_unary() const noexcept { return has_source() ^ has_target(); }
+		inline bool is_binary() const noexcept { return has_source() && has_target(); }
 	};
 
 	constexpr entity_command_t null_command{ command_type_t::None, std::nullopt, std::nullopt };

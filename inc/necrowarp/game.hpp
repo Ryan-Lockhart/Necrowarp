@@ -605,7 +605,7 @@ namespace necrowarp {
 					renderer.draw_fill_rect(rect_t{ offset_t{ 0, globals::window_size.h - excess_size.h - 1 }, extent_t{ globals::window_size.w, excess_size.h } }, color_t { 0xC0 });
 				}
 
-				game_map.draw(game_atlas, camera, globals::grid_origin<grid_type_e::Game>());
+				game_map.draw(game_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 
 				entity_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
 			}

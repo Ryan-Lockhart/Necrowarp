@@ -1,6 +1,6 @@
 #pragma once
 
-#include <necrowarp/entities/adventurer.hpp>
+#include <necrowarp/entities/animate/good/adventurer.hpp>
 
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>

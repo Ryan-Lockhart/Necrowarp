@@ -79,16 +79,33 @@ namespace necrowarp {
 
 	struct ladder_t {
 	  private:
-		inline void draw_shackle(offset_t draw_position) const noexcept {
+		inline void draw_shackle(offset_t pos) const noexcept {
 			switch (shackle) {
 				case shackle_type_t::Calcitic: {
-					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, draw_position);
+					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos);
 					return;
 				} case shackle_type_t::Spectral: {
-					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, draw_position);
+					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos);
 					return;
 				} case shackle_type_t::Sanguine: {
-					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, draw_position);
+					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos);
+					return;
+				} default: {
+					return;
+				}
+			}
+		}
+
+		inline void draw_shackle(offset_t pos, offset_t offset) const noexcept {
+			switch (shackle) {
+				case shackle_type_t::Calcitic: {
+					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos, offset);
+					return;
+				} case shackle_type_t::Spectral: {
+					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos, offset);
+					return;
+				} case shackle_type_t::Sanguine: {
+					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos, offset);
 					return;
 				} default: {
 					return;
@@ -167,39 +184,37 @@ namespace necrowarp {
 		}
 
 		inline void draw(offset_t offset) const noexcept {
-			const offset_t draw_position{ position + offset };
-
-			game_atlas.draw(current_glyph(), draw_position);
+			game_atlas.draw(current_glyph(), position, offset);
 
 			if (!has_shackle()) {
 				return;
 			}
 
-			draw_shackle(draw_position);
+			draw_shackle(position, offset);
 		}
 
 		inline void draw(cref<camera_t> camera) const noexcept {
-			const offset_t draw_position{ position + camera.get_offset() };
+			const offset_t pos{ position + camera.get_offset() };
 
-			game_atlas.draw(current_glyph(), draw_position);
+			game_atlas.draw(current_glyph(), pos);
 
 			if (!has_shackle()) {
 				return;
 			}
 
-			draw_shackle(draw_position);
+			draw_shackle(pos);
 		}
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept {
-			const offset_t draw_position{ position + camera.get_offset() + offset };
+			const offset_t pos{ position + camera.get_offset() };
 
-			game_atlas.draw(current_glyph(), draw_position);
+			game_atlas.draw(current_glyph(), pos, offset);
 
 			if (!has_shackle()) {
 				return;
 			}
 
-			draw_shackle(draw_position);
+			draw_shackle(pos, offset);
 		}
 
 		constexpr operator entity_type_t() const noexcept { return entity_type_t::Ladder; }

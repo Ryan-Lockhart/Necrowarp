@@ -1,6 +1,6 @@
 #pragma once
 
-#include <necrowarp/entities/flesh_golem.hpp>
+#include <necrowarp/entities/animate/evil/flesh_golem.hpp>
 
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>

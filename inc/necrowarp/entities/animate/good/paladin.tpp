@@ -1,6 +1,6 @@
 #pragma once
 
-#include <necrowarp/entities/paladin.hpp>
+#include <necrowarp/entities/animate/good/paladin.hpp>
 
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>

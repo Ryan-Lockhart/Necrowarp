@@ -1,5 +1,6 @@
 #pragma once
 
+#include "necrowarp/globals.hpp"
 #include <bleak.hpp>
 
 #include <necrowarp/ui.hpp>
@@ -910,11 +911,11 @@ namespace necrowarp {
 
 			if (phase.current_phase == game_phase_t::Playing) {
 				if (!draw_cursor) {
-					grid_cursor.draw(camera, -globals::CursorOffset);
+					grid_cursor.draw(camera, -globals::CursorOffset + globals::grid_origin<grid_type_e::Game>());
 				}
 
 				if (draw_warp_cursor) {
-					warp_cursor.draw(camera, -globals::CursorOffset);
+					warp_cursor.draw(camera, -globals::CursorOffset + globals::grid_origin<grid_type_e::Game>());
 				}
 			}
 			
