@@ -37,7 +37,7 @@ namespace necrowarp {
 
 		inline glyph_t current_glyph() const noexcept { return fresh ? entity_glyphs<skull_t> : glyphs::AnimateSkull; }
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<skull_t>, position); }
+		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
 
 		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
 

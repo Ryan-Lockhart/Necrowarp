@@ -2,10 +2,8 @@
 
 #include <bleak/typedef.hpp>
 
-#include <cmath>
 #include <optional>
 #include <ranges>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>

@@ -24,7 +24,7 @@ namespace necrowarp {
 
 		constexpr bool is_active() const noexcept { return current_state; }
 
-		constexpr bool is_hovered(offset_t position, extent_t size) const noexcept { return Mouse::is_inside(position * ui_atlas.glyph_size, size * ui_atlas.glyph_size); }
+		constexpr bool is_hovered(offset_t position, extent_t size) const noexcept { return Mouse::is_inside(position * ui_atlas.get_glyph_size(), size * ui_atlas.get_glyph_size()); }
 
 		constexpr void update(Mouse::button_t button, offset_t position, extent_t size) noexcept {
 			previous_state = current_state;

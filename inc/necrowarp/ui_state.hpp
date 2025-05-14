@@ -1,6 +1,5 @@
 #pragma once
 
-#include "necrowarp/globals.hpp"
 #include <bleak.hpp>
 
 #include <necrowarp/ui.hpp>

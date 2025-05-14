@@ -40,7 +40,7 @@
 					"program": "install/linux/x86_64/release/necrowarp",
 					"cwd": "install/linux/x86_64/release",
 				},
-				"expressions": "native"
+				"expressions": "native",
 			}
 		]
 	},

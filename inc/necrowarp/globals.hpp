@@ -179,10 +179,16 @@ namespace necrowarp {
 		
 		static inline extent_t window_size{ 1920, 1080 };
 
-		template<grid_type_e GridType> static constexpr extent_t cell_size;
+		template<grid_type_e GridType> static constexpr cstr atlas_path{};
+
+		template<> inline constexpr cstr atlas_path<grid_type_e::UI>{ "res/gfx/glyphs/glyphs_8x8.png" };
+		template<> inline constexpr cstr atlas_path<grid_type_e::Game>{ "res/gfx/tiles/tileset_64x64.png" };
+		template<> inline constexpr cstr atlas_path<grid_type_e::Icon>{ "res/gfx/icons/icons_32x32.png" };
+
+		template<grid_type_e GridType> static constexpr extent_t cell_size{};
 
 		template<> inline constexpr extent_t cell_size<grid_type_e::UI>{ 8, 8 };
-		template<> inline constexpr extent_t cell_size<grid_type_e::Game>{ 16, 16 };
+		template<> inline constexpr extent_t cell_size<grid_type_e::Game>{ 64, 64 };
 		template<> inline constexpr extent_t cell_size<grid_type_e::Icon>{ 32, 32 };
 
 		template<grid_type_e GridType> inline extent_t grid_overflow() noexcept { return window_size % cell_size<GridType>; }
@@ -224,7 +230,7 @@ namespace necrowarp {
 
 		static constexpr rect_t MapBounds{ MapOrigin, MapSize };
 
-		static inline rect_t map_bounds() {
+		static inline rect_t map_bounds() noexcept {
 			const extent_t excess{ max<offset_t::scalar_t>(grid_size<grid_type_e::Game>().w - MapSize.w, 0), max<offset_t::scalar_t>(grid_size<grid_type_e::Game>().h - MapSize.h, 0) };
 
 			return rect_t{ offset_t{ excess.w / 2, excess.h / 2 }, extent_t{ grid_size<grid_type_e::Game>().w - excess.w - 1, grid_size<grid_type_e::Game>().h - excess.h - 1 } };
@@ -234,8 +240,8 @@ namespace necrowarp {
 
 		static constexpr extent_t BorderSize{ 4, 4 };
 
-		static constexpr f32 CellToGlyphRatio{ 2.0f };
-		static constexpr f32 GlyphToCellRatio{ 0.5f };
+		static constexpr f32 CellToGlyphRatio{ static_cast<f32>(cell_size<grid_type_e::Game>.w) / static_cast<f32>(cell_size<grid_type_e::UI>.w) };
+		static constexpr f32 GlyphToCellRatio{ static_cast<f32>(cell_size<grid_type_e::UI>.w) / static_cast<f32>(cell_size<grid_type_e::Game>.w) };
 
 		static inline offset_t convert_cell_to_glyph(offset_t position) noexcept {
 			return offset_t{ offset_t::scalar_cast(position.x * CellToGlyphRatio), offset_t::scalar_cast(position.y * CellToGlyphRatio) };
@@ -247,7 +253,7 @@ namespace necrowarp {
 
 		constexpr offset_t CursorOffset{ cell_size<grid_type_e::Game> / 4 };
 
-		static inline extent_t camera_extent() { return MapSize - globals::grid_size<grid_type_e::Game>(); }
+		static inline extent_t camera_extent() noexcept { return MapSize - globals::grid_size<grid_type_e::Game>(); }
 		static inline offset_t::scalar_t camera_speed{ 4 };
 
 		struct map_config_t {
@@ -283,7 +289,7 @@ namespace necrowarp {
 		};
 		
 		constexpr map_config_t TunnelsPreset{
-			0.5,
+			0.525,
 			512,
 			4,
 			8,
@@ -296,7 +302,7 @@ namespace necrowarp {
 			8
 		};
 
-		static inline map_config_t map_config{ CavernPreset };
+		static inline map_config_t map_config{ TunnelsPreset };
 
 		constexpr i16 SpawnDistributionLow{ 0 };
 		constexpr i16 SpawnDistributionHigh{ 99 };
@@ -327,6 +333,6 @@ namespace necrowarp {
 
 		static inline std::uniform_real_distribution<f32> blood_pool_dis{ BloodPoolMinimumVolume, BloodPoolMaximumVolume };
 
-		constexpr bool OopsAllPriests{ true };
+		constexpr bool OopsAllPriests{ false };
 	} // namespace globals
 } // namespace necrowarp

@@ -15,9 +15,9 @@ namespace necrowarp {
 
 		constexpr embedded_box_t(color_t background, border_t border) noexcept : background{ background }, border{ border } {}
 
-		constexpr offset_t raw_position(offset_t position) const noexcept { return position * ui_atlas.glyph_size; }
+		constexpr offset_t raw_position(offset_t position) const noexcept { return position * ui_atlas.get_glyph_size(); }
 
-		constexpr extent_t raw_size(extent_t size) const noexcept { return size * ui_atlas.glyph_size; }
+		constexpr extent_t raw_size(extent_t size) const noexcept { return size * ui_atlas.get_glyph_size(); }
 
 		constexpr bool is_hovered(offset_t position, extent_t size) const noexcept { return Mouse::is_inside(raw_position(position), raw_size(size)); }
 

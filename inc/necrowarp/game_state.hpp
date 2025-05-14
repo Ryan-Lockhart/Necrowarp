@@ -26,9 +26,9 @@ namespace necrowarp {
 	static inline window_t window{ globals::GameName.c_str(), globals::window_size, globals::WindowFlags };
 	static inline renderer_t renderer{ window, globals::RendererFlags };
 
-	static inline atlas_t<globals::GlyphsetSize> ui_atlas{ renderer, "res/gfx/glyphs/glyphs_8x8.png" };
-	static inline atlas_t<globals::TilesetSize> game_atlas{ renderer, "res/gfx/tiles/tileset_16x16.png" };
-	static inline atlas_t<globals::IconsetSize> icon_atlas{ renderer, "res/gfx/icons/icons_32x32.png" };
+	static inline atlas_t<globals::GlyphsetSize> ui_atlas{ renderer, globals::atlas_path<grid_type_e::UI> };
+	static inline atlas_t<globals::TilesetSize> game_atlas{ renderer, globals::atlas_path<grid_type_e::Game> };
+	static inline atlas_t<globals::IconsetSize> icon_atlas{ renderer, globals::atlas_path<grid_type_e::Icon> };
 
 	static inline std::mt19937 random_engine{};
 
