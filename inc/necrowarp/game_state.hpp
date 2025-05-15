@@ -5,6 +5,7 @@
 #include <atomic>
 #include <random>
 
+#include <necrowarp/cell.hpp>
 #include <necrowarp/globals.hpp>
 #include <necrowarp/phase.hpp>
 
@@ -87,12 +88,12 @@ namespace necrowarp {
 		bool enabled;
 
 	  public:
-		bool is_enabled() const noexcept { return enabled; };
+		inline bool is_enabled() const noexcept { return enabled; };
 
-		i16 current_minimum() const noexcept { return minimum; };
-		i16 current_maximum() const noexcept { return maximum; };
+		inline i16 current_minimum() const noexcept { return minimum; };
+		inline i16 current_maximum() const noexcept { return maximum; };
 
-		void enable(i16 min, i16 max) noexcept {
+		inline void enable(i16 min, i16 max) noexcept {
 			if (is_enabled()) {
 				return;
 			}
@@ -103,7 +104,7 @@ namespace necrowarp {
 			enabled = true;
 		};
 
-		void disable() noexcept {
+		inline void disable() noexcept {
 			if (!is_enabled()) {
 				return;
 			}
@@ -114,7 +115,7 @@ namespace necrowarp {
 			maximum = 0;
 		};
 
-		void set(i16 min, i16 max) noexcept {
+		inline void set(i16 min, i16 max) noexcept {
 			if (!is_enabled()) {
 				return;
 			}
@@ -137,9 +138,9 @@ namespace necrowarp {
 		bool free_costs;
 		bool bypass_invocations;
 
-		bool is_enabled() const noexcept { return globals::CheatsAllowed && enabled; }
+		inline bool is_enabled() const noexcept { return globals::CheatsAllowed && enabled; }
 
-		void activate() noexcept {
+		inline void activate() noexcept {
 			if (!globals::CheatsAllowed) {
 				return;
 			}
@@ -147,7 +148,7 @@ namespace necrowarp {
 			enabled = true;
 		}
 
-		void deactivate() noexcept {
+		inline void deactivate() noexcept {
 			enabled = false;
 		}
 	};
@@ -162,18 +163,18 @@ namespace necrowarp {
 		usize wave_size{ static_cast<usize>(globals::map_config.starting_adventurers) };
 		usize spawns_remaining{ static_cast<usize>(globals::map_config.starting_adventurers) };
 
-		usize has_spawns() const noexcept { return spawns_remaining > 0; }
+		inline usize has_spawns() const noexcept { return spawns_remaining > 0; }
 
 		i16	player_kills{ 0 };
 		i16	minion_kills{ 0 };
 
-		i16	total_kills() const noexcept { return player_kills + minion_kills; };
+		inline i16	total_kills() const noexcept { return player_kills + minion_kills; };
 
-		i16 current_reinforcements() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerReinforcement, globals::MinimumReinforcements, globals::MaximumReinforcements); }
+		inline i16 current_reinforcements() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerReinforcement, globals::MinimumReinforcements, globals::MaximumReinforcements); }
 		
-		bool has_reinforcements() const noexcept { return current_reinforcements() > 0; }
+		inline bool has_reinforcements() const noexcept { return current_reinforcements() > 0; }
 
-		void reset() noexcept {
+		inline void reset() noexcept {
 			game_seed = std::random_device{}();
 			random_engine.seed(game_seed);
 

@@ -984,23 +984,23 @@ namespace necrowarp {
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::RandomWarp>(cref<entity_command_t> command) noexcept {
-		if (!player.can_random_warp()) {
+		if (!player.can_perform(discount_e::RandomWarp)) {
 			return;
 		}
 
-		player.pay_random_warp_cost();
+		player.pay_cost(discount_e::RandomWarp);
 
 		random_warp(command.source.value());
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::TargetWarp>(cref<entity_command_t> command) noexcept {
-		if (!player.can_target_warp()) {
+		if (!player.can_perform(discount_e::TargetWarp)) {
 			return;
 		}
 
 		++steam_stats::stats<steam_stat_e::TargetWarps, i32>;
 
-		player.pay_target_warp_cost();
+		player.pay_cost(discount_e::TargetWarp);
 
 		entity_registry.update(command.source.value(), command.target.value());
 
@@ -1014,7 +1014,7 @@ namespace necrowarp {
 
 		const entity_type_t target_type{ entity_registry.at(target_position) };
 
-		if (target_type != entity_type_t::Skull && !player.can_target_warp()) {
+		if (target_type != entity_type_t::Skull && !player.can_perform(discount_e::TargetWarp)) {
 			return;
 		}
 
@@ -1026,7 +1026,7 @@ namespace necrowarp {
 		case entity_type_t::Skull: {
 			const bool is_fresh{ entity_registry.at<skull_t>(target_position)->fresh };
 
-			if (!player.can_target_warp(is_fresh ? player_t::SkullBoon : 0)) {
+			if (!player.can_perform(discount_e::TargetWarp, is_fresh ? player_t::SkullBoon : 0)) {
 				return;
 			}
 
@@ -1035,7 +1035,7 @@ namespace necrowarp {
 
 			++steam_stats::stats<steam_stat_e::SkullsConsumed, i32>;
 
-			player.pay_target_warp_cost(is_fresh ? player_t::SkullBoon : 0);
+			player.pay_cost(discount_e::TargetWarp, is_fresh ? player_t::SkullBoon : 0);
 
 			random_warp(source_position);
 
@@ -1049,7 +1049,7 @@ namespace necrowarp {
 
 			entity_registry.update(source_position, target_position);
 
-			player.pay_target_warp_cost();
+			player.pay_cost(discount_e::TargetWarp);
 			player.bolster_armor(armor_boon + player.max_armor() / 8);
 
 			draw_warp_cursor = false;
@@ -1063,7 +1063,7 @@ namespace necrowarp {
 
 			entity_registry.update(source_position, target_position);
 
-			player.pay_target_warp_cost();
+			player.pay_cost(discount_e::TargetWarp);
 			player.bolster_armor(armor_boon + player.max_armor() / 4);
 
 			draw_warp_cursor = false;
@@ -1077,7 +1077,7 @@ namespace necrowarp {
 
 			entity_registry.update(source_position, target_position);
 
-			player.pay_target_warp_cost();
+			player.pay_cost(discount_e::TargetWarp);
 			player.bolster_armor(armor_boon + player.max_armor() / 2);
 
 			draw_warp_cursor = false;
@@ -1088,7 +1088,7 @@ namespace necrowarp {
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::CalciticInvocation>(cref<entity_command_t> command) noexcept {
-		if (!player.can_perform_calcitic_invocation() || entity_registry.empty<skull_t>()) {
+		if (!player.can_perform(discount_e::CalciticInvocation) || entity_registry.empty<skull_t>()) {
 			return;
 		}
 
@@ -1165,11 +1165,11 @@ namespace necrowarp {
 
 		// summon max amount of skeletons achievment placeholder : Skeleton Crew
 
-		player.pay_calcitic_invocation_cost();
+		player.pay_cost(discount_e::CalciticInvocation);
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::SpectralInvocation>(cref<entity_command_t> command) noexcept {
-		if (!player.can_perform_spectral_invocation() || entity_registry.empty<skull_t>()) {
+		if (!player.can_perform(discount_e::SpectralInvocation) || entity_registry.empty<skull_t>()) {
 			return;
 		}
 
@@ -1235,7 +1235,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::SpectralInvocations, i32>;
 
-		player.pay_spectral_invocation_cost();
+		player.pay_cost(discount_e::SpectralInvocation);
 
 		if (!random_warp(command.source.value())) {
 			player.bolster_armor(accumulated_health);
@@ -1249,7 +1249,7 @@ namespace necrowarp {
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::SanguineInvocation>(cref<entity_command_t> command) noexcept {
-		if (!player.can_perform_spectral_invocation() || !game_map.template contains<zone_region_t::Interior>(cell_trait_t::Bloodied)) {
+		if (!player.can_perform(discount_e::SpectralInvocation) || !game_map.template contains<zone_region_t::Interior>(cell_trait_t::Bloodied)) {
 			return;
 		}
 
@@ -1315,7 +1315,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::SanguineInvocations, i32>;
 
-		player.pay_sanguine_invocation_cost();
+		player.pay_cost(discount_e::SanguineInvocation);
 
 		if (!random_warp(command.source.value())) {
 			player.bolster_armor(accumulated_health);
@@ -1329,7 +1329,7 @@ namespace necrowarp {
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::NecromanticAscendance>(cref<entity_command_t> command) noexcept {
-		if (!player.can_perform_necromantic_ascendance() || player.has_ascended()) {
+		if (!player.can_perform(discount_e::NecromanticAscendance) || player.has_ascended()) {
 			return;
 		}
 
@@ -1337,7 +1337,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::NecromanticAscensions, i32>;
 
-		player.pay_necromantic_ascendance_cost();
+		player.pay_cost(discount_e::NecromanticAscendance);
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::Exorcise>(cref<entity_command_t> command) noexcept {

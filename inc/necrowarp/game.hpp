@@ -265,6 +265,8 @@ namespace necrowarp {
 		static inline void descend() noexcept {
 			terminate_process_turn();
 
+			randomize_patrons();
+
 #if !defined(STEAMLESS)
 			steam_stats::store();
 
