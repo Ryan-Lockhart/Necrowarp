@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bleak/constants/colors.hpp"
 #include <bleak.hpp>
 
 #include <bit>
@@ -8,6 +9,169 @@
 
 namespace necrowarp {
 	using namespace bleak;
+
+	enum class fluid_type_e : u8 {
+		None = 0,
+
+		Blood = 1 << 0,
+		Ichor = 1 << 1,
+
+		BloodyIchor = Blood | Ichor,
+	};
+
+	constexpr cstr to_string(fluid_type_e fluid) noexcept {
+		switch (fluid) {
+			case fluid_type_e::None: {
+				return "none";
+			} case fluid_type_e::Blood: {
+				return "blood";
+			} case fluid_type_e::Ichor: {
+				return "ichor";
+			} case fluid_type_e::BloodyIchor: {
+				return "bloody ichor";
+			}
+		}
+	}
+
+	constexpr runes_t to_colored_string(fluid_type_e fluid) noexcept {
+		const cstr string{ to_string(fluid) };
+
+		switch (fluid) {
+			case fluid_type_e::None: {
+				return runes_t{ string, colors::White };
+			} case fluid_type_e::Blood: {
+				return runes_t{ string, colors::materials::Blood };
+			} case fluid_type_e::Ichor: {
+				return runes_t{ string, colors::materials::Ichor };
+			} case fluid_type_e::BloodyIchor: {
+				return runes_t{ string, colors::materials::BloodyIchor };
+			}
+		}
+	}
+
+	struct fluid_cell_t {
+		bool blood : 1 { false };
+		bool ichor : 1 { false };
+		bool : 6;
+
+		constexpr fluid_cell_t() noexcept = default;
+
+		constexpr fluid_cell_t(cref<fluid_cell_t> other) noexcept = default;
+		constexpr fluid_cell_t(rval<fluid_cell_t> other) noexcept = default;
+
+		constexpr ref<fluid_cell_t> operator=(cref<fluid_cell_t> other) noexcept = default;
+		constexpr ref<fluid_cell_t> operator=(rval<fluid_cell_t> other) noexcept = default;
+
+		inline bool contains(fluid_type_e fluid) const noexcept {
+			switch (fluid) {
+				case fluid_type_e::None: {
+					return !blood && !ichor;
+				} case fluid_type_e::Blood: {
+					return blood;
+				} case fluid_type_e::Ichor: {
+					return ichor;
+				} case fluid_type_e::BloodyIchor: {
+					return blood && ichor;
+				}
+			}
+		}
+
+		inline void set(fluid_type_e fluid) noexcept {
+			switch (fluid) {
+				case fluid_type_e::None: {
+					blood = false;
+					ichor = false;
+				} case fluid_type_e::Blood: {
+					blood = true;
+				} case fluid_type_e::Ichor: {
+					ichor = true;
+				} case fluid_type_e::BloodyIchor: {
+					blood = true;
+					ichor = true;
+				}
+			}
+		}
+
+		inline void unset(fluid_type_e fluid) noexcept {
+			switch (fluid) {
+				case fluid_type_e::None: {
+					return;
+				} case fluid_type_e::Blood: {
+					blood = false;
+				} case fluid_type_e::Ichor: {
+					ichor = false;
+				} case fluid_type_e::BloodyIchor: {
+					blood = false;
+					ichor = false;
+				}
+			}
+		}
+
+		template<typename... Fluids>
+			requires is_homogeneous<fluid_type_e, Fluids...>::value && is_plurary<Fluids...>::value
+		constexpr fluid_cell_t(Fluids... fluids) {
+			for (fluid_type_e fluid : { fluids... }) {
+				set(fluid);
+			}
+		}
+
+		constexpr inline fluid_cell_t operator+(fluid_type_e fluid) const noexcept {
+			fluid_cell_t state{ *this };
+
+			state.set(fluid);
+
+			return state;
+		}
+
+		constexpr inline fluid_cell_t operator-(fluid_type_e fluid) const noexcept {
+			fluid_cell_t cell{ *this };
+
+			cell.unset(fluid);
+
+			return cell;
+		}
+
+		constexpr inline ref<fluid_cell_t> operator+=(fluid_type_e fluid) noexcept {
+			set(fluid);
+
+			return *this;
+		}
+
+		constexpr inline ref<fluid_cell_t> operator-=(fluid_type_e fluid) noexcept {
+			unset(fluid);
+
+			return *this;
+		}
+
+		constexpr ref<fluid_cell_t> operator=(fluid_type_e fluid) noexcept {
+			set(fluid);
+
+			return *this;
+		}
+
+		constexpr bool operator==(fluid_cell_t other) const noexcept { return blood == other.blood && ichor == other.ichor; }
+
+		constexpr bool operator!=(fluid_cell_t other) const noexcept { return blood != other.blood || ichor != other.ichor; }
+
+		constexpr bool operator==(fluid_type_e fluid) const noexcept { return contains(fluid); }
+
+		constexpr bool operator!=(fluid_type_e fluid) const noexcept { return !contains(fluid); }
+
+		constexpr explicit operator fluid_type_e() const noexcept {
+			u8 fluid{ 0 };
+
+			if (blood) { fluid |= static_cast<u8>(fluid_type_e::Blood); }
+			if (ichor) { fluid |= static_cast<u8>(fluid_type_e::Ichor); }
+
+			return static_cast<fluid_type_e>(fluid);
+		}
+
+		inline constexpr std::string to_tooltip() const {
+			const fluid_type_e fluid{ static_cast<fluid_type_e>(*this) };
+
+			return std::format("The cell is {}.", fluid == fluid_type_e::None ? "dry" : std::format("spattered with {}", to_string(fluid)));
+		}
+	};
 
 	enum class cell_trait_t : u8 {
 		Open,
@@ -54,7 +218,7 @@ namespace necrowarp {
 		}
 	}
 
-	struct cell_state_t {
+	struct map_cell_t {
 	  public:
 		bool solid : 1 { false };
 		bool opaque : 1 { false };
@@ -64,155 +228,13 @@ namespace necrowarp {
 		bool protrudes : 1 { false };
 		bool : 2;
 
-		constexpr cell_state_t() noexcept = default;
+		constexpr map_cell_t() noexcept = default;
 
-		constexpr cell_state_t(cref<cell_state_t> other) noexcept = default;
+		constexpr map_cell_t(cref<map_cell_t> other) noexcept = default;
+		constexpr map_cell_t(rval<map_cell_t> other) noexcept = default;
 
-		constexpr cell_state_t(rval<cell_state_t> other) noexcept = default;
-
-		constexpr ref<cell_state_t> operator=(cref<cell_state_t> other) noexcept = default;
-
-		constexpr ref<cell_state_t> operator=(rval<cell_state_t> other) noexcept = default;
-
-		template<typename... Traits>
-			requires is_homogeneous<cell_trait_t, Traits...>::value && is_plurary<Traits...>::value
-		constexpr cell_state_t(Traits... traits) {
-			for (cref<cell_trait_t> trait : { traits... }) {
-				set(trait);
-			}
-		}
-
-		constexpr inline cell_state_t operator+(cref<cell_trait_t> trait) const noexcept {
-			cell_state_t state{ *this };
-
-			state.set(trait);
-
-			return state;
-		}
-
-		constexpr inline cell_state_t operator-(cref<cell_trait_t> trait) const noexcept {
-			cell_state_t state{ *this };
-
-			state.unset(trait);
-
-			return state;
-		}
-
-		constexpr inline ref<cell_state_t> operator+=(cref<cell_trait_t> trait) noexcept {
-			set(trait);
-
-			return *this;
-		}
-
-		constexpr inline ref<cell_state_t> operator-=(cref<cell_trait_t> trait) noexcept {
-			unset(trait);
-
-			return *this;
-		}
-
-		constexpr void set(cref<cell_trait_t> trait) noexcept {
-			switch (trait) {
-			case cell_trait_t::Open:
-				solid = false;
-				break;
-			case cell_trait_t::Solid:
-				solid = true;
-				break;
-			case cell_trait_t::Transperant:
-				opaque = false;
-				break;
-			case cell_trait_t::Opaque:
-				opaque = true;
-				break;
-			case cell_trait_t::Unseen:
-				seen = false;
-				break;
-			case cell_trait_t::Seen:
-				seen = true;
-				break;
-			case cell_trait_t::Unexplored:
-				explored = false;
-				break;
-			case cell_trait_t::Explored:
-				explored = true;
-				break;
-			case cell_trait_t::Rough:
-				smooth = false;
-				break;
-			case cell_trait_t::Smooth:
-				smooth = true;
-				break;
-			case cell_trait_t::Recedes:
-				protrudes = false;
-				break;
-			case cell_trait_t::Protrudes:
-				protrudes = true;
-				break;
-			default:
-				break;
-			}
-		}
-
-		constexpr void unset(cref<cell_trait_t> trait) noexcept {
-			switch (trait) {
-			case cell_trait_t::Open:
-				solid = true;
-				break;
-			case cell_trait_t::Solid:
-				solid = false;
-				break;
-			case cell_trait_t::Transperant:
-				opaque = true;
-				break;
-			case cell_trait_t::Opaque:
-				opaque = false;
-				break;
-			case cell_trait_t::Unseen:
-				seen = true;
-				break;
-			case cell_trait_t::Seen:
-				seen = false;
-				break;
-			case cell_trait_t::Unexplored:
-				explored = true;
-				break;
-			case cell_trait_t::Explored:
-				explored = false;
-				break;
-			case cell_trait_t::Rough:
-				smooth = true;
-				break;
-			case cell_trait_t::Smooth:
-				smooth = false;
-				break;
-			case cell_trait_t::Protrudes:
-				protrudes = true;
-				break;
-			case cell_trait_t::Recedes:
-				protrudes = false;
-				break;
-			default:
-				break;
-			}
-		}
-
-		constexpr ref<cell_state_t> operator=(cell_trait_t trait) noexcept {
-			set(trait);
-
-			return *this;
-		}
-
-		constexpr bool operator==(cref<cell_state_t> other) const noexcept {
-			return solid == other.solid && opaque == other.opaque && seen == other.seen && explored == other.explored && smooth == other.smooth && protrudes == other.protrudes;
-		}
-
-		constexpr bool operator!=(cref<cell_state_t> other) const noexcept {
-			return solid != other.solid || opaque != other.opaque || seen != other.seen || explored != other.explored || smooth != other.smooth || protrudes != other.protrudes;
-		}
-
-		constexpr bool operator==(cref<cell_trait_t> other) const noexcept { return contains(other); }
-
-		constexpr bool operator!=(cref<cell_trait_t> other) const noexcept { return !contains(other); }
+		constexpr ref<map_cell_t> operator=(cref<map_cell_t> other) noexcept = default;
+		constexpr ref<map_cell_t> operator=(rval<map_cell_t> other) noexcept = default;
 
 		constexpr bool contains(cell_trait_t trait) const noexcept {
 			switch (trait) {
@@ -244,6 +266,146 @@ namespace necrowarp {
 				return false;
 			}
 		}
+
+		constexpr void set(cell_trait_t trait) noexcept {
+			switch (trait) {
+			case cell_trait_t::Open:
+				solid = false;
+				break;
+			case cell_trait_t::Solid:
+				solid = true;
+				break;
+			case cell_trait_t::Transperant:
+				opaque = false;
+				break;
+			case cell_trait_t::Opaque:
+				opaque = true;
+				break;
+			case cell_trait_t::Unseen:
+				seen = false;
+				break;
+			case cell_trait_t::Seen:
+				seen = true;
+				break;
+			case cell_trait_t::Unexplored:
+				explored = false;
+				break;
+			case cell_trait_t::Explored:
+				explored = true;
+				break;
+			case cell_trait_t::Rough:
+				smooth = false;
+				break;
+			case cell_trait_t::Smooth:
+				smooth = true;
+				break;
+			case cell_trait_t::Recedes:
+				protrudes = false;
+				break;
+			case cell_trait_t::Protrudes:
+				protrudes = true;
+				break;
+			default:
+				break;
+			}
+		}
+
+		constexpr void unset(cell_trait_t trait) noexcept {
+			switch (trait) {
+			case cell_trait_t::Open:
+				solid = true;
+				break;
+			case cell_trait_t::Solid:
+				solid = false;
+				break;
+			case cell_trait_t::Transperant:
+				opaque = true;
+				break;
+			case cell_trait_t::Opaque:
+				opaque = false;
+				break;
+			case cell_trait_t::Unseen:
+				seen = true;
+				break;
+			case cell_trait_t::Seen:
+				seen = false;
+				break;
+			case cell_trait_t::Unexplored:
+				explored = true;
+				break;
+			case cell_trait_t::Explored:
+				explored = false;
+				break;
+			case cell_trait_t::Rough:
+				smooth = true;
+				break;
+			case cell_trait_t::Smooth:
+				smooth = false;
+				break;
+			case cell_trait_t::Protrudes:
+				protrudes = true;
+				break;
+			case cell_trait_t::Recedes:
+				protrudes = false;
+				break;
+			default:
+				break;
+			}
+		}
+
+		template<typename... Traits>
+			requires is_homogeneous<cell_trait_t, Traits...>::value && is_plurary<Traits...>::value
+		constexpr map_cell_t(Traits... traits) {
+			for (cref<cell_trait_t> trait : { traits... }) {
+				set(trait);
+			}
+		}
+
+		constexpr inline map_cell_t operator+(cell_trait_t trait) const noexcept {
+			map_cell_t state{ *this };
+
+			state.set(trait);
+
+			return state;
+		}
+
+		constexpr inline map_cell_t operator-(cell_trait_t trait) const noexcept {
+			map_cell_t state{ *this };
+
+			state.unset(trait);
+
+			return state;
+		}
+
+		constexpr inline ref<map_cell_t> operator+=(cell_trait_t trait) noexcept {
+			set(trait);
+
+			return *this;
+		}
+
+		constexpr inline ref<map_cell_t> operator-=(cell_trait_t trait) noexcept {
+			unset(trait);
+
+			return *this;
+		}
+
+		constexpr ref<map_cell_t> operator=(cell_trait_t trait) noexcept {
+			set(trait);
+
+			return *this;
+		}
+
+		constexpr bool operator==(map_cell_t other) const noexcept {
+			return solid == other.solid && opaque == other.opaque && seen == other.seen && explored == other.explored && smooth == other.smooth && protrudes == other.protrudes;
+		}
+
+		constexpr bool operator!=(map_cell_t other) const noexcept {
+			return solid != other.solid || opaque != other.opaque || seen != other.seen || explored != other.explored || smooth != other.smooth || protrudes != other.protrudes;
+		}
+
+		constexpr bool operator==(cell_trait_t other) const noexcept { return contains(other); }
+
+		constexpr bool operator!=(cell_trait_t other) const noexcept { return !contains(other); }
 
 		inline constexpr std::string to_tooltip() const {
 			if (seen && explored) {
@@ -340,13 +502,13 @@ namespace necrowarp {
 		}
 
 		struct hasher {
-			static constexpr usize operator()(cref<cell_state_t> cell_state) noexcept { return hash_combine(std::bit_cast<u8>(cell_state)); }
+			static constexpr usize operator()(cref<map_cell_t> cell_state) noexcept { return hash_combine(std::bit_cast<u8>(cell_state)); }
 		};
 	};
 } // namespace necrowarp
 
 namespace bleak {
-	template<> struct is_drawable<necrowarp::cell_state_t> {
+	template<> struct is_drawable<necrowarp::map_cell_t> {
 		static bool constexpr value = true;
 	};
 } // namespace bleak

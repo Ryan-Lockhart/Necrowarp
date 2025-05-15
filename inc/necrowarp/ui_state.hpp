@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cell.hpp"
 #include <bleak.hpp>
 
 #include <necrowarp/ui.hpp>
@@ -740,12 +741,12 @@ namespace necrowarp {
 			}
 
 			const entity_type_t entity_type{ entity_registry.at(grid_cursor.current_position) };
-			const bool bloodied{ game_map[grid_cursor.current_position].bloodied };
+			const fluid_type_e fluid{ fluid_map[grid_cursor.current_position] };
 
-			show_tooltip = entity_type != entity_type_t::None || bloodied;
+			show_tooltip = entity_type != entity_type_t::None || fluid != fluid_type_e::None;
 
 			if (show_tooltip) {
-				if (entity_type != entity_type_t::None && bloodied) {
+				if (entity_type != entity_type_t::None && fluid != fluid_type_e::None) {
 					tooltip_label.text = to_colored_string(entity_type);
 
 					if (entity_type == entity_type_t::Ladder) {
