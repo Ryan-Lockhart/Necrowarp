@@ -5,6 +5,8 @@
 #include <cstddef>
 #include <optional>
 
+#include <necrowarp/cell.hpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -221,6 +223,12 @@ namespace necrowarp {
 	template<typename T> constexpr bool is_bleeder_v = is_fodder<T>::value;
 
 	template<typename T> concept BleederEntity = is_entity<T>::value && is_bleeder<T>::value;
+
+	template<typename T> struct fluid_type {
+		static constexpr fluid_type_e type = fluid_type_e::None;
+	};
+
+	template<typename T> constexpr fluid_type_e fluid_type_v = fluid_type<T>::type;
 
 	enum struct command_type_t : u8 {
 		None = 0,

@@ -58,11 +58,51 @@ namespace necrowarp {
 		Saeiligarkeuss
 	};
 
+	constexpr cstr to_string(patron_e patron) noexcept {
+		switch (patron) {
+			case patron_e::None: {
+				return "None";
+			} case patron_e::Rathghul: {
+				return "Rathghul";
+			} case patron_e::Akurakhaithan: {
+				return "Akurakhaithan";
+			} case patron_e::Merirfin: {
+				return "Merirfin";
+			} case patron_e::Saeiligarkeuss: {
+				return "Saeiligarkeuss";
+			}
+		}
+	}
+
 	enum class disposition_e : u8 {
 		Sadistic,
 		Apathetic,
 		Cooperative,
 	};
+
+	constexpr cstr to_string(disposition_e disposition) noexcept {
+		switch (disposition) {
+			case disposition_e::Sadistic: {
+				return "sadistic";
+			} case disposition_e::Apathetic: {
+				return "apathetic";
+			} case disposition_e::Cooperative: {
+				return "cooperative";
+			}
+		}
+	}
+
+	constexpr runes_t to_colored_string(disposition_e disposition) noexcept {
+		switch (disposition) {
+			case disposition_e::Sadistic: {
+				return runes_t{ to_string(disposition_e::Sadistic), colors::Red};
+			} case disposition_e::Apathetic: {
+				return runes_t{ to_string(disposition_e::Apathetic), colors::Yellow};
+			} case disposition_e::Cooperative: {
+				return runes_t{ to_string(disposition_e::Cooperative), colors::Green};
+			}
+		}
+	}
 
 	enum class discount_e : u8 {
 		RandomWarp,
@@ -74,6 +114,42 @@ namespace necrowarp {
 
 		NecromanticAscendance
 	};
+
+	constexpr cstr to_string(discount_e patron) noexcept {
+		switch (patron) {
+			case discount_e::RandomWarp: {
+				return "random warp";
+			} case discount_e::TargetWarp: {
+				return "target warp";
+			} case discount_e::CalciticInvocation: {
+				return "calcitic invocation";
+			} case discount_e::SpectralInvocation: {
+				return "spectral invocation";
+			} case discount_e::SanguineInvocation: {
+				return "sanguine invocation";
+			} case discount_e::NecromanticAscendance: {
+				return "necromantic ascendance";
+			}
+		}
+	}
+
+	enum class discount_type_e : u8 {
+		Malus,
+		Placebo,
+		Boon
+	};
+
+	constexpr cstr to_string(discount_type_e type) noexcept {
+		switch (type) {
+			case discount_type_e::Malus: {
+				return "malus";
+			} case discount_type_e::Placebo: {
+				return "placebo";
+			} case discount_type_e::Boon: {
+				return "boon";
+			}
+		}
+	}
 
 	struct discount_t {
 		const i8 negative{ 0 };
@@ -153,6 +229,14 @@ namespace necrowarp {
 		{ -4, 0, 2 },
 		{ 0, 8, 16 },
 	};
+
+	static inline disposition_e get_patron_disposition(patron_e patron) noexcept {
+		return magic_enum::enum_switch([&](auto val) -> disposition_e {
+			constexpr patron_e cval{ val };
+
+			return patrons<cval>.disposition;
+		}, patron);
+	}
 
 	static inline void reset_patrons() noexcept {
 		magic_enum::enum_for_each<patron_e>([&](auto val) -> void {
@@ -289,6 +373,14 @@ namespace necrowarp {
 				}
 			}, patron);
 		}
+
+		inline discount_type_e get_discount_type(discount_e discount) const noexcept {
+			const i8 discount_value{ get_discount(discount) };
+
+			return discount_value == 0 ? discount_type_e::Placebo : discount_value < 0 ? discount_type_e::Malus : discount_type_e::Boon;
+		}
+
+		inline patron_e get_patron() const noexcept { return patron; }
 
 		inline void set_patron(patron_e value) noexcept {
 			if (static_cast<i32>(value) < static_cast<i32>(patron_e::None) || static_cast<i32>(value) > static_cast<i32>(patron_e::Saeiligarkeuss)) {

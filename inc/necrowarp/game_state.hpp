@@ -35,7 +35,7 @@ namespace necrowarp {
 
 	static inline zone_t<map_cell_t, globals::MapSize, globals::BorderSize> game_map{};
 
-	static inline zone_t<fluid_cell_t, globals::MapSize, globals::BorderSize - 1> fluid_map{};
+	static inline zone_t<fluid_cell_t, globals::MapSize, globals::BorderSize> fluid_map{};
 
 	static inline cursor_t ui_cursor{ renderer, "res/gfx/sprites/cursor.png", colors::White };
 

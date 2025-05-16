@@ -1,5 +1,6 @@
 #pragma once
 
+#include "necrowarp/cell.hpp"
 #include <bleak.hpp>
 
 #include <cstdlib>
@@ -193,10 +194,13 @@ namespace necrowarp {
 			game_stats.cheats.no_hit = true;
 			game_stats.cheats.free_costs = true;
 
-			constexpr cell_state_t open_state{ cell_trait_t::Open, cell_trait_t::Transperant, cell_trait_t::Seen, cell_trait_t::Explored };
-			constexpr cell_state_t closed_state{ cell_trait_t::Solid, cell_trait_t::Opaque, cell_trait_t::Seen, cell_trait_t::Explored };
+			game_map.reset<zone_region_t::All>();
+			fluid_map.reset<zone_region_t::All>();
 
-			constexpr binary_applicator_t<cell_state_t> cell_applicator{ closed_state, open_state };
+			constexpr map_cell_t open_state{ cell_trait_t::Open, cell_trait_t::Transperant, cell_trait_t::Seen, cell_trait_t::Explored };
+			constexpr map_cell_t closed_state{ cell_trait_t::Solid, cell_trait_t::Opaque, cell_trait_t::Seen, cell_trait_t::Explored };
+
+			constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 
 			game_map
 				.set<zone_region_t::Border>(closed_state)
@@ -209,9 +213,7 @@ namespace necrowarp {
 				)
 				.collapse<zone_region_t::Interior>(cell_trait_t::Solid, 0x00, cell_trait_t::Open)
 				.randomize<zone_region_t::All>(random_engine, 0.25, cell_trait_t::Smooth, cell_trait_t::Rough)
-				.randomize<zone_region_t::All>(random_engine, 2.0 / 3.0, cell_trait_t::Protrudes, cell_trait_t::Recedes)
-				.randomize<zone_region_t::All, rock_type_t>(random_engine)
-				.randomize<zone_region_t::All, mineral_type_t>(random_engine);
+				.randomize<zone_region_t::All>(random_engine, 0.50, cell_trait_t::Protrudes, cell_trait_t::Recedes);
 
 			std::vector<area_t> areas{ area_t::partition(game_map, cell_trait_t::Open) };
 
@@ -284,14 +286,15 @@ namespace necrowarp {
 #endif
 
 			game_map.reset<zone_region_t::All>();
+			fluid_map.reset<zone_region_t::All>();
 
 			entity_registry.reset<ALL_NON_PLAYER>();
 			entity_registry.reset_goal_map<player_t>();
 
-			constexpr cell_state_t open_state{ cell_trait_t::Open, cell_trait_t::Transperant, cell_trait_t::Seen, cell_trait_t::Explored };
-			constexpr cell_state_t closed_state{ cell_trait_t::Solid, cell_trait_t::Opaque, cell_trait_t::Seen, cell_trait_t::Explored };
+			constexpr map_cell_t open_state{ cell_trait_t::Open, cell_trait_t::Transperant, cell_trait_t::Seen, cell_trait_t::Explored };
+			constexpr map_cell_t closed_state{ cell_trait_t::Solid, cell_trait_t::Opaque, cell_trait_t::Seen, cell_trait_t::Explored };
 
-			constexpr binary_applicator_t<cell_state_t> cell_applicator{ closed_state, open_state };
+			constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 			
 			game_map
 				.set<zone_region_t::Border>(closed_state)
@@ -304,9 +307,7 @@ namespace necrowarp {
 				)
 				.collapse<zone_region_t::Interior>(cell_trait_t::Solid, 0x00, cell_trait_t::Open)
 				.randomize<zone_region_t::All>(random_engine, 0.25, cell_trait_t::Smooth, cell_trait_t::Rough)
-				.randomize<zone_region_t::All>(random_engine, 2.0 / 3.0, cell_trait_t::Protrudes, cell_trait_t::Recedes)
-				.randomize<zone_region_t::All, rock_type_t>(random_engine)
-				.randomize<zone_region_t::All, mineral_type_t>(random_engine);
+				.randomize<zone_region_t::All>(random_engine, 0.50, cell_trait_t::Protrudes, cell_trait_t::Recedes);
 
 			std::vector<area_t> areas{ area_t::partition(game_map, cell_trait_t::Open) };
 
@@ -608,6 +609,7 @@ namespace necrowarp {
 				}
 
 				game_map.draw(game_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
+				fluid_map.draw(game_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 
 				entity_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
 			}

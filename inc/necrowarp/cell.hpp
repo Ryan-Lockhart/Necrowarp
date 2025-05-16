@@ -1,11 +1,12 @@
 #pragma once
 
-#include "bleak/constants/colors.hpp"
 #include <bleak.hpp>
 
 #include <bit>
 #include <format>
 #include <string>
+
+#include <necrowarp/globals.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -32,6 +33,20 @@ namespace necrowarp {
 			}
 		}
 	}
+
+	static inline color_t fluid_color(fluid_type_e fluid) noexcept {
+			switch (fluid) {
+				case fluid_type_e::None: {
+					return colors::Transparent;
+				} case fluid_type_e::Blood: {
+					return colors::materials::Blood;
+				} case fluid_type_e::Ichor: {
+					return colors::materials::Ichor;
+				} case fluid_type_e::BloodyIchor: {
+					return colors::materials::BloodyIchor;
+				}
+			}
+		}
 
 	constexpr runes_t to_colored_string(fluid_type_e fluid) noexcept {
 		const cstr string{ to_string(fluid) };
@@ -171,6 +186,25 @@ namespace necrowarp {
 
 			return std::format("The cell is {}.", fluid == fluid_type_e::None ? "dry" : std::format("spattered with {}", to_string(fluid)));
 		}
+
+		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_type_e>(zone[position])) }, position);
+		}
+
+		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
+			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_type_e>(zone[position])) }, position + offset);
+		}
+
+		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_type_e>(zone[position])) }, position + offset, nudge);
+		}
+
+		struct hasher {
+			static constexpr usize operator()(fluid_cell_t cell) noexcept { return hash_combine(std::bit_cast<u8>(cell)); }
+		};
 	};
 
 	enum class cell_trait_t : u8 {
@@ -502,12 +536,16 @@ namespace necrowarp {
 		}
 
 		struct hasher {
-			static constexpr usize operator()(cref<map_cell_t> cell_state) noexcept { return hash_combine(std::bit_cast<u8>(cell_state)); }
+			static constexpr usize operator()(map_cell_t cell) noexcept { return hash_combine(std::bit_cast<u8>(cell)); }
 		};
 	};
 } // namespace necrowarp
 
 namespace bleak {
+	template<> struct is_drawable<necrowarp::fluid_cell_t> {
+		static bool constexpr value = true;
+	};
+
 	template<> struct is_drawable<necrowarp::map_cell_t> {
 		static bool constexpr value = true;
 	};

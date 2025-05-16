@@ -1,6 +1,11 @@
 #pragma once
 
+#include "bleak/constants/colors.hpp"
+#include "bleak/text.hpp"
 #include "cell.hpp"
+#include "entities/animate/evil/player.hpp"
+#include "necrowarp/ui/box.hpp"
+#include "necrowarp/ui/label.hpp"
 #include <bleak.hpp>
 
 #include <necrowarp/ui.hpp>
@@ -533,11 +538,14 @@ namespace necrowarp {
 		}
 	};
 
-	constexpr glyph_t ActiveEnergyGlyph{ characters::Energy, color_t{ 0xFF, static_cast<u8>(0xFF) } };
-	constexpr glyph_t InactiveEnergyGlyph{ characters::Energy, color_t{ 0xFF, static_cast<u8>(0x80) } };
+	constexpr color_t ActiveEnergyColor{ colors::Magenta };
+	constexpr color_t InactiveEnergyColor{ ActiveEnergyColor, u8{ 0x80 } };
 
-	constexpr glyph_t ActiveArmorGlyph{ characters::Armor, color_t{ 0xFF, static_cast<u8>(0xFF) } };
-	constexpr glyph_t InactiveArmorGlyph{ characters::Armor, color_t{ 0xFF, static_cast<u8>(0x80) } };
+	constexpr color_t ActiveArmorColor{ colors::Marble };
+	constexpr color_t InactiveArmorColor{ ActiveArmorColor, u8{ 0x80 } };
+
+	constexpr color_t ActiveDivinityColor{ colors::metals::Gold };
+	constexpr color_t InactiveDivinityColor{ ActiveDivinityColor, u8{ 0x80 } };
 
 	constexpr cstr depth_hidden_text{ "Depth: 000" };
 
@@ -548,12 +556,26 @@ namespace necrowarp {
 		"    Depth: 000    "
 	};
 
+	constexpr cstr favor_hidden_text{ "Favor" };
+
+	constexpr cstr favor_expanded_text{
+		"Patron:                      \n\n\n"
+		"Random Warp:             0000\n\n"
+		"Target Warp:             0000\n\n\n"
+		"Calcitic Invocation:     0000\n\n"
+		"Spectral Invocation:     0000\n\n"
+		"Sanguine Invocation:     0000\n\n\n"
+		"Necromantic Ascendance:  0000\n\n\n"
+		"            Favor            "
+	};
+
 	template<> struct phase_state_t<game_phase_t::Playing> {
-		static inline status_bar_t<2> player_statuses{
+		static inline status_bar_t<3> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
-			std::array<status_t, 2>{
-				status_t{ player_t::MaximumEnergy, ActiveEnergyGlyph, InactiveEnergyGlyph },
-				status_t{ player_t::MaximumArmor, ActiveArmorGlyph, InactiveArmorGlyph }
+			std::array<status_t, 3>{
+				status_t{ runes_t{ "  energy: ", colors::Magenta }, player_t::MaximumEnergy, ActiveEnergyColor, InactiveEnergyColor },
+				status_t{ runes_t{ "   armor: ", colors::Marble }, player_t::MaximumArmor, ActiveArmorColor, InactiveArmorColor },
+				status_t{ runes_t{ "divinity: ", colors::metals::Gold }, player_t::MaximumDivinity, ActiveDivinityColor, InactiveDivinityColor }
 			},
 			embedded_box_t{ colors::Black, { colors::White, 1 } },
 			extent_t{ 1, 1 }
@@ -578,11 +600,21 @@ namespace necrowarp {
 		};
 
 		static inline label_t favor_hidden_label{
-
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southeast },
+			embedded_label_t{
+				runes_t{ favor_hidden_text, colors::White },
+				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				extent_t{ 1, 1 }
+			}
 		};
 
 		static inline label_t favor_expanded_label{
-
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southeast },
+			embedded_label_t{
+				runes_t{ favor_expanded_text, colors::White },
+				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				extent_t{ 1, 1 }
+			}
 		};
 
 		static inline label_t tooltip_label{
@@ -636,7 +668,7 @@ namespace necrowarp {
 				return true;
 			}
 			
-			return player_statuses.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered());
+			return player_statuses.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered());
 		}
 
 		static inline void update() noexcept {
@@ -649,6 +681,9 @@ namespace necrowarp {
 
 			player_statuses[1].current_value = player.get_armor();
 			player_statuses[1].max_value = player.max_armor();
+
+			player_statuses[2].current_value = player.get_divinity();
+			player_statuses[2].max_value = player.max_divinity();
 
 			show_command = true;
 
@@ -738,6 +773,43 @@ namespace necrowarp {
 				};
 			} else {
 				depth_hidden_label.text = runes_t{ std::format("Depth: {:3}", (isize)game_stats.game_depth * -1) };
+			}
+
+			show_favor = show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered();
+
+			if (show_favor) {
+				const patron_e current_patron{ player.get_patron() };
+
+				const i16 random_warp_cost{ player.get_discount(discount_e::RandomWarp) };
+
+				const bool has_random_warp_malus{ random_warp_cost < 0 };
+
+				const i16 target_warp_cost{ player.get_discount(discount_e::TargetWarp) };
+
+				const i16 calcitic_invocation_cost{ player.get_discount(discount_e::CalciticInvocation) };
+				const i16 spectral_invocation_cost{ player.get_discount(discount_e::SpectralInvocation) };
+				const i16 sanguine_invocation_cost{ player.get_discount(discount_e::SanguineInvocation) };
+
+				const i16 necromantic_ascendance_cost{ player.get_discount(discount_e::NecromanticAscendance) };
+
+				favor_expanded_label.text = runes_t{
+					std::format(
+						"Patron: {} ({})\n\n\n"
+						"Random Warp: {}\n\n"
+						"Target Warp: {}\n\n\n"
+						"Calcitic Invocation: {}\n\n"
+						"Spectral Invocation: {}\n\n"
+						"Sanguine Invocation: {}\n\n\n"
+						"Necromantic Ascendance: {}\n\n\n"
+						"            Favor            ",
+						necrowarp::to_string(current_patron),
+						necrowarp::to_string(get_patron_disposition(current_patron)),
+						player.get_discount()
+					),
+					colors::White
+				};
+			} else {
+				favor_hidden_label.text = runes_t{ std::format("Depth: {:3}", (isize)game_stats.game_depth * -1) };
 			}
 
 			const entity_type_t entity_type{ entity_registry.at(grid_cursor.current_position) };
@@ -881,7 +953,7 @@ namespace necrowarp {
 				colors::Green
 			};
 
-			draw_cursor = any_hovered() || !globals::map_bounds().within(ui_cursor.get_position() / globals::cell_size<grid_type_e::Game>);
+			draw_cursor = any_hovered() || !(((globals::map_bounds() + extent_t{ 1, 1 }) * globals::cell_size<grid_type_e::Game>) + globals::grid_origin<grid_type_e::Game>()).within(ui_cursor.get_position());
 
 			ui_cursor.update();
 			
@@ -911,11 +983,11 @@ namespace necrowarp {
 
 			if (phase.current_phase == game_phase_t::Playing) {
 				if (!draw_cursor) {
-					grid_cursor.draw(camera, -globals::CursorOffset + globals::grid_origin<grid_type_e::Game>());
+					grid_cursor.draw(camera, globals::grid_origin<grid_type_e::Game>());
 				}
 
 				if (draw_warp_cursor) {
-					warp_cursor.draw(camera, -globals::CursorOffset + globals::grid_origin<grid_type_e::Game>());
+					warp_cursor.draw(camera, globals::grid_origin<grid_type_e::Game>());
 				}
 			}
 			

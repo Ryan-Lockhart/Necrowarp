@@ -11,15 +11,25 @@ namespace necrowarp {
 	using namespace bleak;
 
 	struct status_t {
-		glyph_t active_glyph;
-		glyph_t inactive_glyph;
+		static constexpr u8 left_segment{ 0 };
+		static constexpr u8 center_segment{ 1 };
+		static constexpr u8 right_segment{ 2 };
+		
+		runes_t label;
+		
+		color_t active_color;
+		color_t inactive_color;
 		
 		u8 max_value{ 16 };
 		u8 current_value;
 
-		constexpr status_t(u8 max_value, glyph_t active_glyph, glyph_t inactive_glyph) noexcept : active_glyph{ active_glyph }, inactive_glyph{ inactive_glyph }, max_value{ max_value }, current_value{} {}
+		inline u8 get_segment(u8 value) const noexcept {
+			return value != 0 ? value == max_value - 1 ? status_t::right_segment : status_t::center_segment : status_t::left_segment;
+		}
 
-		constexpr status_t(u8 max_value, u8 current_value, glyph_t active_glyph, glyph_t inactive_glyph) noexcept : active_glyph{ active_glyph }, inactive_glyph{ inactive_glyph }, max_value{ max_value }, current_value{} {}
+		constexpr status_t(cref<runes_t> label, u8 max_value, color_t active_color, color_t inactive_color) noexcept : label{ label }, active_color{ active_color }, inactive_color{ inactive_color }, max_value{ max_value }, current_value{} {}
+
+		constexpr status_t(cref<runes_t> label, u8 max_value, u8 current_value, color_t active_color, color_t inactive_color) noexcept : label{ label }, active_color{ active_color }, inactive_color{ inactive_color }, max_value{ max_value }, current_value{} {}
 	};
 
 	template<usize Statuses> struct embedded_status_bar_t {
@@ -44,7 +54,7 @@ namespace necrowarp {
 			u8 max_length{};
 
 			for (u8 i{ 0 }; i < Statuses; ++i) {
-				max_length = std::max(max_length, statuses[i].max_value);
+				max_length = std::max(max_length, static_cast<u8>(text::calculate_size(statuses[i].label).w + statuses[i].max_value));
 			}
 
 			return max_length;
@@ -54,19 +64,21 @@ namespace necrowarp {
 
 		constexpr extent_t external_size() const noexcept { return extent_t{ max_length(), Statuses } + padding * 2; }
 
-		constexpr extent_t bounding_size() const noexcept { return internal_size() * globals::CellToGlyphRatio + padding * 2; }
-
-		constexpr bool is_hovered(offset_t position) const noexcept { return box.is_hovered(apply_padding(position), bounding_size()); }
+		constexpr bool is_hovered(offset_t position) const noexcept { return box.is_hovered(apply_padding(position), external_size()); }
 
 		constexpr void draw(ref<renderer_t> renderer, offset_t position) const noexcept {
-			box.draw(renderer, apply_padding(position), bounding_size());
+			box.draw(renderer, apply_padding(position), external_size());
 
 			const usize max_len = max_length();
 
 			for (usize i{ 0 }; i < Statuses; ++i) {
+				ui_atlas.draw(statuses[i].label, position + offset_t{ 0, i });
+
+				const u8 label_length{ static_cast<u8>(text::calculate_size(statuses[i].label).w) };
+
 				for (usize j{ 0 }; j < max_len; ++j) {
 					if (j < statuses[i].max_value) {
-						game_atlas.draw(statuses[i].current_value > j ? statuses[i].active_glyph : statuses[i].inactive_glyph, position + offset_t{ j, i }, offset_t{ -8, -8 });
+						ui_atlas.draw(glyph_t{ statuses[i].get_segment(j), statuses[i].current_value > j ? statuses[i].active_color : statuses[i].inactive_color }, position + offset_t{ label_length + j, i });
 					}
 				}
 			}
@@ -79,7 +91,7 @@ namespace necrowarp {
 		constexpr status_bar_t(anchor_t anchor, std::array<status_t, Statuses> statuses, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_status_bar_t<Statuses>{ statuses, box, padding } {}
 
 		constexpr bool is_hovered() const noexcept {
-			return embedded_status_bar_t<Statuses>::is_hovered(anchor_t::get_offset(embedded_status_bar_t<Statuses>::bounding_size()));
+			return embedded_status_bar_t<Statuses>::is_hovered(anchor_t::get_offset(embedded_status_bar_t<Statuses>::external_size()));
 		}
 
 		constexpr void draw(ref<renderer_t> renderer) const noexcept { embedded_status_bar_t<Statuses>::draw(renderer, get_offset(embedded_status_bar_t<Statuses>::external_size())); }

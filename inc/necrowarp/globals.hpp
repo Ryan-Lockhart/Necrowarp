@@ -251,8 +251,6 @@ namespace necrowarp {
 			return offset_t{ offset_t::scalar_cast(position.x * GlyphToCellRatio), offset_t::scalar_cast(position.y * GlyphToCellRatio) };
 		}
 
-		constexpr offset_t CursorOffset{ cell_size<grid_type_e::Game> / 4 };
-
 		static inline extent_t camera_extent() noexcept { return MapSize - globals::grid_size<grid_type_e::Game>(); }
 		static inline offset_t::scalar_t camera_speed{ 4 };
 
@@ -275,7 +273,7 @@ namespace necrowarp {
 		};
 		
 		constexpr map_config_t CavernPreset{
-			0.475,
+			0.45,
 			512,
 			4,
 			8,
@@ -289,7 +287,7 @@ namespace necrowarp {
 		};
 		
 		constexpr map_config_t TunnelsPreset{
-			0.525,
+			0.55,
 			512,
 			4,
 			8,
@@ -302,7 +300,7 @@ namespace necrowarp {
 			8
 		};
 
-		static inline map_config_t map_config{ TunnelsPreset };
+		static inline map_config_t map_config{ CavernPreset };
 
 		constexpr i16 SpawnDistributionLow{ 0 };
 		constexpr i16 SpawnDistributionHigh{ 99 };
@@ -326,7 +324,7 @@ namespace necrowarp {
 
 		constexpr i16 FloorsPerReinforcement{ 8 };
 
-		constexpr bool CheatsAllowed{ false };
+		constexpr bool CheatsAllowed{ true };
 
 		constexpr f32 BloodPoolMinimumVolume{ 4.5f };
 		constexpr f32 BloodPoolMaximumVolume{ 5.7f };

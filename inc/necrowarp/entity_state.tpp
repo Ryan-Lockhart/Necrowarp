@@ -1,5 +1,6 @@
 #pragma once
 
+#include "necrowarp/cell.hpp"
 #include <necrowarp/entities.hpp>
 
 #include <cstddef>
@@ -750,7 +751,7 @@ namespace necrowarp {
 				victim->receive_damage(damage_amount);
 
 				if constexpr (is_bleeder<entity_type>::value) {
-					game_map[target_position].set(cell_trait_t::Bloodied);
+					fluid_map[target_position] += fluid_type<entity_type>::type;
 				}
 
 				return false;
@@ -791,11 +792,12 @@ namespace necrowarp {
 			return true;
 		} else if constexpr (Victim == entity_type_t::Wraith) {
 			entity_registry.remove<Victim>(target_position);
+			fluid_map[target_position] += fluid_type_e::Ichor;
 
 			return true;
 		} else if constexpr (Victim == entity_type_t::FleshGolem) {
 			entity_registry.remove<Victim>(target_position);
-			game_map[target_position].set(cell_trait_t::Bloodied);
+			fluid_map[target_position] += fluid_type_e::Blood;
 
 			return true;
 		} else {
@@ -916,8 +918,11 @@ namespace necrowarp {
 			switch (target_type) {
 				case entity_type_t::Adventurer:
 				case entity_type_t::Paladin:
-				case entity_type_t::Priest: {
-					game_map[target_position].set(cell_trait_t::Bloodied);
+				case entity_type_t::Priest:
+				case entity_type_t::FleshGolem: {
+					fluid_map[target_position] += fluid_type_e::Blood;
+				} case entity_type_t::Wraith: {
+					fluid_map[target_position] += fluid_type_e::Ichor;
 				} default: {
 					break;
 				}
@@ -975,7 +980,9 @@ namespace necrowarp {
 				case entity_type_t::Paladin:
 				case entity_type_t::Priest:
 				case entity_type_t::FleshGolem: {
-					game_map[source_position].set(cell_trait_t::Bloodied);
+					fluid_map[target_position] += fluid_type_e::Blood;
+				} case entity_type_t::Wraith: {
+					fluid_map[target_position] += fluid_type_e::Ichor;
 				} default: {
 					break;
 				}
@@ -1249,7 +1256,7 @@ namespace necrowarp {
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::SanguineInvocation>(cref<entity_command_t> command) noexcept {
-		if (!player.can_perform(discount_e::SpectralInvocation) || !game_map.template contains<zone_region_t::Interior>(cell_trait_t::Bloodied)) {
+		if (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map.template contains<zone_region_t::Interior>(fluid_type_e::Blood)) {
 			return;
 		}
 
@@ -1260,7 +1267,7 @@ namespace necrowarp {
 		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t position{ player.position + offset };
 
-			const bool has_blood{ game_map[position].bloodied };
+			const bool has_blood{ fluid_map[position].contains(fluid_type_e::Blood) };
 			const bool has_ladder{ entity_registry.at(position) == entity_type_t::Ladder };
 
 			if (!game_map.within<zone_region_t::Interior>(position) || (!has_blood && (eligible_ladder != nullptr || !has_ladder))) {
@@ -1268,7 +1275,7 @@ namespace necrowarp {
 			}
 
 			if (has_blood) {
-				game_map[position].unset(cell_trait_t::Bloodied);
+				fluid_map[position] -= fluid_type_e::Blood;
 				++accumulated_health;
 
 				steam_stats::stats<steam_stat_e::BloodConsumed, f32> += blood_pool_volume();
@@ -1443,7 +1450,7 @@ namespace necrowarp {
 
 		entity_registry.add(skull_t{ source_position, true });
 
-		game_map[source_position].set(cell_trait_t::Bloodied);
+		fluid_map[source_position] += fluid_type_e::Blood;
 
 		++steam_stats::stats<steam_stat_e::PlayerKills, i32>;
 
