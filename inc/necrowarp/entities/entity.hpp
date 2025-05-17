@@ -13,6 +13,8 @@ namespace necrowarp {
 	struct player_t;
 
 	struct skeleton_t;
+	struct cultist_t;
+	struct bloodhound_t;
 	struct wraith_t;
 	struct flesh_golem_t;
 
@@ -25,6 +27,8 @@ namespace necrowarp {
 
 #define ALL_EVIL_NPCS \
 		skeleton_t, \
+		cultist_t, \
+		bloodhound_t, \
 		wraith_t, \
 		flesh_golem_t
 
@@ -57,6 +61,8 @@ namespace necrowarp {
 		None = 0,
 		Player,
 		Skeleton,
+		Cultist,
+		Bloodhound,
 		Wraith,
 		FleshGolem,
 		Adventurer,
@@ -74,6 +80,10 @@ namespace necrowarp {
 				return "player";
 			} case entity_type_t::Skeleton: {
 				return "skeleton";
+			} case entity_type_t::Cultist: {
+				return "cultist";
+			} case entity_type_t::Bloodhound: {
+				return "bloodhound";
 			} case entity_type_t::Wraith: {
 				return "wraith";
 			} case entity_type_t::FleshGolem: {
@@ -95,34 +105,82 @@ namespace necrowarp {
 	}
 
 	static constexpr runes_t to_colored_string(entity_type_t type) noexcept {
+		const cstr string{ to_string(type) };
+
 		switch (type) {
 			case entity_type_t::None: {
-				return runes_t{ to_string(type), colors::Grey };
+				return runes_t{ string, colors::Grey };
 			} case entity_type_t::Player: {
-				return runes_t{ to_string(type), colors::Magenta };
+				return runes_t{ string, colors::Magenta };
 			} case entity_type_t::Skeleton: {
-				return runes_t{ to_string(type), colors::White };
+				return runes_t{ string, colors::White };
+			} case entity_type_t::Cultist: {
+				return runes_t{ string, colors::dark::Magenta };
+			} case entity_type_t::Bloodhound: {
+				return runes_t{ string, colors::materials::LightBlood };
 			} case entity_type_t::Wraith: {
-				return runes_t{ to_string(type), colors::light::Green };
+				return runes_t{ string, colors::light::Green };
 			} case entity_type_t::FleshGolem: {
-				return runes_t{ to_string(type), colors::materials::DarkBlood };
+				return runes_t{ string, colors::materials::DarkBlood };
 			} case entity_type_t::Adventurer: {
-				return runes_t{ to_string(type), colors::metals::Bronze };
+				return runes_t{ string, colors::metals::Bronze };
 			} case entity_type_t::Paladin: {
-				return runes_t{ to_string(type), colors::metals::Steel };
+				return runes_t{ string, colors::metals::Steel };
 			} case entity_type_t::Priest: {
-				return runes_t{ to_string(type), colors::metals::Gold };
+				return runes_t{ string, colors::metals::Gold };
 			} case entity_type_t::Skull: {
-				return runes_t{ to_string(type), colors::White };
+				return runes_t{ string, colors::White };
 			} case entity_type_t::Ladder: {
-				return runes_t{ to_string(type), colors::materials::Oak };
+				return runes_t{ string, colors::materials::Oak };
 			} default: {
-				return runes_t{ to_string(type), colors::White };
+				return runes_t{ string, colors::White };
 			}
 		}
 	}
 
 	constexpr usize EntityTypeCount{ static_cast<usize>(entity_type_t::Priest) + 1 };
+
+	enum class decay_e : i8 {
+		Rotted = -1,
+		Animate = 0,
+		Fresh = 1,
+	};
+
+	constexpr decay_e decay(decay_e state) noexcept {
+		switch (state) {
+			case decay_e::Fresh: {
+				return decay_e::Animate;
+			} case decay_e::Animate: {
+				return decay_e::Rotted;
+			} case decay_e::Rotted: {
+				return decay_e::Rotted;
+			}
+		}
+	}
+
+	constexpr cstr to_string(decay_e decay) noexcept {
+		switch (decay) {
+			case decay_e::Rotted: {
+				return "rotted";
+			} case decay_e::Animate: {
+				return "animate";
+			} case decay_e::Fresh: {
+				return "fresh";
+			}
+		}
+	}
+
+	constexpr runes_t to_colored_string(decay_e decay) noexcept {
+		switch (decay) {
+			case decay_e::Rotted: {
+				return runes_t{ to_string(decay_e::Rotted), colors::light::Red };
+			} case decay_e::Animate: {
+				return runes_t{ to_string(decay_e::Animate), colors::light::Magenta };
+			} case decay_e::Fresh: {
+				return runes_t{ to_string(decay_e::Fresh), colors::light::Green };
+			}
+		}
+	}
 
 	template<typename T> struct is_entity {
 		static constexpr bool value = false;
@@ -216,6 +274,14 @@ namespace necrowarp {
 
 	template<typename T> concept FodderEntity = is_entity<T>::value && is_fodder<T>::value;
 
+	template<typename T> struct is_fast {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_fast_v = is_fast<T>::value;
+
+	template<typename T> concept FastEntity = is_entity<T>::value && is_fast<T>::value;
+
 	template<typename T> struct is_bleeder {
 		static constexpr bool value = false;
 	};
@@ -236,6 +302,7 @@ namespace necrowarp {
 		Descend,
 		Consume,
 		Clash,
+		Lunge,
 		RandomWarp,
 		TargetWarp,
 		ConsumeWarp,
@@ -261,6 +328,8 @@ namespace necrowarp {
 				return "consume";
 			} case command_type_t::Clash: {
 				return "clash";
+			} case command_type_t::Lunge: {
+				return "lunge";
 			} case command_type_t::RandomWarp: {
 				return "random warp";
 			} case command_type_t::TargetWarp: {

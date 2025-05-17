@@ -31,6 +31,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct fluid_type<paladin_t> {
+		static constexpr fluid_type_e type = fluid_type_e::Blood;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<paladin_t>{ glyphs::Paladin };
 
 	struct paladin_t {

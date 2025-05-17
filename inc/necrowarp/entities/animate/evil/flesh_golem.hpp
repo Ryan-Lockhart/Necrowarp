@@ -31,6 +31,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct fluid_type<flesh_golem_t> {
+		static constexpr fluid_type_e type = fluid_type_e::Blood;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<flesh_golem_t>{ glyphs::FleshGolem };
 
 	struct flesh_golem_t {
@@ -42,16 +46,16 @@ namespace necrowarp {
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 	
 	public:
-		static constexpr i8 MaximumHealth{ 8 };
+		static constexpr f32 HealthMultiplier{ 2.0f };
+
+		static constexpr i8 BaseMaximumHealth{ 9 };
+
+		static constexpr i8 MaximumHealth{ static_cast<i8>(BaseMaximumHealth * HealthMultiplier) };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr i8 MinimumArmorBoon{ 1 };
-
 		static constexpr i8 MinimumDamageReceived{ 1 };
-
-		inline i8 armor_boon() const noexcept { return max<i8>(MinimumArmorBoon, health) * 2; }
 		
-		inline flesh_golem_t(offset_t position, i8 health) noexcept : position{ position }, health{ health } {}
+		inline flesh_golem_t(offset_t position, i8 health) noexcept : position{ position }, health{ static_cast<i8>(health * HealthMultiplier) } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 

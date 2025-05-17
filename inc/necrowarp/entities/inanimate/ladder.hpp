@@ -141,6 +141,21 @@ namespace necrowarp {
 
 		inline bool has_shackle() const noexcept { return shackle != shackle_type_t::None; }
 
+		inline std::string to_string() const noexcept { return std::format("{} ({} | {})", necrowarp::to_string(entity_type_t::Ladder), necrowarp::to_string(verticality), necrowarp::to_string(shackle)); }
+
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_type_t::Ladder) };
+
+			colored_string
+				.concatenate(runes_t{ " (" })
+				.concatenate(runes_t{ necrowarp::to_string(verticality) })
+				.concatenate(runes_t{ " | " })
+				.concatenate(necrowarp::to_colored_string(shackle))
+				.concatenate(runes_t{ ")" });
+			
+			return colored_string;
+		}
+
 		inline glyph_t current_glyph() const noexcept { return is_up_ladder() ? entity_glyphs<ladder_t> : glyphs::DownLadder; }
 
 		inline void enshackle() noexcept {

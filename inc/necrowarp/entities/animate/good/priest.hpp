@@ -35,6 +35,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct fluid_type<priest_t> {
+		static constexpr fluid_type_e type = fluid_type_e::Blood;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<priest_t>{ glyphs::Priest };
 
 	struct priest_t {
@@ -47,16 +51,16 @@ namespace necrowarp {
 
 	public:
 		static constexpr i8 MaximumHealth{ 1 };
-		static constexpr i8 MaximumPiety{ 8 };
+		static constexpr i8 MaximumPiety{ 6 };
 		static constexpr i8 MaximumDamage{ 1 };
 
 		static constexpr i8 DeathBoon{ 2 };
+		static constexpr i8 ExorcismBoon{ 3 };
 
-		static constexpr i8 StartingPiety{ 8 };
+		static constexpr i8 StartingPiety{ 3 };
 
-		static constexpr i8 ExorcismCost{ 1 };
-		static constexpr i8 ResurrectCost{ 2 };
-		static constexpr i8 AnointCost{ 4 };
+		static constexpr i8 ResurrectCost{ 1 };
+		static constexpr i8 AnointCost{ 2 };
 
 		inline priest_t(offset_t position) noexcept : position{ position }, piety{ StartingPiety } {}
 
@@ -68,17 +72,15 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
-		inline bool can_exorcise() const noexcept { return piety >= ExorcismCost; }
-
 		inline bool can_resurrect() const noexcept { return piety >= ResurrectCost; }
 
 		inline bool can_anoint() const noexcept { return piety >= AnointCost; }
 
-		inline void pay_exorcise_cost() noexcept { set_piety(piety - ExorcismCost); }
-
 		inline void pay_resurrect_cost() noexcept { set_piety(piety - ResurrectCost); }
 
 		inline void pay_ordain_cost() noexcept { set_piety(piety - AnointCost); }
+
+		inline void receive_exorcism_boon() noexcept { set_piety(piety + ExorcismBoon); }
 
 		inline entity_command_t think() const noexcept;
 

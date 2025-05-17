@@ -36,19 +36,19 @@ namespace necrowarp {
 
 			switch (entity_registry.at(offset_pos)) {
 				case entity_type_t::Skull: {
-					if (!can_resurrect() && !can_exorcise()) {
-						continue;
-					}
-
 					cauto skull{ entity_registry.at<skull_t>(offset_pos) };
 
 					if (skull == nullptr) {
 						continue;
 					}
 
-					if (skull->fresh && can_resurrect()) {
+					if (!can_resurrect() && skull->state == decay_e::Fresh) {
+						continue;
+					}
+
+					if (skull->state == decay_e::Fresh && can_resurrect()) {
 						return entity_command_t{ command_type_t::Resurrect, position, offset_pos };
-					} else if (!skull->fresh && can_exorcise()) {
+					} else if (skull->state != decay_e::Fresh) {
 						return entity_command_t{ command_type_t::Exorcise, position, offset_pos }; 
 					}
 					

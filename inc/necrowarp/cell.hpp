@@ -57,7 +57,8 @@ namespace necrowarp {
 			} case fluid_type_e::Blood: {
 				return runes_t{ string, colors::materials::Blood };
 			} case fluid_type_e::Ichor: {
-				return runes_t{ string, colors::materials::Ichor };
+				// using magenta because I can't read the colored string for ichor
+				return runes_t{ string, colors::dark::Magenta };
 			} case fluid_type_e::BloodyIchor: {
 				return runes_t{ string, colors::materials::BloodyIchor };
 			}
@@ -96,13 +97,17 @@ namespace necrowarp {
 				case fluid_type_e::None: {
 					blood = false;
 					ichor = false;
+					break;
 				} case fluid_type_e::Blood: {
 					blood = true;
+					break;
 				} case fluid_type_e::Ichor: {
 					ichor = true;
+					break;
 				} case fluid_type_e::BloodyIchor: {
 					blood = true;
 					ichor = true;
+					break;
 				}
 			}
 		}
@@ -110,14 +115,17 @@ namespace necrowarp {
 		inline void unset(fluid_type_e fluid) noexcept {
 			switch (fluid) {
 				case fluid_type_e::None: {
-					return;
+					break;
 				} case fluid_type_e::Blood: {
 					blood = false;
+					break;
 				} case fluid_type_e::Ichor: {
 					ichor = false;
+					break;
 				} case fluid_type_e::BloodyIchor: {
 					blood = false;
 					ichor = false;
+					break;
 				}
 			}
 		}
@@ -215,11 +223,7 @@ namespace necrowarp {
 		Unseen,
 		Seen,
 		Unexplored,
-		Explored,
-		Rough,
-		Smooth,
-		Recedes,
-		Protrudes
+		Explored
 	};
 
 	constexpr cstr to_string(cell_trait_t trait) noexcept {
@@ -240,14 +244,6 @@ namespace necrowarp {
 				return "unexplored";
 			} case cell_trait_t::Explored: {
 				return "explored";
-			} case cell_trait_t::Rough: {
-				return "rough";
-			} case cell_trait_t::Smooth: {
-				return "smooth";
-			} case cell_trait_t::Recedes: {
-				return "recedes";
-			} case cell_trait_t::Protrudes: {
-				return "protrudes";
 			}
 		}
 	}
@@ -258,9 +254,7 @@ namespace necrowarp {
 		bool opaque : 1 { false };
 		bool seen : 1 { false };
 		bool explored : 1 { false };
-		bool smooth : 1 { false };
-		bool protrudes : 1 { false };
-		bool : 2;
+		bool : 4;
 
 		constexpr map_cell_t() noexcept = default;
 
@@ -288,14 +282,6 @@ namespace necrowarp {
 				return explored;
 			case cell_trait_t::Unexplored:
 				return !explored;
-			case cell_trait_t::Smooth:
-				return smooth;
-			case cell_trait_t::Rough:
-				return !smooth;
-			case cell_trait_t::Protrudes:
-				return protrudes;
-			case cell_trait_t::Recedes:
-				return !protrudes;
 			default:
 				return false;
 			}
@@ -327,18 +313,6 @@ namespace necrowarp {
 			case cell_trait_t::Explored:
 				explored = true;
 				break;
-			case cell_trait_t::Rough:
-				smooth = false;
-				break;
-			case cell_trait_t::Smooth:
-				smooth = true;
-				break;
-			case cell_trait_t::Recedes:
-				protrudes = false;
-				break;
-			case cell_trait_t::Protrudes:
-				protrudes = true;
-				break;
 			default:
 				break;
 			}
@@ -369,18 +343,6 @@ namespace necrowarp {
 				break;
 			case cell_trait_t::Explored:
 				explored = false;
-				break;
-			case cell_trait_t::Rough:
-				smooth = true;
-				break;
-			case cell_trait_t::Smooth:
-				smooth = false;
-				break;
-			case cell_trait_t::Protrudes:
-				protrudes = true;
-				break;
-			case cell_trait_t::Recedes:
-				protrudes = false;
 				break;
 			default:
 				break;
@@ -430,11 +392,11 @@ namespace necrowarp {
 		}
 
 		constexpr bool operator==(map_cell_t other) const noexcept {
-			return solid == other.solid && opaque == other.opaque && seen == other.seen && explored == other.explored && smooth == other.smooth && protrudes == other.protrudes;
+			return solid == other.solid && opaque == other.opaque && seen == other.seen && explored == other.explored;
 		}
 
 		constexpr bool operator!=(map_cell_t other) const noexcept {
-			return solid != other.solid || opaque != other.opaque || seen != other.seen || explored != other.explored || smooth != other.smooth || protrudes != other.protrudes;
+			return solid != other.solid || opaque != other.opaque || seen != other.seen || explored != other.explored;
 		}
 
 		constexpr bool operator==(cell_trait_t other) const noexcept { return contains(other); }
@@ -442,18 +404,7 @@ namespace necrowarp {
 		constexpr bool operator!=(cell_trait_t other) const noexcept { return !contains(other); }
 
 		inline constexpr std::string to_tooltip() const {
-			if (seen && explored) {
-				return std::format(
-					"The cell is physically {} and visibility is {}.\nIt is {} and {} by the player.\nThe {}{} is {} to the touch.",
-					solid ? "blocked" : "open",
-					opaque ? "obscured" : "unobscured",
-					seen ? "in view" : "not in view",
-					explored ? "was explored" : "remains unexplored",
-					solid ? protrudes ? "protruding " : "receding " : "",
-					solid ? "wall" : "floor",
-					smooth ? "smooth" : "rough"
-				);
-			} else if (explored) {
+			if (explored) {
 				return std::format(
 					"The cell is physically {} and visibility is {}.\nIt is {} and {} by the player.",
 					solid ? "blocked" : "open",
@@ -468,13 +419,11 @@ namespace necrowarp {
 
 		inline constexpr operator std::string() const {
 			return std::format(
-				"[{}, {}, {}, {}, {}, {}]",
+				"[{}, {}, {}, {}]",
 				solid ? "Solid" : "Open",
 				opaque ? "Opaque" : "Transperant",
 				seen ? "Seen" : "Unseen",
-				explored ? "Explored" : "Unexplored",
-				smooth ? "Smooth" : "Rough",
-				protrudes ? "Protrudes" : "Recedes"
+				explored ? "Explored" : "Unexplored"
 			);
 		}
 
@@ -492,7 +441,7 @@ namespace necrowarp {
 				return;
 			}
 
-			const u8 glyph{ characters::auto_set(smooth, protrudes, zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid)) };
+			const u8 glyph{ zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid) };
 
 			atlas.draw(glyph_t{ glyph, color_t{ 0xC0, alpha } }, position);
 		}
@@ -511,7 +460,7 @@ namespace necrowarp {
 				return;
 			}
 
-			const u8 glyph{ characters::auto_set(smooth, protrudes, zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid)) };
+			const u8 glyph{ zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid) };
 
 			atlas.draw(glyph_t{ glyph, color_t{ 0xC0, alpha } }, position + offset);
 		}
@@ -530,7 +479,7 @@ namespace necrowarp {
 				return;
 			}
 
-			const u8 glyph{ characters::auto_set(smooth, protrudes, zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid)) };
+			const u8 glyph{ zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid) };
 
 			atlas.draw(glyph_t{ glyph, color_t{ 0xC0, alpha } }, position + offset, nudge);
 		}

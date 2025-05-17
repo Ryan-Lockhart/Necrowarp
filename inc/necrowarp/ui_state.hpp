@@ -1,11 +1,5 @@
 #pragma once
 
-#include "bleak/constants/colors.hpp"
-#include "bleak/text.hpp"
-#include "cell.hpp"
-#include "entities/animate/evil/player.hpp"
-#include "necrowarp/ui/box.hpp"
-#include "necrowarp/ui/label.hpp"
 #include <bleak.hpp>
 
 #include <necrowarp/ui.hpp>
@@ -556,7 +550,7 @@ namespace necrowarp {
 		"    Depth: 000    "
 	};
 
-	constexpr cstr favor_hidden_text{ "Favor" };
+	constexpr cstr favor_hidden_text{ " Favor " };
 
 	constexpr cstr favor_expanded_text{
 		"Patron:                      \n\n\n"
@@ -566,7 +560,7 @@ namespace necrowarp {
 		"Spectral Invocation:     0000\n\n"
 		"Sanguine Invocation:     0000\n\n\n"
 		"Necromantic Ascendance:  0000\n\n\n"
-		"            Favor            "
+		" Favor                       "
 	};
 
 	template<> struct phase_state_t<game_phase_t::Playing> {
@@ -600,7 +594,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t favor_hidden_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southeast },
+			anchor_t{ offset_t{ 0, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ favor_hidden_text, colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -609,7 +603,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t favor_expanded_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southeast },
+			anchor_t{ offset_t{ 0, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ favor_expanded_text, colors::White },
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -779,85 +773,72 @@ namespace necrowarp {
 
 			if (show_favor) {
 				const patron_e current_patron{ player.get_patron() };
+				const disposition_e current_disposition{ get_patron_disposition(current_patron) };
 
-				const i16 random_warp_cost{ player.get_discount(discount_e::RandomWarp) };
+				favor_expanded_label.text = runes_t{ std::format( "Patron: {} ({})\n\n\n", necrowarp::to_string(current_patron), necrowarp::to_string(current_disposition)), colors::White };
 
-				const bool has_random_warp_malus{ random_warp_cost < 0 };
+				magic_enum::enum_for_each<discount_e>([&](auto val) {
+					constexpr discount_e cval{ val };
+					const i8 value{ player.get_discount(cval) };
+					const discount_type_e type{ player.get_discount_type(value) };
 
-				const i16 target_warp_cost{ player.get_discount(discount_e::TargetWarp) };
+					favor_expanded_label.text.concatenate(to_colored_string(cval, value, type));
 
-				const i16 calcitic_invocation_cost{ player.get_discount(discount_e::CalciticInvocation) };
-				const i16 spectral_invocation_cost{ player.get_discount(discount_e::SpectralInvocation) };
-				const i16 sanguine_invocation_cost{ player.get_discount(discount_e::SanguineInvocation) };
+					if constexpr (cval == discount_e::TargetWarp || cval == discount_e::SanguineInvocation || cval == discount_e::NecromanticAscendance) {
+						favor_expanded_label.text.concatenate(runes_t{ "\n\n\n" });
+					} else {
+						favor_expanded_label.text.concatenate(runes_t{ "\n\n" });
+					}
+				});
 
-				const i16 necromantic_ascendance_cost{ player.get_discount(discount_e::NecromanticAscendance) };
+				const extent_t current_size{ text::calculate_size(favor_expanded_label.text) };
 
-				favor_expanded_label.text = runes_t{
-					std::format(
-						"Patron: {} ({})\n\n\n"
-						"Random Warp: {}\n\n"
-						"Target Warp: {}\n\n\n"
-						"Calcitic Invocation: {}\n\n"
-						"Spectral Invocation: {}\n\n"
-						"Sanguine Invocation: {}\n\n\n"
-						"Necromantic Ascendance: {}\n\n\n"
-						"            Favor            ",
-						necrowarp::to_string(current_patron),
-						necrowarp::to_string(get_patron_disposition(current_patron)),
-						player.get_discount()
-					),
-					colors::White
-				};
+				favor_expanded_label.text.concatenate(runes_t{ std::format(" Favor{}", std::string(current_size.w - 6, ' ')) });
 			} else {
-				favor_hidden_label.text = runes_t{ std::format("Depth: {:3}", (isize)game_stats.game_depth * -1) };
+				favor_hidden_label.text = runes_t{ " Favor " };
 			}
 
-			const entity_type_t entity_type{ entity_registry.at(grid_cursor.current_position) };
+			const bool has_entity{ entity_registry.at(grid_cursor.current_position) != entity_type_t::None };
 			const fluid_type_e fluid{ fluid_map[grid_cursor.current_position] };
 
-			show_tooltip = entity_type != entity_type_t::None || fluid != fluid_type_e::None;
+			show_tooltip = has_entity || fluid != fluid_type_e::None;
 
 			if (show_tooltip) {
-				if (entity_type != entity_type_t::None && fluid != fluid_type_e::None) {
-					tooltip_label.text = to_colored_string(entity_type);
+				tooltip_label.text = runes_t{};
 
-					if (entity_type == entity_type_t::Ladder) {
-						tooltip_label.text
-							.concatenate(runes_t{ " (" })
-							.concatenate(runes_t{ to_string(entity_registry.at<ladder_t>(grid_cursor.current_position)->verticality) })
-							.concatenate({ " | " })
-							.concatenate(to_colored_string(entity_registry.at<ladder_t>(grid_cursor.current_position)->shackle))
-							.concatenate(runes_t{ ")"});
-					} else if (entity_type == entity_type_t::Skull && entity_registry.at<skull_t>(grid_cursor.current_position)->fresh) {
-						tooltip_label.text
-							.concatenate(runes_t{ " (" })
-							.concatenate(runes_t{ "fresh", colors::light::Green })
-							.concatenate(runes_t{ ")"});
-					}
-					
-					tooltip_label.text
-						.concatenate({ " | " })
-						.concatenate({"blood", colors::materials::LightBlood });
-				} else {
-					if (entity_type == entity_type_t::None) {
-						tooltip_label.text = runes_t{ "blood", colors::materials::LightBlood };
+				if (has_entity) {
+					if (!entity_registry.contains<skeleton_t, ladder_t, skull_t>(grid_cursor.current_position)) {
+						tooltip_label.text.concatenate(to_colored_string(entity_registry.at(grid_cursor.current_position)));
 					} else {
-						tooltip_label.text = to_colored_string(entity_type);						
+						bool has_predecessor{ false };
 
-						if (entity_type == entity_type_t::Ladder) {
-							tooltip_label.text
-								.concatenate(runes_t{ " (" })
-								.concatenate(runes_t{ to_string(entity_registry.at<ladder_t>(grid_cursor.current_position)->verticality) })
-								.concatenate({ " | " })
-								.concatenate(to_colored_string(entity_registry.at<ladder_t>(grid_cursor.current_position)->shackle))
-								.concatenate(runes_t{ ")"});
-						} else if (entity_type == entity_type_t::Skull && entity_registry.at<skull_t>(grid_cursor.current_position)->fresh) {
-							tooltip_label.text
-								.concatenate(runes_t{ " (" })
-								.concatenate(runes_t{ "fresh", colors::light::Green })
-								.concatenate(runes_t{ ")"});
+						if (entity_registry.contains<skeleton_t>(grid_cursor.current_position)) {
+							tooltip_label.text.concatenate(entity_registry.at<skeleton_t>(grid_cursor.current_position)->to_colored_string());
+							has_predecessor = true;
+						} if (entity_registry.contains<ladder_t>(grid_cursor.current_position)) {
+							if (has_predecessor) {
+								tooltip_label.text.concatenate(runes_t{ ", " });
+							}
+
+							tooltip_label.text.concatenate(entity_registry.at<ladder_t>(grid_cursor.current_position)->to_colored_string());
+
+							has_predecessor = true;
+						} if (entity_registry.contains<skull_t>(grid_cursor.current_position)) {
+							if (has_predecessor) {
+								tooltip_label.text.concatenate(runes_t{ ", " });
+							}
+
+							tooltip_label.text.concatenate(entity_registry.at<skull_t>(grid_cursor.current_position)->to_colored_string());
 						}
 					}
+				}
+
+				if (has_entity && fluid != fluid_type_e::None) {
+					tooltip_label.text.concatenate({ " | " });
+				}
+				
+				if (fluid != fluid_type_e::None) {
+					tooltip_label.text.concatenate(to_colored_string(fluid));
 				}
 			}
 
@@ -908,6 +889,10 @@ namespace necrowarp {
 			show_depth ?
 				depth_expanded_label.draw(renderer) :
 				depth_hidden_label.draw(renderer);
+
+			show_favor ?
+				favor_expanded_label.draw(renderer) :
+				favor_hidden_label.draw(renderer);
 
 			if (!draw_cursor && show_tooltip) {
 				tooltip_label.draw(renderer);
@@ -983,11 +968,11 @@ namespace necrowarp {
 
 			if (phase.current_phase == game_phase_t::Playing) {
 				if (!draw_cursor) {
-					grid_cursor.draw(camera, globals::grid_origin<grid_type_e::Game>());
+					grid_cursor.draw(camera, globals::grid_origin<grid_type_e::Game>() + globals::CursorOffset);
 				}
 
 				if (draw_warp_cursor) {
-					warp_cursor.draw(camera, globals::grid_origin<grid_type_e::Game>());
+					warp_cursor.draw(camera, globals::grid_origin<grid_type_e::Game>() + globals::CursorOffset);
 				}
 			}
 			

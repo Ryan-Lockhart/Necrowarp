@@ -74,7 +74,7 @@ namespace necrowarp {
 
 	static inline volatile std::atomic_bool game_running{ false };
 
-	static inline f32 blood_pool_volume() noexcept { return globals::blood_pool_dis(random_engine); }
+	static inline f32 fluid_pool_volume() noexcept { return globals::fluid_pool_dis(random_engine); }
 
 	enum class attribute_e {
 		Energy,
@@ -205,10 +205,10 @@ namespace necrowarp {
 		LowestDepth,
 
 		SkullsConsumed,
-		BloodConsumed,
 		SkeletonsConsumed,
-		WraithsConsumed,
-		FleshGolemsConsumed,
+
+		BloodConsumed,
+		IchorConsumed,
 
 		LaddersUnshackled,
 		LaddersShackled,
@@ -244,10 +244,10 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::LowestDepth> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::SkullsConsumed> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::BloodConsumed> { using type = f32; };
 	template<> struct to_stat_type<steam_stat_e::SkeletonsConsumed> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::WraithsConsumed> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::FleshGolemsConsumed> { using type = i32; };
+
+	template<> struct to_stat_type<steam_stat_e::BloodConsumed> { using type = f32; };
+	template<> struct to_stat_type<steam_stat_e::IchorConsumed> { using type = f32; };
 
 	template<> struct to_stat_type<steam_stat_e::LaddersUnshackled> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::LaddersShackled> { using type = i32; };
@@ -292,14 +292,12 @@ namespace necrowarp {
 				return "lowest_depth";
 			} case steam_stat_e::SkullsConsumed: {
 				return "skulls_consumed";
-			} case steam_stat_e::BloodConsumed: {
-				return "blood_consumed";
 			} case steam_stat_e::SkeletonsConsumed: {
 				return "skeletons_consumed";
-			} case steam_stat_e::WraithsConsumed: {
-				return "wraiths_consumed";
-			} case steam_stat_e::FleshGolemsConsumed: {
-				return "flesh_golems_consumed";
+			} case steam_stat_e::BloodConsumed: {
+				return "blood_consumed";
+			} case steam_stat_e::IchorConsumed: {
+				return "ichor_consumed";
 			} case steam_stat_e::LaddersUnshackled: {
 				return "ladders_unshackled";
 			} case steam_stat_e::LaddersShackled: {
@@ -352,14 +350,12 @@ namespace necrowarp {
 				return "Lowest Depth";
 			} case steam_stat_e::SkullsConsumed: {
 				return "Skulls Consumed";
-			} case steam_stat_e::BloodConsumed: {
-				return "Blood Consumed";
 			} case steam_stat_e::SkeletonsConsumed: {
 				return "Skeletons Consumed";
-			} case steam_stat_e::WraithsConsumed: {
-				return "Wraiths Consumed";
-			} case steam_stat_e::FleshGolemsConsumed: {
-				return "Flesh Golems Consumed";
+			} case steam_stat_e::BloodConsumed: {
+				return "Blood Consumed";
+			} case steam_stat_e::IchorConsumed: {
+				return "Ichor Consumed";
 			} case steam_stat_e::LaddersUnshackled: {
 				return "Ladders Unshackled";
 			} case steam_stat_e::LaddersShackled: {

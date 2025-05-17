@@ -118,17 +118,17 @@ namespace necrowarp {
 	constexpr cstr to_string(discount_e patron) noexcept {
 		switch (patron) {
 			case discount_e::RandomWarp: {
-				return "random warp";
+				return "Random Warp";
 			} case discount_e::TargetWarp: {
-				return "target warp";
+				return "Target Warp";
 			} case discount_e::CalciticInvocation: {
-				return "calcitic invocation";
+				return "Calcitic Invocation";
 			} case discount_e::SpectralInvocation: {
-				return "spectral invocation";
+				return "Spectral Invocation";
 			} case discount_e::SanguineInvocation: {
-				return "sanguine invocation";
+				return "Sanguine Invocation";
 			} case discount_e::NecromanticAscendance: {
-				return "necromantic ascendance";
+				return "Necromantic Ascendance";
 			}
 		}
 	}
@@ -147,6 +147,20 @@ namespace necrowarp {
 				return "placebo";
 			} case discount_type_e::Boon: {
 				return "boon";
+			}
+		}
+	}
+
+	constexpr runes_t to_colored_string(discount_e discount, i8 value, discount_type_e type) noexcept {
+		runes_t colored_string{ std::format("{}: ", to_string(discount)) };
+
+		switch (type) {
+			case discount_type_e::Malus: {
+				return colored_string.concatenate(runes_t{ std::format("+{}", abs(value)), colors::Red });
+			} case discount_type_e::Placebo: {
+				return colored_string.concatenate(runes_t{ "0", colors::Yellow });
+			} case discount_type_e::Boon: {
+				return colored_string.concatenate(runes_t{ std::format("-{}", abs(value)), colors::Green });
 			}
 		}
 	}
@@ -378,6 +392,10 @@ namespace necrowarp {
 			const i8 discount_value{ get_discount(discount) };
 
 			return discount_value == 0 ? discount_type_e::Placebo : discount_value < 0 ? discount_type_e::Malus : discount_type_e::Boon;
+		}
+
+		inline discount_type_e get_discount_type(i8 value) const noexcept {
+			return value == 0 ? discount_type_e::Placebo : value < 0 ? discount_type_e::Malus : discount_type_e::Boon;
 		}
 
 		inline patron_e get_patron() const noexcept { return patron; }

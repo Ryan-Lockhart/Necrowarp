@@ -36,6 +36,8 @@ namespace necrowarp {
 
 		inline bool empty() const noexcept { return false; }
 
+		inline bool empty(offset_t position) const noexcept;
+
 		inline bool contains(offset_t position) const noexcept;
 
 		template<NonPlayerEntity EntityType> inline bool contains(offset_t position) const noexcept;

@@ -182,13 +182,13 @@ namespace necrowarp {
 		template<grid_type_e GridType> static constexpr cstr atlas_path{};
 
 		template<> inline constexpr cstr atlas_path<grid_type_e::UI>{ "res/gfx/glyphs/glyphs_8x8.png" };
-		template<> inline constexpr cstr atlas_path<grid_type_e::Game>{ "res/gfx/tiles/tileset_64x64.png" };
+		template<> inline constexpr cstr atlas_path<grid_type_e::Game>{ "res/gfx/tiles/tileset_16x16.png" };
 		template<> inline constexpr cstr atlas_path<grid_type_e::Icon>{ "res/gfx/icons/icons_32x32.png" };
 
 		template<grid_type_e GridType> static constexpr extent_t cell_size{};
 
 		template<> inline constexpr extent_t cell_size<grid_type_e::UI>{ 8, 8 };
-		template<> inline constexpr extent_t cell_size<grid_type_e::Game>{ 64, 64 };
+		template<> inline constexpr extent_t cell_size<grid_type_e::Game>{ 16, 16 };
 		template<> inline constexpr extent_t cell_size<grid_type_e::Icon>{ 32, 32 };
 
 		template<grid_type_e GridType> inline extent_t grid_overflow() noexcept { return window_size % cell_size<GridType>; }
@@ -220,7 +220,7 @@ namespace necrowarp {
 		}
 
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
-		static constexpr extent_t TilesetSize{ 16, 5 };
+		static constexpr extent_t TilesetSize{ 16, 3 };
 		static constexpr extent_t IconsetSize{ 3, 2 };
 
 		static constexpr extent_t MapSize{ 128, 128 };
@@ -326,11 +326,13 @@ namespace necrowarp {
 
 		constexpr bool CheatsAllowed{ true };
 
-		constexpr f32 BloodPoolMinimumVolume{ 4.5f };
-		constexpr f32 BloodPoolMaximumVolume{ 5.7f };
+		constexpr f32 FluidPoolMinimumVolume{ 4.5f };
+		constexpr f32 FluidPoolMaximumVolume{ 5.7f };
 
-		static inline std::uniform_real_distribution<f32> blood_pool_dis{ BloodPoolMinimumVolume, BloodPoolMaximumVolume };
+		static inline std::uniform_real_distribution<f32> fluid_pool_dis{ FluidPoolMinimumVolume, FluidPoolMaximumVolume };
 
 		constexpr bool OopsAllPriests{ false };
+
+		constexpr offset_t CursorOffset{ -4 };
 	} // namespace globals
 } // namespace necrowarp

@@ -31,30 +31,73 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<skeleton_t>{ glyphs::Skeleton };
+	template<> struct is_bleeder<skeleton_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct fluid_type<skeleton_t> {
+		static constexpr fluid_type_e type = fluid_type_e::Ichor;
+	};
+
+	template<> inline constexpr glyph_t entity_glyphs<skeleton_t>{ glyphs::FreshSkeleton };
 
 	struct skeleton_t {
 		offset_t position;
-		const bool rotted;
+		const decay_e state;
 
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 		
-		constexpr i8 armor_boon() const noexcept { return rotted ? 1 : 2; }
+		constexpr i8 armor_boon() const noexcept {
+			return static_cast<i8>(state) + 1;
+		}
 
-		inline skeleton_t(offset_t position, bool rotted) noexcept : position{ position }, rotted{ rotted } {}
+		inline skeleton_t(offset_t position) noexcept : position{ position }, state{ decay_e::Fresh } {}
+
+		inline skeleton_t(offset_t position, decay_e state) noexcept : position{ position }, state{ state } {}
+
+		inline bool is_fresh() const noexcept { return state == decay_e::Fresh; }
+
+		inline bool is_animate() const noexcept { return state == decay_e::Animate; }
+
+		inline bool is_rotted() const noexcept { return state == decay_e::Rotted; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
 		inline entity_command_t think() const noexcept;
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position); }
+		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(entity_type_t::Skeleton), necrowarp::to_string(state)); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position, offset); }
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_type_t::Skeleton) };
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position + camera.get_offset()); }
+			colored_string
+				.concatenate(runes_t{ " (" })
+				.concatenate(necrowarp::to_colored_string(state))
+				.concatenate(runes_t{ ")" });
+			
+			return colored_string;
+		}
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<skeleton_t>, position + camera.get_offset(), offset); }
+		inline glyph_t current_glyph() const noexcept {
+			switch (state) {
+				case decay_e::Rotted: {
+					return glyphs::RottedSkeleton;
+				} case decay_e::Animate: {
+					return glyphs::AnimateSkeleton;
+				} case decay_e::Fresh: {
+					return glyphs::FreshSkeleton;
+				}
+			}
+		}
+
+		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
+
+		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
+
+		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
+
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator entity_type_t() const noexcept { return entity_type_t::Skeleton; }
 

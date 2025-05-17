@@ -55,8 +55,7 @@ namespace necrowarp {
 			case entity_type_t::Priest: {
 				return command_type_t::Clash;			
 			} case entity_type_t::Skull:
-			  case entity_type_t::Skeleton:
-			  case entity_type_t::Wraith: {
+			  case entity_type_t::Skeleton: {
 				return command_type_t::Consume;
 			} case entity_type_t::Ladder: {
 				return command_type_t::Descend;

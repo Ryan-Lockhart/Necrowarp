@@ -27,6 +27,14 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_bleeder<wraith_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct fluid_type<wraith_t> {
+		static constexpr fluid_type_e type = fluid_type_e::Ichor;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<wraith_t>{ glyphs::Wraith };
 
 	struct wraith_t {
@@ -38,10 +46,8 @@ namespace necrowarp {
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 	
 	public:
-		static constexpr i8 MaximumHealth{ 8 };
+		static constexpr i8 MaximumHealth{ 9 };
 		static constexpr i8 MaximumDamage{ 2 };
-
-		constexpr i8 armor_boon() const noexcept { return max<i8>(health, 1) * 2; }
 		
 		inline wraith_t(offset_t position, i8 health) noexcept : position{ position }, health{ health } {}
 		

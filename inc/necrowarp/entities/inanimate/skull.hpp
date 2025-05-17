@@ -27,15 +27,42 @@ namespace necrowarp {
 
 	struct skull_t {
 		offset_t position;
-		const bool fresh;
+		const decay_e state;
 
-		inline skull_t(offset_t position) noexcept : position{ position }, fresh{ false } {}
+		inline skull_t(offset_t position) noexcept : position{ position }, state{ decay_e::Fresh } {}
 
-		inline skull_t(offset_t position, bool fresh) noexcept : position{ position }, fresh{ fresh } {}
+		inline skull_t(offset_t position, decay_e state) noexcept : position{ position }, state{ state } {}
 
-		inline bool is_fresh() const noexcept { return fresh; }
+		inline bool is_fresh() const noexcept { return state == decay_e::Fresh; }
 
-		inline glyph_t current_glyph() const noexcept { return fresh ? entity_glyphs<skull_t> : glyphs::AnimateSkull; }
+		inline bool is_animate() const noexcept { return state == decay_e::Animate; }
+
+		inline bool is_rotted() const noexcept { return state == decay_e::Rotted; }
+
+		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(entity_type_t::Skull), necrowarp::to_string(state)); }
+
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_type_t::Skull) };
+
+			colored_string
+				.concatenate(runes_t{ " (" })
+				.concatenate(necrowarp::to_colored_string(state))
+				.concatenate(runes_t{ ")" });
+			
+			return colored_string;
+		}
+
+		inline glyph_t current_glyph() const noexcept {
+			switch (state) {
+				case decay_e::Rotted: {
+					return glyphs::RottedSkull;
+				} case decay_e::Animate: {
+					return glyphs::AnimateSkull;
+				} case decay_e::Fresh: {
+					return glyphs::FreshSkull;
+				}
+			}
+		}
 
 		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "necrowarp/cell.hpp"
 #include <bleak.hpp>
 
 #include <cstdlib>
@@ -211,9 +210,7 @@ namespace necrowarp {
 					globals::map_config.automata_threshold,
 					cell_applicator
 				)
-				.collapse<zone_region_t::Interior>(cell_trait_t::Solid, 0x00, cell_trait_t::Open)
-				.randomize<zone_region_t::All>(random_engine, 0.25, cell_trait_t::Smooth, cell_trait_t::Rough)
-				.randomize<zone_region_t::All>(random_engine, 0.50, cell_trait_t::Protrudes, cell_trait_t::Recedes);
+				.collapse<zone_region_t::Interior>(cell_trait_t::Solid, 0x00, cell_trait_t::Open);
 
 			std::vector<area_t> areas{ area_t::partition(game_map, cell_trait_t::Open) };
 
@@ -305,9 +302,7 @@ namespace necrowarp {
 					globals::map_config.automata_threshold,
 					cell_applicator
 				)
-				.collapse<zone_region_t::Interior>(cell_trait_t::Solid, 0x00, cell_trait_t::Open)
-				.randomize<zone_region_t::All>(random_engine, 0.25, cell_trait_t::Smooth, cell_trait_t::Rough)
-				.randomize<zone_region_t::All>(random_engine, 0.50, cell_trait_t::Protrudes, cell_trait_t::Recedes);
+				.collapse<zone_region_t::Interior>(cell_trait_t::Solid, 0x00, cell_trait_t::Open);
 
 			std::vector<area_t> areas{ area_t::partition(game_map, cell_trait_t::Open) };
 
