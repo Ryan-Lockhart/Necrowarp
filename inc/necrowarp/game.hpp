@@ -250,7 +250,9 @@ namespace necrowarp {
 
 			entity_registry.spawn<skull_t>(
 				static_cast<usize>(globals::map_config.starting_skulls),
-				static_cast<u32>(globals::map_config.minimum_skull_distance)
+				static_cast<u32>(globals::map_config.minimum_skull_distance),
+
+				decay_e::Animate
 			);
 
 			entity_registry.recalculate_goal_maps();
@@ -349,7 +351,9 @@ namespace necrowarp {
 
 			entity_registry.spawn<skull_t>(
 				static_cast<usize>(globals::map_config.starting_skulls),
-				static_cast<u32>(globals::map_config.minimum_skull_distance)
+				static_cast<u32>(globals::map_config.minimum_skull_distance),
+
+				decay_e::Animate
 			);
 
 			entity_registry.recalculate_goal_maps();

@@ -74,6 +74,24 @@ namespace necrowarp {
 		}
 	}
 
+	constexpr runes_t to_colored_string(patron_e patron) noexcept {
+		const cstr string{ to_string(patron) };
+		
+		switch (patron) {
+			case patron_e::None: {
+				return runes_t{ string, colors::light::Grey };
+			} case patron_e::Rathghul: {
+				return runes_t{ string, colors::light::Green };
+			} case patron_e::Akurakhaithan: {
+				return runes_t{ string, colors::light::Magenta };
+			} case patron_e::Merirfin: {
+				return runes_t{ string, colors::light::Red };
+			} case patron_e::Saeiligarkeuss: {
+				return runes_t{ string, colors::dark::Orange };
+			}
+		}
+	}
+
 	enum class disposition_e : u8 {
 		Sadistic,
 		Apathetic,
@@ -83,23 +101,25 @@ namespace necrowarp {
 	constexpr cstr to_string(disposition_e disposition) noexcept {
 		switch (disposition) {
 			case disposition_e::Sadistic: {
-				return "sadistic";
+				return "Sadistic";
 			} case disposition_e::Apathetic: {
-				return "apathetic";
+				return "Apathetic";
 			} case disposition_e::Cooperative: {
-				return "cooperative";
+				return "Cooperative";
 			}
 		}
 	}
 
 	constexpr runes_t to_colored_string(disposition_e disposition) noexcept {
+		const cstr string{ to_string(disposition) };
+
 		switch (disposition) {
 			case disposition_e::Sadistic: {
-				return runes_t{ to_string(disposition_e::Sadistic), colors::Red};
+				return runes_t{ string, colors::Red};
 			} case disposition_e::Apathetic: {
-				return runes_t{ to_string(disposition_e::Apathetic), colors::Yellow};
+				return runes_t{ string, colors::Yellow};
 			} case disposition_e::Cooperative: {
-				return runes_t{ to_string(disposition_e::Cooperative), colors::Green};
+				return runes_t{ string, colors::Green};
 			}
 		}
 	}
@@ -115,8 +135,26 @@ namespace necrowarp {
 		NecromanticAscendance
 	};
 
-	constexpr cstr to_string(discount_e patron) noexcept {
-		switch (patron) {
+	constexpr usize padding_size(discount_e discount) noexcept {
+		switch (discount) {
+			case discount_e::RandomWarp: {
+				return 12;
+			} case discount_e::TargetWarp: {
+				return 12;
+			} case discount_e::CalciticInvocation: {
+				return 4;
+			} case discount_e::SpectralInvocation: {
+				return 4;
+			} case discount_e::SanguineInvocation: {
+				return 4;
+			} case discount_e::NecromanticAscendance: {
+				return 1;
+			}
+		}
+	}
+
+	constexpr cstr to_string(discount_e discount) noexcept {
+		switch (discount) {
 			case discount_e::RandomWarp: {
 				return "Random Warp";
 			} case discount_e::TargetWarp: {
@@ -151,19 +189,35 @@ namespace necrowarp {
 		}
 	}
 
-	constexpr runes_t to_colored_string(discount_e discount, i8 value, discount_type_e type) noexcept {
-		runes_t colored_string{ std::format("{}: ", to_string(discount)) };
+	constexpr runes_t to_colored_string(i8 value, discount_type_e type) noexcept {
+		runes_t colored_string{};
 
 		switch (type) {
 			case discount_type_e::Malus: {
-				return colored_string.concatenate(runes_t{ std::format("+{}", abs(value)), colors::Red });
+				return colored_string.concatenate(runes_t{ std::format("+{} ", abs(value)), colors::Red });
 			} case discount_type_e::Placebo: {
-				return colored_string.concatenate(runes_t{ "0", colors::Yellow });
+				return colored_string.concatenate(runes_t{ " 0 ", colors::Yellow });
 			} case discount_type_e::Boon: {
-				return colored_string.concatenate(runes_t{ std::format("-{}", abs(value)), colors::Green });
+				return colored_string.concatenate(runes_t{ std::format("-{} ", abs(value)), colors::Green });
 			}
 		}
 	}
+
+	constexpr runes_t to_colored_string(discount_e discount, i8 value, discount_type_e type) noexcept {
+		runes_t colored_string{ std::format("{}:{}", to_string(discount), std::string(padding_size(discount), ' ')) };
+
+		switch (type) {
+			case discount_type_e::Malus: {
+				return colored_string.concatenate(runes_t{ std::format("+{} ", abs(value)), colors::Red });
+			} case discount_type_e::Placebo: {
+				return colored_string.concatenate(runes_t{ " 0 ", colors::Yellow });
+			} case discount_type_e::Boon: {
+				return colored_string.concatenate(runes_t{ std::format("-{} ", abs(value)), colors::Green });
+			}
+		}
+	}
+
+	template<patron_e Patron> constexpr runes_t to_colored_string() noexcept;
 
 	struct discount_t {
 		const i8 negative{ 0 };
@@ -180,7 +234,7 @@ namespace necrowarp {
 					return positive;
 				}
 			}
-		} 
+		}
 	};
 
 	struct patron_t {
@@ -194,6 +248,24 @@ namespace necrowarp {
 		const discount_t sanguine_invocation{};
 
 		const discount_t necromantic_ascendance{};
+
+		template<discount_e Discount> constexpr discount_t get_discount() const noexcept {
+			switch (Discount) {
+				case discount_e::RandomWarp: {
+					return random_warp;
+				} case discount_e::TargetWarp: {
+					return target_warp;
+				} case discount_e::CalciticInvocation: {
+					return calcitic_invocation;
+				} case discount_e::SpectralInvocation: {
+					return spectral_invocation;
+				} case discount_e::SanguineInvocation: {
+					return sanguine_invocation;
+				} case discount_e::NecromanticAscendance: {
+					return necromantic_ascendance;
+				}
+			}
+		}
 	};
 
 	template<patron_e Patron> static inline patron_t patrons;
@@ -238,11 +310,37 @@ namespace necrowarp {
 		disposition_e::Apathetic,
 		{ -1, 1, 2 },
 		{ -2, 2, 4 },
-		{ -4, 0, 2 },
-		{ -4, 0, 2 },
-		{ -4, 0, 2 },
+		{ -8, 0, 4 },
+		{ -8, 0, 4 },
+		{ -8, 0, 4 },
 		{ 0, 8, 16 },
 	};
+
+	constexpr discount_type_e get_discount_type(i8 value) {
+		return value == 0 ? discount_type_e::Placebo : value < 0 ? discount_type_e::Malus : discount_type_e::Boon;
+	}
+
+	template<patron_e Patron> constexpr runes_t to_colored_string(discount_e discount) noexcept {
+		runes_t colored_string{};
+
+		magic_enum::enum_switch([&](auto val) {
+			constexpr discount_e discount_cval{ val };
+			
+			cauto discount_info{ patrons<Patron>.template get_discount<discount_cval>() };
+
+			colored_string.concatenate(to_colored_string(discount_info.negative, get_discount_type(discount_info.negative)));
+
+			colored_string.concatenate(runes_t{ " | " });
+
+			colored_string.concatenate(to_colored_string(discount_info.neutral, get_discount_type(discount_info.neutral)));
+
+			colored_string.concatenate(runes_t{ " | " });
+
+			colored_string.concatenate(to_colored_string(discount_info.positive, get_discount_type(discount_info.positive)));
+		}, discount);
+
+		return colored_string;
+	}
 
 	static inline disposition_e get_patron_disposition(patron_e patron) noexcept {
 		return magic_enum::enum_switch([&](auto val) -> disposition_e {

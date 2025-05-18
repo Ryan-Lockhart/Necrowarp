@@ -21,6 +21,28 @@ namespace necrowarp {
 
 	static inline player_t player{};
 
+	template<patron_e Patron> constexpr runes_t to_colored_string() noexcept {
+		runes_t colored_string{};
+
+		magic_enum::enum_for_each<discount_e>([&](auto val) -> void {
+			constexpr discount_e cval{ val };
+
+			colored_string.concatenate({ std::format("{}:{}", to_string(cval), std::string(padding_size(cval), ' ')) });
+
+			colored_string.concatenate(to_colored_string<Patron>(cval));
+
+			if constexpr (cval == discount_e::TargetWarp || cval == discount_e::SanguineInvocation) {
+				colored_string.concatenate(runes_t{ "\n" });
+			} if (cval == discount_e::NecromanticAscendance) {
+				return;
+			} else {
+				colored_string.concatenate(runes_t{ "\n\n" });
+			}
+		});
+
+		return colored_string;
+	}
+
 	static inline bool update_camera() noexcept {
 		bool force_width{ globals::MapSize.w <= globals::grid_size<grid_type_e::Game>().w };
 		bool force_height{ globals::MapSize.h <= globals::grid_size<grid_type_e::Game>().h };
