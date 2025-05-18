@@ -953,19 +953,29 @@ namespace necrowarp {
 			show_depth = show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered();
 
 			if (show_depth) {
+				const i8 kills_energy{ game_stats.kills_until_next_energy_slot() };
+				const i8 kills_armor{ game_stats.kills_until_next_armor_slot() };
+
+				const i8 kills_divinity{ game_stats.kills_until_next_divinity_turn() };
+
 				depth_expanded_label.text = runes_t{
 					std::format(
-						"Player Kills: {:4}\n\n"
-						"Minion Kills: {:4}\n\n\n"
-						"Total Kills:  {:4}\n\n\n"
-						"    Depth: {:3}    ",
-						game_stats.player_kills,
-						game_stats.minion_kills,
-						game_stats.total_kills(),
-						game_stats.game_depth
+						"Minion Kills: {:4} (+1 energy slot in {} kill{})\n\n"
+						"Player Kills: {:4} (+1 armor slot in {} kill{})\n\n\n"
+						"Total Kills:  {:4} (+1 divinity turn in {} kill{})\n\n\n",
+						
+						game_stats.minion_kills, kills_energy == 0 ? globals::KillsPerEnergySlot : kills_energy, kills_energy == 1 ? "" : "s",
+						game_stats.player_kills, kills_armor == 0 ? globals::KillsPerArmorSlot : kills_armor, kills_armor == 1 ? "" : "s",
+						game_stats.total_kills(), kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s"
 					),
-					colors::White
+					colors::White, 
 				};
+
+				const extent_t::scalar_t half_width{ depth_expanded_label.calculate_size().w / 2 - 5 };
+
+				depth_expanded_label.text.concatenate(runes_t{
+					std::format("{}Depth: {:3}{}", std::string(half_width, ' '), game_stats.game_depth, std::string(half_width, ' '))
+				});
 			} else {
 				depth_hidden_label.text = runes_t{ std::format("Depth: {:3}", (isize)game_stats.game_depth * -1) };
 			}

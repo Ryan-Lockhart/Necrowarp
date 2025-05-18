@@ -170,7 +170,13 @@ namespace necrowarp {
 		i16	player_kills{ 0 };
 		i16	minion_kills{ 0 };
 
-		inline i16	total_kills() const noexcept { return player_kills + minion_kills; };
+		inline i16 total_kills() const noexcept { return player_kills + minion_kills; };
+
+		inline i8 kills_until_next_energy_slot() const noexcept { return abs(minion_kills % globals::KillsPerEnergySlot - globals::KillsPerEnergySlot); }
+
+		inline i8 kills_until_next_armor_slot() const noexcept { return abs(player_kills % globals::KillsPerArmorSlot - globals::KillsPerArmorSlot); }
+
+		inline i8 kills_until_next_divinity_turn() const noexcept { return abs(total_kills() % globals::KillsPerDivinityTurn - globals::KillsPerDivinityTurn); }
 
 		inline i16 current_reinforcements() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerReinforcement, globals::MinimumReinforcements, globals::MaximumReinforcements); }
 		

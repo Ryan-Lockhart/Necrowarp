@@ -192,6 +192,7 @@ namespace necrowarp {
 
 			game_stats.cheats.no_hit = true;
 			game_stats.cheats.free_costs = true;
+			game_stats.cheats.bypass_invocations = true;
 
 			game_map.reset<zone_region_t::All>();
 			fluid_map.reset<zone_region_t::All>();

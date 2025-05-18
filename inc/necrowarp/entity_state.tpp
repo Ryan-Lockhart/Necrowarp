@@ -1107,7 +1107,7 @@ namespace necrowarp {
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::CalciticInvocation>(cref<entity_command_t> command) noexcept {
-		if (!player.can_perform(discount_e::CalciticInvocation) || entity_registry.empty<skull_t>()) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::CalciticInvocation) || entity_registry.empty<skull_t>())) {
 			return;
 		}
 
@@ -1210,7 +1210,7 @@ namespace necrowarp {
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::SpectralInvocation>(cref<entity_command_t> command) noexcept {
-		if (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map.template contains<zone_region_t::Interior>(fluid_type_e::Ichor)) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map.template contains<zone_region_t::Interior>(fluid_type_e::Ichor))) {
 			return;
 		}
 
@@ -1322,7 +1322,7 @@ namespace necrowarp {
 	}
 
 	template<> void entity_registry_t::process_command<command_type_t::SanguineInvocation>(cref<entity_command_t> command) noexcept {
-		if (!player.can_perform(discount_e::SanguineInvocation) || !fluid_map.template contains<zone_region_t::Interior>(fluid_type_e::Blood)) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SanguineInvocation) || !fluid_map.template contains<zone_region_t::Interior>(fluid_type_e::Blood))) {
 			return;
 		}
 

@@ -22,7 +22,7 @@ namespace necrowarp {
 				cauto flee_from_evil_pos{ evil_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
 
 				if (!flee_from_evil_pos.has_value()) {
-					return entity_command_t{ command_type_t::Suicide };
+					return entity_command_t{ command_type_t::Suicide, position };
 				}
 
 				return entity_command_t{ command_type_t::Move, position, flee_from_evil_pos.value() };
@@ -91,7 +91,7 @@ namespace necrowarp {
 		}();
 
 		if (!descent_pos.has_value()) {
-			return entity_command_t{ command_type_t::None };
+					return entity_command_t{ command_type_t::Suicide, position };
 		}
 
 		return entity_command_t{ command_type_t::Move, position, descent_pos.value() };
