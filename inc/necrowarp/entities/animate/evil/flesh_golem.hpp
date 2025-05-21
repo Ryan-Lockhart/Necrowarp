@@ -1,6 +1,7 @@
 #pragma once
 
 #include <necrowarp/entities/entity.hpp>
+#include <necrowarp/commands/command.hpp>
 
 #include <necrowarp/game_state.hpp>
 
@@ -11,12 +12,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_type<flesh_golem_t, entity_type_t::FleshGolem> {
+	template<> struct to_entity_enum<flesh_golem_t> {
+		static constexpr entity_e value = entity_e::FleshGolem;
+	};
+
+	template<> struct is_entity_type<flesh_golem_t, entity_e::FleshGolem> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_entity_type<entity_type_t::FleshGolem> {
+	template<> struct to_entity_type<entity_e::FleshGolem> {
 		using type = flesh_golem_t;
+	};
+
+	template<> struct to_entity_group<entity_e::FleshGolem> {
+		static constexpr entity_group_e value = entity_group_e::FleshGolem;
 	};
 
 	template<> struct is_evil_entity<flesh_golem_t> {
@@ -24,6 +33,10 @@ namespace necrowarp {
 	};
 
 	template<> struct is_animate<flesh_golem_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_combatant<flesh_golem_t> {
 		static constexpr bool value = true;
 	};
 
@@ -69,7 +82,7 @@ namespace necrowarp {
 
 		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - filter_damage(damage_amount)); }
 
-		inline entity_command_t think() const noexcept;
+		inline command_pack_t think() const noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position); }
 
@@ -79,7 +92,7 @@ namespace necrowarp {
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position + camera.get_offset(), offset); }
 
-		constexpr operator entity_type_t() const noexcept { return entity_type_t::FleshGolem; }
+		constexpr operator entity_e() const noexcept { return entity_e::FleshGolem; }
 
 		struct hasher {
 			struct offset {

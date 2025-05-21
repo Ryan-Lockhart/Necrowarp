@@ -1,6 +1,9 @@
 #pragma once
 
 #include <necrowarp/entities/entity.hpp>
+#include <necrowarp/commands/command.hpp>
+
+#include <necrowarp/entity_command.hpp>
 
 #include <random>
 
@@ -15,12 +18,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_type<player_t, entity_type_t::Player> {
+	template<> struct to_entity_enum<player_t> {
+		static constexpr entity_e value = entity_e::Player;
+	};
+
+	template<> struct is_entity_type<player_t, entity_e::Player> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_entity_type<entity_type_t::Player> {
+	template<> struct to_entity_type<entity_e::Player> {
 		using type = player_t;
+	};
+
+	template<> struct to_entity_group<entity_e::Player> {
+		static constexpr entity_group_e value = entity_group_e::Player;
 	};
 
 	template<> struct is_evil_entity<player_t> {
@@ -39,16 +50,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_combatant<player_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<player_t>{ glyphs::UnarmoredPlayer };
 
-	template<> inline constexpr glyph_t command_icons<command_type_t::RandomWarp>{ 0x00, colors::White };
-	template<> inline constexpr glyph_t command_icons<command_type_t::TargetWarp>{ 0x01, colors::White };
+	template<> inline constexpr glyph_t command_icons<command_e::RandomWarp>{ 0x00, colors::White };
+	template<> inline constexpr glyph_t command_icons<command_e::TargetWarp>{ 0x01, colors::White };
 
-	template<> inline constexpr glyph_t command_icons<command_type_t::CalciticInvocation>{ 0x02, colors::White };
-	template<> inline constexpr glyph_t command_icons<command_type_t::SpectralInvocation>{ 0x10, colors::White };
-	template<> inline constexpr glyph_t command_icons<command_type_t::SanguineInvocation>{ 0x11, colors::White };
+	template<> inline constexpr glyph_t command_icons<command_e::CalciticInvocation>{ 0x02, colors::White };
+	template<> inline constexpr glyph_t command_icons<command_e::SpectralInvocation>{ 0x10, colors::White };
+	template<> inline constexpr glyph_t command_icons<command_e::SanguineInvocation>{ 0x11, colors::White };
 
-	template<> inline constexpr glyph_t command_icons<command_type_t::NecromanticAscendance>{ 0x12, colors::White };
+	template<> inline constexpr glyph_t command_icons<command_e::NecromanticAscendance>{ 0x12, colors::White };
 
 	enum class patron_e : u8 {
 		None,
@@ -383,7 +398,7 @@ namespace necrowarp {
 	}
 
 	struct player_t {
-		entity_command_t command;
+		command_pack_t command;
 		offset_t position;
 
 		static constexpr i8 MinimumEnergy{ 4 };
@@ -616,13 +631,13 @@ namespace necrowarp {
 
 		inline void zero_out_divinity() noexcept { set_divinity(0); }
 
-		template<entity_type_t EntityType> inline bool will_perish() const noexcept;
+		template<entity_e EntityType> inline bool will_perish() const noexcept;
 
-		template<entity_type_t EntityType> inline void receive_damage() noexcept;
+		template<entity_e EntityType> inline void receive_damage() noexcept;
 
-		template<entity_type_t EntityType> inline void receive_death_boon() noexcept;
+		template<entity_e EntityType> inline void receive_death_boon() noexcept;
 
-		inline command_type_t clash_or_consume(offset_t position) const noexcept;
+		inline command_e clash_or_consume(offset_t position) const noexcept;
 
 		inline void bolster_armor(i8 value) noexcept { set_armor(armor + value); }
 
@@ -638,7 +653,7 @@ namespace necrowarp {
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
-		constexpr operator entity_type_t() const noexcept { return entity_type_t::Player; }
+		constexpr operator entity_e() const noexcept { return entity_e::Player; }
 	};
 
 	static inline patron_e desired_patron{ patron_e::None };

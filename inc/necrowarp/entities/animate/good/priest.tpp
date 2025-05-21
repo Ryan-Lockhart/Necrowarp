@@ -6,14 +6,14 @@
 #include <necrowarp/entity_state.tpp>
 
 namespace necrowarp {
-	inline entity_command_t priest_t::think() const noexcept {
+	inline command_pack_t priest_t::think() const noexcept {
 		if (!has_piety()) {
 			cauto flock_to_paladin_pos{ entity_goal_map<paladin_t>.descend<zone_region_t::Interior>(position, entity_registry) };
 
 			if (!flock_to_paladin_pos.has_value() && entity_registry.empty<adventurer_t>()) {
-				return entity_command_t{ command_type_t::None };
+				return command_pack_t{ command_e::None };
 			} else if (flock_to_paladin_pos.has_value()) {
-				return entity_command_t{ command_type_t::Move, position, flock_to_paladin_pos.value() };
+				return command_pack_t{ command_e::Move, position, flock_to_paladin_pos.value() };
 			}
 
 			cauto flock_to_adventurer_pos { entity_goal_map<adventurer_t>.descend<zone_region_t::Interior>(position, entity_registry) };
@@ -22,46 +22,40 @@ namespace necrowarp {
 				cauto flee_from_evil_pos{ evil_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
 
 				if (!flee_from_evil_pos.has_value()) {
-					return entity_command_t{ command_type_t::Suicide, position };
+					return command_pack_t{ command_e::Suicide, position };
 				}
 
-				return entity_command_t{ command_type_t::Move, position, flee_from_evil_pos.value() };
+				return command_pack_t{ command_e::Move, position, flee_from_evil_pos.value() };
 			}
 
-			return entity_command_t{ command_type_t::Move, position, flock_to_adventurer_pos.value() };
+			return command_pack_t{ command_e::Move, position, flock_to_adventurer_pos.value() };
 		}
 
 		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t offset_pos{ position + offset };
 
-			switch (entity_registry.at(offset_pos)) {
-				case entity_type_t::Skull: {
-					cauto skull{ entity_registry.at<skull_t>(offset_pos) };
+			if (entity_registry.contains<skull_t>(offset_pos)) {
+				cauto skull{ entity_registry.at<skull_t>(offset_pos) };
 
-					if (skull == nullptr) {
-						continue;
-					}
-
-					if (!can_resurrect() && skull->state == decay_e::Fresh) {
-						continue;
-					}
-
-					if (skull->state == decay_e::Fresh && can_resurrect()) {
-						return entity_command_t{ command_type_t::Resurrect, position, offset_pos };
-					} else if (skull->state != decay_e::Fresh) {
-						return entity_command_t{ command_type_t::Exorcise, position, offset_pos }; 
-					}
-					
-					continue;
-				} case entity_type_t::Adventurer: {
-					if (!can_anoint()) {
-						continue;
-					}
-
-					return entity_command_t{ command_type_t::Anoint, position, offset_pos };
-				} default: {
+				if (skull == nullptr) {
 					continue;
 				}
+
+				if (!can_resurrect() && skull->state == decay_e::Fresh) {
+					continue;
+				}
+
+				if (skull->state == decay_e::Fresh && can_resurrect()) {
+					return command_pack_t{ command_e::Resurrect, position, offset_pos };
+				} else if (skull->state != decay_e::Fresh) {
+					return command_pack_t{ command_e::Exorcise, position, offset_pos }; 
+				}
+			} else if (entity_registry.contains<adventurer_t>(offset_pos)) {
+				if (!can_anoint()) {
+					continue;
+				}
+
+				return command_pack_t{ command_e::Anoint, position, offset_pos };
 			}
 		}
 
@@ -91,9 +85,9 @@ namespace necrowarp {
 		}();
 
 		if (!descent_pos.has_value()) {
-					return entity_command_t{ command_type_t::Suicide, position };
+			return command_pack_t{ command_e::Suicide, position };
 		}
 
-		return entity_command_t{ command_type_t::Move, position, descent_pos.value() };
+		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 } // namespace necrowarp

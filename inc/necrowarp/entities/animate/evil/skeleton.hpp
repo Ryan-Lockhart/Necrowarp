@@ -1,6 +1,7 @@
 #pragma once
 
 #include <necrowarp/entities/entity.hpp>
+#include <necrowarp/commands/command.hpp>
 
 #include <necrowarp/game_state.hpp>
 
@@ -11,12 +12,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_type<skeleton_t, entity_type_t::Skeleton> {
+	template<> struct to_entity_enum<skeleton_t> {
+		static constexpr entity_e value = entity_e::Skeleton;
+	};
+
+	template<> struct is_entity_type<skeleton_t, entity_e::Skeleton> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_entity_type<entity_type_t::Skeleton> {
+	template<> struct to_entity_type<entity_e::Skeleton> {
 		using type = skeleton_t;
+	};
+
+	template<> struct to_entity_group<entity_e::Skeleton> {
+		static constexpr entity_group_e value = entity_group_e::Skeleton;
 	};
 
 	template<> struct is_evil_entity<skeleton_t> {
@@ -27,7 +36,15 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_combatant<skeleton_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_fodder<skeleton_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_clumsy<skeleton_t> {
 		static constexpr bool value = true;
 	};
 
@@ -64,12 +81,12 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
-		inline entity_command_t think() const noexcept;
+		inline command_pack_t think() const noexcept;
 
-		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(entity_type_t::Skeleton), necrowarp::to_string(state)); }
+		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(entity_e::Skeleton), necrowarp::to_string(state)); }
 
 		inline runes_t to_colored_string() const noexcept {
-			runes_t colored_string{ necrowarp::to_colored_string(entity_type_t::Skeleton) };
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Skeleton) };
 
 			colored_string
 				.concatenate(runes_t{ " (" })
@@ -99,7 +116,7 @@ namespace necrowarp {
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
-		constexpr operator entity_type_t() const noexcept { return entity_type_t::Skeleton; }
+		constexpr operator entity_e() const noexcept { return entity_e::Skeleton; }
 
 		struct hasher {
 			struct offset {

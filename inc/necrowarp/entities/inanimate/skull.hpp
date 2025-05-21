@@ -11,12 +11,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_type<skull_t, entity_type_t::Skull> {
+	template<> struct to_entity_enum<skull_t> {
+		static constexpr entity_e value = entity_e::Skull;
+	};
+
+	template<> struct is_entity_type<skull_t, entity_e::Skull> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_entity_type<entity_type_t::Skull> {
+	template<> struct to_entity_type<entity_e::Skull> {
 		using type = skull_t;
+	};
+
+	template<> struct to_entity_group<entity_e::Skull> {
+		static constexpr entity_group_e value = entity_group_e::Skull;
 	};
 
 	template<> struct is_inanimate<skull_t> {
@@ -39,10 +47,10 @@ namespace necrowarp {
 
 		inline bool is_rotted() const noexcept { return state == decay_e::Rotted; }
 
-		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(entity_type_t::Skull), necrowarp::to_string(state)); }
+		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(entity_e::Skull), necrowarp::to_string(state)); }
 
 		inline runes_t to_colored_string() const noexcept {
-			runes_t colored_string{ necrowarp::to_colored_string(entity_type_t::Skull) };
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Skull) };
 
 			colored_string
 				.concatenate(runes_t{ " (" })
@@ -72,7 +80,7 @@ namespace necrowarp {
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
-		constexpr operator entity_type_t() const noexcept { return entity_type_t::Skull; }
+		constexpr operator entity_e() const noexcept { return entity_e::Skull; }
 
 		struct hasher {
 			struct offset {

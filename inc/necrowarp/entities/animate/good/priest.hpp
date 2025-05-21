@@ -1,6 +1,7 @@
 #pragma once
 
 #include <necrowarp/entities/entity.hpp>
+#include <necrowarp/commands/command.hpp>
 
 #include <necrowarp/game_state.hpp>
 
@@ -11,12 +12,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_type<priest_t, entity_type_t::Priest> {
+	template<> struct to_entity_enum<priest_t> {
+		static constexpr entity_e value = entity_e::Priest;
+	};
+
+	template<> struct is_entity_type<priest_t, entity_e::Priest> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_entity_type<entity_type_t::Priest> {
+	template<> struct to_entity_type<entity_e::Priest> {
 		using type = priest_t;
+	};
+
+	template<> struct to_entity_group<entity_e::Priest> {
+		static constexpr entity_group_e value = entity_group_e::Priest;
 	};
 
 	template<> struct is_good_entity<priest_t> {
@@ -24,6 +33,14 @@ namespace necrowarp {
 	};
 
 	template<> struct is_animate<priest_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_combatant<priest_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_docile<priest_t> {
 		static constexpr bool value = true;
 	};
 
@@ -82,7 +99,7 @@ namespace necrowarp {
 
 		inline void receive_exorcism_boon() noexcept { set_piety(piety + ExorcismBoon); }
 
-		inline entity_command_t think() const noexcept;
+		inline command_pack_t think() const noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<priest_t>, position); }
 
@@ -92,7 +109,7 @@ namespace necrowarp {
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<priest_t>, position + camera.get_offset(), offset); }
 
-		constexpr operator entity_type_t() const noexcept { return entity_type_t::Priest; }
+		constexpr operator entity_e() const noexcept { return entity_e::Priest; }
 
 		struct hasher {
 			struct offset {

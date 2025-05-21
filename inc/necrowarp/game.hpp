@@ -88,35 +88,31 @@ namespace necrowarp {
 			player.command = entity_command_t{};
 
 			if (Keyboard::any_keys_pressed<2>(bindings::Wait)) {
+				player.command = entity_command_t{ command_type_t::None };
+
 				return true;
 			} else if (Keyboard::is_key_down(bindings::RandomWarp)) {
 				player.command = entity_command_t{ command_type_t::RandomWarp, player.position };
-
-				return true;
 			} else if (Keyboard::is_key_down(bindings::TargetWarp)) {
-				if (!game_map.within<zone_region_t::Interior>(grid_cursor.get_position()) || game_map[grid_cursor.get_position()].solid) {
-					return false;
-				}
-
-				player.command = entity_command_t{ entity_registry.contains(grid_cursor.get_position()) ? command_type_t::ConsumeWarp : command_type_t::TargetWarp, player.position, grid_cursor.get_position() };
-
-				return true;
+				player.command = entity_command_t{
+					entity_registry.contains(grid_cursor.get_position()) ?
+						command_type_t::ConsumeWarp :
+						command_type_t::TargetWarp,
+					player.position,
+					grid_cursor.get_position()
+				};
 			} else if (Keyboard::is_key_down(bindings::CalciticInvocation)) {
 				player.command = entity_command_t{ command_type_t::CalciticInvocation, player.position };
-
-				return true;
 			} else if (Keyboard::is_key_down(bindings::SpectralInvocation)) {
 				player.command = entity_command_t{ command_type_t::SpectralInvocation, player.position };
-
-				return true;
 			} else if (Keyboard::is_key_down(bindings::SanguineInvocation)) {
 				player.command = entity_command_t{ command_type_t::SanguineInvocation, player.position };
-
-				return true;
 			} else if (Keyboard::is_key_down(bindings::NecromanticAscendance)) {
 				player.command = entity_command_t{ command_type_t::NecromanticAscendance, player.position };
+			}
 
-				return true;
+			if (player.command.type != command_type_t::None) {
+				return entity_registry.is_command_valid(player.command);
 			}
 
 			const offset_t direction = []() -> offset_t {
@@ -146,9 +142,13 @@ namespace necrowarp {
 
 				player.command = entity_command_t{ command_type, player.position, target_position };
 
-				draw_warp_cursor = false;
+				if (!entity_registry.is_command_valid(player.command)) {
+					return false;
+				} else {
+					draw_warp_cursor = false;
 
-				return true;
+					return true;
+				}
 			}
 
 			return false;
@@ -462,37 +462,51 @@ namespace necrowarp {
 				return true;
 			}
 
-			if (game_stats.wave_size >= globals::HugeWaveSize) {
-				if (spawn_chance < 60) {
-					entity_registry.add<true>(adventurer_t{ spawn_pos.value() });
-				} else if (spawn_chance < 96) {
-					entity_registry.add<true>(paladin_t{ spawn_pos.value() });
+			if (game_stats.wave_size >= globals::MassiveWaveSize) {
+				if (spawn_chance < 80) {
+					entity_registry.add<true>(mercenary_t{ spawn_pos.value() }); // 80%
+				} else if (spawn_chance < 98) {
+					entity_registry.add<true>(paladin_t{ spawn_pos.value() }); // 16%
 				} else {
-					entity_registry.add<true>(priest_t{ spawn_pos.value() });
+					entity_registry.add<true>(priest_t{ spawn_pos.value() }); // 4%
+				}
+			} else if (game_stats.wave_size >= globals::HugeWaveSize) {
+				if (spawn_chance < 50) {
+					entity_registry.add<true>(adventurer_t{ spawn_pos.value() }); // 50%
+				} else if (spawn_chance < 90) {
+					entity_registry.add<true>(mercenary_t{ spawn_pos.value() }); // 40%
+				} else if (spawn_chance < 98) {
+					entity_registry.add<true>(paladin_t{ spawn_pos.value() }); // 8%
+				} else {
+					entity_registry.add<true>(priest_t{ spawn_pos.value() }); // 4%
 				}
 			} else if (game_stats.wave_size >= globals::LargeWaveSize) {
 				if (spawn_chance < 70) {
-					entity_registry.add<true>(adventurer_t{ spawn_pos.value() });
-				} else if (spawn_chance < 97) {
-					entity_registry.add<true>(paladin_t{ spawn_pos.value() });
-				} else  {
-					entity_registry.add<true>(priest_t{ spawn_pos.value() });
+					entity_registry.add<true>(adventurer_t{ spawn_pos.value() }); // 70%
+				} else if (spawn_chance < 94) {
+					entity_registry.add<true>(mercenary_t{ spawn_pos.value() }); // 24%
+				} else if (spawn_chance < 98) {
+					entity_registry.add<true>(paladin_t{ spawn_pos.value() }); // 4%
+				} else {
+					entity_registry.add<true>(priest_t{ spawn_pos.value() }); // 2%
 				}
 			} else if (game_stats.wave_size >= globals::MediumWaveSize) {
 				if (spawn_chance < 80) {
-					entity_registry.add<true>(adventurer_t{ spawn_pos.value() });
-				} else if (spawn_chance < 98) {
-					entity_registry.add<true>(paladin_t{ spawn_pos.value() });
+					entity_registry.add<true>(adventurer_t{ spawn_pos.value() }); // 80%
+				} else if (spawn_chance < 97) {
+					entity_registry.add<true>(mercenary_t{ spawn_pos.value() }); // 17%
+				} else if (spawn_chance < 99) {
+					entity_registry.add<true>(paladin_t{ spawn_pos.value() }); // 2%
 				} else {
-					entity_registry.add<true>(priest_t{ spawn_pos.value() });
+					entity_registry.add<true>(priest_t{ spawn_pos.value() }); // 1%
 				}
 			} else if (game_stats.wave_size >= globals::SmallWaveSize) {
 				if (spawn_chance < 90) {
-					entity_registry.add<true>(adventurer_t{ spawn_pos.value() });
+					entity_registry.add<true>(adventurer_t{ spawn_pos.value() }); // 90%
 				} else if (spawn_chance < 99) {
-					entity_registry.add<true>(paladin_t{ spawn_pos.value() });
+					entity_registry.add<true>(mercenary_t{ spawn_pos.value() }); // 9%
 				} else {
-					entity_registry.add<true>(priest_t{ spawn_pos.value() });
+					entity_registry.add<true>(paladin_t{ spawn_pos.value() }); // 1%
 				}
 			} else {
 				entity_registry.add<true>(adventurer_t{ spawn_pos.value() });

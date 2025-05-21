@@ -309,9 +309,10 @@ namespace necrowarp {
 		constexpr i16 MediumWaveSize{ 16 };
 		constexpr i16 LargeWaveSize{ 32 };
 		constexpr i16 HugeWaveSize{ 64 };
+		constexpr i16 MassiveWaveSize{ 128 };
 
 		constexpr i16 MinimumWaveSize{ 4 };
-		constexpr i16 MaximumWaveSize{ 64 };
+		constexpr i16 MaximumWaveSize{ 128 };
 
 		constexpr i16 KillsPerPopulation{ 8 };
 
@@ -324,7 +325,7 @@ namespace necrowarp {
 
 		constexpr i16 FloorsPerReinforcement{ 8 };
 
-		constexpr bool CheatsAllowed{ true };
+		constexpr bool CheatsAllowed{ false };
 
 		constexpr f32 FluidPoolMinimumVolume{ 4.5f };
 		constexpr f32 FluidPoolMaximumVolume{ 5.7f };

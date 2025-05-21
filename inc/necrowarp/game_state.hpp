@@ -76,6 +76,16 @@ namespace necrowarp {
 
 	static inline f32 fluid_pool_volume() noexcept { return globals::fluid_pool_dis(random_engine); }
 
+	static inline f32 fluid_pool_volume(i8 count) noexcept { 
+		f32 amount{};
+
+		for (i8 i{ 0 }; i < count; ++i) {
+			amount += globals::fluid_pool_dis(random_engine);
+		}
+
+		return amount;
+	}
+
 	enum class attribute_e {
 		Energy,
 		Armor,

@@ -1,0 +1,141 @@
+#pragma once
+
+#include <necrowarp/commands/binary/spectral_invocation.hpp>
+
+#include <necrowarp/entity_command.hpp>
+
+#include <necrowarp/entity_state.hpp>
+#include <necrowarp/entity_state.tpp>
+
+namespace necrowarp {
+	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, spectral_invocation_t>::process() noexcept {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map.template contains<zone_region_t::Interior>(fluid_type_e::Ichor))) {
+			player_turn_invalidated = true;
+
+			return;
+		}
+
+		const bool is_exalted{ player.has_ascended() };
+
+		i8 pools_consumed{ 0 };
+
+		ptr<ladder_t> eligible_ladder{ nullptr };
+
+		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+			const offset_t position{ player.position + offset };
+
+			const bool no_ichor{ fluid_map[position] != fluid_type_e::Ichor };
+
+			if (no_ichor && player.bypass_invocations_enabled()) {
+				++pools_consumed;
+
+				if (!is_exalted) {
+					entity_registry.add<true>(cultist_t{ position });
+				}
+
+				continue;
+			}
+
+			const bool has_ichor{ fluid_map[position].contains(fluid_type_e::Ichor) };
+			const bool has_ladder{ entity_registry.at(position) == entity_e::Ladder };
+
+			if (!game_map.within<zone_region_t::Interior>(position) || (!has_ichor && (eligible_ladder != nullptr || !has_ladder))) {
+				continue;
+			}
+
+			if (has_ichor) {
+				fluid_map[position] -= fluid_type_e::Ichor;
+				++pools_consumed;
+
+				if (!is_exalted) {
+					entity_registry.add<true>(cultist_t{ position });
+				}
+			}
+
+			if (eligible_ladder == nullptr && has_ladder) {
+				eligible_ladder = entity_registry.at<ladder_t>(position);
+
+				switch (eligible_ladder->shackle) {
+					case shackle_type_t::None: {
+						if (eligible_ladder->is_down_ladder()) {
+							eligible_ladder = nullptr;
+						}
+						break;
+					} default: {
+						if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_type_t::Spectral) {
+							eligible_ladder = nullptr;
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		if (fluid_map[player.position].contains(fluid_type_e::Ichor)) {
+			const offset_t pos{ player.position };
+
+			fluid_map[pos] -= fluid_type_e::Ichor;
+			++pools_consumed;
+
+			if (!is_exalted) {
+				if (!entity_registry.random_warp(source_position)) {
+					player.bolster_armor(pools_consumed);
+				} else {
+					entity_registry.add<true>(cultist_t{ pos });
+				}
+			}
+		}
+
+		if (player.bypass_invocations_enabled()) {
+			pools_consumed = wraith_t::MaximumHealth;
+		}
+
+		steam_stats::stats<steam_stat_e::IchorConsumed, f32> += fluid_pool_volume(pools_consumed);
+
+		if (pools_consumed <= 0) {
+			player_turn_invalidated = true;
+
+			return;
+		} else if (pools_consumed >= 4 && eligible_ladder != nullptr) {
+			if (eligible_ladder->is_down_ladder()) {
+				eligible_ladder->unshackle();
+
+				// unshackle first eldritch shackle achievment placeholder : A Chilling Draft
+			} else {
+				eligible_ladder->enshackle(shackle_type_t::Spectral);
+
+				// eldritch enshackle first ladder achievment placeholder : Isn't it incorporeal?
+			}
+
+			eligible_ladder = nullptr;
+		}
+
+		++steam_stats::stats<steam_stat_e::SpectralInvocations, i32>;
+
+		player.pay_cost(discount_e::SpectralInvocation);
+
+		if (!player.has_ascended()) {
+			if (pools_consumed == 9) {
+				// summon max amount of cultists achievment placeholder : ?
+			} else if (pools_consumed > 1) {
+				// summon first squad of cultists achievment placeholder : ?
+			}
+
+			return;
+		}
+
+		if (!entity_registry.random_warp(source_position)) {
+			player.bolster_armor(pools_consumed);
+
+			return;
+		}
+
+		entity_registry.add<true>(wraith_t{ source_position, pools_consumed });
+
+		if (pools_consumed == 9) {
+			// summon first wraith achievment placeholder : Intersticial
+		} else {
+			// summon wraith with max heatlh achievment placeholder : Summoned from Beyond
+		}
+	}
+} // namespace necrowarp

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <necrowarp/entities/entity.hpp>
+#include <necrowarp/commands/command.hpp>
 
 #include <necrowarp/game_state.hpp>
 
@@ -11,12 +12,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_type<cultist_t, entity_type_t::Cultist> {
+	template<> struct to_entity_enum<cultist_t> {
+		static constexpr entity_e value = entity_e::Cultist;
+	};
+
+	template<> struct is_entity_type<cultist_t, entity_e::Cultist> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_entity_type<entity_type_t::Cultist> {
+	template<> struct to_entity_type<entity_e::Cultist> {
 		using type = cultist_t;
+	};
+
+	template<> struct to_entity_group<entity_e::Cultist> {
+		static constexpr entity_group_e value = entity_group_e::Cultist;
 	};
 
 	template<> struct is_evil_entity<cultist_t> {
@@ -24,6 +33,10 @@ namespace necrowarp {
 	};
 
 	template<> struct is_animate<cultist_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_combatant<cultist_t> {
 		static constexpr bool value = true;
 	};
 
@@ -51,7 +64,7 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
-		inline entity_command_t think() const noexcept;
+		inline command_pack_t think() const noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<cultist_t>, position); }
 
@@ -61,7 +74,7 @@ namespace necrowarp {
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<cultist_t>, position + camera.get_offset(), offset); }
 
-		constexpr operator entity_type_t() const noexcept { return entity_type_t::Cultist; }
+		constexpr operator entity_e() const noexcept { return entity_e::Cultist; }
 
 		struct hasher {
 			struct offset {

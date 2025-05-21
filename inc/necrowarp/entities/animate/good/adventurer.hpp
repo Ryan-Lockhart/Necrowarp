@@ -1,6 +1,7 @@
 #pragma once
 
 #include <necrowarp/entities/entity.hpp>
+#include <necrowarp/commands/command.hpp>
 
 #include <necrowarp/game_state.hpp>
 
@@ -11,12 +12,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_type<adventurer_t, entity_type_t::Adventurer> {
+	template<> struct to_entity_enum<adventurer_t> {
+		static constexpr entity_e value = entity_e::Adventurer;
+	};
+
+	template<> struct is_entity_type<adventurer_t, entity_e::Adventurer> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_entity_type<entity_type_t::Adventurer> {
+	template<> struct to_entity_type<entity_e::Adventurer> {
 		using type = adventurer_t;
+	};
+
+	template<> struct to_entity_group<entity_e::Adventurer> {
+		static constexpr entity_group_e value = entity_group_e::Adventurer;
 	};
 
 	template<> struct is_good_entity<adventurer_t> {
@@ -27,7 +36,15 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_combatant<adventurer_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_fodder<adventurer_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_clumsy<adventurer_t> {
 		static constexpr bool value = true;
 	};
 
@@ -61,7 +78,7 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
-		inline entity_command_t think() const noexcept;
+		inline command_pack_t think() const noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<adventurer_t>, position); }
 
@@ -71,7 +88,7 @@ namespace necrowarp {
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<adventurer_t>, position + camera.get_offset(), offset); }
 
-		constexpr operator entity_type_t() const noexcept { return entity_type_t::Adventurer; }
+		constexpr operator entity_e() const noexcept { return entity_e::Adventurer; }
 
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };

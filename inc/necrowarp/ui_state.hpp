@@ -1017,7 +1017,7 @@ namespace necrowarp {
 				favor_hidden_label.text = runes_t{ " Favor " };
 			}
 
-			const bool has_entity{ entity_registry.at(grid_cursor.current_position) != entity_type_t::None };
+			const bool has_entity{ entity_registry.at(grid_cursor.current_position) != entity_e::None };
 			const fluid_type_e fluid{ fluid_map[grid_cursor.current_position] };
 
 			show_tooltip = has_entity || fluid != fluid_type_e::None;
@@ -1062,21 +1062,21 @@ namespace necrowarp {
 			}
 
 			switch (entity_registry.at(grid_cursor.current_position)) {
-				case entity_type_t::Player: {
+				case entity_e::Player: {
 					grid_cursor.color = colors::Magenta;
 					break;
-				} case entity_type_t::Skeleton:
-				  case entity_type_t::Wraith:
-				  case entity_type_t::FleshGolem: {
+				} case entity_e::Skeleton:
+				  case entity_e::Wraith:
+				  case entity_e::FleshGolem: {
 					grid_cursor.color = colors::Green;
 					break;
-				} case entity_type_t::Adventurer:
-				  case entity_type_t::Paladin:
-				  case entity_type_t::Priest: {
+				} case entity_e::Adventurer:
+				  case entity_e::Paladin:
+				  case entity_e::Priest: {
 					grid_cursor.color = colors::Red;
 					break;
-				} case entity_type_t::Skull:
-				  case entity_type_t::Ladder: {
+				} case entity_e::Skull:
+				  case entity_e::Ladder: {
 					grid_cursor.color = colors::Blue;
 					break;
 				} default: {

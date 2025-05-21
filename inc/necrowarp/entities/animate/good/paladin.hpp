@@ -1,6 +1,7 @@
 #pragma once
 
 #include <necrowarp/entities/entity.hpp>
+#include <necrowarp/commands/command.hpp>
 
 #include <necrowarp/game_state.hpp>
 
@@ -11,12 +12,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_type<paladin_t, entity_type_t::Paladin> {
+	template<> struct to_entity_enum<paladin_t> {
+		static constexpr entity_e value = entity_e::Paladin;
+	};
+
+	template<> struct is_entity_type<paladin_t, entity_e::Paladin> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_entity_type<entity_type_t::Paladin> {
+	template<> struct to_entity_type<entity_e::Paladin> {
 		using type = paladin_t;
+	};
+
+	template<> struct to_entity_group<entity_e::Paladin> {
+		static constexpr entity_group_e value = entity_group_e::Paladin;
 	};
 
 	template<> struct is_good_entity<paladin_t> {
@@ -24,6 +33,10 @@ namespace necrowarp {
 	};
 
 	template<> struct is_animate<paladin_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_combatant<paladin_t> {
 		static constexpr bool value = true;
 	};
 
@@ -62,7 +75,7 @@ namespace necrowarp {
 
 		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
-		inline entity_command_t think() const noexcept;
+		inline command_pack_t think() const noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position); }
 
@@ -72,7 +85,7 @@ namespace necrowarp {
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position + camera.get_offset(), offset); }
 
-		constexpr operator entity_type_t() const noexcept { return entity_type_t::Paladin; }
+		constexpr operator entity_e() const noexcept { return entity_e::Paladin; }
 
 		struct hasher {
 			struct offset {

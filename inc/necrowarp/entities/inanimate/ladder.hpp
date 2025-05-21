@@ -11,12 +11,20 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_type<ladder_t, entity_type_t::Ladder> {
+	template<> struct to_entity_enum<ladder_t> {
+		static constexpr entity_e value = entity_e::Ladder;
+	};
+
+	template<> struct is_entity_type<ladder_t, entity_e::Ladder> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_entity_type<entity_type_t::Ladder> {
+	template<> struct to_entity_type<entity_e::Ladder> {
 		using type = ladder_t;
+	};
+
+	template<> struct to_entity_group<entity_e::Ladder> {
+		static constexpr entity_group_e value = entity_group_e::Ladder;
 	};
 
 	template<> struct is_inanimate<ladder_t> {
@@ -141,10 +149,10 @@ namespace necrowarp {
 
 		inline bool has_shackle() const noexcept { return shackle != shackle_type_t::None; }
 
-		inline std::string to_string() const noexcept { return std::format("{} ({} | {})", necrowarp::to_string(entity_type_t::Ladder), necrowarp::to_string(verticality), necrowarp::to_string(shackle)); }
+		inline std::string to_string() const noexcept { return std::format("{} ({} | {})", necrowarp::to_string(entity_e::Ladder), necrowarp::to_string(verticality), necrowarp::to_string(shackle)); }
 
 		inline runes_t to_colored_string() const noexcept {
-			runes_t colored_string{ necrowarp::to_colored_string(entity_type_t::Ladder) };
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Ladder) };
 
 			colored_string
 				.concatenate(runes_t{ " (" })
@@ -232,7 +240,7 @@ namespace necrowarp {
 			draw_shackle(pos, offset);
 		}
 
-		constexpr operator entity_type_t() const noexcept { return entity_type_t::Ladder; }
+		constexpr operator entity_e() const noexcept { return entity_e::Ladder; }
 
 		struct hasher {
 			struct offset {

@@ -15,7 +15,7 @@ namespace necrowarp {
 		None = 0,
 
 		Blood = 1 << 0,
-		Ichor = 1 << 1,
+		Ichor = Blood << 1,
 
 		BloodyIchor = Blood | Ichor,
 	};
