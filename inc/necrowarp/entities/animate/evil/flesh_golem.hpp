@@ -66,6 +66,13 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ static_cast<i8>(BaseMaximumHealth * HealthMultiplier) };
 		static constexpr i8 MaximumDamage{ 1 };
 
+		static constexpr std::array<entity_e, 4> TargetPriorities{
+			entity_e::Priest,
+			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Paladin
+		};
+
 		static constexpr i8 MinimumDamageReceived{ 1 };
 		
 		inline flesh_golem_t(offset_t position, i8 health) noexcept : position{ position }, health{ static_cast<i8>(health * HealthMultiplier) } {}
@@ -80,9 +87,13 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage(damage_amount); }
 
+		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
 		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - filter_damage(damage_amount)); }
 
 		inline command_pack_t think() const noexcept;
+
+		inline void die() noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position); }
 

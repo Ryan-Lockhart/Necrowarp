@@ -6,6 +6,7 @@
 
 #include <necrowarp/cell.hpp>
 
+#include <magic_enum/magic_enum_utility.hpp>
 #include <magic_enum/magic_enum_switch.hpp>
 
 namespace necrowarp {
@@ -138,7 +139,7 @@ namespace necrowarp {
 			} case entity_e::Adventurer: {
 				return runes_t{ string, colors::metals::Bronze };
 			} case entity_e::Mercenary: {
-				return runes_t{ string, colors::metals::Iron };
+				return runes_t{ string, colors::metals::Brass };
 			} case entity_e::Paladin: {
 				return runes_t{ string, colors::metals::Steel };
 			} case entity_e::Priest: {
@@ -196,6 +197,10 @@ namespace necrowarp {
 	template<typename... EntityTypes>
 		requires is_plurary<EntityTypes...>::value && is_homogeneous<entity_e, EntityTypes...>::value
 	constexpr bool operator!=(entity_group_e lhs, EntityTypes... rhs) noexcept;
+
+	static constexpr std::string to_string(entity_group_e group) noexcept;
+
+	static constexpr runes_t to_colored_string(entity_group_e group) noexcept;
 
 	enum class decay_e : i8 {
 		Rotted = -1,
@@ -295,14 +300,6 @@ namespace necrowarp {
 
 	template<typename T> concept EvilEntity = NonNullEntity<T> && is_evil_entity<T>::value;
 
-	template<typename T> struct is_npc_entity {
-		static constexpr bool value = false;
-	};
-
-	template<typename T> constexpr bool is_npc_entity_v = is_npc_entity<T>::value;
-
-	template<typename T> concept NPCEntity = NonNullEntity<T> && is_npc_entity<T>::value;
-
 	template<typename T> struct is_animate {
 		static constexpr bool value = false;
 	};
@@ -326,6 +323,14 @@ namespace necrowarp {
 	template<typename T> constexpr bool is_non_player_v = is_non_player_entity<T>::value;
 
 	template<typename T> concept NonPlayerEntity = NonNullEntity<T> && is_non_player_entity<T>::value;
+
+	template<typename T> concept NPCEntity = NonNullEntity<T> && AnimateEntity<T> && NonPlayerEntity<T>;
+
+	template<typename T> struct is_npc_entity {
+		static constexpr bool value = NPCEntity<T>;
+	};
+
+	template<typename T> constexpr bool is_npc_entity_v = is_npc_entity<T>::value;
 
 	template<typename T> struct is_player {
 		static constexpr bool value = false;

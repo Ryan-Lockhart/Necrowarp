@@ -3,6 +3,13 @@
 #include <necrowarp/entities/entity.hpp>
 #include <necrowarp/commands/command.hpp>
 
+#include <necrowarp/entity_command.hpp>
+
+#include <necrowarp/commands/binary/exorcise.hpp>
+#include <necrowarp/commands/binary/resurrect.hpp>
+#include <necrowarp/commands/binary/anoint.hpp>
+#include <necrowarp/commands/unary/suicide.hpp>
+
 #include <necrowarp/game_state.hpp>
 
 namespace necrowarp {
@@ -56,10 +63,44 @@ namespace necrowarp {
 		static constexpr fluid_type_e type = fluid_type_e::Blood;
 	};
 
+	template<> struct is_entity_command_valid<priest_t, exorcise_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<priest_t, resurrect_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<priest_t, anoint_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<priest_t, suicide_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<priest_t>{ glyphs::Priest };
 
 	struct priest_t {
 		offset_t position;
+
+		static constexpr i8 MaximumHealth{ 1 };
+		static constexpr i8 MaximumDamage{ 0 };
+
+		static constexpr i8 MaximumPiety{ 6 };
+		static constexpr i8 StartingPiety{ 3 };
+
+		static constexpr std::array<entity_e, 3> TargetPriorities{
+			entity_e::Skull,
+			entity_e::Adventurer,
+			entity_e::Mercenary
+		};
+
+		static constexpr i8 DeathBoon{ 2 };
+		static constexpr i8 ExorcismBoon{ 3 };
+		
+		static constexpr i8 ResurrectCost{ 1 };
+		static constexpr i8 AnointCost{ 2 };
 		
 	private:
 		i8 piety;
@@ -67,18 +108,6 @@ namespace necrowarp {
 		inline void set_piety(i8 value) noexcept { piety = clamp<i8>(value, 0, max_piety()); }
 
 	public:
-		static constexpr i8 MaximumHealth{ 1 };
-		static constexpr i8 MaximumPiety{ 6 };
-		static constexpr i8 MaximumDamage{ 1 };
-
-		static constexpr i8 DeathBoon{ 2 };
-		static constexpr i8 ExorcismBoon{ 3 };
-
-		static constexpr i8 StartingPiety{ 3 };
-
-		static constexpr i8 ResurrectCost{ 1 };
-		static constexpr i8 AnointCost{ 2 };
-
 		inline priest_t(offset_t position) noexcept : position{ position }, piety{ StartingPiety } {}
 
 		inline i8 get_piety() const noexcept { return piety; }
@@ -88,6 +117,8 @@ namespace necrowarp {
 		inline i8 max_piety() const noexcept { return MaximumPiety; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+
+		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
 		inline bool can_resurrect() const noexcept { return piety >= ResurrectCost; }
 
@@ -100,6 +131,8 @@ namespace necrowarp {
 		inline void receive_exorcism_boon() noexcept { set_piety(piety + ExorcismBoon); }
 
 		inline command_pack_t think() const noexcept;
+
+		inline void die() noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<priest_t>, position); }
 

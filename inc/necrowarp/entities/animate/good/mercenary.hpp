@@ -57,11 +57,29 @@ namespace necrowarp {
 	struct mercenary_t {
 		offset_t position;
 
+		static constexpr i8 MaximumHealth{ 2 };
+		static constexpr i8 MaximumDamage{ 1 };
+
+		static constexpr std::array<entity_e, 6> TargetPriorities{
+			entity_e::Player,
+			entity_e::Bloodhound,
+			entity_e::Cultist,
+			entity_e::Skeleton,
+			entity_e::Wraith,
+			entity_e::FleshGolem,
+		};
+
+		static constexpr i8 DeathBoon{ 1 };
+
 		inline mercenary_t(offset_t position) noexcept : position{ position } {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
+		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
 		inline command_pack_t think() const noexcept;
+
+		inline void die() noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<mercenary_t>, position); }
 
@@ -72,10 +90,6 @@ namespace necrowarp {
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<mercenary_t>, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Mercenary; }
-
-		static constexpr i8 MaximumHealth{ 1 };
-		static constexpr i8 MaximumDamage{ 1 };
-		static constexpr i8 DeathBoon{ 1 };
 
 		struct hasher {
 			struct offset {

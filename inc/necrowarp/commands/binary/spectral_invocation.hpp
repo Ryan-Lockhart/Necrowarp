@@ -15,6 +15,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct to_command_type<command_e::SpectralInvocation> {
+		using type = spectral_invocation_t;
+	};
+
 	template<> struct to_command_enum<spectral_invocation_t> {
 		static constexpr command_e value = command_e::SpectralInvocation;
 	};
@@ -29,6 +33,6 @@ namespace necrowarp {
 		const offset_t source_position;
 		const offset_t target_position;
 
-		inline void process() noexcept;
+		inline void process() const noexcept;
 	};
 } // namespace necrowarp

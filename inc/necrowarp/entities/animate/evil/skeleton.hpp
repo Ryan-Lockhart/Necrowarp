@@ -64,6 +64,13 @@ namespace necrowarp {
 
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
+
+		static constexpr std::array<entity_e, 4> TargetPriorities{
+			entity_e::Priest,
+			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Paladin
+		};
 		
 		constexpr i8 armor_boon() const noexcept {
 			return static_cast<i8>(state) + 1;
@@ -81,7 +88,11 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
+		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
 		inline command_pack_t think() const noexcept;
+
+		inline void die() noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(entity_e::Skeleton), necrowarp::to_string(state)); }
 

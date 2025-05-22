@@ -34,35 +34,67 @@ namespace necrowarp {
 		none_t
 
 	#define ALL_UNARY_COMMANDS \
-		random_warp_t \
-		necromantic_ascendance_t \
+		random_warp_t, \
+		necromantic_ascendance_t, \
 		suicide_t
 
 	#define ALL_BINARY_COMMANDS \
-		move_t \
-		descend_t \
-		consume_t \
-		clash_t \
-		target_warp_t \
-		consume_warp_t \
-		calcitic_invocation_t \
-		spectral_invocation_t \
-		sanguine_invocation_t \
-		exorcise_t \
-		resurrect_t \
+		move_t, \
+		descend_t, \
+		consume_t, \
+		clash_t, \
+		target_warp_t, \
+		consume_warp_t, \
+		calcitic_invocation_t, \
+		spectral_invocation_t, \
+		sanguine_invocation_t, \
+		exorcise_t, \
+		resurrect_t, \
 		anoint_t
 
 	#define ALL_TERNARY_COMMANDS \
 		lunge_t
 
 	#define ALL_NON_NULL_COMMANDS \
-		ALL_UNARY_COMMANDS \
-		ALL_BINARY_COMMANDS \
+		ALL_UNARY_COMMANDS, \
+		ALL_BINARY_COMMANDS, \
 		ALL_TERNARY_COMMANDS
 
 	#define ALL_COMMANDS \
-		ALL_NULL_COMMANDS \
+		ALL_NULL_COMMANDS, \
 		ALL_NON_NULL_COMMANDS
+	
+	#define ALL_BASIC_COMMANDS \
+		move_t, \
+		clash_t
+	
+	#define ALL_NECRO_COMMANDS \
+		descend_t, \
+		consume_t, \
+		random_warp_t, \
+		target_warp_t, \
+		consume_warp_t, \
+		calcitic_invocation_t, \
+		spectral_invocation_t, \
+		sanguine_invocation_t, \
+		necromantic_ascendance_t
+	
+	#define ALL_BLOODHOUND_COMMANDS \
+		lunge_t
+	
+	#define ALL_PRIEST_COMMANDS \
+		exorcise_t, \
+		resurrect_t, \
+		anoint_t
+	
+	#define ALL_NPC_COMMANDS \
+		ALL_BASIC_COMMANDS, \
+		ALL_BLOODHOUND_COMMANDS, \
+		ALL_PRIEST_COMMANDS
+	
+	#define ALL_PLAYER_COMMANDS \
+		ALL_BASIC_COMMANDS, \
+		ALL_NECRO_COMMANDS
 
 	enum struct command_e : u8 {
 		None = 0,
@@ -90,6 +122,8 @@ namespace necrowarp {
 		std::optional<offset_t> source_position;
 		std::optional<offset_t> intermediate_position;
 		std::optional<offset_t> target_position;
+
+		constexpr command_pack_t() : type{ command_e::None }, source_position{}, intermediate_position{}, target_position{} {}
 
 		constexpr command_pack_t(command_e command) : type{ command }, source_position{}, intermediate_position{}, target_position{} {}
 
@@ -160,11 +194,19 @@ namespace necrowarp {
 
 	template<command_e CommandType> using to_command_type_t = typename to_command_type<CommandType>::type;
 	
+	template<> struct to_command_type<command_e::None> {
+		using type = std::nullptr_t;
+	};
+	
 	template<typename T> struct is_null_command {
 		static constexpr bool value = false;
 	};
 
 	template<typename T> constexpr bool is_null_command_v = is_null_command<T>::value;
+
+	template<> struct is_null_command<std::nullptr_t> {
+		static constexpr bool value = true;
+	};
 
 	template<typename T> concept NullCommand = Command<T> && is_null_command<T>::value;
 

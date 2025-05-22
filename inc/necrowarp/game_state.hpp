@@ -230,6 +230,7 @@ namespace necrowarp {
 		LaddersShackled,
 
 		AdventurersSlain,
+		MercenariesSlain,
 		PaladinsSlain,
 		PriestsSlain,
 
@@ -269,6 +270,7 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::LaddersShackled> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::AdventurersSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::MercenariesSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::PaladinsSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::PriestsSlain> { using type = i32; };
 
@@ -320,6 +322,8 @@ namespace necrowarp {
 				return "ladders_shackled";
 			} case steam_stat_e::AdventurersSlain: {
 				return "adventurers_slain";
+			} case steam_stat_e::MercenariesSlain: {
+				return "mercenaries_slain";
 			} case steam_stat_e::PaladinsSlain: {
 				return "paladins_slain";
 			} case steam_stat_e::PriestsSlain: {
@@ -378,6 +382,8 @@ namespace necrowarp {
 				return "Ladders Shackled";
 			} case steam_stat_e::AdventurersSlain: {
 				return "Adventurers Slain";
+			} case steam_stat_e::MercenariesSlain: {
+				return "Mercenaries Slain";
 			} case steam_stat_e::PaladinsSlain: {
 				return "Paladins Slain";
 			} case steam_stat_e::PriestsSlain: {

@@ -60,11 +60,22 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
+		static constexpr std::array<entity_e, 4> TargetPriorities{
+			entity_e::Priest,
+			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Paladin
+		};
+
 		inline cultist_t(offset_t position) noexcept : position{ position } {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
+		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
 		inline command_pack_t think() const noexcept;
+
+		inline void die() noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<cultist_t>, position); }
 

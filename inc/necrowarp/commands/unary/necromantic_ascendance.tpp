@@ -7,8 +7,10 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
+#include <necrowarp/entities/entity.tpp>
+
 namespace necrowarp {
-	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, necromantic_ascendance_t>::process() noexcept {
+	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, necromantic_ascendance_t>::process() const noexcept {
 		if (player.has_ascended() || !player.can_perform(discount_e::NecromanticAscendance)) {
 			player_turn_invalidated = true;
 

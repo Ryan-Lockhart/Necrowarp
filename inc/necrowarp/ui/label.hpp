@@ -32,6 +32,16 @@ namespace necrowarp {
 			box.draw(renderer, apply_padding(position), calculate_size(), background);
 			ui_atlas.draw(text, position);
 		}
+
+		template<extent_t AtlasSize> constexpr void draw(ref<renderer_t> renderer, ref<atlas_t<AtlasSize>> atlas, offset_t position) const noexcept {
+			box.draw(renderer, apply_padding(position), calculate_size());
+			atlas.draw(text, position);
+		}
+
+		template<extent_t AtlasSize> constexpr void draw(ref<renderer_t> renderer, ref<atlas_t<AtlasSize>> atlas, offset_t position, color_t background) const noexcept {
+			box.draw(renderer, apply_padding(position), calculate_size(), background);
+			atlas.draw(text, position);
+		}
 	};
 
 	struct label_t : public anchor_t, public embedded_label_t {
@@ -49,6 +59,14 @@ namespace necrowarp {
 
 		constexpr void draw(ref<renderer_t> renderer, color_t background) const noexcept {
 			embedded_label_t::draw(renderer, anchor_t::get_offset(embedded_label_t::calculate_size()), background);
+		}
+
+		template<extent_t AtlasSize> constexpr void draw(ref<renderer_t> renderer, ref<atlas_t<AtlasSize>> atlas) const noexcept {
+			embedded_label_t::draw(renderer, atlas, anchor_t::get_offset(embedded_label_t::calculate_size()));
+		}
+
+		template<extent_t AtlasSize> constexpr void draw(ref<renderer_t> renderer, ref<atlas_t<AtlasSize>> atlas, color_t background) const noexcept {
+			embedded_label_t::draw(renderer, atlas, anchor_t::get_offset(embedded_label_t::calculate_size()), background);
 		}
 	};
 }

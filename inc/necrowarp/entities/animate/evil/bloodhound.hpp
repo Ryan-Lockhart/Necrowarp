@@ -3,6 +3,10 @@
 #include <necrowarp/entities/entity.hpp>
 #include <necrowarp/commands/command.hpp>
 
+#include <necrowarp/entity_command.hpp>
+
+#include <necrowarp/commands/ternary/lunge.hpp>
+
 #include <necrowarp/game_state.hpp>
 
 namespace necrowarp {
@@ -56,6 +60,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_entity_command_valid<bloodhound_t, lunge_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<bloodhound_t>{ glyphs::Bloodhound };
 
 	struct bloodhound_t {
@@ -64,11 +72,22 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
+		static constexpr std::array<entity_e, 4> TargetPriorities{
+			entity_e::Priest,
+			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Paladin
+		};
+
 		inline bloodhound_t(offset_t position) noexcept : position{ position } {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
+		inline i8 get_damage(entity_e target) const noexcept { return target != entity_e::Paladin ? MaximumDamage : 0; }
+
 		inline command_pack_t think() const noexcept;
+
+		inline void die() noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<bloodhound_t>, position); }
 

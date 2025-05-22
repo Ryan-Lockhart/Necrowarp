@@ -62,26 +62,28 @@ namespace necrowarp {
 
 		constexpr extent_t internal_size() const noexcept { return extent_t{ max_length(), Statuses }; }
 
-		constexpr extent_t external_size() const noexcept { return extent_t{ max_length(), Statuses } + padding * 2; }
+		constexpr extent_t external_size() const noexcept { return extent_t{ max_length(), Statuses } + padding * 2 + extent_t{ 0, Statuses - 1 }; }
 
 		constexpr bool is_hovered(offset_t position) const noexcept { return box.is_hovered(apply_padding(position), external_size()); }
 
 		constexpr void draw(ref<renderer_t> renderer, offset_t position) const noexcept {
 			box.draw(renderer, apply_padding(position), external_size());
 
-			const usize max_len = max_length();
+			runes_t runes{};
 
 			for (usize i{ 0 }; i < Statuses; ++i) {
-				ui_atlas.draw(statuses[i].label, position + offset_t{ 0, i });
+				runes.concatenate(statuses[i].label);
 
-				const u8 label_length{ static_cast<u8>(text::calculate_size(statuses[i].label).w) };
+				for (usize j{ 0 }; j < statuses[i].max_value; ++j) {
+					runes += glyph_t{ statuses[i].get_segment(j), statuses[i].current_value > j ? statuses[i].active_color : statuses[i].inactive_color };
+				}
 
-				for (usize j{ 0 }; j < max_len; ++j) {
-					if (j < statuses[i].max_value) {
-						ui_atlas.draw(glyph_t{ statuses[i].get_segment(j), statuses[i].current_value > j ? statuses[i].active_color : statuses[i].inactive_color }, position + offset_t{ label_length + j, i });
-					}
+				if (i < Statuses - 1) {
+					runes.concatenate(runes_t{ "\n\n", colors::White });
 				}
 			}
+
+			ui_atlas.draw(runes, position);
 		}
 	};
 	

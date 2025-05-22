@@ -7,11 +7,15 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
+#include <necrowarp/entities/entity.tpp>
+
 namespace necrowarp {
-	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, consume_t>::process() noexcept {
-		const entity_group_e target_types{ entity_registry.at(target_position) };
+	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, consume_t>::process() const noexcept {
+		const entity_group_e group{ entity_registry.at(target_position) };
+
+		const entity_e target{ determine_target<EntityType>(group) };
 		
-		switch (target_types) {
+		switch (target) {
 			case entity_e::Skull: {
 				const decay_e state{ entity_registry.at<skull_t>(target_position)->state };
 

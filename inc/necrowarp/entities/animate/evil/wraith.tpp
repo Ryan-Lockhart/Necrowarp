@@ -25,4 +25,8 @@ namespace necrowarp {
 
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
+
+	inline void wraith_t::die() noexcept {
+		fluid_map[position] += fluid_type<wraith_t>::type;
+	}
 } // namespace necrowarp

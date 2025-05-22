@@ -19,7 +19,7 @@ namespace necrowarp {
 			cauto flock_to_adventurer_pos { entity_goal_map<adventurer_t>.descend<zone_region_t::Interior>(position, entity_registry) };
 
 			if (!flock_to_adventurer_pos.has_value()) {
-				cauto flee_from_evil_pos{ evil_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
+				cauto flee_from_evil_pos{ good_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
 
 				if (!flee_from_evil_pos.has_value()) {
 					return command_pack_t{ command_e::Suicide, position };
@@ -75,7 +75,7 @@ namespace necrowarp {
 				return adventurer_pos;
 			}
 
-			cauto flee_from_evil_pos{ evil_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
+			cauto flee_from_evil_pos{ good_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
 
 			if (!flee_from_evil_pos.has_value()) {
 				return std::nullopt;
@@ -89,5 +89,13 @@ namespace necrowarp {
 		}
 
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
+	}
+
+	inline void priest_t::die() noexcept {
+		entity_registry.add<true>(skull_t{ position });
+
+		fluid_map[position] += fluid_type<priest_t>::type;
+
+		++steam_stats::stats<steam_stat_e::PriestsSlain, i32>;
 	}
 } // namespace necrowarp

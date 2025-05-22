@@ -1,24 +1,24 @@
 #pragma once
 
+#include "necrowarp/commands/command.hpp"
+#include <necrowarp/entity_state.hpp>
+
 #include <necrowarp/entities.hpp>
 #include <necrowarp/commands.hpp>
 
-#include <cstddef>
 #include <optional>
-#include <random>
-#include <type_traits>
 
 #include <bleak/sparse.hpp>
 
-namespace necrowarp {
+namespace necrowarp {	
+	using namespace bleak;
+
 	constexpr distance_function_t DistanceFunction{ distance_function_t::Octile };
 	
 	extern grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor;
 
 	extern bool draw_cursor;
 	extern bool draw_warp_cursor;
-	
-	using namespace bleak;
 
 	static inline player_t player{};
 
@@ -113,6 +113,38 @@ namespace necrowarp {
 		});
 		
 		return entities;
+	}
+
+	template<NonPlayerEntity EntityType> inline cptr<EntityType> entity_registry_t::at(offset_t position) const noexcept {
+		if (!contains<EntityType>(position)) {
+			return nullptr;
+		}
+
+		return entity_storage<EntityType>[position];
+	}
+
+	template<PlayerEntity EntityType> inline cptr<EntityType> entity_registry_t::at(offset_t position) const noexcept {
+		if (player.position != position) {
+			return nullptr;
+		}
+
+		return &player;
+	}
+
+	template<NonPlayerEntity EntityType> inline ptr<EntityType> entity_registry_t::at(offset_t position) noexcept {
+		if (!contains<EntityType>(position)) {
+			return nullptr;
+		}
+
+		return entity_storage<EntityType>[position];
+	}
+
+	template<PlayerEntity EntityType> inline ptr<EntityType> entity_registry_t::at(offset_t position) noexcept {
+		if (player.position != position) {
+			return nullptr;
+		}
+
+		return &player;
 	}
 
 	template<NonPlayerEntity EntityTypes> inline usize entity_registry_t::count() const noexcept {
@@ -333,7 +365,7 @@ namespace necrowarp {
 		magic_enum::enum_switch([&](auto val) {
 			constexpr command_e cval{ val };
 
-			using command_type = to_command_type<cval>;
+			using command_type = to_command_type<cval>::type;
 
 			if constexpr (is_null_command<command_type>::value) {
 				return;
@@ -361,7 +393,7 @@ namespace necrowarp {
 				}
 				
 				command.process();
-			} else if constexpr (is_binary_command<command_type>::value) {
+			} else if constexpr (is_ternary_command<command_type>::value) {
 				if (!pack.source_position.has_value() || !pack.intermediate_position.has_value() || !pack.target_position.has_value()) {
 					return;
 				}
@@ -383,7 +415,7 @@ namespace necrowarp {
 		}, pack.type);
 	}
 
-	template<NonPlayerEntity EntityType> inline void entity_registry_t::update() noexcept {
+	template<NPCEntity EntityType> inline void entity_registry_t::update() noexcept {
 		for (crauto entity : entity_storage<EntityType>) {
 			if (newborns.contains(entity.position)) {
 				newborns.remove(entity.position);
@@ -395,7 +427,7 @@ namespace necrowarp {
 			magic_enum::enum_switch([&](auto val) {
 				constexpr command_e cval{ val };
 
-				using command_type = to_command_type<cval>;
+				using command_type = to_command_type<cval>::type;
 
 				if constexpr (is_null_command<command_type>::value) {
 					return;
@@ -423,7 +455,7 @@ namespace necrowarp {
 					}
 
 					entity_commands<EntityType, command_type>.push(command);
-				} else if constexpr (is_binary_command<command_type>::value) {
+				} else if constexpr (is_ternary_command<command_type>::value) {
 					if (!pack.source_position.has_value() || !pack.intermediate_position.has_value() || !pack.target_position.has_value()) {
 						return;
 					}
@@ -448,7 +480,7 @@ namespace necrowarp {
 		entity_registry.process_commands<EntityType>();
 	}
 
-	template<NonNullEntity... EntityTypes>
+	template<NPCEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline void entity_registry_t::update() noexcept {
 		(update<EntityTypes>(), ...);
@@ -484,23 +516,11 @@ namespace necrowarp {
 		steam_stats::store();
 	}
 
-	template<NonNullEntity EntityType, NonNullCommand... CommandTypes>
-		requires is_plurary<CommandTypes...>::value
-	inline void process_commands() noexcept {
-		(process_commands<EntityType, CommandTypes>(), ...);
-	}
+	template<NPCEntity EntityType, NonNullCommand CommandType> inline void entity_registry_t::process_commands() noexcept {
+		if constexpr (!is_entity_command_valid<EntityType, CommandType>::value) {
+			return;
+		}
 
-	template<NonNullEntity EntityType> inline void entity_registry_t::process_commands() noexcept {
-		process_commands<EntityType, ALL_NON_NULL_COMMANDS>();
-	}
-
-	template<NonNullEntity... EntityTypes>
-		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t::process_commands() noexcept {
-		(process_commands<EntityTypes>(), ...);
-	}
-
-	template<NonNullEntity EntityType, NonNullCommand CommandType> inline void entity_registry_t::process_commands() noexcept {
 		while (!entity_commands<EntityType, CommandType>.empty()) {
 			cauto command{ entity_commands<EntityType, CommandType>.front() };
 
@@ -508,6 +528,16 @@ namespace necrowarp {
 
 			command.process();
 		}
+	}
+
+	template<NPCEntity EntityType, NonNullCommand... CommandTypes>
+		requires is_plurary<CommandTypes...>::value
+	inline void entity_registry_t::process_commands() noexcept {
+		(process_commands<EntityType, CommandTypes>(), ...);
+	}
+
+	template<NPCEntity EntityType> inline void entity_registry_t::process_commands() noexcept {
+		process_commands<EntityType, ALL_NPC_COMMANDS>();
 	}
 
 	template<NonNullEntity EntityType> inline void entity_registry_t::recalculate_goal_map() noexcept {
@@ -568,7 +598,7 @@ namespace necrowarp {
 		reset_alignment_goal_maps();
 	}
 
-	template<NonNullEntity EntityType, Command CommandType> inline bool entity_registry_t::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
+	template<AnimateEntity EntityType, Command CommandType> inline bool entity_registry_t::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
 		static constexpr entity_e entity_enum{ to_entity_enum<EntityType>::value };
 		static constexpr command_e command_enum{ to_command_enum<CommandType>::value };
 
@@ -576,13 +606,7 @@ namespace necrowarp {
 			return false;
 		}
 
-		if (!game_map.within<zone_region_t::Interior>(command.source_position)) {
-			return false;
-		}
-
-		const entity_group_e source_types{ entity_registry.at(command.source_position) };
-
-		if (source_types != entity_enum) {
+		if (!game_map.within<zone_region_t::Interior>(command.source_position) || !entity_registry.contains<EntityType>(command.source_position)) {
 			return false;
 		}
 
@@ -615,7 +639,7 @@ namespace necrowarp {
 		}
 
 		if (entity_enum != entity_e::Priest) {
-			switch (command.type) {
+			switch (command_enum) {
 				case command_e::Exorcise:
 				case command_e::Resurrect:
 				case command_e::Anoint:
@@ -627,68 +651,66 @@ namespace necrowarp {
 			}
 		}
 		
-		if constexpr (is_unary_command<CommandType>::value) {
-			return true;
-		}
-
-		if (!game_map.within<zone_region_t::Interior>(command.target_position)) {
-			return false;
-		}
-
-		const entity_group_e target_types{ entity_registry.at(command.target_position) };
-
-		switch (command_enum) {
-			case command_e::Move:
-			case command_e::TargetWarp: {
-				if (game_map[command.target_position].solid || entity_registry.contains(command.target_position) || target_types != entity_e::None) {
-					return false;
-				}
-
-				break;
-			} case command_e::Clash:
-			  case command_e::Lunge:
-			  case command_e::Consume:
-			  case command_e::ConsumeWarp:
-			  case command_e::Exorcise:
-			  case command_e::Resurrect:
-			  case command_e::Anoint: {
-				if (!entity_registry.contains(command.target_position) || target_types == entity_e::None) {
-					return false;
-				}
-
-				break;
-			} case command_e::Descend: {
-				if (!entity_registry.contains(command.target_position) || target_types != entity_e::Ladder) {
-					return false;
-				}
-
-				cref<ladder_t> descension_point{ *entity_registry.at<ladder_t>(command.target_position) };
-
-				if (descension_point.is_up_ladder() || descension_point.has_shackle()) {
-					return false;
-				}
-
-				break;
-			} default: {
-				break;
+		if constexpr (is_binary_command<CommandType>::value) {
+			if (!game_map.within<zone_region_t::Interior>(command.target_position)) {
+				return false;
 			}
-		}
 
-		if (!game_map.within<zone_region_t::Interior>(command.intermediate_position)) {
-			return false;
-		}
+			switch (command_enum) {
+				case command_e::Move:
+				case command_e::TargetWarp: {
+					if (game_map[command.target_position].solid || entity_registry.contains(command.target_position)) {
+						return false;
+					}
 
-		const entity_group_e intermediate_types{ entity_registry.at(command.intermediate_position) };
+					break;
+				} case command_e::Clash:
+				case command_e::Lunge:
+				case command_e::Consume:
+				case command_e::ConsumeWarp:
+				case command_e::Exorcise:
+				case command_e::Resurrect:
+				case command_e::Anoint: {
+					if (!entity_registry.contains(command.target_position)) {
+						return false;
+					}
 
-		switch (command_enum) {
-			case command_e::Lunge: {
-				if (entity_registry.contains(command.intermediate_position) || intermediate_types != entity_e::None) {
+					break;
+				} case command_e::Descend: {
+					if (!entity_registry.contains(command.target_position) || !entity_registry.contains<ladder_t>(command.target_position)) {
+						return false;
+					}
+
+					cref<ladder_t> descension_point{ *entity_registry.at<ladder_t>(command.target_position) };
+
+					if (descension_point.is_up_ladder() || descension_point.has_shackle()) {
+						return false;
+					}
+
+					break;
+				} default: {
+					break;
+				}
+			}
+
+			if constexpr (is_ternary_command<CommandType>::value) {
+				if (!game_map.within<zone_region_t::Interior>(command.intermediate_position)) {
 					return false;
 				}
-			} default: {
-				break;
+
+				const entity_group_e intermediate_types{ entity_registry.at(command.intermediate_position) };
+
+				switch (command_enum) {
+					case command_e::Lunge: {
+						if (entity_registry.contains(command.intermediate_position) || intermediate_types != entity_e::None) {
+							return false;
+						}
+					} default: {
+						break;
+					}
+				}
 			}
-		}
+		}		
 
 		return true;
 	}
@@ -731,115 +753,6 @@ namespace necrowarp {
 		draw_warp_cursor = true;
 
 		return true;
-	}
-
-	template<entity_e Victim> inline bool entity_registry_t::process_clash(offset_t target_position, i8 damage_amount) noexcept {
-		if constexpr (Victim == entity_e::None) {
-			return false;
-		}
-
-		if (entity_registry.at(target_position) != Victim) {
-			return false;
-		}
-
-		using entity_type = to_entity_type<Victim>::type;
-
-		if constexpr (is_inanimate<entity_type>::value) {
-			return false;
-		}
-
-		ptr<entity_type> victim{ entity_registry.at<entity_type>(target_position) };
-
-		if (victim == nullptr) {
-			return false;
-		}
-
-		if constexpr (!is_fodder<entity_type>::value) {
-			if (victim->can_survive(damage_amount)) {
-				victim->receive_damage(damage_amount);
-
-				if constexpr (is_bleeder<entity_type>::value) {
-					fluid_map[target_position] += fluid_type<entity_type>::type;
-				}
-
-				return false;
-			}
-		}
-
-		if constexpr (has_death_sound<entity_type>) {
-			static std::mt19937 gen{ std::random_device{}() };
-			static std::uniform_int_distribution<usize> dis{
-				static_cast<usize>(epoch_interval * 0.20),
-				static_cast<usize>(epoch_interval * 0.80)
-			};
-
-			const usize interval{ dis(gen) };
-
-			death_sounds<entity_type>.delay(interval, random_engine);
-		}
-
-		if constexpr (is_bleeder<entity_type>::value && Victim != entity_e::Skeleton) {
-			fluid_map[target_position] += fluid_type<entity_type>::type;
-		}
-
-		if constexpr (Victim == entity_e::Player) {
-			phase.transition(game_phase_t::GameOver);
-
-			++steam_stats::stats<steam_stat_e::PlayerDeaths, i32>;
-
-			return true;
-		} else if constexpr (Victim == entity_e::Skeleton) {
-			const decay_e state{ victim->state };
-
-			entity_registry.remove<Victim>(target_position);
-
-			if (state != decay_e::Rotted) {
-				entity_registry.add(skull_t{ target_position, decay(state) });
-			} else {
-				fluid_map[target_position] += fluid_type<entity_type>::type;
-			}
-
-			return true;
-		} else if constexpr (Victim == entity_e::Cultist) {
-			entity_registry.remove<Victim>(target_position);
-			entity_registry.add(skull_t{ target_position, decay_e::Rotted });
-
-			return true;
-		} else if constexpr (Victim == entity_e::Bloodhound) {
-			entity_registry.remove<Victim>(target_position);
-
-			return true;
-		} else if constexpr (Victim == entity_e::Wraith) {
-			entity_registry.remove<Victim>(target_position);
-
-			return true;
-		} else if constexpr (Victim == entity_e::FleshGolem) {
-			entity_registry.remove<Victim>(target_position);
-
-			return true;
-		} else {
-			entity_registry.remove<Victim>(target_position);
-			entity_registry.add(skull_t{ target_position });
-
-			switch (Victim) {
-				case entity_e::Adventurer: {
-					++steam_stats::stats<steam_stat_e::AdventurersSlain, i32>;
-					break;
-				} case entity_e::Paladin: {
-					++steam_stats::stats<steam_stat_e::PaladinsSlain, i32>;
-					break;
-				} case entity_e::Priest: {
-					++steam_stats::stats<steam_stat_e::PriestsSlain, i32>;
-					break;
-				} default: {
-					break;
-				}
-			}
-
-			player.receive_death_boon<Victim>();
-
-			return true;
-		}
 	}
 
 	template<NonPlayerEntity EntityType> inline void entity_registry_t::draw() const noexcept {

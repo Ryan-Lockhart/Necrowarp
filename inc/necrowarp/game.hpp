@@ -6,8 +6,13 @@
 #include <thread>
 
 #include <necrowarp/entities.hpp>
+#include <necrowarp/commands.hpp>
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
+
+#include <necrowarp/entities.tpp>
+#include <necrowarp/commands.tpp>
+
 #include <necrowarp/game_state.hpp>
 #include <necrowarp/ui_state.hpp>
 #include <necrowarp/globals.hpp>
@@ -85,34 +90,34 @@ namespace necrowarp {
 		}
 
 		static inline bool character_input() noexcept {
-			player.command = entity_command_t{};
+			player.command = command_pack_t{};
 
 			if (Keyboard::any_keys_pressed<2>(bindings::Wait)) {
-				player.command = entity_command_t{ command_type_t::None };
+				player.command = command_pack_t{ command_e::None };
 
 				return true;
 			} else if (Keyboard::is_key_down(bindings::RandomWarp)) {
-				player.command = entity_command_t{ command_type_t::RandomWarp, player.position };
+				player.command = command_pack_t{ command_e::RandomWarp, player.position };
 			} else if (Keyboard::is_key_down(bindings::TargetWarp)) {
-				player.command = entity_command_t{
+				player.command = command_pack_t{
 					entity_registry.contains(grid_cursor.get_position()) ?
-						command_type_t::ConsumeWarp :
-						command_type_t::TargetWarp,
+						command_e::ConsumeWarp :
+						command_e::TargetWarp,
 					player.position,
 					grid_cursor.get_position()
 				};
 			} else if (Keyboard::is_key_down(bindings::CalciticInvocation)) {
-				player.command = entity_command_t{ command_type_t::CalciticInvocation, player.position };
+				player.command = command_pack_t{ command_e::CalciticInvocation, player.position, player.position };
 			} else if (Keyboard::is_key_down(bindings::SpectralInvocation)) {
-				player.command = entity_command_t{ command_type_t::SpectralInvocation, player.position };
+				player.command = command_pack_t{ command_e::SpectralInvocation, player.position, player.position };
 			} else if (Keyboard::is_key_down(bindings::SanguineInvocation)) {
-				player.command = entity_command_t{ command_type_t::SanguineInvocation, player.position };
+				player.command = command_pack_t{ command_e::SanguineInvocation, player.position, player.position };
 			} else if (Keyboard::is_key_down(bindings::NecromanticAscendance)) {
-				player.command = entity_command_t{ command_type_t::NecromanticAscendance, player.position };
+				player.command = command_pack_t{ command_e::NecromanticAscendance, player.position };
 			}
 
-			if (player.command.type != command_type_t::None) {
-				return entity_registry.is_command_valid(player.command);
+			if (player.command.type != command_e::None) {
+				return true;
 			}
 
 			const offset_t direction = []() -> offset_t {
@@ -138,17 +143,13 @@ namespace necrowarp {
 					return false;
 				}
 
-				const command_type_t command_type{ !entity_registry.contains(target_position) ? command_type_t::Move : player.clash_or_consume(target_position) };
+				const command_e command_type{ !entity_registry.contains(target_position) ? command_e::Move : player.clash_or_consume(target_position) };
 
-				player.command = entity_command_t{ command_type, player.position, target_position };
+				player.command = command_pack_t{ command_type, player.position, target_position };
 
-				if (!entity_registry.is_command_valid(player.command)) {
-					return false;
-				} else {
-					draw_warp_cursor = false;
+				draw_warp_cursor = false;
 
-					return true;
-				}
+				return true;
 			}
 
 			return false;
@@ -256,7 +257,7 @@ namespace necrowarp {
 				decay_e::Animate
 			);
 
-			entity_registry.recalculate_goal_maps();
+			entity_registry.recalculate_goal_map();
 
 			phase.transition(game_phase_t::Playing);
 
@@ -357,7 +358,7 @@ namespace necrowarp {
 				decay_e::Animate
 			);
 
-			entity_registry.recalculate_goal_maps();
+			entity_registry.recalculate_goal_map();
 
 			phase.transition(game_phase_t::Playing);
 

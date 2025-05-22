@@ -87,29 +87,23 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline bool update(offset_t current, offset_t target) noexcept;
 
-		template<NonNullEntity EntityType, Command CommandType> inline bool is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept;
+		template<AnimateEntity EntityType, Command CommandType> inline bool is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept;
 
 		inline bool random_warp(offset_t source) noexcept;
 
-		template<entity_e Victim> inline bool process_clash(offset_t target_position, i8 damage_amount) noexcept;
-
-		template<NonNullEntity EntityType, NonNullCommand... CommandTypes>
+		template<NPCEntity EntityType, NonNullCommand... CommandTypes>
 			requires is_plurary<CommandTypes...>::value
 		inline void process_commands() noexcept;
 
-		template<NonNullEntity EntityType> inline void process_commands() noexcept;
+		template<NPCEntity EntityType, NonNullCommand CommandType> inline void process_commands() noexcept;
 
-		template<NonNullEntity... EntityTypes>
-			requires is_plurary<EntityTypes...>::value
-		inline void process_commands() noexcept;
-
-		template<NonNullEntity EntityType, NonNullCommand CommandType> inline void process_commands() noexcept;
+		template<NPCEntity EntityType> inline void process_commands() noexcept;
 
 		template<PlayerEntity EntityType> inline void update() noexcept;
 
-		template<NonPlayerEntity EntityType> inline void update() noexcept;
+		template<NPCEntity EntityType> inline void update() noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<NPCEntity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void update() noexcept;
 

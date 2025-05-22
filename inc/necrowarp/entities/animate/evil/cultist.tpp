@@ -25,4 +25,10 @@ namespace necrowarp {
 
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
+
+	inline void cultist_t::die() noexcept {
+		entity_registry.add<true>(skull_t{ position, decay_e::Rotted });
+
+		fluid_map[position] += fluid_type<cultist_t>::type;
+	}
 } // namespace necrowarp

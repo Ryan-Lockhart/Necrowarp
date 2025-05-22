@@ -7,8 +7,10 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
+#include <necrowarp/entities/entity.tpp>
+
 namespace necrowarp {
-	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, anoint_t>::process() noexcept {
+	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, anoint_t>::process() const noexcept {
 		if (!entity_registry.contains<priest_t>(source_position)) {
 			return;
 		}

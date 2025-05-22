@@ -419,6 +419,16 @@ namespace necrowarp {
 		static constexpr i8 MaximumDamage{ 1 };
 		static constexpr i8 MinimumDamage{ 1 };
 
+		static constexpr std::array<entity_e, 7> TargetPriorities{
+			entity_e::Priest,
+			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Paladin,
+			entity_e::Skeleton,
+			entity_e::Skull,
+			entity_e::Ladder,
+		};
+
 		template<discount_e Type> static constexpr i8 Cost{};
 
 		template<> constexpr i8 Cost<discount_e::RandomWarp>{ 2 };
@@ -567,6 +577,8 @@ namespace necrowarp {
 			return no_hit_enabled() || has_ascended() || armor >= damage_amount;
 		}
 
+		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
 		inline void receive_damage(i8 damage_amount) noexcept {
 			if (no_hit_enabled() || has_ascended()) {
 				return;
@@ -631,13 +643,15 @@ namespace necrowarp {
 
 		inline void zero_out_divinity() noexcept { set_divinity(0); }
 
-		template<entity_e EntityType> inline bool will_perish() const noexcept;
+		template<NonNullEntity EntityType> inline bool will_perish() const noexcept;
 
-		template<entity_e EntityType> inline void receive_damage() noexcept;
+		template<NonNullEntity EntityType> inline void receive_damage() noexcept;
 
-		template<entity_e EntityType> inline void receive_death_boon() noexcept;
+		template<NonNullEntity EntityType> inline void receive_death_boon() noexcept;
 
 		inline command_e clash_or_consume(offset_t position) const noexcept;
+
+		inline void die() noexcept;
 
 		inline void bolster_armor(i8 value) noexcept { set_armor(armor + value); }
 

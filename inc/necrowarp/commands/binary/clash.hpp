@@ -15,11 +15,23 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct to_command_type<command_e::Clash> {
+		using type = clash_t;
+	};
+
 	template<> struct to_command_enum<clash_t> {
 		static constexpr command_e value = command_e::Clash;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, clash_t> {
+	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+		requires (!std::is_same<InitiatorType, VictimType>::value)
+	static inline bool instigate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
+
+	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+		requires (!std::is_same<InitiatorType, VictimType>::value)
+	static inline bool retaliate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
+
+	template<CombatantEntity EntityType> struct entity_command_t<EntityType, clash_t> {
 		using entity_type = EntityType;
 		using command_type = clash_t;
 
@@ -29,6 +41,6 @@ namespace necrowarp {
 		const offset_t source_position;
 		const offset_t target_position;
 
-		inline void process() noexcept;
+		inline void process() const noexcept;
 	};
 } // namespace necrowarp

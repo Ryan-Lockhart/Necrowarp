@@ -15,6 +15,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct to_command_type<command_e::Lunge> {
+		using type = lunge_t;
+	};
+
 	template<> struct to_command_enum<lunge_t> {
 		static constexpr command_e value = command_e::Lunge;
 	};
@@ -30,6 +34,6 @@ namespace necrowarp {
 		const offset_t intermediate_position;
 		const offset_t target_position;
 
-		inline void process() noexcept;
+		inline void process() const noexcept;
 	};
 } // namespace necrowarp

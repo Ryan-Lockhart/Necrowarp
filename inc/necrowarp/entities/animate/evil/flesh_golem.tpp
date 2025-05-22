@@ -25,4 +25,8 @@ namespace necrowarp {
 
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
+
+	inline void flesh_golem_t::die() noexcept {
+		fluid_map[position] += fluid_type<flesh_golem_t>::type;
+	}
 } // namespace necrowarp

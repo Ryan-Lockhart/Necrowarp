@@ -7,11 +7,15 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
-namespace necrowarp {
-	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, consume_warp_t>::process() noexcept {
-		const entity_group_e target_types{ entity_registry.at(target_position) };
+#include <necrowarp/entities/entity.tpp>
 
-		if (target_types != entity_e::Skull && !player.can_perform(discount_e::TargetWarp)) {
+namespace necrowarp {
+	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, consume_warp_t>::process() const noexcept {
+		const entity_group_e group{ entity_registry.at(target_position) };
+
+		const entity_e target{ determine_target<EntityType>(group) };
+
+		if (target != entity_e::Skull && !player.can_perform(discount_e::TargetWarp)) {
 			player_turn_invalidated = true;
 
 			return;
@@ -19,7 +23,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::TargetWarps, i32>;
 
-		switch (target_types) {
+		switch (target) {
 			case entity_e::Skull: {
 				const decay_e state{ entity_registry.at<skull_t>(target_position)->state };
 

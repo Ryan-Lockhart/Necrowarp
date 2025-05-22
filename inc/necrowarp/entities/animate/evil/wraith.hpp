@@ -61,6 +61,13 @@ namespace necrowarp {
 	public:
 		static constexpr i8 MaximumHealth{ 9 };
 		static constexpr i8 MaximumDamage{ 2 };
+
+		static constexpr std::array<entity_e, 4> TargetPriorities{
+			entity_e::Priest,
+			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Paladin
+		};
 		
 		inline wraith_t(offset_t position, i8 health) noexcept : position{ position }, health{ health } {}
 		
@@ -72,9 +79,13 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
 
+		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
 		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
 		inline command_pack_t think() const noexcept;
+
+		inline void die() noexcept;
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position); }
 

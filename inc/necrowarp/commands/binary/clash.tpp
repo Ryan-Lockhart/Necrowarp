@@ -7,116 +7,182 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
+#include <necrowarp/entities/entity.tpp>
+
 namespace necrowarp {
-	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, clash_t>::process() noexcept {
-		const entity_group_e source_types{ entity_registry.at(source_position) };
-		const entity_group_e target_types{ entity_registry.at(target_position) };
+	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+		requires (!std::is_same<InitiatorType, VictimType>::value)
+	inline bool instigate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+		const i8 damage{ initiator.get_damage(to_entity_enum<VictimType>::value) };
 
-		i8 source_damage{ 0 };
+		if (damage <= 0) {
+			return false;
+		}
 
-		switch (source_types) {
-			case entity_e::Player:
-			case entity_e::Skeleton:
-			case entity_e::Cultist:
-			case entity_e::FleshGolem:
-			case entity_e::Adventurer: {
-				source_damage = 1;
-				break;
-			} case entity_e::Wraith:
-			  case entity_e::Paladin: {
-				source_damage = 2;
-				break;
-			} case entity_e::Bloodhound: {
-				source_damage = target_types == entity_e::Paladin ? 0 : 1;
-				break;
-			} default: {
-				return;
+		if constexpr (!is_fodder<VictimType>::value) {
+			if (victim.can_survive(damage)) {
+				victim.receive_damage(damage);
+
+				if constexpr (is_bleeder<VictimType>::value) {
+					fluid_map[victim.position] += fluid_type<VictimType>::type;
+				}
+
+				return false;
 			}
 		}
 
-		i8 target_damage{ 0 };
+		if constexpr (has_death_sound<VictimType>) {
+			static std::mt19937 gen{ std::random_device{}() };
+			static std::uniform_int_distribution<usize> dis{
+				static_cast<usize>(epoch_interval * 0.20),
+				static_cast<usize>(epoch_interval * 0.80)
+			};
 
-		switch (target_types) {
-			case entity_e::Player:
-			case entity_e::Skeleton:
-			case entity_e::Cultist:
-			case entity_e::FleshGolem:
-			case entity_e::Adventurer: {
-				target_damage = 1;
-				break;
-			} case entity_e::Wraith:
-			  case entity_e::Paladin: {
-				target_damage = 2;
-				break;
-			} case entity_e::Bloodhound: {
-				target_damage = source_type == entity_e::Paladin ? 0 : 1;
-				break;
-			} default: {
-				return;
+			const usize interval{ dis(gen) };
+
+			death_sounds<VictimType>.delay(interval, random_engine);
+		}
+
+		constexpr entity_e victim_enum{ to_entity_enum<VictimType>::value };
+
+		if constexpr (is_bleeder<VictimType>::value && victim_enum != entity_e::Skeleton) {
+			fluid_map[victim.position] += fluid_type<VictimType>::type;
+		}
+
+		return true;
+	}
+
+	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+		requires (!std::is_same<InitiatorType, VictimType>::value)
+	inline bool retaliate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+		const i8 damage{ victim.get_damage(to_entity_enum<InitiatorType>::value) };
+
+		if (damage <= 0) {
+			return false;
+		}
+
+		if constexpr (!is_fodder<InitiatorType>::value) {
+			if (initiator.can_survive(damage)) {
+				initiator.receive_damage(damage);
+
+				if constexpr (is_bleeder<InitiatorType>::value) {
+					fluid_map[initiator.position] += fluid_type<InitiatorType>::type;
+				}
+
+				return false;
 			}
 		}
 
-		const bool target_killed{
-			magic_enum::enum_switch([this, source_damage](auto val) -> bool {
-				constexpr entity_e cval{ val };
+		if constexpr (has_death_sound<InitiatorType>) {
+			static std::mt19937 gen{ std::random_device{}() };
+			static std::uniform_int_distribution<usize> dis{
+				static_cast<usize>(epoch_interval * 0.20),
+				static_cast<usize>(epoch_interval * 0.80)
+			};
 
-				if constexpr (cval == entity_e::None || cval == entity_e::Skull || cval == entity_e::Ladder) {
-					return false;
-				}
+			const usize interval{ dis(gen) };
 
-				return process_clash<cval>(target_position, source_damage);
-			}, source_types)
-		};
-
-		if (target_killed) {
-			switch (source_types) {
-				case entity_e::Player: {
-					++game_stats.player_kills;
-					draw_warp_cursor = false;
-					break;
-				} case entity_e::Skeleton:
-				  case entity_e::Cultist:
-				  case entity_e::Bloodhound:
-				  case entity_e::Wraith:
-				  case entity_e::FleshGolem: {
-					++game_stats.minion_kills;
-					break;
-				} default: {
-					break;
-				}
-			}
+			death_sounds<InitiatorType>.delay(interval, random_engine);
 		}
 
-		const bool source_killed{
-			magic_enum::enum_switch([this, target_damage](auto val) -> bool {
-				constexpr entity_e cval{ val };
+		constexpr entity_e initiator_enum{ to_entity_enum<InitiatorType>::value };
 
-				if constexpr (cval == entity_e::None || cval == entity_e::Skull || cval == entity_e::Ladder) {
-					return false;
-				}
-
-				return process_clash<cval>(source_position, target_damage);
-			}, source_types)
-		};
-
-		if (source_killed) {
-			switch (target_types) {
-				case entity_e::Player: {
-					++game_stats.player_kills;
-					++steam_stats::stats<steam_stat_e::PlayerKills, i32>;
-					break;
-				} case entity_e::Skeleton:
-				  case entity_e::Cultist:
-				  case entity_e::Bloodhound:
-				  case entity_e::Wraith:
-				  case entity_e::FleshGolem: {
-					++game_stats.minion_kills;
-					++steam_stats::stats<steam_stat_e::MinionKills, i32>;
-					break;
-				} default: {
-					break;
-				}
-			}
+		if constexpr (is_bleeder<InitiatorType>::value && initiator_enum != entity_e::Skeleton) {
+			fluid_map[initiator.position] += fluid_type<InitiatorType>::type;
 		}
+
+		return true;
+	}
+
+	template<CombatantEntity EntityType> inline void entity_command_t<EntityType, clash_t>::process() const noexcept {
+		ptr<EntityType> initiator_ptr{ entity_registry.at<EntityType>(source_position) };
+
+		if (initiator_ptr == nullptr) {
+			return;
+		}
+
+		ref<EntityType> initiator{ *initiator_ptr };
+		
+		const entity_e victim_enum{ determine_target<EntityType>(entity_registry.at(target_position)) };
+
+		if (victim_enum == entity_e::None) {
+			return;
+		}
+
+		magic_enum::enum_switch([&](auto val) -> void {
+			constexpr entity_e cval{ val };
+
+			using victim_type = to_entity_type<cval>::type;
+
+			if constexpr (!is_null_entity<victim_type>::value && !std::is_same<EntityType, victim_type>::value && is_animate<victim_type>::value) {
+				ptr<victim_type> victim_ptr{ entity_registry.at<victim_type>(target_position) };
+
+				if (victim_ptr == nullptr) {
+					return;
+				}
+
+				ref<victim_type> victim{ *victim_ptr };
+
+				const bool target_killed{ instigate(initiator, victim) };
+
+				const bool source_killed{ retaliate(initiator, victim) };
+
+				if (target_killed) {
+					victim.die();
+
+					if constexpr (is_npc_entity<victim_type>::value) {
+						entity_registry.remove<victim_type>(victim.position);
+					}
+
+					switch (to_entity_enum<EntityType>::value) {
+						case entity_e::Player: {
+							++game_stats.player_kills;
+							++steam_stats::stats<steam_stat_e::PlayerKills, i32>;
+
+							draw_warp_cursor = false;
+							break;
+						} case entity_e::Skeleton:
+						case entity_e::Cultist:
+						case entity_e::Bloodhound:
+						case entity_e::Wraith:
+						case entity_e::FleshGolem: {
+							++game_stats.minion_kills;
+							++steam_stats::stats<steam_stat_e::MinionKills, i32>;
+							break;
+						} default: {
+							break;
+						}
+					}
+				}
+
+				if (source_killed) {
+					if constexpr (is_animate<victim_type>::value) {
+						initiator.die();
+					}
+
+					if constexpr (is_npc_entity<EntityType>::value) {
+						entity_registry.remove<EntityType>(initiator.position);
+					}
+
+					switch (victim_enum) {
+						case entity_e::Player: {
+							++game_stats.player_kills;
+							++steam_stats::stats<steam_stat_e::PlayerKills, i32>;
+							break;
+						} case entity_e::Skeleton:
+						case entity_e::Cultist:
+						case entity_e::Bloodhound:
+						case entity_e::Wraith:
+						case entity_e::FleshGolem: {
+							++game_stats.minion_kills;
+							++steam_stats::stats<steam_stat_e::MinionKills, i32>;
+							break;
+						} default: {
+							break;
+						}
+					}
+				}
+			}			
+		}, victim_enum);
 	}
 } // namespace necrowarp

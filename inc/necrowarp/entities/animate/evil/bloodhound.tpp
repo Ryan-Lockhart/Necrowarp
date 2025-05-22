@@ -41,4 +41,8 @@ namespace necrowarp {
 
 		return command_pack_t{ command_e::Move, position, further_descent_pos.value() };
 	}
+
+	inline void bloodhound_t::die() noexcept {
+		fluid_map[position] += fluid_type<bloodhound_t>::type;
+	}
 } // namespace necrowarp

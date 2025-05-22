@@ -38,4 +38,44 @@ namespace necrowarp {
 	constexpr bool operator!=(entity_group_e lhs, EntityTypes... rhs) noexcept {
 		return ((lhs != rhs) && ...);
 	}
+
+	static constexpr std::string to_string(entity_group_e group) noexcept {
+		std::string string{ "" };
+
+		magic_enum::enum_for_each<entity_e>([&](auto val) {
+			constexpr entity_e cval{ val };
+
+			if (group != cval) {
+				return;
+			}
+
+			if (string != "" && cval != entity_e::Ladder) {
+				string.append(", ");
+			}
+
+			string.append(to_string(cval));
+		});
+
+		return string;
+	}
+
+	static constexpr runes_t to_colored_string(entity_group_e group) noexcept {
+		runes_t runes{};
+
+		magic_enum::enum_for_each<entity_e>([&](auto val) {
+			constexpr entity_e cval{ val };
+
+			if (group != cval) {
+				return;
+			}
+
+			if (!runes.empty() && cval != entity_e::Ladder) {
+				runes.concatenate(runes_t{ ", " });
+			}
+
+			runes.concatenate(to_colored_string(cval));
+		});
+
+		return runes;
+	}
 } // namespace necrowarp
