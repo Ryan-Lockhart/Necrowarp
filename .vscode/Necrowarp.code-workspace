@@ -25,7 +25,12 @@
 					"program": "install/linux/x86_64/debug/necrowarp",
 					"cwd": "install/linux/x86_64/debug",
 				},
-				"expressions": "native"
+				"expressions": "native",
+				"presentation": {
+					"hidden": false,
+					"group": "launch",
+					"order": 1
+				}
 			},
 			{
 				"name": "(lldb) Launch Release",
@@ -41,6 +46,11 @@
 					"cwd": "install/linux/x86_64/release",
 				},
 				"expressions": "native",
+				"presentation": {
+					"hidden": false,
+					"group": "launch",
+					"order": 2
+				}
 			}
 		]
 	},

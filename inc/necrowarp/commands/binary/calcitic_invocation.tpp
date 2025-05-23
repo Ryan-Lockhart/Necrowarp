@@ -26,9 +26,7 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
-			const bool is_empty{ entity_registry.at(position) == entity_e::None };
-
-			if (is_empty && player.bypass_invocations_enabled()) {
+			if (entity_registry.empty(position) && player.bypass_invocations_enabled()) {
 				++accumulated_skulls;
 
 				if (!is_exalted) {
@@ -49,12 +47,11 @@ namespace necrowarp {
 				const decay_e state{ entity_registry.at<skull_t>(position)->state };
 
 				entity_registry.remove<skull_t>(position);
+				++accumulated_skulls;
 
 				if (!is_exalted) {
 					entity_registry.add<true>(skeleton_t{ position, state });
 				}
-
-				++accumulated_skulls;
 			}
 
 			if (eligible_ladder == nullptr && has_ladder) {

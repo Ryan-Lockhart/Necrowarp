@@ -13,6 +13,12 @@ namespace necrowarp {
 	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	inline bool instigate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+		if constexpr (is_clumsy<InitiatorType>::value) {
+			if (!coinflip(random_engine)) {
+				return false;
+			}
+		}
+
 		const i8 damage{ initiator.get_damage(to_entity_enum<VictimType>::value) };
 
 		if (damage <= 0) {
@@ -31,30 +37,18 @@ namespace necrowarp {
 			}
 		}
 
-		if constexpr (has_death_sound<VictimType>) {
-			static std::mt19937 gen{ std::random_device{}() };
-			static std::uniform_int_distribution<usize> dis{
-				static_cast<usize>(epoch_interval * 0.20),
-				static_cast<usize>(epoch_interval * 0.80)
-			};
-
-			const usize interval{ dis(gen) };
-
-			death_sounds<VictimType>.delay(interval, random_engine);
-		}
-
-		constexpr entity_e victim_enum{ to_entity_enum<VictimType>::value };
-
-		if constexpr (is_bleeder<VictimType>::value && victim_enum != entity_e::Skeleton) {
-			fluid_map[victim.position] += fluid_type<VictimType>::type;
-		}
-
 		return true;
 	}
 
 	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	inline bool retaliate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+		if constexpr (is_clumsy<VictimType>::value) {
+			if (!coinflip(random_engine)) {
+				return false;
+			}
+		}
+
 		const i8 damage{ victim.get_damage(to_entity_enum<InitiatorType>::value) };
 
 		if (damage <= 0) {
@@ -71,24 +65,6 @@ namespace necrowarp {
 
 				return false;
 			}
-		}
-
-		if constexpr (has_death_sound<InitiatorType>) {
-			static std::mt19937 gen{ std::random_device{}() };
-			static std::uniform_int_distribution<usize> dis{
-				static_cast<usize>(epoch_interval * 0.20),
-				static_cast<usize>(epoch_interval * 0.80)
-			};
-
-			const usize interval{ dis(gen) };
-
-			death_sounds<InitiatorType>.delay(interval, random_engine);
-		}
-
-		constexpr entity_e initiator_enum{ to_entity_enum<InitiatorType>::value };
-
-		if constexpr (is_bleeder<InitiatorType>::value && initiator_enum != entity_e::Skeleton) {
-			fluid_map[initiator.position] += fluid_type<InitiatorType>::type;
 		}
 
 		return true;

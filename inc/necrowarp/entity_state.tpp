@@ -1,6 +1,5 @@
 #pragma once
 
-#include "necrowarp/commands/command.hpp"
 #include <necrowarp/entity_state.hpp>
 
 #include <necrowarp/entities.hpp>
@@ -168,6 +167,18 @@ namespace necrowarp {
 	inline bool entity_registry_t::empty() const noexcept {
 		return (empty<EntityTypes>() && ...);
 	}
+	
+	template<Entity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline bool entity_registry_t::empty(offset_t position) const noexcept {
+		return (empty<EntityTypes>(position) && ...);
+	}
+
+	template<NonPlayerEntity EntityType> inline bool entity_registry_t::empty(offset_t position) const noexcept { return !entity_storage<EntityType>.contains(position); }
+
+	template<PlayerEntity EntityType> inline bool entity_registry_t::empty(offset_t position) const noexcept { return player.position != position; }
+
+	inline bool entity_registry_t::empty(offset_t position) const noexcept { return empty<ALL_ENTITIES>(position); }
 
 	template<bool Force, NonPlayerEntity EntityType> inline bool entity_registry_t::add(rval<EntityType> entity) noexcept {
 		if constexpr (!Force) {
@@ -197,7 +208,7 @@ namespace necrowarp {
 	}
 
 	template<NonPlayerEntity EntityType> inline bool entity_registry_t::remove(offset_t position) noexcept {
-		if (!entity_registry.contains(position)) {
+		if (entity_registry.empty(position)) {
 			return false;
 		}
 		
@@ -313,7 +324,7 @@ namespace necrowarp {
 	}
 
 	template<NonPlayerEntity EntityType> inline bool entity_registry_t::update(offset_t current, offset_t target) noexcept {
-		if (!entity_registry.contains(current) || !game_map.within<zone_region_t::Interior>(current) || entity_registry.contains(target) || !game_map.within<zone_region_t::Interior>(target)) {
+		if (entity_registry.empty(current) || !game_map.within<zone_region_t::Interior>(current) || entity_registry.contains(target) || !game_map.within<zone_region_t::Interior>(target)) {
 			return false;
 		}
 
@@ -337,7 +348,7 @@ namespace necrowarp {
 	}
 
 	template<PlayerEntity EntityType> inline bool entity_registry_t::update(offset_t current, offset_t target) noexcept {
-		if (!entity_registry.contains(current) || !game_map.within<zone_region_t::Interior>(current) || entity_registry.contains(target) || !game_map.within<zone_region_t::Interior>(target)) {
+		if (entity_registry.empty(current) || !game_map.within<zone_region_t::Interior>(current) || entity_registry.contains(target) || !game_map.within<zone_region_t::Interior>(target)) {
 			return false;
 		}
 
@@ -365,52 +376,65 @@ namespace necrowarp {
 		magic_enum::enum_switch([&](auto val) {
 			constexpr command_e cval{ val };
 
-			using command_type = to_command_type<cval>::type;
+			using command_type = to_command_type<cval>::type;			
 
 			if constexpr (is_null_command<command_type>::value) {
 				return;
-			} else if constexpr (is_unary_command<command_type>::value) {
-				if (!pack.source_position.has_value()) {
-					return;
-				}
-
-				const entity_command_t<EntityType, command_type> command{ pack.source_position.value() };
-				
-				if (!is_command_valid<EntityType, command_type>(command)) {
-					return;
-				}
-				
-				command.process();
-			} else if constexpr (is_binary_command<command_type>::value) {
-				if (!pack.source_position.has_value() || !pack.target_position.has_value()) {
-					return;
-				}
-
-				const entity_command_t<EntityType, command_type> command{ pack.source_position.value(), pack.target_position.value() };
-				
-				if (!is_command_valid<EntityType, command_type>(command)) {
-					return;
-				}
-				
-				command.process();
-			} else if constexpr (is_ternary_command<command_type>::value) {
-				if (!pack.source_position.has_value() || !pack.intermediate_position.has_value() || !pack.target_position.has_value()) {
-					return;
-				}
-
-				const entity_command_t<EntityType, command_type> command{
-					pack.source_position.value(),
-					pack.intermediate_position.value(),
-					pack.target_position.value()
-				};
-				
-				if (!is_command_valid<EntityType, command_type>(command)) {
-					return;
-				}
-				
-				command.process();
 			} else {
-				return;
+				if constexpr (is_entity_command_valid<EntityType, command_type>::value) {
+					if constexpr (is_unary_command<command_type>::value) {
+						if (!pack.source_position.has_value()) {
+							player_turn_invalidated = true;
+							return;
+						}
+
+						const entity_command_t<EntityType, command_type> command{ pack.source_position.value() };
+						
+						if (!is_command_valid<EntityType, command_type>(command)) {
+							player_turn_invalidated = true;
+							return;
+						}
+						
+						command.process();
+					} else if constexpr (is_binary_command<command_type>::value) {
+						if (!pack.source_position.has_value() || !pack.target_position.has_value()) {
+							player_turn_invalidated = true;
+							return;
+						}
+
+						const entity_command_t<EntityType, command_type> command{ pack.source_position.value(), pack.target_position.value() };
+						
+						if (!is_command_valid<EntityType, command_type>(command)) {
+							player_turn_invalidated = true;
+							return;
+						}
+						
+						command.process();
+					} else if constexpr (is_ternary_command<command_type>::value) {
+						if (!pack.source_position.has_value() || !pack.intermediate_position.has_value() || !pack.target_position.has_value()) {
+							player_turn_invalidated = true;
+							return;
+						}
+
+						const entity_command_t<EntityType, command_type> command{
+							pack.source_position.value(),
+							pack.intermediate_position.value(),
+							pack.target_position.value()
+						};
+						
+						if (!is_command_valid<EntityType, command_type>(command)) {
+							player_turn_invalidated = true;
+							return;
+						}
+						
+						command.process();
+					} else {
+						return;
+					}
+				} else {
+					player_turn_invalidated = true;
+					return;
+				}
 			}
 		}, pack.type);
 	}
@@ -431,48 +455,52 @@ namespace necrowarp {
 
 				if constexpr (is_null_command<command_type>::value) {
 					return;
-				} else if constexpr (is_unary_command<command_type>::value) {
-					if (!pack.source_position.has_value()) {
-						return;
-					}
-
-					const entity_command_t<EntityType, command_type> command{ pack.source_position.value() };
-					
-					if (!is_command_valid<EntityType, command_type>(command)) {
-						return;
-					}
-
-					entity_commands<EntityType, command_type>.push(command);
-				} else if constexpr (is_binary_command<command_type>::value) {
-					if (!pack.source_position.has_value() || !pack.target_position.has_value()) {
-						return;
-					}
-
-					const entity_command_t<EntityType, command_type> command{ pack.source_position.value(), pack.target_position.value() };
-					
-					if (!is_command_valid<EntityType, command_type>(command)) {
-						return;
-					}
-
-					entity_commands<EntityType, command_type>.push(command);
-				} else if constexpr (is_ternary_command<command_type>::value) {
-					if (!pack.source_position.has_value() || !pack.intermediate_position.has_value() || !pack.target_position.has_value()) {
-						return;
-					}
-
-					const entity_command_t<EntityType, command_type> command{
-						pack.source_position.value(),
-						pack.intermediate_position.value(),
-						pack.target_position.value()
-					};
-					
-					if (!is_command_valid<EntityType, command_type>(command)) {
-						return;
-					}
-
-					entity_commands<EntityType, command_type>.push(command);
 				} else {
-					return;
+					if constexpr (is_entity_command_valid<EntityType, command_type>::value) {
+						if constexpr (is_unary_command<command_type>::value) {
+							if (!pack.source_position.has_value()) {
+								return;
+							}
+
+							const entity_command_t<EntityType, command_type> command{ pack.source_position.value() };
+							
+							if (!is_command_valid<EntityType, command_type>(command)) {
+								return;
+							}
+
+							entity_commands<EntityType, command_type>.push(command);
+						} else if constexpr (is_binary_command<command_type>::value) {
+							if (!pack.source_position.has_value() || !pack.target_position.has_value()) {
+								return;
+							}
+
+							const entity_command_t<EntityType, command_type> command{ pack.source_position.value(), pack.target_position.value() };
+							
+							if (!is_command_valid<EntityType, command_type>(command)) {
+								return;
+							}
+
+							entity_commands<EntityType, command_type>.push(command);
+						} else if constexpr (is_ternary_command<command_type>::value) {
+							if (!pack.source_position.has_value() || !pack.intermediate_position.has_value() || !pack.target_position.has_value()) {
+								return;
+							}
+
+							const entity_command_t<EntityType, command_type> command{
+								pack.source_position.value(),
+								pack.intermediate_position.value(),
+								pack.target_position.value()
+							};
+							
+							if (!is_command_valid<EntityType, command_type>(command)) {
+								return;
+							}
+
+							entity_commands<EntityType, command_type>.push(command);
+						} else {
+							return;
+						}
+					}
 				}
 			}, pack.type);
 		}
@@ -517,16 +545,14 @@ namespace necrowarp {
 	}
 
 	template<NPCEntity EntityType, NonNullCommand CommandType> inline void entity_registry_t::process_commands() noexcept {
-		if constexpr (!is_entity_command_valid<EntityType, CommandType>::value) {
-			return;
-		}
+		if constexpr (is_entity_command_valid<EntityType, CommandType>::value) {
+			while (!entity_commands<EntityType, CommandType>.empty()) {
+				cauto command{ entity_commands<EntityType, CommandType>.front() };
 
-		while (!entity_commands<EntityType, CommandType>.empty()) {
-			cauto command{ entity_commands<EntityType, CommandType>.front() };
+				entity_commands<EntityType, CommandType>.pop();
 
-			entity_commands<EntityType, CommandType>.pop();
-
-			command.process();
+				command.process();
+			}
 		}
 	}
 
@@ -671,13 +697,13 @@ namespace necrowarp {
 				case command_e::Exorcise:
 				case command_e::Resurrect:
 				case command_e::Anoint: {
-					if (!entity_registry.contains(command.target_position)) {
+					if (entity_registry.empty(command.target_position)) {
 						return false;
 					}
 
 					break;
 				} case command_e::Descend: {
-					if (!entity_registry.contains(command.target_position) || !entity_registry.contains<ladder_t>(command.target_position)) {
+					if (entity_registry.empty(command.target_position) || !entity_registry.contains<ladder_t>(command.target_position)) {
 						return false;
 					}
 
@@ -812,3 +838,6 @@ namespace necrowarp {
 		player.draw(camera, offset);
 	}
 } // namespace necrowarp
+
+#include <necrowarp/entities.tpp>
+#include <necrowarp/commands.tpp>

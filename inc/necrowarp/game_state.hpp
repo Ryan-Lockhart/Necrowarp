@@ -33,6 +33,8 @@ namespace necrowarp {
 
 	static inline std::mt19937 random_engine{};
 
+	static inline std::bernoulli_distribution coinflip{};
+
 	static inline zone_t<map_cell_t, globals::MapSize, globals::BorderSize> game_map{};
 
 	static inline zone_t<fluid_cell_t, globals::MapSize, globals::BorderSize> fluid_map{};

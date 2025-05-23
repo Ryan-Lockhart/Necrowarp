@@ -143,7 +143,7 @@ namespace necrowarp {
 					return false;
 				}
 
-				const command_e command_type{ !entity_registry.contains(target_position) ? command_e::Move : player.clash_or_consume(target_position) };
+				const command_e command_type{ entity_registry.empty(target_position) ? command_e::Move : player.clash_or_consume(target_position) };
 
 				player.command = command_pack_t{ command_type, player.position, target_position };
 

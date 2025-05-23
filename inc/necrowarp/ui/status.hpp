@@ -11,9 +11,9 @@ namespace necrowarp {
 	using namespace bleak;
 
 	struct status_t {
-		static constexpr u8 left_segment{ 0 };
-		static constexpr u8 center_segment{ 1 };
-		static constexpr u8 right_segment{ 2 };
+		static constexpr u8 left_segment{ 1 };
+		static constexpr u8 center_segment{ 2 };
+		static constexpr u8 right_segment{ 3 };
 		
 		runes_t label;
 		

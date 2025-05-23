@@ -7,28 +7,31 @@
 
 namespace necrowarp {
 	inline command_pack_t priest_t::think() const noexcept {
-		if (!has_piety()) {
+		if (!can_resurrect() && !can_anoint() && entity_registry.empty<skull_t>()) {
 			cauto flock_to_paladin_pos{ entity_goal_map<paladin_t>.descend<zone_region_t::Interior>(position, entity_registry) };
 
-			if (!flock_to_paladin_pos.has_value() && entity_registry.empty<adventurer_t>()) {
-				return command_pack_t{ command_e::None };
-			} else if (flock_to_paladin_pos.has_value()) {
+			if (flock_to_paladin_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, flock_to_paladin_pos.value() };
+			}
+			cauto flock_to_mercenary_pos{ entity_goal_map<mercenary_t>.descend<zone_region_t::Interior>(position, entity_registry) };
+
+			if (flock_to_mercenary_pos.has_value()) {
+				return command_pack_t{ command_e::Move, position, flock_to_mercenary_pos.value() };
 			}
 
 			cauto flock_to_adventurer_pos { entity_goal_map<adventurer_t>.descend<zone_region_t::Interior>(position, entity_registry) };
 
-			if (!flock_to_adventurer_pos.has_value()) {
-				cauto flee_from_evil_pos{ good_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
-
-				if (!flee_from_evil_pos.has_value()) {
-					return command_pack_t{ command_e::Suicide, position };
-				}
-
-				return command_pack_t{ command_e::Move, position, flee_from_evil_pos.value() };
+			if (flock_to_adventurer_pos.has_value()) {
+				return command_pack_t{ command_e::Move, position, flock_to_adventurer_pos.value() };
 			}
 
-			return command_pack_t{ command_e::Move, position, flock_to_adventurer_pos.value() };
+			cauto flee_from_evil_pos{ good_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
+
+			if (flee_from_evil_pos.has_value()) {
+				return command_pack_t{ command_e::Move, position, flee_from_evil_pos.value() };
+			}
+			
+			return command_pack_t{ command_e::Suicide, position };
 		}
 
 		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {

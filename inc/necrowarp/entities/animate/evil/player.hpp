@@ -5,6 +5,17 @@
 
 #include <necrowarp/entity_command.hpp>
 
+#include <necrowarp/commands/unary/random_warp.hpp>
+#include <necrowarp/commands/unary/necromantic_ascendance.hpp>
+
+#include <necrowarp/commands/binary/consume.hpp>
+#include <necrowarp/commands/binary/descend.hpp>
+#include <necrowarp/commands/binary/target_warp.hpp>
+#include <necrowarp/commands/binary/consume_warp.hpp>
+#include <necrowarp/commands/binary/calcitic_invocation.hpp>
+#include <necrowarp/commands/binary/spectral_invocation.hpp>
+#include <necrowarp/commands/binary/sanguine_invocation.hpp>
+
 #include <random>
 
 #include <magic_enum/magic_enum_switch.hpp>
@@ -51,6 +62,42 @@ namespace necrowarp {
 	};
 
 	template<> struct is_combatant<player_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, random_warp_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, necromantic_ascendance_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, consume_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, descend_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, target_warp_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, consume_warp_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, calcitic_invocation_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, spectral_invocation_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, sanguine_invocation_t> {
 		static constexpr bool value = true;
 	};
 

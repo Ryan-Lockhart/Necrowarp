@@ -1,7 +1,5 @@
 #pragma once
 
-#include "necrowarp/entities/entity.hpp"
-#include "necrowarp/ui/label.hpp"
 #include <bleak.hpp>
 
 #include <necrowarp/ui.hpp>
@@ -875,7 +873,7 @@ namespace necrowarp {
 				return true;
 			}
 			
-			return player_statuses.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered());
+			return player_statuses.is_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered());
 		}
 
 		static inline void update() noexcept {

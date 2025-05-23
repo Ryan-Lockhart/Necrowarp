@@ -37,9 +37,19 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline bool empty() const noexcept { return false; }
 
+		template<NonPlayerEntity EntityType> inline bool empty(offset_t position) const noexcept;
+
+		template<PlayerEntity EntityType> inline bool empty(offset_t position) const noexcept;
+
+		inline bool empty(offset_t position) const noexcept;
+
 		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline bool empty() const noexcept;
+
+		template<Entity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline bool empty(offset_t position) const noexcept;
 
 		constexpr bool empty() const noexcept { return false; }
 

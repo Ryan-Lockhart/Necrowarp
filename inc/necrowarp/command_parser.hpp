@@ -158,32 +158,27 @@ namespace necrowarp {
 								return std::nullopt;
 							}
 
-							try {
-								std::string temp{ tokens[2] };
+							std::string temp{ tokens[2] };
 
-								const i16 minimum{ static_cast<i16>(std::stoi(temp)) };
+							const i16 minimum{ static_cast<i16>(std::stoi(temp)) };
 
-								temp = tokens[3];
+							temp = tokens[3];
 
-								const i16 maximum{ static_cast<i16>(std::stoi(temp)) };
+							const i16 maximum{ static_cast<i16>(std::stoi(temp)) };
 
-								if (minimum > maximum || minimum < 0) {
-									error_log.add("ERROR: \"{}\" is a ternary command; the minimum cannot exceed the maximum", command_str);
+							if (minimum > maximum || minimum < 0) {
+								error_log.add("ERROR: \"{}\" is a ternary command; the minimum cannot exceed the maximum", command_str);
 
-									return std::nullopt;
-								}
-
-								return command_t{
-									command,
-									state,
-
-									minimum,
-									maximum
-								};
-							} catch (std::invalid_argument) {
-								error_log.add("ERROR: failed to parse minimum or maximum of \"{}\"", command_str);
 								return std::nullopt;
 							}
+
+							return command_t{
+								command,
+								state,
+
+								minimum,
+								maximum
+							};
 						} case state_e::Disable: {
 							if (tokens.size() > 2) {
 								error_log.add("ERROR: \"{}\" is a unary command when using \"disable\"", command_str);
