@@ -901,13 +901,13 @@ namespace necrowarp {
 
 			advancement_label.text = runes_t{
 				std::format(
-					"(+1 energy slot in {} kill{})\n\n"
-					"(+1 armor slot in {} kill{})\n\n"
-					"(+1 divinity turn in {} kill{})",
+					"[{}/{}] (+1 energy slot in {} kill{})\n\n"
+					"[{}/{}] (+1 armor slot in {} kill{})\n\n"
+					"[{}/{}] (+1 divinity turn in {} kill{})",
 
-					kills_energy == 0 ? globals::KillsPerEnergySlot : kills_energy, kills_energy == 1 ? "" : "s",
-					kills_armor == 0 ? globals::KillsPerArmorSlot : kills_armor, kills_armor == 1 ? "" : "s",
-					kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s"
+					player.get_energy(), player.max_energy(), kills_energy == 0 ? globals::KillsPerEnergySlot : kills_energy, kills_energy == 1 ? "" : "s",
+					player.get_armor(), player.max_armor(), kills_armor == 0 ? globals::KillsPerArmorSlot : kills_armor, kills_armor == 1 ? "" : "s",
+					player.get_divinity(), player.max_divinity(), kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s"
 				)
 			};
 
@@ -986,7 +986,7 @@ namespace necrowarp {
 			if (show_depth) {
 				depth_expanded_label.text = runes_t{
 					std::format(
-						"Minion Kills: 0000\n\n"
+						"Minion Kills: {:4}\n\n"
 						"Player Kills: {:4}\n\n\n"
 						"Total Kills:  {:4}\n\n\n",
 						
