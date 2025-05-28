@@ -44,7 +44,7 @@ bleak_dep = dependency('bleak', required: true, fallback: ['bleak', 'bleak_dep']
 subdir('inc')
 
 executable('necrowarp', 'src/program.cpp',
-	cpp_args: ['-DSTEAMLESS', necrowarp_args],
+	cpp_args: ['-DSTEAMLESS', '-march=x86-64-v3', necrowarp_args],
 
     include_directories: [necrowarp_private_includes, necrowarp_internal_includes],
     dependencies: bleak_dep,

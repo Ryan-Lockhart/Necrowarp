@@ -12,7 +12,7 @@ namespace necrowarp {
 	using namespace bleak;
 
 	static inline label_t title_label{
-		anchor_t{ { globals::grid_size<grid_type_e::UI>().w / 2, 1 }, cardinal_e::North },
+		anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, 1 }, cardinal_e::North },
 		embedded_label_t{
 			runes_t{ globals::GameTitle, colors::Marble },
 			embedded_box_t{ colors::Black,
@@ -22,7 +22,7 @@ namespace necrowarp {
 	};
 
 	static inline label_t fps_label{
-		anchor_t{ { globals::grid_size<grid_type_e::UI>().w, 1 }, cardinal_e::Northeast },
+		anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w, 1 }, cardinal_e::Northeast },
 		embedded_label_t{
 			runes_t{ "FPS: 0000", colors::Green },
 			embedded_box_t{ colors::Black, { colors::White, 1 } },
