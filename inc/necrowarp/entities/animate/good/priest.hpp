@@ -148,9 +148,9 @@ namespace necrowarp {
 			struct offset {
 				using is_transparent = void;
 
-				static constexpr usize operator()(cref<priest_t> priest) noexcept { return offset_t::hasher::operator()(priest.position); }
+				static constexpr usize operator()(cref<priest_t> priest) noexcept { return offset_t::std_hasher::operator()(priest.position); }
 
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::hasher::operator()(position); }
+				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
 			};
 		};
 
@@ -158,11 +158,11 @@ namespace necrowarp {
 			struct offset {
 				using is_transparent = void;
 			
-				static constexpr bool operator()(cref<priest_t> lhs, cref<priest_t> rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs.position); }
+				static constexpr bool operator()(cref<priest_t> lhs, cref<priest_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
 
-				static constexpr bool operator()(cref<priest_t> lhs, offset_t rhs) noexcept { return offset_t::hasher::operator()(lhs.position) == offset_t::hasher::operator()(rhs); }
+				static constexpr bool operator()(cref<priest_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
 
-				static constexpr bool operator()(offset_t lhs, cref<priest_t> rhs) noexcept { return offset_t::hasher::operator()(lhs) == offset_t::hasher::operator()(rhs.position); }
+				static constexpr bool operator()(offset_t lhs, cref<priest_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
 			};
 		};
 	};
