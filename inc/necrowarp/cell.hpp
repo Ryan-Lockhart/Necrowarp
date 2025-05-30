@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bleak/constants/characters.hpp"
 #include <bleak.hpp>
 
 #include <bit>
@@ -457,10 +458,12 @@ namespace necrowarp {
 				return 0;
 			}
 
+			const bool is_alt_patch{ index == 6 || index == 9 };
+
 			if (!is_left_patch) {
-				return characters::RightPatch;
+				return !is_alt_patch ? characters::RightPatch : characters::AltRightPatch;
 			} else {
-				return characters::LeftPatch;
+				return !is_alt_patch ? characters::LeftPatch : characters::AltLeftPatch;
 			}
 
 			return 0;
@@ -540,7 +543,7 @@ namespace necrowarp {
 
 			atlas.draw(glyph_t{ index, color_t{ 0xC0, alpha } }, position + offset);
 
-			//draw_patch(atlas, zone, position, offset, index);
+			draw_patch(atlas, zone, position, offset, index);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
