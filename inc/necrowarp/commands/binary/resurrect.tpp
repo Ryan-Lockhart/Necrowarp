@@ -15,11 +15,11 @@ namespace necrowarp {
 			return;
 		}
 
-		if (!entity_registry.contains<skull_t>(target_position)) {
+		if (!object_registry.contains<skull_t>(target_position)) {
 			return;
 		}
 
-		cauto skull{ entity_registry.at<skull_t>(target_position) };
+		cauto skull{ object_registry.at<skull_t>(target_position) };
 
 		if (skull == nullptr || skull->state != decay_e::Fresh ) {
 			return;
@@ -31,7 +31,7 @@ namespace necrowarp {
 			return;
 		}
 
-		entity_registry.remove<skull_t>(target_position);
+		object_registry.remove<skull_t>(target_position);
 
 		entity_registry.add(adventurer_t{ target_position });
 

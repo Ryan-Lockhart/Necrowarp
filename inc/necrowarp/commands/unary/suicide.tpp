@@ -17,7 +17,7 @@ namespace necrowarp {
 
 		entity_registry.remove<priest_t>(source_position);
 
-		entity_registry.add(skull_t{ source_position });
+		object_registry.add(skull_t{ source_position });
 
 		fluid_map[source_position] += fluid_type<priest_t>::type;
 

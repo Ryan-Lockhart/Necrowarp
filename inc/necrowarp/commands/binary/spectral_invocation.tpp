@@ -39,7 +39,7 @@ namespace necrowarp {
 			}
 
 			const bool has_ichor{ fluid_map[position].contains(fluid_type_e::Ichor) };
-			const bool has_ladder{ entity_registry.at(position) == entity_e::Ladder };
+			const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
 			if (!game_map.within<zone_region_t::Interior>(position) || (!has_ichor && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
@@ -55,7 +55,7 @@ namespace necrowarp {
 			}
 
 			if (eligible_ladder == nullptr && has_ladder) {
-				eligible_ladder = entity_registry.at<ladder_t>(position);
+				eligible_ladder = object_registry.at<ladder_t>(position);
 
 				switch (eligible_ladder->shackle) {
 					case shackle_type_t::None: {
@@ -98,14 +98,14 @@ namespace necrowarp {
 			for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 
-				const bool has_ladder{ entity_registry.at(position) == entity_e::Ladder };
+				const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
 				if (!game_map.within<zone_region_t::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
 					continue;
 				}
 
 				if (eligible_ladder == nullptr && has_ladder) {
-					eligible_ladder = entity_registry.at<ladder_t>(position);
+					eligible_ladder = object_registry.at<ladder_t>(position);
 
 					switch (eligible_ladder->shackle) {
 						case shackle_type_t::None: {

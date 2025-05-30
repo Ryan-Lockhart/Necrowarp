@@ -221,7 +221,9 @@ namespace necrowarp {
 
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
 		static constexpr extent_t TilesetSize{ 16, 3 };
-		static constexpr extent_t IconsetSize{ 3, 2 };
+		static constexpr extent_t IconsetSize{ 2, 4 };
+
+		static constexpr distance_function_t DistanceFunction{ distance_function_t::Octile };
 
 		static constexpr extent_t MapSize{ 128, 128 };
 
@@ -337,5 +339,11 @@ namespace necrowarp {
 		constexpr bool OopsAllPriests{ false };
 
 		constexpr offset_t CursorOffset{ -4 };
+
+		template<typename T> struct has_unique_descriptor {
+			static constexpr bool value = false;
+		};
+
+		template<typename T> constexpr bool has_unique_descriptor_v = has_unique_descriptor<T>::value;
 	} // namespace globals
 } // namespace necrowarp

@@ -15,7 +15,7 @@ namespace necrowarp {
 			return;
 		}
 
-		if (!entity_registry.contains<skull_t>(target_position)) {
+		if (!object_registry.contains<skull_t>(target_position)) {
 			return;
 		}
 
@@ -25,7 +25,7 @@ namespace necrowarp {
 			return;
 		}
 
-		entity_registry.remove<skull_t>(target_position);
+		object_registry.remove<skull_t>(target_position);
 
 		++steam_stats::stats<steam_stat_e::SkullsExorcised, i32>;
 

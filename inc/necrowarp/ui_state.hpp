@@ -5,6 +5,7 @@
 #include <necrowarp/ui.hpp>
 #include <necrowarp/game_state.hpp>
 #include <necrowarp/entity_state.tpp>
+#include <necrowarp/object_state.tpp>
 
 #include <magic_enum/magic_enum_utility.hpp>
 
@@ -851,8 +852,9 @@ namespace necrowarp {
 		static constexpr offset_t calcitic_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 1 }; }
 		static constexpr offset_t spectral_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 }; }
 		static constexpr offset_t sanguine_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 1 }; }
+		static constexpr offset_t galvanic_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 2 }; }
 
-		static constexpr offset_t necromantic_ascendance_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 3 }; }
+		static constexpr offset_t necromantic_ascendance_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 4 }; }
 
 		static inline bool any_hovered() noexcept {
 			if (phase.current_phase != game_phase_t::Playing) {
@@ -868,6 +870,8 @@ namespace necrowarp {
 			} else if (Mouse::is_inside(spectral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				return true;
 			} else if (Mouse::is_inside(sanguine_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				return true;
+			} else if (Mouse::is_inside(galvanic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				return true;
 			} else if (Mouse::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				return true;
@@ -965,6 +969,16 @@ namespace necrowarp {
 					.concatenate(runes_t{ "]" });
 				
 					command_label.position = (sanguine_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+			} else if (Mouse::is_inside(galvanic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				command_label.text = runes_t{ to_string(command_e::GalvanicInvocation) };
+				command_label.text
+					.concatenate(runes_t{ " ["})
+					.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::GalvanicInvocation) ? colors::Green : colors::Red })
+					.concatenate(runes_t{ "/" })
+					.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::GalvanicInvocation)) })
+					.concatenate(runes_t{ "]" });
+				
+					command_label.position = (galvanic_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
 			} else if (Mouse::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 				command_label.text = runes_t{ to_string(command_e::NecromanticAscendance) };
 				command_label.text
@@ -1042,41 +1056,28 @@ namespace necrowarp {
 			}
 
 			const bool has_entity{ entity_registry.contains(grid_cursor.current_position) };
+			const bool has_object{ object_registry.contains(grid_cursor.current_position) };
+
 			const fluid_type_e fluid{ fluid_map[grid_cursor.current_position] };
 
-			show_tooltip = has_entity || fluid != fluid_type_e::None;
+			show_tooltip = has_entity || has_object || fluid != fluid_type_e::None;
 
 			if (show_tooltip) {
 				tooltip_label.text = runes_t{};
 
 				if (has_entity) {
-					if (!entity_registry.contains<skeleton_t, ladder_t, skull_t>(grid_cursor.current_position)) {
-						tooltip_label.text.concatenate(to_colored_string(entity_registry.at(grid_cursor.current_position)));
-					} else {
-						bool has_predecessor{ false };
-
-						if (entity_registry.contains<skeleton_t>(grid_cursor.current_position)) {
-							tooltip_label.text.concatenate(entity_registry.at<skeleton_t>(grid_cursor.current_position)->to_colored_string());
-							has_predecessor = true;
-						} if (entity_registry.contains<ladder_t>(grid_cursor.current_position)) {
-							if (has_predecessor) {
-								tooltip_label.text.concatenate(runes_t{ ", " });
-							}
-
-							tooltip_label.text.concatenate(entity_registry.at<ladder_t>(grid_cursor.current_position)->to_colored_string());
-
-							has_predecessor = true;
-						} if (entity_registry.contains<skull_t>(grid_cursor.current_position)) {
-							if (has_predecessor) {
-								tooltip_label.text.concatenate(runes_t{ ", " });
-							}
-
-							tooltip_label.text.concatenate(entity_registry.at<skull_t>(grid_cursor.current_position)->to_colored_string());
-						}
-					}
+					tooltip_label.text.concatenate(to_colored_string(entity_registry.at(grid_cursor.current_position), grid_cursor.current_position));
 				}
 
-				if (has_entity && fluid != fluid_type_e::None) {
+				if (has_entity && has_object) {
+					tooltip_label.text.concatenate({ " | " });
+				}
+
+				if (has_object) {
+					tooltip_label.text.concatenate(to_colored_string(object_registry.at(grid_cursor.current_position), grid_cursor.current_position));
+				}
+
+				if ((has_entity || has_object) && fluid != fluid_type_e::None) {
 					tooltip_label.text.concatenate({ " | " });
 				}
 				
@@ -1085,15 +1086,13 @@ namespace necrowarp {
 				}
 			}
 
-			const entity_group_e group{ entity_registry.at(grid_cursor.current_position) };
-
-			if (group == entity_e::Player) {
+			if (entity_registry.contains<player_t>(grid_cursor.current_position)) {
 				grid_cursor.color = colors::Magenta;
-			} else if (group == entity_e::Skeleton || group == entity_e::Cultist || group == entity_e::Bloodhound || group == entity_e::Wraith || group == entity_e::FleshGolem) {
+			} else if (entity_registry.contains<ALL_EVIL_NPCS>(grid_cursor.current_position)) {
 				grid_cursor.color = colors::Green;
-			} else if (group == entity_e::Adventurer || group == entity_e::Mercenary || group == entity_e::Paladin || group == entity_e::Priest) {
+			} else if (entity_registry.contains<ALL_GOOD_NPCS>(grid_cursor.current_position)) {
 				grid_cursor.color = colors::Red;
-			} else if (group == entity_e::Skull || group == entity_e::Ladder) {
+			} else if (object_registry.contains(grid_cursor.current_position)) {
 				grid_cursor.color = colors::Blue;
 			} else {
 				grid_cursor.color = colors::metals::Gold;
@@ -1116,6 +1115,7 @@ namespace necrowarp {
 			icon_atlas.draw(glyph_t{ icons::CalciticInvocation.index, player.can_perform(discount_e::CalciticInvocation) ? colors::White : colors::dark::Grey }, calcitic_invocation_icon_position());
 			icon_atlas.draw(glyph_t{ icons::SpectralInvocation.index, player.can_perform(discount_e::SpectralInvocation) ? colors::White : colors::dark::Grey }, spectral_invocation_icon_position());
 			icon_atlas.draw(glyph_t{ icons::SanguineInvocation.index, player.can_perform(discount_e::SanguineInvocation) ? colors::White : colors::dark::Grey }, sanguine_invocation_icon_position());
+			icon_atlas.draw(glyph_t{ icons::GalvanicInvocation.index, player.can_perform(discount_e::GalvanicInvocation) ? colors::White : colors::dark::Grey }, galvanic_invocation_icon_position());
 
 			icon_atlas.draw(glyph_t{ icons::NecromanticAscendance.index, player.can_perform(discount_e::NecromanticAscendance) ? colors::White : colors::dark::Grey }, necromantic_ascendance_icon_position());
 

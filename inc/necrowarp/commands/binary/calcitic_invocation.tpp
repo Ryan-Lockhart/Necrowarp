@@ -9,9 +9,11 @@
 
 #include <necrowarp/entities/entity.tpp>
 
+#include <necrowarp/objects/object.tpp>
+
 namespace necrowarp {
 	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, calcitic_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::CalciticInvocation) || entity_registry.empty<skull_t>())) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::CalciticInvocation) || object_registry.empty<skull_t>())) {
 			player_turn_invalidated = true;
 
 			return;
@@ -36,17 +38,17 @@ namespace necrowarp {
 				continue;
 			}
 
-			const bool has_skull{ entity_registry.contains<skull_t>(position) };
-			const bool has_ladder{ entity_registry.contains<ladder_t>(position) };
+			const bool has_skull{ object_registry.contains<skull_t>(position) };
+			const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
 			if (!game_map.within<zone_region_t::Interior>(position) || (!has_skull && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
 			if (has_skull) {
-				const decay_e state{ entity_registry.at<skull_t>(position)->state };
+				const decay_e state{ object_registry.at<skull_t>(position)->state };
 
-				entity_registry.remove<skull_t>(position);
+				object_registry.remove<skull_t>(position);
 				++accumulated_skulls;
 
 				if (!is_exalted) {
@@ -55,7 +57,7 @@ namespace necrowarp {
 			}
 
 			if (eligible_ladder == nullptr && has_ladder) {
-				eligible_ladder = entity_registry.at<ladder_t>(position);
+				eligible_ladder = object_registry.at<ladder_t>(position);
 
 				switch (eligible_ladder->shackle) {
 					case shackle_type_t::None: {
@@ -73,11 +75,11 @@ namespace necrowarp {
 			}
 		}
 
-		if (entity_registry.contains<skull_t>(target_position)) {
+		if (object_registry.contains<skull_t>(target_position)) {
 			const offset_t pos{ target_position };
-			const decay_e state{ entity_registry.at<skull_t>(pos)->state };
+			const decay_e state{ object_registry.at<skull_t>(pos)->state };
 
-			entity_registry.remove<skull_t>(pos);
+			object_registry.remove<skull_t>(pos);
 			++accumulated_skulls;
 
 			if (!is_exalted) {
@@ -95,14 +97,14 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 				
-				const bool has_ladder{ entity_registry.contains<ladder_t>(position) };
+				const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
 				if (!game_map.within<zone_region_t::Interior>(position) || (eligible_ladder != nullptr || !has_ladder)) {
 					continue;
 				}
 
 				if (eligible_ladder == nullptr && has_ladder) {
-					eligible_ladder = entity_registry.at<ladder_t>(position);
+					eligible_ladder = object_registry.at<ladder_t>(position);
 
 					switch (eligible_ladder->shackle) {
 						case shackle_type_t::None: {

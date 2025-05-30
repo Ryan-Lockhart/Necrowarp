@@ -5,14 +5,15 @@
 #include <necrowarp/entities.hpp>
 #include <necrowarp/commands.hpp>
 
+#include <necrowarp/object_state.hpp>
+#include <necrowarp/object_state.tpp>
+
 #include <optional>
 
 #include <bleak/sparse.hpp>
 
 namespace necrowarp {	
 	using namespace bleak;
-
-	constexpr distance_function_t DistanceFunction{ distance_function_t::Octile };
 	
 	extern grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor;
 
@@ -31,7 +32,7 @@ namespace necrowarp {
 
 			colored_string.concatenate(to_colored_string<Patron>(cval));
 
-			if constexpr (cval == discount_e::TargetWarp || cval == discount_e::SanguineInvocation) {
+			if constexpr (cval == discount_e::TargetWarp || cval == discount_e::GalvanicInvocation) {
 				colored_string.concatenate(runes_t{ "\n" });
 			} if (cval == discount_e::NecromanticAscendance) {
 				return;
@@ -73,10 +74,10 @@ namespace necrowarp {
 
 	static inline sparse_t<sparseling_t<bool>> newborns{};
 
-	static inline field_t<float, DistanceFunction, globals::MapSize, globals::BorderSize> good_goal_map{};
-	static inline field_t<float, DistanceFunction, globals::MapSize, globals::BorderSize> evil_goal_map{};
+	static inline field_t<float, globals::DistanceFunction, globals::MapSize, globals::BorderSize> good_goal_map{};
+	static inline field_t<float, globals::DistanceFunction, globals::MapSize, globals::BorderSize> evil_goal_map{};
 
-	template<typename T> static inline field_t<float, DistanceFunction, globals::MapSize, globals::BorderSize> entity_goal_map{};
+	template<NonNullEntity EntityType> static inline field_t<float, globals::DistanceFunction, globals::MapSize, globals::BorderSize> entity_goal_map{};
 
 	static inline bool descent_flag{ false };
 
@@ -199,9 +200,7 @@ namespace necrowarp {
 
 			entity_goal_map<EntityType>.add(position);
 
-			if constexpr (is_animate<EntityType>::value) {
-				newborns.add(sparseling_t<bool>{ position });
-			}
+			newborns.add(sparseling_t<bool>{ position });
 		}
 
 		return inserted;
@@ -327,10 +326,6 @@ namespace necrowarp {
 		if (entity_registry.empty(current) || !game_map.within<zone_region_t::Interior>(current) || entity_registry.contains(target) || !game_map.within<zone_region_t::Interior>(target)) {
 			return false;
 		}
-
-		if constexpr (is_inanimate<EntityType>::value) {
-			return false;
-		}
 		
 		if (!entity_storage<EntityType>.move(current, target)) {
 			return false;
@@ -354,10 +349,6 @@ namespace necrowarp {
 
 		player.position = target;
 		good_goal_map.update(current, target);
-
-		if constexpr (is_inanimate<EntityType>::value) {
-			return false;
-		}
 
 		if constexpr (is_evil_entity<EntityType>::value) {
 			good_goal_map.update(current, target);
@@ -537,7 +528,7 @@ namespace necrowarp {
 			return;
 		}
 
-		update<ALL_NPCS>();
+		update<ALL_NON_PLAYER>();
 
 		recalculate_goal_map();
 
@@ -624,11 +615,11 @@ namespace necrowarp {
 		reset_alignment_goal_maps();
 	}
 
-	template<AnimateEntity EntityType, Command CommandType> inline bool entity_registry_t::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
+	template<NonNullEntity EntityType, Command CommandType> inline bool entity_registry_t::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
 		static constexpr entity_e entity_enum{ to_entity_enum<EntityType>::value };
 		static constexpr command_e command_enum{ to_command_enum<CommandType>::value };
 
-		if constexpr (is_null_command<CommandType>::value || is_inanimate<EntityType>::value) {
+		if constexpr (is_null_command<CommandType>::value) {
 			return false;
 		}
 
@@ -646,6 +637,7 @@ namespace necrowarp {
 				case command_e::CalciticInvocation:
 				case command_e::SpectralInvocation:
 				case command_e::SanguineInvocation:
+				case command_e::GalvanicInvocation:
 				case command_e::NecromanticAscendance: {
 					return false;
 				} default: {
@@ -691,25 +683,30 @@ namespace necrowarp {
 
 					break;
 				} case command_e::Clash:
-				case command_e::Lunge:
-				case command_e::Consume:
-				case command_e::ConsumeWarp:
-				case command_e::Exorcise:
-				case command_e::Resurrect:
-				case command_e::Anoint: {
+				  case command_e::Lunge:
+				  case command_e::Exorcise:
+				  case command_e::Resurrect:
+				  case command_e::Anoint: {
 					if (entity_registry.empty(command.target_position)) {
 						return false;
 					}
 
 					break;
 				} case command_e::Descend: {
-					if (entity_registry.empty(command.target_position) || !entity_registry.contains<ladder_t>(command.target_position)) {
+					if (object_registry.empty(command.target_position) || !object_registry.contains<ladder_t>(command.target_position)) {
 						return false;
 					}
 
-					cref<ladder_t> descension_point{ *entity_registry.at<ladder_t>(command.target_position) };
+					cref<ladder_t> descension_point{ *object_registry.at<ladder_t>(command.target_position) };
 
 					if (descension_point.is_up_ladder() || descension_point.has_shackle()) {
+						return false;
+					}
+
+					break;
+				} case command_e::Consume:
+				  case command_e::ConsumeWarp: {
+					if (entity_registry.empty(command.target_position) && object_registry.empty(command.target_position)) {
 						return false;
 					}
 
@@ -788,13 +785,25 @@ namespace necrowarp {
 	}
 
 	template<NonPlayerEntity EntityType> inline void entity_registry_t::draw(cref<camera_t> camera) const noexcept {
+		cauto viewport{ camera.get_viewport() }; 
+
 		for (crauto entity : entity_storage<EntityType>) {
+			if (!viewport.within(entity.position)) {
+				continue;
+			}
+
 			entity.draw(camera);
 		}
 	}
 
 	template<NonPlayerEntity EntityType> inline void entity_registry_t::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+		cauto viewport{ camera.get_viewport() }; 
+
 		for (crauto entity : entity_storage<EntityType>) {
+			if (!viewport.within(entity.position)) {
+				continue;
+			}
+
 			entity.draw(camera, offset);
 		}
 	}
@@ -818,22 +827,19 @@ namespace necrowarp {
 	}
 
 	inline void entity_registry_t::draw() const noexcept {
-		draw<ALL_INANIMATE>();
-		draw<ALL_NPCS>();
+		draw<ALL_NON_PLAYER>();
 
 		player.draw();
 	}
 
 	inline void entity_registry_t::draw(cref<camera_t> camera) const noexcept {
-		draw<ALL_INANIMATE>(camera);
-		draw<ALL_NPCS>(camera);
+		draw<ALL_NON_PLAYER>(camera);
 
 		player.draw(camera);
 	}
 
 	inline void entity_registry_t::draw(cref<camera_t> camera, offset_t offset) const noexcept {
-		draw<ALL_INANIMATE>(camera, offset);
-		draw<ALL_NPCS>(camera, offset);
+		draw<ALL_NON_PLAYER>(camera, offset);
 
 		player.draw(camera, offset);
 	}

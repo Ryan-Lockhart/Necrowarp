@@ -97,7 +97,7 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline bool update(offset_t current, offset_t target) noexcept;
 
-		template<AnimateEntity EntityType, Command CommandType> inline bool is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept;
+		template<NonNullEntity EntityType, Command CommandType> inline bool is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept;
 
 		inline bool random_warp(offset_t source) noexcept;
 

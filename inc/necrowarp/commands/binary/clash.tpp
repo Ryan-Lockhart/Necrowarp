@@ -9,6 +9,8 @@
 
 #include <necrowarp/entities/entity.tpp>
 
+#include <necrowarp/objects/object.tpp>
+
 namespace necrowarp {
 	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
@@ -90,7 +92,7 @@ namespace necrowarp {
 
 			using victim_type = to_entity_type<cval>::type;
 
-			if constexpr (!is_null_entity<victim_type>::value && !std::is_same<EntityType, victim_type>::value && is_animate<victim_type>::value) {
+			if constexpr (!is_null_entity<victim_type>::value && !std::is_same<EntityType, victim_type>::value) {
 				ptr<victim_type> victim_ptr{ entity_registry.at<victim_type>(target_position) };
 
 				if (victim_ptr == nullptr) {
@@ -132,9 +134,7 @@ namespace necrowarp {
 				}
 
 				if (source_killed) {
-					if constexpr (is_animate<victim_type>::value) {
-						initiator.die();
-					}
+					initiator.die();
 
 					if constexpr (is_npc_entity<EntityType>::value) {
 						entity_registry.remove<EntityType>(initiator.position);

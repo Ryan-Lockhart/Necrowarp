@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bleak/constants/characters.hpp"
 #include <bleak.hpp>
 
 #include <bit>

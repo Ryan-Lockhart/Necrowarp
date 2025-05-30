@@ -24,6 +24,7 @@ namespace necrowarp {
 	struct calcitic_invocation_t;
 	struct spectral_invocation_t;
 	struct sanguine_invocation_t;
+	struct galvanic_invocation_t;
 	struct exorcise_t;
 	struct resurrect_t;
 	struct anoint_t;
@@ -48,6 +49,7 @@ namespace necrowarp {
 		calcitic_invocation_t, \
 		spectral_invocation_t, \
 		sanguine_invocation_t, \
+		galvanic_invocation_t, \
 		exorcise_t, \
 		resurrect_t, \
 		anoint_t
@@ -77,6 +79,7 @@ namespace necrowarp {
 		calcitic_invocation_t, \
 		spectral_invocation_t, \
 		sanguine_invocation_t, \
+		galvanic_invocation_t, \
 		necromantic_ascendance_t
 	
 	#define ALL_BLOODHOUND_COMMANDS \
@@ -109,6 +112,7 @@ namespace necrowarp {
 		CalciticInvocation,
 		SpectralInvocation,
 		SanguineInvocation,
+		GalvanicInvocation,
 		NecromanticAscendance,
 		Exorcise,
 		Resurrect,
@@ -160,6 +164,8 @@ namespace necrowarp {
 				return "spectral invocation";
 			} case command_e::SanguineInvocation: {
 				return "sanguine invocation";
+			} case command_e::GalvanicInvocation: {
+				return "galvanic invocation";
 			} case command_e::NecromanticAscendance: {
 				return "necromantic ascendance";
 			} case command_e::Exorcise: {

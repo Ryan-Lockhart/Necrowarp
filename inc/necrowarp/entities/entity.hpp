@@ -25,9 +25,6 @@ namespace necrowarp {
 	struct paladin_t;
 	struct priest_t;
 
-	struct skull_t;
-	struct ladder_t;
-
 	#define ALL_EVIL_NPCS \
 		skeleton_t, \
 		cultist_t, \
@@ -48,25 +45,13 @@ namespace necrowarp {
 	#define ALL_GOOD \
 		ALL_GOOD_NPCS
 
-	#define ALL_NPCS \
+	#define ALL_NON_PLAYER \
 		ALL_EVIL_NPCS, \
 		ALL_GOOD_NPCS
 
-	#define ALL_ANIMATE \
-		player_t, \
-		ALL_NPCS
-
-	#define ALL_INANIMATE \
-		skull_t, \
-		ladder_t
-
-	#define ALL_NON_PLAYER \
-		ALL_NPCS, \
-		ALL_INANIMATE
-
 	#define ALL_ENTITIES \
-		ALL_ANIMATE, \
-		ALL_INANIMATE
+		player_t, \
+		ALL_NON_PLAYER
 
 	enum struct entity_e : u8 {
 		None = 0,
@@ -79,9 +64,7 @@ namespace necrowarp {
 		Adventurer,
 		Mercenary,
 		Paladin,
-		Priest,
-		Skull,
-		Ladder
+		Priest
 	};
 
 	static constexpr cstr to_string(entity_e type) noexcept {
@@ -108,10 +91,6 @@ namespace necrowarp {
 				return "paladin";
 			} case entity_e::Priest: {
 				return "priest";
-			} case entity_e::Skull: {
-				return "skull";
-			} case entity_e::Ladder: {
-				return "ladder";
 			} default: {
 				return "unknown";
 			}
@@ -144,10 +123,6 @@ namespace necrowarp {
 				return runes_t{ string, colors::metals::Steel };
 			} case entity_e::Priest: {
 				return runes_t{ string, colors::metals::Gold };
-			} case entity_e::Skull: {
-				return runes_t{ string, colors::White };
-			} case entity_e::Ladder: {
-				return runes_t{ string, colors::materials::Oak };
 			} default: {
 				return runes_t{ string, colors::White };
 			}
@@ -169,9 +144,7 @@ namespace necrowarp {
 		Adventurer = FleshGolem << 1,
 		Mercenary = Adventurer << 1,
 		Paladin = Mercenary << 1,
-		Priest = Paladin << 1,
-		Skull = Priest << 1,
-		Ladder = Skull << 1
+		Priest = Paladin << 1
 	};
 
 	constexpr entity_group_e operator+(entity_group_e lhs, entity_group_e rhs) noexcept { return static_cast<entity_group_e>(static_cast<entity_group_t>(lhs) | static_cast<entity_group_t>(rhs)); }
@@ -201,48 +174,6 @@ namespace necrowarp {
 	static constexpr std::string to_string(entity_group_e group) noexcept;
 
 	static constexpr runes_t to_colored_string(entity_group_e group) noexcept;
-
-	enum class decay_e : i8 {
-		Rotted = -1,
-		Animate = 0,
-		Fresh = 1,
-	};
-
-	constexpr decay_e decay(decay_e state) noexcept {
-		switch (state) {
-			case decay_e::Fresh: {
-				return decay_e::Animate;
-			} case decay_e::Animate: {
-				return decay_e::Rotted;
-			} case decay_e::Rotted: {
-				return decay_e::Rotted;
-			}
-		}
-	}
-
-	constexpr cstr to_string(decay_e decay) noexcept {
-		switch (decay) {
-			case decay_e::Rotted: {
-				return "rotted";
-			} case decay_e::Animate: {
-				return "animate";
-			} case decay_e::Fresh: {
-				return "fresh";
-			}
-		}
-	}
-
-	constexpr runes_t to_colored_string(decay_e decay) noexcept {
-		switch (decay) {
-			case decay_e::Rotted: {
-				return runes_t{ to_string(decay_e::Rotted), colors::light::Red };
-			} case decay_e::Animate: {
-				return runes_t{ to_string(decay_e::Animate), colors::light::Magenta };
-			} case decay_e::Fresh: {
-				return runes_t{ to_string(decay_e::Fresh), colors::light::Green };
-			}
-		}
-	}
 
 	template<typename T> struct is_entity {
 		static constexpr bool value = false;
@@ -300,22 +231,6 @@ namespace necrowarp {
 
 	template<typename T> concept EvilEntity = NonNullEntity<T> && is_evil_entity<T>::value;
 
-	template<typename T> struct is_animate {
-		static constexpr bool value = false;
-	};
-
-	template<typename T> constexpr bool is_animate_v = is_animate<T>::value;
-
-	template<typename T> concept AnimateEntity = NonNullEntity<T> && is_animate<T>::value;
-
-	template<typename T> struct is_inanimate {
-		static constexpr bool value = false;
-	};
-
-	template<typename T> constexpr bool is_inanimate_v = is_inanimate<T>::value;
-
-	template<typename T> concept InanimateEntity = NonNullEntity<T> && is_inanimate<T>::value;
-
 	template<typename T> struct is_non_player_entity {
 		static constexpr bool value = true;
 	};
@@ -324,7 +239,7 @@ namespace necrowarp {
 
 	template<typename T> concept NonPlayerEntity = NonNullEntity<T> && is_non_player_entity<T>::value;
 
-	template<typename T> concept NPCEntity = NonNullEntity<T> && AnimateEntity<T> && NonPlayerEntity<T>;
+	template<typename T> concept NPCEntity = NonNullEntity<T> && NonPlayerEntity<T>;
 
 	template<typename T> struct is_npc_entity {
 		static constexpr bool value = NPCEntity<T>;
@@ -406,11 +321,11 @@ namespace necrowarp {
 
 	template<Entity EntityType> inline constexpr glyph_t entity_glyphs;
 
-	template<AnimateEntity EntityType> static inline constexpr bool has_death_sound{ false };
+	template<NonNullEntity EntityType> static inline constexpr bool has_death_sound{ false };
 
-	template<AnimateEntity EntityType> static inline constexpr usize num_death_sounds{ 0 };
+	template<NonNullEntity EntityType> static inline constexpr usize num_death_sounds{ 0 };
 
-	template<AnimateEntity EntityType> static inline clip_pool_t<num_death_sounds<EntityType>> death_sounds;
+	template<NonNullEntity EntityType> static inline clip_pool_t<num_death_sounds<EntityType>> death_sounds;
 
 	template<> inline constexpr glyph_t entity_glyphs<std::nullptr_t>{ 0x40, colors::White };
 } // namespace necrowarp

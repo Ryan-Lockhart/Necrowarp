@@ -1,8 +1,10 @@
 #pragma once
 
+#include "bleak/constants/keys.hpp"
 #include <bleak.hpp>
 
 #include <cstdlib>
+#include <iostream>
 #include <thread>
 
 #include <necrowarp/entities.hpp>
@@ -92,6 +94,8 @@ namespace necrowarp {
 		static inline bool character_input() noexcept {
 			player.command = command_pack_t{};
 
+			const bool inspect_objects{ Keyboard::is_key_pressed(keys::Modifier::Left::Control) };
+
 			if (Keyboard::any_keys_pressed<2>(bindings::Wait)) {
 				player.command = command_pack_t{ command_e::None };
 
@@ -100,7 +104,7 @@ namespace necrowarp {
 				player.command = command_pack_t{ command_e::RandomWarp, player.position };
 			} else if (Keyboard::is_key_down(bindings::TargetWarp)) {
 				player.command = command_pack_t{
-					entity_registry.contains(grid_cursor.get_position()) ?
+					!entity_registry.empty(grid_cursor.get_position()) || (inspect_objects && !object_registry.empty(grid_cursor.get_position())) ?
 						command_e::ConsumeWarp :
 						command_e::TargetWarp,
 					player.position,
@@ -143,7 +147,7 @@ namespace necrowarp {
 					return false;
 				}
 
-				const command_e command_type{ entity_registry.empty(target_position) ? command_e::Move : player.clash_or_consume(target_position) };
+				const command_e command_type{ !entity_registry.empty(target_position) || (inspect_objects && !object_registry.empty(target_position)) ? player.clash_or_consume(target_position) : command_e::Move };
 
 				player.command = command_pack_t{ command_type, player.position, target_position };
 
@@ -236,21 +240,21 @@ namespace necrowarp {
 			player.position = player_pos.value();
 			good_goal_map.add(player_pos.value());
 
-			entity_registry.spawn<ladder_t>(
+			object_registry.spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_up_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
 				verticality_t::Up
 			);
 
-			entity_registry.spawn<ladder_t>(
+			object_registry.spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_down_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
 				verticality_t::Down, true
 			);
 
-			entity_registry.spawn<skull_t>(
+			object_registry.spawn<skull_t>(
 				static_cast<usize>(globals::map_config.starting_skulls),
 				static_cast<u32>(globals::map_config.minimum_skull_distance),
 
@@ -337,21 +341,21 @@ namespace necrowarp {
 			
 			good_goal_map.add(player.position);
 
-			entity_registry.spawn<ladder_t>(
+			object_registry.spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_up_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
 				verticality_t::Up
 			);
 
-			entity_registry.spawn<ladder_t>(
+			object_registry.spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_down_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
 				verticality_t::Down, true
 			);
 
-			entity_registry.spawn<skull_t>(
+			object_registry.spawn<skull_t>(
 				static_cast<usize>(globals::map_config.starting_skulls),
 				static_cast<u32>(globals::map_config.minimum_skull_distance),
 
@@ -435,7 +439,7 @@ namespace necrowarp {
 		}
 
 		static inline std::optional<offset_t> find_spawn_position() noexcept {
-			for (cref<ladder_t> ladder : entity_storage<ladder_t>) {
+			for (cref<ladder_t> ladder : object_storage<ladder_t>) {
 				if (entity_registry.contains<ALL_GOOD_NPCS>(ladder.position) || ladder.is_down_ladder() || ladder.has_shackle()) {
 					continue;
 				}
@@ -626,6 +630,7 @@ namespace necrowarp {
 				game_map.draw(game_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 				fluid_map.draw(game_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 
+				object_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
 				entity_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
 			}
 

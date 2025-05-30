@@ -35,6 +35,8 @@ namespace necrowarp {
 
 	static inline std::bernoulli_distribution coinflip{};
 
+	static inline std::bernoulli_distribution triflip{ 1.0 / 3.0 };
+
 	static inline zone_t<map_cell_t, globals::MapSize, globals::BorderSize> game_map{};
 
 	static inline zone_t<fluid_cell_t, globals::MapSize, globals::BorderSize> fluid_map{};
@@ -216,6 +218,8 @@ namespace necrowarp {
 		CalciticInvocations,
 		SpectralInvocations,
 		SanguineInvocations,
+		GalvanicInvocations,
+
 		NecromanticAscensions,
 
 		MetersMoved,
@@ -223,6 +227,7 @@ namespace necrowarp {
 		LowestDepth,
 
 		SkullsConsumed,
+		MetalConsumed,
 		SkeletonsConsumed,
 
 		BloodConsumed,
@@ -256,6 +261,8 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::CalciticInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::SpectralInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::SanguineInvocations> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::GalvanicInvocations> { using type = i32; };
+
 	template<> struct to_stat_type<steam_stat_e::NecromanticAscensions> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::MetersMoved> { using type = f32; };
@@ -263,6 +270,7 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::LowestDepth> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::SkullsConsumed> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::MetalConsumed> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::SkeletonsConsumed> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::BloodConsumed> { using type = f32; };
@@ -302,6 +310,8 @@ namespace necrowarp {
 				return "spectral_invocations";
 			} case steam_stat_e::SanguineInvocations: {
 				return "sanguine_invocations";
+			} case steam_stat_e::GalvanicInvocations: {
+				return "galvanic_invocations";
 			} case steam_stat_e::NecromanticAscensions: {
 				return "necromantic_ascensions";
 			} case steam_stat_e::MetersMoved: {
@@ -312,6 +322,8 @@ namespace necrowarp {
 				return "lowest_depth";
 			} case steam_stat_e::SkullsConsumed: {
 				return "skulls_consumed";
+			} case steam_stat_e::MetalConsumed: {
+				return "metal_consumed";
 			} case steam_stat_e::SkeletonsConsumed: {
 				return "skeletons_consumed";
 			} case steam_stat_e::BloodConsumed: {
@@ -362,6 +374,8 @@ namespace necrowarp {
 				return "Spectral Invocations";
 			} case steam_stat_e::SanguineInvocations: {
 				return "Sanguine Invocations";
+			} case steam_stat_e::GalvanicInvocations: {
+				return "Galvanic Invocations";
 			} case steam_stat_e::NecromanticAscensions: {
 				return "Necromantic Ascensions";
 			} case steam_stat_e::MetersMoved: {
@@ -372,6 +386,8 @@ namespace necrowarp {
 				return "Lowest Depth";
 			} case steam_stat_e::SkullsConsumed: {
 				return "Skulls Consumed";
+			} case steam_stat_e::MetalConsumed: {
+				return "Metal Consumed";
 			} case steam_stat_e::SkeletonsConsumed: {
 				return "Skeletons Consumed";
 			} case steam_stat_e::BloodConsumed: {
