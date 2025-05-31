@@ -3,6 +3,10 @@
 #include <necrowarp/entities/entity.hpp>
 #include <necrowarp/commands/command.hpp>
 
+#include <necrowarp/entity_command.hpp>
+
+#include <necrowarp/commands/unary/eviscerate.hpp>
+
 #include <necrowarp/game_state.hpp>
 
 namespace necrowarp {
@@ -44,6 +48,10 @@ namespace necrowarp {
 		static constexpr fluid_type_e type = fluid_type_e::Ichor;
 	};
 
+	template<> struct is_entity_command_valid<wraith_t, eviscerate_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<wraith_t>{ glyphs::Wraith };
 
 	struct wraith_t {
@@ -56,13 +64,13 @@ namespace necrowarp {
 	
 	public:
 		static constexpr i8 MaximumHealth{ 9 };
-		static constexpr i8 MaximumDamage{ 2 };
+		static constexpr i8 MaximumDamage{ 5 };
 
 		static constexpr std::array<entity_e, 4> EntityPriorities{
 			entity_e::Priest,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
-			entity_e::Paladin
+			entity_e::Paladin,
 		};
 		
 		inline wraith_t(offset_t position, i8 health) noexcept : position{ position }, health{ health } {}
@@ -74,6 +82,8 @@ namespace necrowarp {
 		constexpr i8 max_health() const noexcept { return MaximumHealth; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
+
+		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 

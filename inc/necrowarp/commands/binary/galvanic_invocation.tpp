@@ -7,9 +7,6 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
-#include <necrowarp/object_state.hpp>
-#include <necrowarp/object_state.tpp>
-
 #include <necrowarp/entities/entity.tpp>
 #include <necrowarp/objects/object.tpp>
 
@@ -28,7 +25,7 @@ namespace necrowarp {
 
 		ptr<ladder_t> eligible_ladder{ nullptr };
 
-		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
 			const bool has_metal{ object_registry.contains<metal_t>(position) };
@@ -38,7 +35,7 @@ namespace necrowarp {
 				aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
 
 				if (!is_exalted) {
-					// entity_registry.add<true>(animated_suit_t{ position });
+					entity_registry.add<true>(animated_suit_t{ position, galvanisation_e::Writhing });
 				}
 
 				continue;
@@ -59,7 +56,7 @@ namespace necrowarp {
 				aggregate_quality += static_cast<u8>(state) + 1;
 
 				if (!is_exalted) {
-					// entity_registry.add<true>(animated_suit_t{ position });
+					entity_registry.add<true>(animated_suit_t{ position, triflip(random_engine) ? galvanise(state) : state });
 				}
 			}
 
@@ -96,7 +93,18 @@ namespace necrowarp {
 				if (!entity_registry.random_warp(source_position)) {
 					player.bolster_armor(metal_consumed);
 				} else {
-					// entity_registry.add<true>(animated_suit_t{ pos, triflip(random_engine) ? galvanise(state) : state });
+					entity_registry.add<true>(animated_suit_t{ pos, triflip(random_engine) ? galvanise(state) : state });
+				}
+			}
+		} else if (player.bypass_invocations_enabled()) {
+			++metal_consumed;
+			aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
+
+			if (!is_exalted) {
+				if (!entity_registry.random_warp(source_position)) {
+					player.bolster_armor(metal_consumed);
+				} else {
+					entity_registry.add<true>(animated_suit_t{ target_position, galvanisation_e::Writhing });
 				}
 			}
 		}
@@ -104,7 +112,7 @@ namespace necrowarp {
 		steam_stats::stats<steam_stat_e::MetalConsumed, i32> += metal_consumed;
 
 		if (eligible_ladder == nullptr) {
-			for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+			for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 
 				const bool has_ladder{ object_registry.contains<ladder_t>(position) };
@@ -137,7 +145,7 @@ namespace necrowarp {
 			player_turn_invalidated = true;
 
 			return;
-		} else if (metal_consumed >= 4 && eligible_ladder != nullptr) {
+		} else if (metal_consumed >= 6 && eligible_ladder != nullptr) {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
@@ -156,10 +164,10 @@ namespace necrowarp {
 		player.pay_cost(discount_e::GalvanicInvocation);
 
 		if (!player.has_ascended()) {
-			if (metal_consumed == 9) {
-				// summon max amount of cultists achievment placeholder : Chosen of the Void
+			if (metal_consumed == globals::MaximumCatalyst) {
+				// summon max amount of animated suits of armor achievment placeholder : Chosen of the Void
 			} else if (metal_consumed > 1) {
-				// summon first squad of cultists achievment placeholder : Anyone home?
+				// summon first squad of animated suits of armor achievment placeholder : Anyone home?
 			}
 
 			return;
@@ -180,12 +188,12 @@ namespace necrowarp {
 			)
 		)};
 
-		// entity_registry.add<true>(death_knight_t{ source_position, metal_consumed, triflip(random_engine) ? galvanise(dk_quality) : dk_quality });
+		entity_registry.add<true>(death_knight_t{ target_position, metal_consumed, triflip(random_engine) ? galvanise(dk_quality) : dk_quality });
 
-		if (metal_consumed == 9) {
+		if (metal_consumed == globals::MaximumCatalyst) {
 			// summon first death knight achievment placeholder : A Pale Gaze
 		} else {
-			// summon wraith with max heatlh achievment placeholder : Death Incarnate
+			// summon death knight with max heatlh achievment placeholder : Death Incarnate
 		}
 	}
 } // namespace necrowarp

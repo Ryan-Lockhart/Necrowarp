@@ -333,6 +333,7 @@ namespace necrowarp {
 		constexpr f32 FluidPoolMaximumVolume{ 5.7f };
 
 		constexpr i8 MinimumCatalyst{ 4 };
+		constexpr i8 MaximumCatalyst{ 9 };
 
 		static inline std::uniform_real_distribution<f32> fluid_pool_dis{ FluidPoolMinimumVolume, FluidPoolMaximumVolume };
 

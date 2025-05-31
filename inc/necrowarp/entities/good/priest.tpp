@@ -34,7 +34,7 @@ namespace necrowarp {
 			return command_pack_t{ command_e::Suicide, position };
 		}
 
-		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t offset_pos{ position + offset };
 
 			if (object_registry.contains<skull_t>(offset_pos)) {

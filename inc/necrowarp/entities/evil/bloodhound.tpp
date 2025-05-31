@@ -7,7 +7,7 @@
 
 namespace necrowarp {
 	inline command_pack_t bloodhound_t::think() const noexcept {
-		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
 			if (!entity_registry.contains<ALL_GOOD>(current_position)) {
@@ -23,7 +23,7 @@ namespace necrowarp {
 			return command_pack_t{ command_e::None };
 		}
 
-		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
 			if (!entity_registry.contains<ALL_GOOD>(current_position)) {

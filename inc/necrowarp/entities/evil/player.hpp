@@ -98,6 +98,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_entity_command_valid<player_t, galvanic_invocation_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<player_t>{ glyphs::UnarmoredPlayer };
 
 	template<> inline constexpr glyph_t command_icons<command_e::RandomWarp>{ 0x00, colors::White };
@@ -187,12 +191,18 @@ namespace necrowarp {
 	enum class discount_e : u8 {
 		RandomWarp,
 		TargetWarp,
+	
+	 // Repulse,    (planned; circular area of effect combat command)
+	 // Annihilate, (planned; linear area of effect combat command)
 
 		CalciticInvocation,
 		SpectralInvocation,
 		SanguineInvocation,
 		GalvanicInvocation,
+	 // RavenousInvocation, (planned; cross domain of Spectral and Sanguine)
+	 // WretchedInvocation, (planned; cross domain of Calcitic and Sanguine)
 
+	 // MaliceIncarnate, (planned; discard body temporarily and enter wraith-world)
 		NecromanticAscendance
 	};
 
@@ -351,7 +361,7 @@ namespace necrowarp {
 		{ 0, 4, 6 },
 		{ -6, -2, 2 },
 		{ -4, 0, 4 },
-		{ 0, 0, 0 },
+		{ -4, 0, 4 },
 		{ -8, 0, 4 },
 	};
 
@@ -362,7 +372,7 @@ namespace necrowarp {
 		{ -4, 0, 4 },
 		{ 0, 4, 6 },
 		{ -6, -2, 2 },
-		{ 0, 0, 0 },
+		{ -4, 0, 4 },
 		{ -4, 0, 8 },
 	};
 
@@ -373,7 +383,7 @@ namespace necrowarp {
 		{ -4, 0, 4 },
 		{ -6, -2, 2 },
 		{ 0, 4, 6 },
-		{ 0, 0, 0 },
+		{ -4, 0, 4 },
 		{ -6, 0, 6 },
 	};
 
@@ -384,7 +394,7 @@ namespace necrowarp {
 		{ -8, 0, 4 },
 		{ -8, 0, 4 },
 		{ -8, 0, 4 },
-		{ 0, 0, 0 },
+		{ -6, 0, 6 },
 		{ 0, 8, 16 },
 	};
 
@@ -477,11 +487,11 @@ namespace necrowarp {
 		static constexpr i8 MinimumDamage{ 1 };
 
 		static constexpr std::array<entity_e, 5> EntityPriorities{
+			entity_e::Skeleton,
 			entity_e::Priest,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
 			entity_e::Paladin,
-			entity_e::Skeleton,
 		};
 
 		static constexpr std::array<object_e, 2> ObjectPriorities{
@@ -497,6 +507,7 @@ namespace necrowarp {
 		template<> constexpr i8 Cost<discount_e::CalciticInvocation>{ 8 };
 		template<> constexpr i8 Cost<discount_e::SpectralInvocation>{ 8 };
 		template<> constexpr i8 Cost<discount_e::SanguineInvocation>{ 8 };
+		template<> constexpr i8 Cost<discount_e::GalvanicInvocation>{ 12 };
 
 		template<> constexpr i8 Cost<discount_e::NecromanticAscendance>{ 16 };
 
@@ -714,6 +725,8 @@ namespace necrowarp {
 		inline command_e clash_or_consume(offset_t position) const noexcept;
 
 		inline void die() noexcept;
+
+		inline void reinvigorate(i8 value) noexcept { set_energy(energy + value); }
 
 		inline void bolster_armor(i8 value) noexcept { set_armor(armor + value); }
 

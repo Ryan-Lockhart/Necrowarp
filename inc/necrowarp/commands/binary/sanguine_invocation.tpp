@@ -23,7 +23,7 @@ namespace necrowarp {
 
 		ptr<ladder_t> eligible_ladder{ nullptr };
 
-		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
 			const bool no_blood{ fluid_map[position] != fluid_type_e::Blood };
@@ -81,21 +81,28 @@ namespace necrowarp {
 
 			if (!is_exalted) {
 				if (!entity_registry.random_warp(source_position)) {
-					player.bolster_armor(pools_consumed);
+					player.reinvigorate(pools_consumed);
+				} else {
+					entity_registry.add<true>(bloodhound_t{ pos });
+				}
+			}
+		} else if (player.bypass_invocations_enabled()) {
+			const offset_t pos{ target_position };
+			++pools_consumed;
+
+			if (!is_exalted) {
+				if (!entity_registry.random_warp(source_position)) {
+					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry.add<true>(bloodhound_t{ pos });
 				}
 			}
 		}
 
-		if (player.bypass_invocations_enabled()) {
-			pools_consumed = flesh_golem_t::MaximumHealth;
-		}
-
 		steam_stats::stats<steam_stat_e::BloodConsumed, f32> += fluid_pool_volume(pools_consumed);
 
 		if (eligible_ladder == nullptr) {
-			for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+			for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 
 				const bool has_ladder{ object_registry.contains<ladder_t>(position) };
@@ -147,8 +154,8 @@ namespace necrowarp {
 		player.pay_cost(discount_e::SanguineInvocation);
 
 		if (!player.has_ascended()) {
-			if (pools_consumed == 9) {
-				// summon max amount of bloodhounds achievment placeholder : The Harrying Hounds
+			if (pools_consumed == globals::MaximumCatalyst) {
+				// summon max amount of bloodhounds achievment placeholder : The Harrying
 			} else if (pools_consumed > 1) {
 				// summon first pack of bloodhounds achievment placeholder : Ankle-biter
 			}
@@ -157,17 +164,17 @@ namespace necrowarp {
 		}
 
 		if (!entity_registry.random_warp(source_position)) {
-			player.bolster_armor(pools_consumed);
+			player.reinvigorate(pools_consumed);
 
 			return;
 		}
 
 		entity_registry.add<true>(flesh_golem_t{ source_position, pools_consumed });
 
-		if (pools_consumed == 9) {
-			// summon first flesh golem achievment placeholder : The Shambling Horror
-		} else {
+		if (pools_consumed == globals::MaximumCatalyst) {
 			// summon flesh golem with max health achievment placeholder : Mountain of Flesh
+		} else {
+			// summon first flesh golem achievment placeholder : The Shambling Horror
 		}
 	}
 } // namespace necrowarp

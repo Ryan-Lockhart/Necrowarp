@@ -36,10 +36,6 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_fodder<mercenary_t> {
-		static constexpr bool value = true;
-	};
-
 	template<> struct is_bleeder<mercenary_t> {
 		static constexpr bool value = true;
 	};
@@ -56,22 +52,42 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 2 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 6> EntityPriorities{
+		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,
+			entity_e::AnimatedSuit,
 			entity_e::Bloodhound,
 			entity_e::Cultist,
 			entity_e::Skeleton,
+			entity_e::Bonespur,
 			entity_e::Wraith,
 			entity_e::FleshGolem,
+			entity_e::DeathKnight,
 		};
 
-		static constexpr i8 DeathBoon{ 1 };
+		static constexpr i8 DeathBoon{ 2 };
+		
+	private:
+		i8 health;
 
-		inline mercenary_t(offset_t position) noexcept : position{ position } {}
+		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 
-		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+	public:
+
+		inline mercenary_t(offset_t position) noexcept : position{ position }, health{ MaximumHealth } {}
+		
+		inline i8 get_health() const noexcept { return health; }
+
+		inline bool has_health() const noexcept { return health > 0; }
+
+		constexpr i8 max_health() const noexcept { return MaximumHealth; }
+
+		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
+
+		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
+		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
 		inline command_pack_t think() const noexcept;
 

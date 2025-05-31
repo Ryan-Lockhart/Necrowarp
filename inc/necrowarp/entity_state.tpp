@@ -262,7 +262,7 @@ namespace necrowarp {
 
 	template<NonPlayerEntity EntityType> inline bool entity_registry_t::spawn(usize count) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, entity_registry) };
+			cauto maybe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, entity_registry, object_registry) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -276,7 +276,7 @@ namespace necrowarp {
 
 	template<NonPlayerEntity EntityType, typename... Args> inline bool entity_registry_t::spawn(usize count, Args... args) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, entity_registry) };
+			cauto maybe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, entity_registry, object_registry) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -290,7 +290,7 @@ namespace necrowarp {
 
 	template<NonPlayerEntity EntityType> inline bool entity_registry_t::spawn(usize count, u32 minimum_distance) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ entity_goal_map<EntityType>.template find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, entity_registry, minimum_distance) };
+			cauto maybe_position{ entity_goal_map<EntityType>.template find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, entity_registry, object_registry, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -308,7 +308,7 @@ namespace necrowarp {
 		entity_goal_map<EntityType>.template recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, entity_registry);
 		
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ entity_goal_map<EntityType>.template find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, entity_registry, minimum_distance) };
+			cauto maybe_position{ entity_goal_map<EntityType>.template find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, entity_registry, object_registry, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -656,6 +656,16 @@ namespace necrowarp {
 			}
 		}
 
+		if constexpr (entity_enum != entity_e::Wraith) {
+			switch (command_enum) {
+				case command_e::Eviscerate: {
+					return false;
+				} default: {
+					break;
+				}
+			}
+		}
+
 		if (entity_enum != entity_e::Priest) {
 			switch (command_enum) {
 				case command_e::Exorcise:
@@ -739,10 +749,10 @@ namespace necrowarp {
 	}
 
 	inline bool entity_registry_t::random_warp(offset_t source) noexcept {
-		cauto random_safe_position{ evil_goal_map.find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, entity_registry, 8) };
+		cauto random_safe_position{ evil_goal_map.find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, entity_registry, object_registry, 8) };
 
 		if (!random_safe_position.has_value()) {
-			cauto random_unsafe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, entity_registry) };
+			cauto random_unsafe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, entity_registry, object_registry) };
 
 			if (!random_unsafe_position.has_value()) {
 				player.receive_failed_warp_boon();

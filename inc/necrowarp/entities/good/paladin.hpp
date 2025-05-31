@@ -49,19 +49,22 @@ namespace necrowarp {
 	struct paladin_t {
 		offset_t position;
 
-		static constexpr i8 MaximumHealth{ 3 };
-		static constexpr i8 MaximumDamage{ 2 };
+		static constexpr i8 MaximumHealth{ 4 };
+		static constexpr i8 MaximumDamage{ 3 };
 
-		static constexpr std::array<entity_e, 6> EntityPriorities{
+		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,
-			entity_e::Bloodhound,
-			entity_e::Cultist,
-			entity_e::Skeleton,
+			entity_e::DeathKnight,
 			entity_e::Wraith,
 			entity_e::FleshGolem,
+			entity_e::AnimatedSuit,
+			entity_e::Cultist,
+			entity_e::Skeleton,
+			entity_e::Bloodhound,
+			entity_e::Bonespur,
 		};
 
-		static constexpr i8 DeathBoon{ 2 };
+		static constexpr i8 DeathBoon{ 3 };
 		
 	private:
 		i8 health;
@@ -78,6 +81,8 @@ namespace necrowarp {
 		constexpr i8 max_health() const noexcept { return MaximumHealth; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
+
+		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 

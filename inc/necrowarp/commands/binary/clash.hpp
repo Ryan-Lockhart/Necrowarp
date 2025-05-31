@@ -31,6 +31,10 @@ namespace necrowarp {
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	static inline bool retaliate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
 
+	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+		requires (!std::is_same<InitiatorType, VictimType>::value)
+	static inline bool reflect(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
+
 	template<CombatantEntity EntityType> struct entity_command_t<EntityType, clash_t> {
 		using entity_type = EntityType;
 		using command_type = clash_t;

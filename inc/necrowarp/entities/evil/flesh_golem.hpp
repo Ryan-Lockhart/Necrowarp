@@ -66,10 +66,8 @@ namespace necrowarp {
 			entity_e::Priest,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
-			entity_e::Paladin
+			entity_e::Paladin,
 		};
-
-		static constexpr i8 MinimumDamageReceived{ 1 };
 		
 		inline flesh_golem_t(offset_t position, i8 health) noexcept : position{ position }, health{ static_cast<i8>(health * HealthMultiplier) } {}
 		
@@ -79,13 +77,13 @@ namespace necrowarp {
 
 		constexpr i8 max_health() const noexcept { return MaximumHealth; }
 
-		inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(MinimumDamageReceived, damage_amount); }
+		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
 
-		inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage(damage_amount); }
+		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - filter_damage(damage_amount)); }
+		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
 		inline command_pack_t think() const noexcept;
 

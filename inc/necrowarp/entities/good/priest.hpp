@@ -96,7 +96,7 @@ namespace necrowarp {
 			object_e::Skull,
 		};
 
-		static constexpr i8 DeathBoon{ 2 };
+		static constexpr i8 DeathBoon{ 4 };
 		static constexpr i8 ExorcismBoon{ 3 };
 		
 		static constexpr i8 ResurrectCost{ 1 };
@@ -117,6 +117,8 @@ namespace necrowarp {
 		inline i8 max_piety() const noexcept { return MaximumPiety; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+
+		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 

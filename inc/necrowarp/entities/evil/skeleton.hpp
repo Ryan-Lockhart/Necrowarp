@@ -70,7 +70,7 @@ namespace necrowarp {
 			entity_e::Priest,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
-			entity_e::Paladin
+			entity_e::Paladin,
 		};
 		
 		constexpr i8 armor_boon() const noexcept {
@@ -88,6 +88,8 @@ namespace necrowarp {
 		inline bool is_rotted() const noexcept { return state == decay_e::Rotted; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+
+		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 

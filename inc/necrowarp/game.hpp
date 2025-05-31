@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bleak/constants/keys.hpp"
+#include "bleak/constants/bindings.hpp"
 #include <bleak.hpp>
 
 #include <cstdlib>
@@ -9,6 +9,7 @@
 
 #include <necrowarp/entities.hpp>
 #include <necrowarp/commands.hpp>
+
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
@@ -94,7 +95,7 @@ namespace necrowarp {
 		static inline bool character_input() noexcept {
 			player.command = command_pack_t{};
 
-			const bool inspect_objects{ Keyboard::is_key_pressed(keys::Modifier::Left::Control) };
+			const bool inspect_objects{ Keyboard::is_key_pressed(bindings::InspectObjects) };
 
 			if (Keyboard::any_keys_pressed<2>(bindings::Wait)) {
 				player.command = command_pack_t{ command_e::None };
@@ -116,6 +117,8 @@ namespace necrowarp {
 				player.command = command_pack_t{ command_e::SpectralInvocation, player.position, player.position };
 			} else if (Keyboard::is_key_down(bindings::SanguineInvocation)) {
 				player.command = command_pack_t{ command_e::SanguineInvocation, player.position, player.position };
+			} else if (Keyboard::is_key_down(bindings::GalvanicInvocation)) {
+				player.command = command_pack_t{ command_e::GalvanicInvocation, player.position, player.position };
 			} else if (Keyboard::is_key_down(bindings::NecromanticAscendance)) {
 				player.command = command_pack_t{ command_e::NecromanticAscendance, player.position };
 			}
@@ -202,6 +205,9 @@ namespace necrowarp {
 			game_map.reset<zone_region_t::All>();
 			fluid_map.reset<zone_region_t::All>();
 
+			entity_registry.reset();
+			object_registry.reset();
+
 			constexpr map_cell_t open_state{ cell_trait_t::Open, cell_trait_t::Transperant, cell_trait_t::Seen, cell_trait_t::Explored };
 			constexpr map_cell_t closed_state{ cell_trait_t::Solid, cell_trait_t::Opaque, cell_trait_t::Seen, cell_trait_t::Explored };
 
@@ -262,6 +268,7 @@ namespace necrowarp {
 			);
 
 			entity_registry.recalculate_goal_map();
+			object_registry.recalculate_goal_map();
 
 			phase.transition(game_phase_t::Playing);
 
@@ -295,6 +302,10 @@ namespace necrowarp {
 
 			entity_registry.reset<ALL_NON_PLAYER>();
 			entity_registry.reset_goal_map<player_t>();
+
+			entity_registry.reset_alignment_goal_maps();
+
+			object_registry.reset();
 
 			constexpr map_cell_t open_state{ cell_trait_t::Open, cell_trait_t::Transperant, cell_trait_t::Seen, cell_trait_t::Explored };
 			constexpr map_cell_t closed_state{ cell_trait_t::Solid, cell_trait_t::Opaque, cell_trait_t::Seen, cell_trait_t::Explored };
@@ -363,6 +374,7 @@ namespace necrowarp {
 			);
 
 			entity_registry.recalculate_goal_map();
+			object_registry.recalculate_goal_map();
 
 			phase.transition(game_phase_t::Playing);
 
@@ -660,17 +672,12 @@ namespace necrowarp {
 		static inline void shutdown() noexcept {
 			Keyboard::terminate();
 			Mouse::terminate();
-
 #if defined (BLEAK_DEBUG)
-
 			message_log.flush_to_console();
 			error_log.flush_to_console();
-
 #else
-
 			message_log.flush_to_file();
 			error_log.flush_to_file();
-
 #endif
 		}
 

@@ -69,15 +69,17 @@ namespace necrowarp {
 		static constexpr i8 MaximumDamage{ 1 };
 
 		static constexpr std::array<entity_e, 4> EntityPriorities{
-			entity_e::Priest,
-			entity_e::Adventurer,
+			entity_e::Paladin,
 			entity_e::Mercenary,
-			entity_e::Paladin
+			entity_e::Adventurer,
+			entity_e::Priest,
 		};
 
 		inline bloodhound_t(offset_t position) noexcept : position{ position } {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+
+		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return target != entity_e::Paladin ? MaximumDamage : 0; }
 

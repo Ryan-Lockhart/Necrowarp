@@ -10,6 +10,7 @@
 #include <necrowarp/commands/binary/calcitic_invocation.tpp>
 #include <necrowarp/commands/binary/spectral_invocation.tpp>
 #include <necrowarp/commands/binary/sanguine_invocation.tpp>
+#include <necrowarp/commands/binary/galvanic_invocation.tpp>
 #include <necrowarp/commands/binary/exorcise.tpp>
 #include <necrowarp/commands/binary/resurrect.tpp>
 #include <necrowarp/commands/binary/anoint.tpp>

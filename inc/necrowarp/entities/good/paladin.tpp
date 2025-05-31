@@ -7,7 +7,7 @@
 
 namespace necrowarp {
 	inline command_pack_t paladin_t::think() const noexcept {
-		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
 			if (!entity_registry.contains<ALL_EVIL>(current_position)) {
@@ -28,6 +28,7 @@ namespace necrowarp {
 
 	inline void paladin_t::die() noexcept {
 		object_registry.add<true>(skull_t{ position });
+		object_registry.add<true>(metal_t{ position, galvanisation_e::Shimmering });
 
 		fluid_map[position] += fluid_type<paladin_t>::type;
 

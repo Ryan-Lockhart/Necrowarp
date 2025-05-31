@@ -8,7 +8,6 @@
 #include <necrowarp/entity_state.tpp>
 
 #include <necrowarp/entities/entity.tpp>
-
 #include <necrowarp/objects/object.tpp>
 
 namespace necrowarp {
@@ -28,7 +27,9 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
-			if (entity_registry.empty(position) && player.bypass_invocations_enabled()) {
+			const bool has_skull{ object_registry.contains<skull_t>(position) };
+
+			if (!has_skull && player.bypass_invocations_enabled()) {
 				++accumulated_skulls;
 
 				if (!is_exalted) {
@@ -38,7 +39,6 @@ namespace necrowarp {
 				continue;
 			}
 
-			const bool has_skull{ object_registry.contains<skull_t>(position) };
 			const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
 			if (!game_map.within<zone_region_t::Interior>(position) || (!has_skull && (eligible_ladder != nullptr || !has_ladder))) {
@@ -77,17 +77,24 @@ namespace necrowarp {
 
 		if (object_registry.contains<skull_t>(target_position)) {
 			const offset_t pos{ target_position };
+
 			const decay_e state{ object_registry.at<skull_t>(pos)->state };
 
 			object_registry.remove<skull_t>(pos);
 			++accumulated_skulls;
 
 			if (!is_exalted) {
-				if (!entity_registry.random_warp(target_position)) {
+				if (!entity_registry.random_warp(source_position)) {
 					player.bolster_armor(accumulated_skulls);
 				} else {
 					entity_registry.add<true>(skeleton_t{ pos, state });
 				}
+			}
+		} else if (player.bypass_invocations_enabled()) {
+			++accumulated_skulls;
+
+			if (!is_exalted) {
+				entity_registry.add<true>(skeleton_t{ target_position });
 			}
 		}
 
@@ -146,7 +153,7 @@ namespace necrowarp {
 		player.pay_cost(discount_e::CalciticInvocation);
 
 		if (!player.has_ascended()) {
-			if (accumulated_skulls == 8) {
+			if (accumulated_skulls == globals::MaximumCatalyst) {
 				// summon max amount of skeletons achievment placeholder : Next Stop: the Bone Zone
 			} else if (accumulated_skulls > 1) {
 				// summon first crew of skeletons achievment placeholder : Skeleton Crew
@@ -154,13 +161,19 @@ namespace necrowarp {
 
 			return;
 		}
-		
-		// summon exalted calcitic minion here
 
-		if (accumulated_skulls == 8) {
-			// summon exalted calcitic minion with max health achievment placeholder : ?
+		if (!entity_registry.random_warp(source_position)) {
+			player.bolster_armor(accumulated_skulls);
+
+			return;
+		}
+
+		entity_registry.add<true>(bonespur_t{ source_position, accumulated_skulls });
+
+		if (accumulated_skulls == globals::MaximumCatalyst) {
+			// summon bonespur with max health achievment placeholder : 28 STAB WOUNDS (SELF-INFLICTED)
 		} else if (accumulated_skulls > 1) {
-			// summon first exalted calcitic minion achievment placeholder : ?
+			// summon first bonespur achievment placeholder : Right to the Point
 		}
 	}
 } // namespace necrowarp

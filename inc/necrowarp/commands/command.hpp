@@ -12,8 +12,9 @@ namespace necrowarp {
 	struct none_t;
 
 	struct random_warp_t;
-	struct suicide_t;
 	struct necromantic_ascendance_t;
+	struct eviscerate_t;
+	struct suicide_t;
 
 	struct move_t;
 	struct descend_t;
@@ -85,6 +86,9 @@ namespace necrowarp {
 	#define ALL_BLOODHOUND_COMMANDS \
 		lunge_t
 	
+	#define ALL_WRAITH_COMMANDS \
+		eviscerate_t
+	
 	#define ALL_PRIEST_COMMANDS \
 		exorcise_t, \
 		resurrect_t, \
@@ -93,6 +97,7 @@ namespace necrowarp {
 	#define ALL_NPC_COMMANDS \
 		ALL_BASIC_COMMANDS, \
 		ALL_BLOODHOUND_COMMANDS, \
+		ALL_WRAITH_COMMANDS, \
 		ALL_PRIEST_COMMANDS
 	
 	#define ALL_PLAYER_COMMANDS \
@@ -106,6 +111,7 @@ namespace necrowarp {
 		Consume,
 		Clash,
 		Lunge,
+		Eviscerate,
 		RandomWarp,
 		TargetWarp,
 		ConsumeWarp,
@@ -152,6 +158,8 @@ namespace necrowarp {
 				return "clash";
 			} case command_e::Lunge: {
 				return "lunge";
+			} case command_e::Eviscerate: {
+				return "eviscerate";
 			} case command_e::RandomWarp: {
 				return "random warp";
 			} case command_e::TargetWarp: {

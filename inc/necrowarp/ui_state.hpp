@@ -822,8 +822,16 @@ namespace necrowarp {
 			}
 		};
 
+		static constexpr extent_t MinimapPixelSize{ 2, 2 };
+
+		static inline minimap_t<globals::MapSize, globals::BorderSize, MinimapPixelSize> minimap{
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() * globals::cell_size<grid_type_e::UI> }, cardinal_e::Southeast },
+			embedded_box_t{ colors::Black, { colors::White, 1 } },
+			extent_t{ 1, 1 }
+		};
+
 		static inline label_t tooltip_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() }, cardinal_e::Southeast },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() - offset_t{ 0, globals::MapSize.h } / 4 }, cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{},
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -877,7 +885,7 @@ namespace necrowarp {
 				return true;
 			}
 			
-			return player_statuses.is_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered());
+			return player_statuses.is_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || minimap.is_hovered();
 		}
 
 		static inline void update() noexcept {
@@ -1134,6 +1142,8 @@ namespace necrowarp {
 			if (!draw_cursor && show_tooltip) {
 				tooltip_label.draw(renderer);
 			}
+
+			minimap.draw(renderer);
 		}
 	};
 

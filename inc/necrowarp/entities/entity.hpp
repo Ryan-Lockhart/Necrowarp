@@ -14,11 +14,21 @@ namespace necrowarp {
 
 	struct player_t;
 
+	// lesser minions
+
 	struct skeleton_t;
 	struct cultist_t;
 	struct bloodhound_t;
+	struct animated_suit_t;
+
+	// exalted minions
+
+	struct bonespur_t;
 	struct wraith_t;
 	struct flesh_golem_t;
+	struct death_knight_t;
+
+	// do-gooders
 
 	struct adventurer_t;
 	struct mercenary_t;
@@ -29,8 +39,11 @@ namespace necrowarp {
 		skeleton_t, \
 		cultist_t, \
 		bloodhound_t, \
+		animated_suit_t, \
+		bonespur_t, \
 		wraith_t, \
-		flesh_golem_t
+		flesh_golem_t, \
+		death_knight_t
 	
 	#define ALL_EVIL \
 		player_t, \
@@ -59,8 +72,11 @@ namespace necrowarp {
 		Skeleton,
 		Cultist,
 		Bloodhound,
+		AnimatedSuit,
+		Bonespur,
 		Wraith,
 		FleshGolem,
+		DeathKnight,
 		Adventurer,
 		Mercenary,
 		Paladin,
@@ -79,10 +95,16 @@ namespace necrowarp {
 				return "cultist";
 			} case entity_e::Bloodhound: {
 				return "bloodhound";
+			} case entity_e::AnimatedSuit: {
+				return "animated suit of armor";
+			} case entity_e::Bonespur: {
+				return "bonespur";
 			} case entity_e::Wraith: {
 				return "wraith";
 			} case entity_e::FleshGolem: {
 				return "flesh golem";
+			} case entity_e::DeathKnight: {
+				return "death knight";
 			} case entity_e::Adventurer: {
 				return "adventurer";
 			} case entity_e::Mercenary: {
@@ -111,10 +133,16 @@ namespace necrowarp {
 				return runes_t{ string, colors::dark::Magenta };
 			} case entity_e::Bloodhound: {
 				return runes_t{ string, colors::materials::LightBlood };
+			} case entity_e::AnimatedSuit: {
+				return runes_t{ string, colors::metals::Tin };
+			} case entity_e::Bonespur: {
+				return runes_t{ string, colors::Marble };
 			} case entity_e::Wraith: {
 				return runes_t{ string, colors::light::Green };
 			} case entity_e::FleshGolem: {
 				return runes_t{ string, colors::materials::DarkBlood };
+			} case entity_e::DeathKnight: {
+				return runes_t{ string, colors::metals::Iron };
 			} case entity_e::Adventurer: {
 				return runes_t{ string, colors::metals::Bronze };
 			} case entity_e::Mercenary: {
@@ -139,9 +167,12 @@ namespace necrowarp {
 		Skeleton = Player << 1,
 		Cultist = Skeleton << 1,
 		Bloodhound = Cultist << 1,
-		Wraith = Bloodhound << 1,
+		AnimatedSuit = Bloodhound << 1,
+		Bonespur = AnimatedSuit << 1,
+		Wraith = Bonespur << 1,
 		FleshGolem = Wraith << 1,
-		Adventurer = FleshGolem << 1,
+		DeathKnight = FleshGolem << 1,
+		Adventurer = DeathKnight << 1,
 		Mercenary = Adventurer << 1,
 		Paladin = Mercenary << 1,
 		Priest = Paladin << 1

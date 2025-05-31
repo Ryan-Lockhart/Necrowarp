@@ -23,12 +23,12 @@ namespace necrowarp {
 
 		ptr<ladder_t> eligible_ladder{ nullptr };
 
-		for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
-			const bool no_ichor{ fluid_map[position] != fluid_type_e::Ichor };
+			const bool has_ichor{ fluid_map[position].contains(fluid_type_e::Ichor) };
 
-			if (no_ichor && player.bypass_invocations_enabled()) {
+			if (!has_ichor && player.bypass_invocations_enabled()) {
 				++pools_consumed;
 
 				if (!is_exalted) {
@@ -38,7 +38,6 @@ namespace necrowarp {
 				continue;
 			}
 
-			const bool has_ichor{ fluid_map[position].contains(fluid_type_e::Ichor) };
 			const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
 			if (!game_map.within<zone_region_t::Interior>(position) || (!has_ichor && (eligible_ladder != nullptr || !has_ladder))) {
@@ -81,21 +80,28 @@ namespace necrowarp {
 
 			if (!is_exalted) {
 				if (!entity_registry.random_warp(source_position)) {
-					player.bolster_armor(pools_consumed);
+					player.reinvigorate(pools_consumed);
+				} else {
+					entity_registry.add<true>(cultist_t{ pos });
+				}
+			}
+		} else if (player.bypass_invocations_enabled()) {
+			const offset_t pos{ target_position };
+			++pools_consumed;
+
+			if (!is_exalted) {
+				if (!entity_registry.random_warp(source_position)) {
+					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry.add<true>(cultist_t{ pos });
 				}
 			}
 		}
 
-		if (player.bypass_invocations_enabled()) {
-			pools_consumed = wraith_t::MaximumHealth;
-		}
-
 		steam_stats::stats<steam_stat_e::IchorConsumed, f32> += fluid_pool_volume(pools_consumed);
 
 		if (eligible_ladder == nullptr) {
-			for (crauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+			for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 
 				const bool has_ladder{ object_registry.contains<ladder_t>(position) };
@@ -147,7 +153,7 @@ namespace necrowarp {
 		player.pay_cost(discount_e::SpectralInvocation);
 
 		if (!player.has_ascended()) {
-			if (pools_consumed == 9) {
+			if (pools_consumed == globals::MaximumCatalyst) {
 				// summon max amount of cultists achievment placeholder : ?
 			} else if (pools_consumed > 1) {
 				// summon first squad of cultists achievment placeholder : ?
@@ -157,14 +163,14 @@ namespace necrowarp {
 		}
 
 		if (!entity_registry.random_warp(source_position)) {
-			player.bolster_armor(pools_consumed);
+			player.reinvigorate(pools_consumed);
 
 			return;
 		}
 
 		entity_registry.add<true>(wraith_t{ source_position, pools_consumed });
 
-		if (pools_consumed == 9) {
+		if (pools_consumed == globals::MaximumCatalyst) {
 			// summon first wraith achievment placeholder : Intersticial
 		} else {
 			// summon wraith with max heatlh achievment placeholder : Summoned from Beyond
