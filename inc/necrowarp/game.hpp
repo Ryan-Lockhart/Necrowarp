@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bleak/constants/bindings.hpp"
 #include <bleak.hpp>
 
 #include <cstdlib>
@@ -19,6 +18,7 @@
 #include <necrowarp/game_state.hpp>
 #include <necrowarp/ui_state.hpp>
 #include <necrowarp/globals.hpp>
+#include <necrowarp/scorekeeper.hpp>
 
 #include <magic_enum/magic_enum_all.hpp>
 
@@ -95,7 +95,7 @@ namespace necrowarp {
 		static inline bool character_input() noexcept {
 			player.command = command_pack_t{};
 
-			const bool inspect_objects{ Keyboard::is_key_pressed(bindings::InspectObjects) };
+			const bool ignore_objects{ Keyboard::is_key_pressed(bindings::IgnoreObjects) };
 
 			if (Keyboard::any_keys_pressed<2>(bindings::Wait)) {
 				player.command = command_pack_t{ command_e::None };
@@ -105,7 +105,7 @@ namespace necrowarp {
 				player.command = command_pack_t{ command_e::RandomWarp, player.position };
 			} else if (Keyboard::is_key_down(bindings::TargetWarp)) {
 				player.command = command_pack_t{
-					!entity_registry.empty(grid_cursor.get_position()) || (inspect_objects && !object_registry.empty(grid_cursor.get_position())) ?
+					!entity_registry.empty(grid_cursor.get_position()) || (!ignore_objects && !object_registry.empty(grid_cursor.get_position())) ?
 						command_e::ConsumeWarp :
 						command_e::TargetWarp,
 					player.position,
@@ -150,7 +150,7 @@ namespace necrowarp {
 					return false;
 				}
 
-				const command_e command_type{ !entity_registry.empty(target_position) || (inspect_objects && !object_registry.empty(target_position)) ? player.clash_or_consume(target_position) : command_e::Move };
+				const command_e command_type{ !entity_registry.empty(target_position) || (!ignore_objects && !object_registry.empty(target_position)) ? player.clash_or_consume(target_position) : command_e::Move };
 
 				player.command = command_pack_t{ command_type, player.position, target_position };
 
@@ -192,9 +192,12 @@ namespace necrowarp {
 
 		static inline void load() noexcept {
 			game_stats.reset();
+
+			scorekeeper.reset();
+
 			reset_patrons();
 
-			player.set_patron(desired_patron);
+			player.patron = desired_patron;
 
 			game_stats.cheats.activate();
 
@@ -233,6 +236,14 @@ namespace necrowarp {
 					if (area != largest_area) {
 						area.apply(game_map, cell_trait_t::Solid);
 					}
+				}
+			}
+
+			for (offset_t::scalar_t y{ 0 }; y < globals::MapSize.h; ++y) {
+				for (offset_t::scalar_t x{ 0 }; x < globals::MapSize.w; ++x) {
+					const offset_t pos{ x, y };
+
+					game_map[pos].recalculate_index(game_map, pos, cell_trait_t::Solid);
 				}
 			}
 
@@ -280,22 +291,28 @@ namespace necrowarp {
 			terminate_process_turn();
 
 			randomize_patrons();
-
 #if !defined(STEAMLESS)
 			steam_stats::store();
 
 			stat_store_timer.record();
 #endif
-
 			descent_flag = false;
 
 			++game_stats.game_depth;
-
 #if !defined(STEAMLESS)
 			if (steam_stats_s::stats<steam_stat_e::LowestDepth, i32>.get_value() > -static_cast<i32>(game_stats.game_depth)) {
 				steam_stats_s::stats<steam_stat_e::LowestDepth, i32> = -static_cast<i32>(game_stats.game_depth);
 			}
 #endif
+			ladder_positions.clear();
+
+			for (crauto ladder : object_storage<ladder_t>) {
+				if (ladder.is_up_ladder()) {
+					continue;
+				}
+
+				ladder_positions.push_back(ladder.position);
+			}
 
 			game_map.reset<zone_region_t::All>();
 			fluid_map.reset<zone_region_t::All>();
@@ -319,7 +336,8 @@ namespace necrowarp {
 					globals::map_config.fill_percent,
 					globals::map_config.automata_iterations,
 					globals::map_config.automata_threshold,
-					cell_applicator
+					cell_applicator,
+					ladder_positions
 				)
 				.collapse<zone_region_t::Interior>(cell_trait_t::Solid, 0x00, cell_trait_t::Open);
 
@@ -332,6 +350,14 @@ namespace necrowarp {
 					if (area != largest_area) {
 						area.apply(game_map, cell_trait_t::Solid);
 					}
+				}
+			}
+
+			for (offset_t::scalar_t y{ 0 }; y < globals::MapSize.h; ++y) {
+				for (offset_t::scalar_t x{ 0 }; x < globals::MapSize.w; ++x) {
+					const offset_t pos{ x, y };
+
+					game_map[pos].recalculate_index(game_map, pos, cell_trait_t::Solid);
 				}
 			}
 
@@ -352,12 +378,27 @@ namespace necrowarp {
 			
 			good_goal_map.add(player.position);
 
-			object_registry.spawn<ladder_t>(
-				static_cast<usize>(globals::map_config.number_of_up_ladders),
-				static_cast<u32>(globals::map_config.minimum_ladder_distance),
+			i16 num_up_ladders_needed{ globals::map_config.number_of_up_ladders };
 
-				verticality_t::Up
-			);
+			while (!ladder_positions.empty()) {
+				cauto position{ ladder_positions.back() };
+				ladder_positions.pop_back();
+
+				if (game_map[position].solid || !entity_registry.empty(position) || !object_registry.empty(position) || !object_registry.add(ladder_t{ position, verticality_t::Up })) {
+					continue;
+				}
+
+				--num_up_ladders_needed;
+			}
+
+			if (num_up_ladders_needed > 0) {
+				object_registry.spawn<ladder_t>(
+					static_cast<usize>(num_up_ladders_needed),
+					static_cast<u32>(globals::map_config.minimum_ladder_distance),
+
+					verticality_t::Up
+				);
+			}
 
 			object_registry.spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_down_ladders),
@@ -415,6 +456,9 @@ namespace necrowarp {
 					case game_phase_t::Playing:
 						phase.transition(game_phase_t::Paused);
 						break;
+					case game_phase_t::Paused:
+						phase.transition(game_phase_t::Playing);
+						break;
 					case game_phase_t::Loading:
 						break;
 					default:
@@ -425,10 +469,6 @@ namespace necrowarp {
 
 			if (phase.current_phase != game_phase_t::Playing) {
 				return;
-			}
-
-			if (Keyboard::is_key_down(bindings::RevealMap)) {
-				game_map.apply<zone_region_t::All>(cell_trait_t::Explored);
 			}
 
 			if (processing_turn) {
@@ -469,9 +509,25 @@ namespace necrowarp {
 				return false;
 			}
 
-			static std::uniform_int_distribution<u16> spawn_distribution{ globals::SpawnDistributionLow, globals::SpawnDistributionHigh };
+			const u8 spawn_chance{ static_cast<u8>(globals::spawn_dis(random_engine)) };
 
-			const u8 spawn_chance{ static_cast<u8>(spawn_distribution(random_engine)) };
+			if constexpr (globals::OopsAllAdventurers) {
+				entity_registry.add<true>(adventurer_t{ spawn_pos.value() });
+
+				return true;
+			}
+
+			if constexpr (globals::OopsAllMercenaries) {
+				entity_registry.add<true>(mercenary_t{ spawn_pos.value() });
+
+				return true;
+			}
+
+			if constexpr (globals::OopsAllPaladins) {
+				entity_registry.add<true>(paladin_t{ spawn_pos.value() });
+
+				return true;
+			}
 
 			if constexpr (globals::OopsAllPriests) {
 				entity_registry.add<true>(priest_t{ spawn_pos.value() });
@@ -485,7 +541,7 @@ namespace necrowarp {
 				} else if (spawn_chance < 98) {
 					entity_registry.add<true>(paladin_t{ spawn_pos.value() }); // 16%
 				} else {
-					entity_registry.add<true>(priest_t{ spawn_pos.value() }); // 4%
+					entity_registry.add<true>(priest_t{ spawn_pos.value() }); // 2%
 				}
 			} else if (game_stats.wave_size >= globals::HugeWaveSize) {
 				if (spawn_chance < 50) {
@@ -495,7 +551,7 @@ namespace necrowarp {
 				} else if (spawn_chance < 98) {
 					entity_registry.add<true>(paladin_t{ spawn_pos.value() }); // 8%
 				} else {
-					entity_registry.add<true>(priest_t{ spawn_pos.value() }); // 4%
+					entity_registry.add<true>(priest_t{ spawn_pos.value() }); // 2%
 				}
 			} else if (game_stats.wave_size >= globals::LargeWaveSize) {
 				if (spawn_chance < 70) {
@@ -639,8 +695,8 @@ namespace necrowarp {
 					renderer.draw_fill_rect(rect_t{ offset_t{ 0, globals::window_size.h - excess_size.h - 1 }, extent_t{ globals::window_size.w, excess_size.h } }, color_t { 0xC0 });
 				}
 
-				game_map.draw(game_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
-				fluid_map.draw(game_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
+				game_map.draw(tile_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
+				fluid_map.draw(tile_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 
 				object_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
 				entity_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
@@ -657,6 +713,7 @@ namespace necrowarp {
 			game_map.reset<zone_region_t::All>();
 			
 			entity_registry.reset();
+			object_registry.reset();
 
 #if !defined(STEAMLESS)
 			steam_stats::store();
@@ -670,6 +727,8 @@ namespace necrowarp {
 		}
 
 		static inline void shutdown() noexcept {
+			terminate_process_turn();
+
 			Keyboard::terminate();
 			Mouse::terminate();
 #if defined (BLEAK_DEBUG)

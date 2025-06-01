@@ -468,6 +468,8 @@ namespace necrowarp {
 		command_pack_t command;
 		offset_t position;
 
+		patron_e patron;
+
 		static constexpr i8 MinimumEnergy{ 4 };
 		static constexpr i8 MaximumEnergy{ 24 };
 
@@ -519,8 +521,6 @@ namespace necrowarp {
 		i8 energy;
 		i8 armor;
 		i8 divinity;
-
-		patron_e patron;
 
 		inline void set_energy(i8 value) noexcept {
 			if (!game_stats.cheats.is_enabled() || !game_stats.cheats.energy.is_enabled()) {
@@ -592,16 +592,6 @@ namespace necrowarp {
 
 		inline discount_type_e get_discount_type(i8 value) const noexcept {
 			return value == 0 ? discount_type_e::Placebo : value < 0 ? discount_type_e::Malus : discount_type_e::Boon;
-		}
-
-		inline patron_e get_patron() const noexcept { return patron; }
-
-		inline void set_patron(patron_e value) noexcept {
-			if (static_cast<i32>(value) < static_cast<i32>(patron_e::None) || static_cast<i32>(value) > static_cast<i32>(patron_e::Saeiligarkeuss)) {
-				return;
-			}
-
-			patron = value;
 		}
 
 		inline bool has_energy() const noexcept { return energy > 0; }
@@ -734,13 +724,13 @@ namespace necrowarp {
 
 		inline glyph_t current_glyph() const noexcept { return !has_armor() ? entity_glyphs<player_t> : glyphs::ArmoredPlayer; }
 
-		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
+		inline void draw() const noexcept { entity_atlas.draw(current_glyph(), position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + offset); }
+		inline void draw(offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position + offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
+		inline void draw(cref<camera_t> camera) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Player; }
 	};

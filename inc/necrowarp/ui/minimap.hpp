@@ -30,7 +30,7 @@ namespace necrowarp {
 		constexpr bool is_hovered(offset_t position) const noexcept { return Mouse::is_inside(apply_padding(position), external_size()); }
 
 		constexpr void draw(ref<renderer_t> renderer, offset_t position) const noexcept {
-			renderer.draw_composite_rect(rect_t{ apply_padding(position), external_size() }, box.background, box.border.color, box.border.thickness);
+			renderer.draw_composite_rect(rect_t{ apply_padding(position), external_size() }, box.background, box.border.color, box.border.thickness * globals::cell_size<grid_type_e::UI>.w);
 			
 			for (extent_t::scalar_t y{ 0 }; y < ZoneSize.h; ++y) {
 				for (extent_t::scalar_t x{ 0 }; x < ZoneSize.w; ++x) {
@@ -39,19 +39,19 @@ namespace necrowarp {
 
 					const color_t pixel_color{ [&]() -> color_t {
 						if (entity_registry.contains<player_t>(pos)) {
-							return colors::light::Magenta;
+							return colors::Magenta;
 						} else if (entity_registry.contains<ALL_EVIL_NPCS>(pos)) {
-							return colors::light::Green;
+							return colors::Green;
 						} else if (entity_registry.contains<ALL_GOOD_NPCS>(pos)) {
-							return colors::light::Red;
+							return colors::Red;
 						} else if (object_registry.contains(pos)) {
-							return colors::light::Blue;
+							return colors::Blue;
 						} else if (game_map[pos].solid) {
-							return colors::Marble;
+							return colors::Charcoal;
 						} else if (!fluid_map[pos].contains(fluid_type_e::None)) {
 							return fluid_color(static_cast<fluid_type_e>(fluid_map[pos]));
 						} else {
-							return colors::Charcoal;
+							return colors::Marble;
 						}
 					}()};
 

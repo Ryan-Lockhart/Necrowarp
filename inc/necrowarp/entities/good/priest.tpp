@@ -5,6 +5,8 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
+#include <necrowarp/scorekeeper.hpp>
+
 namespace necrowarp {
 	inline command_pack_t priest_t::think() const noexcept {
 		if (!can_resurrect() && !can_anoint() && object_registry.empty<skull_t>()) {
@@ -100,5 +102,7 @@ namespace necrowarp {
 		fluid_map[position] += fluid_type<priest_t>::type;
 
 		++steam_stats::stats<steam_stat_e::PriestsSlain, i32>;
+
+		scorekeeper.add(entity_e::Priest);
 	}
 } // namespace necrowarp

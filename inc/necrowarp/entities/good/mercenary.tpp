@@ -5,6 +5,8 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
+#include <necrowarp/scorekeeper.hpp>
+
 namespace necrowarp {
 	inline command_pack_t mercenary_t::think() const noexcept {
 		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
@@ -33,5 +35,7 @@ namespace necrowarp {
 		fluid_map[position] += fluid_type<mercenary_t>::type;
 
 		++steam_stats::stats<steam_stat_e::MercenariesSlain, i32>;
+
+		scorekeeper.add(entity_e::Mercenary);
 	}
 } // namespace necrowarp

@@ -179,12 +179,6 @@ namespace necrowarp {
 		
 		static inline extent_t window_size{ 1920, 1080 };
 
-		template<grid_type_e GridType> static constexpr cstr atlas_path{};
-
-		template<> inline constexpr cstr atlas_path<grid_type_e::UI>{ "res/gfx/glyphs/glyphs_8x8.png" };
-		template<> inline constexpr cstr atlas_path<grid_type_e::Game>{ "res/gfx/tiles/tileset_64x64.png" };
-		template<> inline constexpr cstr atlas_path<grid_type_e::Icon>{ "res/gfx/icons/icons_32x32.png" };
-
 		template<grid_type_e GridType> static constexpr extent_t cell_size{};
 
 		template<> inline constexpr extent_t cell_size<grid_type_e::UI>{ 8, 8 };
@@ -220,7 +214,10 @@ namespace necrowarp {
 		}
 
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
-		static constexpr extent_t TilesetSize{ 16, 4 };
+
+		static constexpr extent_t TilesetSize{ 16, 2 };
+		static constexpr extent_t EntitysetSize{ 16, 2 };
+
 		static constexpr extent_t IconsetSize{ 2, 4 };
 
 		static constexpr distance_function_t DistanceFunction{ distance_function_t::Octile };
@@ -304,8 +301,16 @@ namespace necrowarp {
 
 		static inline map_config_t map_config{ CavernPreset };
 
-		constexpr i16 SpawnDistributionLow{ 0 };
-		constexpr i16 SpawnDistributionHigh{ 99 };
+		constexpr i16 MinimumDepth{ 0 };
+		constexpr i16 MaximumDepth{ 999 };
+
+		constexpr f32 MinimumDepthMultiplier{ 1.0f };
+		constexpr f32 MaximumDepthMultiplier{ 10.0f };
+
+		constexpr u16 SpawnDistributionLow{ 0 };
+		constexpr u16 SpawnDistributionHigh{ 99 };
+
+		static inline std::uniform_int_distribution<u16> spawn_dis{ SpawnDistributionLow, SpawnDistributionHigh };
 
 		constexpr i16 SmallWaveSize{ 8 };
 		constexpr i16 MediumWaveSize{ 16 };
@@ -315,6 +320,9 @@ namespace necrowarp {
 
 		constexpr i16 MinimumWaveSize{ 4 };
 		constexpr i16 MaximumWaveSize{ 128 };
+
+		constexpr f32 MinimumWaveSizeMultiplier{ 0.5f };
+		constexpr f32 MaximumWaveSizeMultiplier{ 2.0f };
 
 		constexpr i16 KillsPerPopulation{ 8 };
 
@@ -337,9 +345,10 @@ namespace necrowarp {
 
 		static inline std::uniform_real_distribution<f32> fluid_pool_dis{ FluidPoolMinimumVolume, FluidPoolMaximumVolume };
 
+		constexpr bool OopsAllAdventurers{ false };
+		constexpr bool OopsAllMercenaries{ false };
+		constexpr bool OopsAllPaladins{ false };
 		constexpr bool OopsAllPriests{ false };
-
-		constexpr offset_t CursorOffset{ -4 };
 
 		template<typename T> struct has_unique_descriptor {
 			static constexpr bool value = false;

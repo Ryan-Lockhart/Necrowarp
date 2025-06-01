@@ -90,13 +90,13 @@ namespace necrowarp {
 		inline void draw_shackle(offset_t pos) const noexcept {
 			switch (shackle) {
 				case shackle_type_t::Calcitic: {
-					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos);
+					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos);
 					return;
 				} case shackle_type_t::Spectral: {
-					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos);
+					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos);
 					return;
 				} case shackle_type_t::Sanguine: {
-					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos);
+					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos);
 					return;
 				} default: {
 					return;
@@ -107,13 +107,13 @@ namespace necrowarp {
 		inline void draw_shackle(offset_t pos, offset_t offset) const noexcept {
 			switch (shackle) {
 				case shackle_type_t::Calcitic: {
-					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos, offset);
+					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos, offset);
 					return;
 				} case shackle_type_t::Spectral: {
-					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos, offset);
+					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos, offset);
 					return;
 				} case shackle_type_t::Sanguine: {
-					game_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos, offset);
+					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos, offset);
 					return;
 				} default: {
 					return;
@@ -197,7 +197,7 @@ namespace necrowarp {
 		};
 
 		inline void draw() const noexcept {
-			game_atlas.draw(current_glyph(), position);
+			entity_atlas.draw(current_glyph(), position);
 
 			if (!has_shackle()) {
 				return;
@@ -207,7 +207,7 @@ namespace necrowarp {
 		}
 
 		inline void draw(offset_t offset) const noexcept {
-			game_atlas.draw(current_glyph(), position, offset);
+			entity_atlas.draw(current_glyph(), position, offset);
 
 			if (!has_shackle()) {
 				return;
@@ -219,7 +219,7 @@ namespace necrowarp {
 		inline void draw(cref<camera_t> camera) const noexcept {
 			const offset_t pos{ position + camera.get_offset() };
 
-			game_atlas.draw(current_glyph(), pos);
+			entity_atlas.draw(current_glyph(), pos);
 
 			if (!has_shackle()) {
 				return;
@@ -231,7 +231,7 @@ namespace necrowarp {
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept {
 			const offset_t pos{ position + camera.get_offset() };
 
-			game_atlas.draw(current_glyph(), pos, offset);
+			entity_atlas.draw(current_glyph(), pos, offset);
 
 			if (!has_shackle()) {
 				return;

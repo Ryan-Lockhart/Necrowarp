@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bleak/constants/characters.hpp"
 #include <bleak.hpp>
 
 #include <bit>
@@ -255,7 +254,8 @@ namespace necrowarp {
 		bool opaque : 1 { false };
 		bool seen : 1 { false };
 		bool explored : 1 { false };
-		bool : 4;
+
+		u8 index: 4 { 0 };
 
 		constexpr map_cell_t() noexcept = default;
 
@@ -429,7 +429,12 @@ namespace necrowarp {
 		}
 
 		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr u8 determine_patch(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, u8 index) const noexcept {
+		inline constexpr void recalculate_index(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, cell_trait_t trait) noexcept {
+			index = zone.template calculate_index<neighbourhood_solver_t::Melded>(position, trait);
+		}
+
+		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr u8 determine_patch(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (zone.on_y_edge(position)) {
 				return 0;
 			}
@@ -452,7 +457,7 @@ namespace necrowarp {
 				}
 			}
 
-			const u8 north_index{ zone.template calculate_index<neighbourhood_solver_t::Melded>(position + offset_t::North, cell_trait_t::Solid) };
+			const u8 north_index{ zone[position + offset_t::North].index };
 
 			if (north_index == 1 || north_index == 2 || north_index == 6 || north_index == 9) {
 				return 0;
@@ -469,18 +474,13 @@ namespace necrowarp {
 			return 0;
 		}
 
-		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr u8 determine_patch(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
-			return determine_patch(zone, position, zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid));
-		}
-
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, u8 index) const noexcept {
+		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (!explored) {
 				return;
 			}
 
-			const u8 patch_character{ determine_patch(zone, position, index) };
+			const u8 patch_character{ determine_patch(zone, position) };
 			
 			if (!patch_character) {
 				return;
@@ -503,20 +503,18 @@ namespace necrowarp {
 				return;
 			}
 
-			const u8 index{ zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid) };
-
 			atlas.draw(glyph_t{ index, color_t{ 0xC0, alpha } }, position);
 
-			//draw_patch(atlas, zone, position, index);
+			draw_patch(atlas, zone, position);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, u8 index) const noexcept {
+		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
 			if (!explored) {
 				return;
 			}
 
-			const u8 patch_character{ determine_patch(zone, position, index) };
+			const u8 patch_character{ determine_patch(zone, position) };
 			
 			if (!patch_character) {
 				return;
@@ -539,20 +537,18 @@ namespace necrowarp {
 				return;
 			}
 
-			const u8 index{ zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid) };
-
 			atlas.draw(glyph_t{ index, color_t{ 0xC0, alpha } }, position + offset);
 
-			draw_patch(atlas, zone, position, offset, index);
+			draw_patch(atlas, zone, position, offset);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge, u8 index) const noexcept {
+		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
 			if (!explored) {
 				return;
 			}
 
-			const u8 patch_character{ determine_patch(zone, position, index) };
+			const u8 patch_character{ determine_patch(zone, position) };
 			
 			if (!patch_character) {
 				return;
@@ -575,11 +571,9 @@ namespace necrowarp {
 				return;
 			}
 
-			const u8 index{ zone.template calculate_index<neighbourhood_solver_t::Melded>(position, cell_trait_t::Solid) };
-
 			atlas.draw(glyph_t{ index, color_t{ 0xC0, alpha } }, position + offset, nudge);
 
-			draw_patch(atlas, zone, position, offset, nudge, index);
+			draw_patch(atlas, zone, position, offset, nudge);
 		}
 
 		struct hasher {

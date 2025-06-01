@@ -5,6 +5,8 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
+#include <necrowarp/scorekeeper.hpp>
+
 namespace necrowarp {
 	inline command_pack_t adventurer_t::think() const noexcept {
 		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
@@ -34,5 +36,7 @@ namespace necrowarp {
 		player.receive_death_boon<adventurer_t>();
 
 		++steam_stats::stats<steam_stat_e::AdventurersSlain, i32>;
+
+		scorekeeper.add(entity_e::Adventurer);
 	}
 } // namespace necrowarp
