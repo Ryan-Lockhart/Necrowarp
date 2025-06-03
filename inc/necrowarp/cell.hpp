@@ -433,6 +433,12 @@ namespace necrowarp {
 			index = zone.template calculate_index<neighbourhood_solver_t::Melded>(position, trait);
 		}
 
+		inline glyph_t floor_glyph() const noexcept { return glyph_t{ characters::Floor, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
+
+		inline glyph_t wall_glyph() const noexcept { return glyph_t{ index, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
+
+		inline glyph_t patch_glyph(u8 idx) const noexcept { return glyph_t{ idx, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
+
 		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr u8 determine_patch(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (zone.on_y_edge(position)) {
@@ -486,7 +492,7 @@ namespace necrowarp {
 				return;
 			}
 
-			atlas.draw(glyph_t{ patch_character, color_t{ 0xC0, seen ? u8{ 0xFF } : u8{ 0x80 } } }, position);
+			atlas.draw(patch_glyph(patch_character), position);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
@@ -495,15 +501,13 @@ namespace necrowarp {
 				return;
 			}
 
-			const u8 alpha{ seen ? u8{ 0xFF } : u8{ 0x80 } };
-
-			atlas.draw(glyph_t{ characters::Floor, color_t{ 0x40, alpha } }, position);
+			atlas.draw(floor_glyph(), position);
 
 			if (!solid) {
 				return;
 			}
 
-			atlas.draw(glyph_t{ index, color_t{ 0xC0, alpha } }, position);
+			atlas.draw(wall_glyph(), position);
 
 			draw_patch(atlas, zone, position);
 		}
@@ -520,7 +524,7 @@ namespace necrowarp {
 				return;
 			}
 
-			atlas.draw(glyph_t{ patch_character, color_t{ 0xC0, seen ? u8{ 0xFF } : u8{ 0x80 } } }, position + offset);
+			atlas.draw(patch_glyph(patch_character), position + offset);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
@@ -529,15 +533,13 @@ namespace necrowarp {
 				return;
 			}
 
-			const u8 alpha{ seen ? u8{ 0xFF } : u8{ 0x80 } };
-
-			atlas.draw(glyph_t{ characters::Floor, color_t{ 0x40, alpha } }, position + offset);
+			atlas.draw(floor_glyph(), position + offset);
 
 			if (!solid) {
 				return;
 			}
 
-			atlas.draw(glyph_t{ index, color_t{ 0xC0, alpha } }, position + offset);
+			atlas.draw(wall_glyph(), position + offset);
 
 			draw_patch(atlas, zone, position, offset);
 		}
@@ -554,7 +556,7 @@ namespace necrowarp {
 				return;
 			}
 
-			atlas.draw(glyph_t{ patch_character, color_t{ 0xC0, seen ? u8{ 0xFF } : u8{ 0x80 } } }, position + offset, nudge);
+			atlas.draw(patch_glyph(patch_character), position + offset, nudge);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
@@ -563,15 +565,13 @@ namespace necrowarp {
 				return;
 			}
 
-			const u8 alpha{ seen ? u8{ 0xFF } : u8{ 0x80 } };
-
-			atlas.draw(glyph_t{ characters::Floor, color_t{ 0x40, alpha } }, position + offset, nudge);
+			atlas.draw(floor_glyph(), position + offset, nudge);
 
 			if (!solid) {
 				return;
 			}
 
-			atlas.draw(glyph_t{ index, color_t{ 0xC0, alpha } }, position + offset, nudge);
+			atlas.draw(wall_glyph(), position + offset, nudge);
 
 			draw_patch(atlas, zone, position, offset, nudge);
 		}

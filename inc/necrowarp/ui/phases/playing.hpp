@@ -286,7 +286,7 @@ namespace necrowarp {
 						"Minion Kills: {:4}\n\n"
 						"Player Kills: {:4}\n\n\n"
 						"Total Kills:  {:4}\n\n\n"
-						"Score:  {:.1f} (x{:2.1f})\n\n\n"
+						"Score:  {} (x{:2.1f})\n\n\n"
 						"    Depth: {:3}    ",
 						
 						game_stats.minion_kills,

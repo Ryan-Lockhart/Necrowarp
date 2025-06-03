@@ -65,7 +65,7 @@ namespace necrowarp {
 			);
 		}
 
-		inline f32 get_score() const noexcept { return score; }
+		inline isize get_score() const noexcept { return static_cast<isize>(std::ceilf(score)); }
 
 		inline void add(isize value) noexcept {
 			value *= current_multiplier();

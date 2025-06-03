@@ -37,8 +37,6 @@ namespace necrowarp {
 				if (!is_exalted) {
 					entity_registry.add<true>(animated_suit_t{ position, galvanisation_e::Writhing });
 				}
-
-				continue;
 			}
 
 			const bool has_ladder{ object_registry.contains<ladder_t>(position) };
@@ -64,13 +62,13 @@ namespace necrowarp {
 				eligible_ladder = object_registry.at<ladder_t>(position);
 
 				switch (eligible_ladder->shackle) {
-					case shackle_type_t::None: {
+					case shackle_e::None: {
 						if (eligible_ladder->is_down_ladder()) {
 							eligible_ladder = nullptr;
 						}
 						break;
 					} default: {
-						if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_type_t::Spectral) {
+						if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_e::Galvanic) {
 							eligible_ladder = nullptr;
 						}
 						break;
@@ -80,8 +78,6 @@ namespace necrowarp {
 		}
 
 		if (object_registry.contains<metal_t>(target_position)) {
-			const offset_t pos{ target_position };
-
 			const galvanisation_e state{ object_registry.at<metal_t>(target_position)->state };
 
 			object_registry.remove<metal_t>(target_position);
@@ -90,10 +86,10 @@ namespace necrowarp {
 			aggregate_quality += static_cast<u8>(state) + 1;
 
 			if (!is_exalted) {
-				if (!entity_registry.random_warp(source_position)) {
+				if (source_position == target_position && !entity_registry.random_warp(source_position)) {
 					player.bolster_armor(metal_consumed);
 				} else {
-					entity_registry.add<true>(animated_suit_t{ pos, triflip(random_engine) ? galvanise(state) : state });
+					entity_registry.add<true>(animated_suit_t{ target_position, triflip(random_engine) ? galvanise(state) : state });
 				}
 			}
 		} else if (player.bypass_invocations_enabled()) {
@@ -101,7 +97,7 @@ namespace necrowarp {
 			aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
 
 			if (!is_exalted) {
-				if (!entity_registry.random_warp(source_position)) {
+				if (source_position == target_position && !entity_registry.random_warp(source_position)) {
 					player.bolster_armor(metal_consumed);
 				} else {
 					entity_registry.add<true>(animated_suit_t{ target_position, galvanisation_e::Writhing });
@@ -111,7 +107,7 @@ namespace necrowarp {
 
 		steam_stats::stats<steam_stat_e::MetalConsumed, i32> += metal_consumed;
 
-		if (eligible_ladder == nullptr) {
+		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 
@@ -125,13 +121,13 @@ namespace necrowarp {
 					eligible_ladder = object_registry.at<ladder_t>(position);
 
 					switch (eligible_ladder->shackle) {
-						case shackle_type_t::None: {
+						case shackle_e::None: {
 							if (eligible_ladder->is_down_ladder()) {
 								eligible_ladder = nullptr;
 							}
 							break;
 						} default: {
-							if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_type_t::Spectral) {
+							if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_e::Galvanic) {
 								eligible_ladder = nullptr;
 							}
 							break;
@@ -151,7 +147,7 @@ namespace necrowarp {
 
 				// unshackle first eldritch shackle achievment placeholder : A Chilling Draft
 			} else {
-				eligible_ladder->enshackle(shackle_type_t::Spectral);
+				eligible_ladder->enshackle(shackle_e::Galvanic);
 
 				// eldritch enshackle first ladder achievment placeholder : Isn't it incorporeal?
 			}

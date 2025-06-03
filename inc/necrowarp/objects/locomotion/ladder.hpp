@@ -2,6 +2,8 @@
 
 #include <necrowarp/objects/object.hpp>
 
+#include <random>
+
 #include <necrowarp/game_state.hpp>
 
 namespace necrowarp {
@@ -50,53 +52,66 @@ namespace necrowarp {
 		}
 	}
 
-	enum class shackle_type_t : u8 {
+	enum class shackle_e : u8 {
 		None,
 		Calcitic,
 		Spectral,
-		Sanguine
+		Sanguine,
+		Galvanic
 	};
 
-	constexpr cstr to_string(shackle_type_t type) noexcept {
+	constexpr cstr to_string(shackle_e type) noexcept {
 		switch (type) {
-			case shackle_type_t::Calcitic: {
+			case shackle_e::Calcitic: {
 				return "spooky shackle";
-			} case shackle_type_t::Spectral: {
+			} case shackle_e::Spectral: {
 				return "eldritch shackle";
-			} case shackle_type_t::Sanguine: {
+			} case shackle_e::Sanguine: {
 				return "bloody shackle";
+			} case shackle_e::Galvanic: {
+				return "glimmering shackle";
 			} default: {
 				return "unshackled";
 			}
 		}
 	}
 
-	constexpr runes_t to_colored_string(shackle_type_t type) noexcept {
+	constexpr runes_t to_colored_string(shackle_e type) noexcept {
+		const cstr string{ to_string(type) };
 		switch (type) {
-			case shackle_type_t::Calcitic: {
-				return runes_t{ to_string(type), colors::metals::shackles::Calcitic };
-			} case shackle_type_t::Spectral: {
-				return runes_t{ to_string(type), colors::metals::shackles::Spectral };
-			}case shackle_type_t::Sanguine: {
-				return runes_t{ to_string(type), colors::metals::shackles::Sanguine };
+			case shackle_e::Calcitic: {
+				return runes_t{ string, colors::metals::shackles::Calcitic };
+			} case shackle_e::Spectral: {
+				return runes_t{ string, colors::metals::shackles::Spectral };
+			} case shackle_e::Sanguine: {
+				return runes_t{ string, colors::metals::shackles::Sanguine };
+			} case shackle_e::Galvanic: {
+				return runes_t{ string, colors::metals::shackles::Galvanic };
 			} default: {
-				return runes_t{ to_string(type), colors::metals::Iron };
+				return runes_t{ string, colors::metals::Iron };
 			}
 		}
 	}
+
+	static inline std::uniform_int_distribution<u16> shackle_dis{ static_cast<u16>(shackle_e::Calcitic), static_cast<u16>(shackle_e::Galvanic) };
+
+	template<RandomEngine Generator> static inline shackle_e random_shackle(ref<Generator> generator) noexcept { return static_cast<shackle_e>(shackle_dis(generator)); }
 
 	struct ladder_t {
 	  private:
 		inline void draw_shackle(offset_t pos) const noexcept {
 			switch (shackle) {
-				case shackle_type_t::Calcitic: {
+				case shackle_e::Calcitic: {
 					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos);
 					return;
-				} case shackle_type_t::Spectral: {
+				} case shackle_e::Spectral: {
 					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos);
 					return;
-				} case shackle_type_t::Sanguine: {
+				} case shackle_e::Sanguine: {
 					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos);
+					return;
+				} case shackle_e::Galvanic: {
+					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Galvanic }, pos);
 					return;
 				} default: {
 					return;
@@ -106,14 +121,17 @@ namespace necrowarp {
 
 		inline void draw_shackle(offset_t pos, offset_t offset) const noexcept {
 			switch (shackle) {
-				case shackle_type_t::Calcitic: {
+				case shackle_e::Calcitic: {
 					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos, offset);
 					return;
-				} case shackle_type_t::Spectral: {
+				} case shackle_e::Spectral: {
 					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos, offset);
 					return;
-				} case shackle_type_t::Sanguine: {
+				} case shackle_e::Sanguine: {
 					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos, offset);
+					return;
+				} case shackle_e::Galvanic: {
+					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Galvanic }, pos, offset);
 					return;
 				} default: {
 					return;
@@ -125,29 +143,23 @@ namespace necrowarp {
 		offset_t position;
 		
 		verticality_t verticality;
-		shackle_type_t shackle;
+		shackle_e shackle;
 
-		inline ladder_t(offset_t position) noexcept : position{ position }, verticality{ verticality_t::Up }, shackle{ shackle_type_t::None } {}
+		inline ladder_t(offset_t position) noexcept : position{ position }, verticality{ verticality_t::Up }, shackle{ shackle_e::None } {}
 
 		inline ladder_t(offset_t position, verticality_t verticality, bool random = false) noexcept :
 			position{ position },
 			verticality{ verticality },
-			shackle{
-				[random]() -> shackle_type_t {
-					return random ?
-						(shackle_type_t)std::uniform_int_distribution<u16>{ (u16)shackle_type_t::Calcitic, (u16)shackle_type_t::Sanguine }(random_engine) :
-						shackle_type_t::None;
-				}()
-			}
+			shackle{ random ? random_shackle(random_engine) : shackle_e::None }
 		{}
 
-		inline ladder_t(offset_t position, verticality_t verticality, shackle_type_t shackle) noexcept : position{ position }, verticality{ verticality }, shackle{ shackle } {}
+		inline ladder_t(offset_t position, verticality_t verticality, shackle_e shackle) noexcept : position{ position }, verticality{ verticality }, shackle{ shackle } {}
 
 		inline bool is_up_ladder() const noexcept { return verticality == verticality_t::Up; }
 
 		inline bool is_down_ladder() const noexcept { return verticality == verticality_t::Down; }
 
-		inline bool has_shackle() const noexcept { return shackle != shackle_type_t::None; }
+		inline bool has_shackle() const noexcept { return shackle != shackle_e::None; }
 
 		inline std::string to_string() const noexcept { return std::format("{} ({} | {})", necrowarp::to_string(object_e::Ladder), necrowarp::to_string(verticality), necrowarp::to_string(shackle)); }
 
@@ -171,13 +183,13 @@ namespace necrowarp {
 				return;
 			}
 			
-			shackle = (shackle_type_t)std::uniform_int_distribution<u16>{ (u16)shackle_type_t::Calcitic, (u16)shackle_type_t::Sanguine }(random_engine);
+			shackle = random_shackle(random_engine);
 
 			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
 		}
 
-		inline void enshackle(shackle_type_t type) noexcept {
-			if (has_shackle() || type == shackle_type_t::None) {
+		inline void enshackle(shackle_e type) noexcept {
+			if (has_shackle() || type == shackle_e::None) {
 				return;
 			}
 			
@@ -191,7 +203,7 @@ namespace necrowarp {
 				return;
 			}
 
-			shackle = shackle_type_t::None;
+			shackle = shackle_e::None;
 
 			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled, i32>;
 		};
