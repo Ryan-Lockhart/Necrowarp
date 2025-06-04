@@ -67,7 +67,7 @@ namespace necrowarp {
 			
 			grid_cursor.update(camera);
 
-			magic_enum::enum_switch([&](auto val) {
+			magic_enum::enum_switch([&](auto val) -> void {
 				constexpr game_phase_t cval{ val };
 
 				if constexpr (cval != game_phase_t::None) {

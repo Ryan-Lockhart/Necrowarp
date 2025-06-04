@@ -8,6 +8,10 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	template<> struct globals::has_unique_descriptor<mercenary_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<mercenary_t> {
 		static constexpr bool value = true;
 	};
@@ -92,6 +96,16 @@ namespace necrowarp {
 		inline command_pack_t think() const noexcept;
 
 		inline void die() noexcept;
+
+		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::Mercenary), get_health(), max_health()); }
+
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Mercenary) };
+
+			colored_string.concatenate(runes_t{ std::format(" [{}/{}]", get_health(), max_health()) });
+			
+			return colored_string;
+		}
 
 		inline void draw() const noexcept { entity_atlas.draw(entity_glyphs<mercenary_t>, position); }
 

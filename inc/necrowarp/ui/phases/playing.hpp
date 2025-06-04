@@ -100,7 +100,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t tooltip_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() - offset_t{ 0, globals::MapSize.h } / 4 }, cardinal_e::Southeast },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() - offset_t{ globals::MapSize.w / 4, 0 } }, cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{},
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -295,7 +295,7 @@ namespace necrowarp {
 						scorekeeper.get_score(), scorekeeper.current_multiplier(),
 						static_cast<isize>(game_stats.game_depth) * -1
 					),
-					colors::White, 
+					colors::White,
 				};
 			} else {
 				depth_hidden_label.text = runes_t{ std::format("Depth: {:3}", static_cast<isize>(game_stats.game_depth) * -1) };
@@ -317,7 +317,7 @@ namespace necrowarp {
 
 				favor_expanded_label.text.concatenate(runes_t{ "\n\n\n", colors::White });
 
-				magic_enum::enum_for_each<discount_e>([&](auto val) {
+				magic_enum::enum_for_each<discount_e>([&](auto val) -> void {
 					constexpr discount_e cval{ val };
 					const i8 value{ player.get_discount(cval) };
 					const discount_type_e type{ player.get_discount_type(value) };

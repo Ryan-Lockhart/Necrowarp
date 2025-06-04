@@ -45,14 +45,14 @@ namespace necrowarp {
 	static constexpr std::string to_string(object_group_e group) noexcept {
 		std::string string{ "" };
 
-		magic_enum::enum_for_each<object_e>([&](auto val) {
+		magic_enum::enum_for_each<object_e>([&](auto val) -> void {
 			constexpr object_e cval{ val };
 
 			if (group != cval) {
 				return;
 			}
 
-			if (string != "" && cval != object_e::Ladder) {
+			if (string != "") {
 				string.append(", ");
 			}
 
@@ -65,14 +65,14 @@ namespace necrowarp {
 	static constexpr runes_t to_colored_string(object_group_e group) noexcept {
 		runes_t runes{};
 
-		magic_enum::enum_for_each<object_e>([&](auto val) {
+		magic_enum::enum_for_each<object_e>([&](auto val) -> void {
 			constexpr object_e cval{ val };
 
 			if (group != cval) {
 				return;
 			}
 
-			if (!runes.empty() && cval != object_e::Ladder) {
+			if (!runes.empty()) {
 				runes.concatenate(runes_t{ ", " });
 			}
 
@@ -85,14 +85,14 @@ namespace necrowarp {
 	static constexpr runes_t to_colored_string(object_group_e group, offset_t position) noexcept {
 		runes_t runes{};
 
-		magic_enum::enum_for_each<object_e>([&](auto val) {
+		magic_enum::enum_for_each<object_e>([&](auto val) -> void {
 			constexpr object_e cval{ val };
 
 			if (group != cval) {
 				return;
 			}
 
-			if (!runes.empty() && cval != object_e::Ladder) {
+			if (!runes.empty()) {
 				runes.concatenate(runes_t{ ", " });
 			}
 

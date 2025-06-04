@@ -440,10 +440,30 @@ namespace necrowarp {
 
 		static inline value_type cached_value;
 		static inline value_type initial_value;
-		
-		inline value_type get_value() const noexcept;
 
-		inline bool set_value(value_type value) noexcept;
+		inline T get_value() const noexcept  {
+			if constexpr (IsSteamless) {
+				return T{};
+			}
+
+			std::optional<T> maybe_value{ steam::user_stats::get_stat<T>(api_name) };
+
+			if (!maybe_value.has_value()) {
+				error_log.add("[WARNING]: returning cached value of \"{}\"...", api_name);
+
+				return cached_value;
+			}
+
+			return cached_value = maybe_value.value();
+		}
+
+		inline bool set_value(value_type value) noexcept {
+			if constexpr (IsSteamless) {
+				return false;
+			}
+
+			return steam::user_stats::set_stat(api_name, value);
+		}
 
 		inline ref<steam_stat_t<Type, T>> operator=(T other) noexcept {
 			set_value(other);
@@ -531,7 +551,7 @@ namespace necrowarp {
 				return;
 			}
 
-			magic_enum::enum_for_each<steam_stat_e>([] (auto val) {
+			magic_enum::enum_for_each<steam_stat_e>([] (auto val) -> void {
 				constexpr steam_stat_e Stat{ val };
 
 				using Type = to_stat_type<Stat>::type;
@@ -573,33 +593,5 @@ namespace necrowarp {
 		if (callback == nullptr || !is_game_id_valid(callback->m_nGameID) || callback->m_eResult == k_EResultFail) {
 			return;
 		}
-	}
-	
-	template<steam_stat_e Type, typename T>
-		requires is_one_of<T, i32, f32>::value
-	inline T steam_stat_t<Type, T>::get_value() const noexcept  {
-		if constexpr (IsSteamless) {
-			return T{};
-		}
-
-		std::optional<T> maybe_value{ steam::user_stats::get_stat<T>(api_name) };
-
-		if (!maybe_value.has_value()) {
-			error_log.add("[WARNING]: returning cached value of \"{}\"...", api_name);
-
-			return cached_value;
-		}
-
-		return cached_value = maybe_value.value();
-	}
-	
-	template<steam_stat_e Type, typename T>
-		requires is_one_of<T, i32, f32>::value
-	inline bool steam_stat_t<Type, T>::set_value(value_type value) noexcept {
-		if constexpr (IsSteamless) {
-			return false;
-		}
-
-		return steam::user_stats::set_stat(api_name, value);
 	}
 } // namespace necrowarp

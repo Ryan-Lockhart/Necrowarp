@@ -364,7 +364,7 @@ namespace necrowarp {
 	template<PlayerEntity EntityType> inline void entity_registry_t::update() noexcept {
 		const command_pack_t pack{ player.command };
 
-		magic_enum::enum_switch([&](auto val) {
+		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr command_e cval{ val };
 
 			using command_type = to_command_type<cval>::type;			
@@ -439,7 +439,7 @@ namespace necrowarp {
 
 			const command_pack_t pack{ entity.think() };
 
-			magic_enum::enum_switch([&](auto val) {
+			magic_enum::enum_switch([&](auto val) -> void {
 				constexpr command_e cval{ val };
 
 				using command_type = to_command_type<cval>::type;

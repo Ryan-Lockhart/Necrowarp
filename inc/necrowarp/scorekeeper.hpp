@@ -80,16 +80,16 @@ namespace necrowarp {
 		inline void add(entity_e slain) noexcept {
 			switch (slain) {
 				case entity_e::Adventurer: {
-					add(1);
+					add(10);
 					break;
 				} case entity_e::Mercenary: {
-					add(2);
+					add(50);
 					break;
 				} case entity_e::Paladin: {
-					add(3);
+					add(100);
 					break;
 				} case entity_e::Priest: {
-					add(3);
+					add(50);
 					break;
 				} default: {
 					break;

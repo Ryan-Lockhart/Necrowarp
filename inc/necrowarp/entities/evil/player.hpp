@@ -405,7 +405,7 @@ namespace necrowarp {
 	template<patron_e Patron> constexpr runes_t to_colored_string(discount_e discount) noexcept {
 		runes_t colored_string{};
 
-		magic_enum::enum_switch([&](auto val) {
+		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr discount_e discount_cval{ val };
 			
 			cauto discount_info{ patrons<Patron>.template get_discount<discount_cval>() };

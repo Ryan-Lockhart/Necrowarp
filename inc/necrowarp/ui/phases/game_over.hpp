@@ -98,7 +98,7 @@ template<> struct phase_state_t<game_phase_t::GameOver> {
 			if (show_statistics) {
 				runes_t stats_str{ "\n" };
 
-				magic_enum::enum_for_each<steam_stat_e>([&stats_str] (auto val) {
+				magic_enum::enum_for_each<steam_stat_e>([&stats_str] (auto val) -> void {
 					constexpr steam_stat_e Stat{ val };
 
 					using Type = to_stat_type<Stat>::type;
