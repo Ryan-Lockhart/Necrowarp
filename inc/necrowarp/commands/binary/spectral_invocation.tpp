@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, spectral_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map.template contains<zone_region_t::Interior>(fluid_type_e::Ichor))) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map.template contains<zone_region_e::Interior>(fluid_e::Ichor))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -23,10 +23,10 @@ namespace necrowarp {
 
 		ptr<ladder_t> eligible_ladder{ nullptr };
 
-		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
-			const bool has_ichor{ fluid_map[position].contains(fluid_type_e::Ichor) };
+			const bool has_ichor{ fluid_map[position].contains(fluid_e::Ichor) };
 
 			if (!has_ichor && player.bypass_invocations_enabled()) {
 				++pools_consumed;
@@ -38,12 +38,12 @@ namespace necrowarp {
 
 			const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
-			if (!game_map.within<zone_region_t::Interior>(position) || (!has_ichor && (eligible_ladder != nullptr || !has_ladder))) {
+			if (!game_map.within<zone_region_e::Interior>(position) || (!has_ichor && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
 			if (has_ichor) {
-				fluid_map[position] -= fluid_type_e::Ichor;
+				fluid_map[position] -= fluid_e::Ichor;
 				++pools_consumed;
 
 				if (!is_exalted) {
@@ -70,10 +70,10 @@ namespace necrowarp {
 			}
 		}
 
-		if (fluid_map[target_position].contains(fluid_type_e::Ichor)) {
+		if (fluid_map[target_position].contains(fluid_e::Ichor)) {
 			const offset_t pos{ target_position };
 
-			fluid_map[pos] -= fluid_type_e::Ichor;
+			fluid_map[pos] -= fluid_e::Ichor;
 			++pools_consumed;
 
 			if (!is_exalted) {
@@ -99,12 +99,12 @@ namespace necrowarp {
 		steam_stats::stats<steam_stat_e::IchorConsumed, f32> += fluid_pool_volume(pools_consumed);
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
-			for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 
 				const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
-				if (!game_map.within<zone_region_t::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
+				if (!game_map.within<zone_region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
 					continue;
 				}
 

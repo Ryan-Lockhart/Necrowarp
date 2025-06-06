@@ -146,7 +146,7 @@ namespace necrowarp {
 			if (direction != offset_t::Zero) {
 				const offset_t target_position{ player.position + direction };
 
-				if (!game_map.within<zone_region_t::Interior>(target_position) || game_map[target_position].solid) {
+				if (!game_map.within<zone_region_e::Interior>(target_position) || game_map[target_position].solid) {
 					return false;
 				}
 
@@ -205,36 +205,36 @@ namespace necrowarp {
 			game_stats.cheats.free_costs = true;
 			game_stats.cheats.bypass_invocations = true;
 
-			game_map.reset<zone_region_t::All>();
-			fluid_map.reset<zone_region_t::All>();
+			game_map.reset<zone_region_e::All>();
+			fluid_map.reset<zone_region_e::All>();
 
 			entity_registry.reset();
 			object_registry.reset();
 
-			constexpr map_cell_t open_state{ cell_trait_t::Open, cell_trait_t::Transperant, cell_trait_t::Seen, cell_trait_t::Explored };
-			constexpr map_cell_t closed_state{ cell_trait_t::Solid, cell_trait_t::Opaque, cell_trait_t::Seen, cell_trait_t::Explored };
+			constexpr map_cell_t open_state{ cell_e::Open, cell_e::Transperant, cell_e::Seen, cell_e::Explored };
+			constexpr map_cell_t closed_state{ cell_e::Solid, cell_e::Opaque, cell_e::Seen, cell_e::Explored };
 
 			constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 
 			game_map
-				.set<zone_region_t::Border>(closed_state)
-				.generate<zone_region_t::Interior>(
+				.set<zone_region_e::Border>(closed_state)
+				.generate<zone_region_e::Interior>(
 					random_engine,
 					globals::map_config.fill_percent,
 					globals::map_config.automata_iterations,
 					globals::map_config.automata_threshold,
 					cell_applicator
 				)
-				.collapse<zone_region_t::Interior>(cell_trait_t::Solid, 0x00, cell_trait_t::Open);
+				.collapse<zone_region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
 
-			std::vector<area_t> areas{ area_t::partition(game_map, cell_trait_t::Open) };
+			std::vector<area_t> areas{ area_t::partition(game_map, cell_e::Open) };
 
 			if (areas.size() > 1) {
 				cref<area_t> largest_area{ *std::max_element(areas.begin(), areas.end(), [](cref<area_t> a, cref<area_t> b) { return a.size() < b.size(); }) };
 
 				for (crauto area : areas) {
 					if (area != largest_area) {
-						area.apply(game_map, cell_trait_t::Solid);
+						area.apply(game_map, cell_e::Solid);
 					}
 				}
 			}
@@ -243,11 +243,11 @@ namespace necrowarp {
 				for (offset_t::scalar_t x{ 0 }; x < globals::MapSize.w; ++x) {
 					const offset_t pos{ x, y };
 
-					game_map[pos].recalculate_index(game_map, pos, cell_trait_t::Solid);
+					game_map[pos].recalculate_index(game_map, pos, cell_e::Solid);
 				}
 			}
 
-			cauto player_pos{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open) };
+			cauto player_pos{ game_map.find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 			if (!player_pos.has_value()) {
 				error_log.add("could not find open position for player!");
@@ -261,14 +261,14 @@ namespace necrowarp {
 				static_cast<usize>(globals::map_config.number_of_up_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
-				verticality_t::Up
+				verticality_e::Up
 			);
 
 			object_registry.spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_down_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
-				verticality_t::Down, true
+				verticality_e::Down, true
 			);
 
 			object_registry.spawn<skull_t>(
@@ -281,7 +281,7 @@ namespace necrowarp {
 			entity_registry.recalculate_goal_map();
 			object_registry.recalculate_goal_map();
 
-			phase.transition(game_phase_t::Playing);
+			phase.transition(phase_e::Playing);
 
 			game_running = true;
 			process_turn_async();
@@ -314,8 +314,8 @@ namespace necrowarp {
 				ladder_positions.push_back(ladder.position);
 			}
 
-			game_map.reset<zone_region_t::All>();
-			fluid_map.reset<zone_region_t::All>();
+			game_map.reset<zone_region_e::All>();
+			fluid_map.reset<zone_region_e::All>();
 
 			entity_registry.reset<ALL_NON_PLAYER>();
 			entity_registry.reset_goal_map<player_t>();
@@ -324,14 +324,14 @@ namespace necrowarp {
 
 			object_registry.reset();
 
-			constexpr map_cell_t open_state{ cell_trait_t::Open, cell_trait_t::Transperant, cell_trait_t::Seen, cell_trait_t::Explored };
-			constexpr map_cell_t closed_state{ cell_trait_t::Solid, cell_trait_t::Opaque, cell_trait_t::Seen, cell_trait_t::Explored };
+			constexpr map_cell_t open_state{ cell_e::Open, cell_e::Transperant, cell_e::Seen, cell_e::Explored };
+			constexpr map_cell_t closed_state{ cell_e::Solid, cell_e::Opaque, cell_e::Seen, cell_e::Explored };
 
 			constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 			
 			game_map
-				.set<zone_region_t::Border>(closed_state)
-				.generate<zone_region_t::Interior>(
+				.set<zone_region_e::Border>(closed_state)
+				.generate<zone_region_e::Interior>(
 					random_engine,
 					globals::map_config.fill_percent,
 					globals::map_config.automata_iterations,
@@ -339,16 +339,16 @@ namespace necrowarp {
 					cell_applicator,
 					ladder_positions
 				)
-				.collapse<zone_region_t::Interior>(cell_trait_t::Solid, 0x00, cell_trait_t::Open);
+				.collapse<zone_region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
 
-			std::vector<area_t> areas{ area_t::partition(game_map, cell_trait_t::Open) };
+			std::vector<area_t> areas{ area_t::partition(game_map, cell_e::Open) };
 
 			if (areas.size() > 1) {
 				cref<area_t> largest_area{ *std::max_element(areas.begin(), areas.end(), [](cref<area_t> a, cref<area_t> b) { return a.size() < b.size(); }) };
 
 				for (crauto area : areas) {
 					if (area != largest_area) {
-						area.apply(game_map, cell_trait_t::Solid);
+						area.apply(game_map, cell_e::Solid);
 					}
 				}
 			}
@@ -357,12 +357,12 @@ namespace necrowarp {
 				for (offset_t::scalar_t x{ 0 }; x < globals::MapSize.w; ++x) {
 					const offset_t pos{ x, y };
 
-					game_map[pos].recalculate_index(game_map, pos, cell_trait_t::Solid);
+					game_map[pos].recalculate_index(game_map, pos, cell_e::Solid);
 				}
 			}
 
 			if (game_map[player.position].solid) {
-				cauto player_pos{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open) };
+				cauto player_pos{ game_map.find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 				if (!player_pos.has_value()) {
 					error_log.add("could not find open position for player!");
@@ -384,7 +384,7 @@ namespace necrowarp {
 				cauto position{ ladder_positions.back() };
 				ladder_positions.pop_back();
 
-				if (game_map[position].solid || !entity_registry.empty(position) || !object_registry.empty(position) || !object_registry.add(ladder_t{ position, verticality_t::Up })) {
+				if (game_map[position].solid || !entity_registry.empty(position) || !object_registry.empty(position) || !object_registry.add(ladder_t{ position, verticality_e::Up })) {
 					continue;
 				}
 
@@ -396,7 +396,7 @@ namespace necrowarp {
 					static_cast<usize>(num_up_ladders_needed),
 					static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
-					verticality_t::Up
+					verticality_e::Up
 				);
 			}
 
@@ -404,7 +404,7 @@ namespace necrowarp {
 				static_cast<usize>(globals::map_config.number_of_down_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
-				verticality_t::Down, true
+				verticality_e::Down, true
 			);
 
 			object_registry.spawn<skull_t>(
@@ -417,7 +417,7 @@ namespace necrowarp {
 			entity_registry.recalculate_goal_map();
 			object_registry.recalculate_goal_map();
 
-			phase.transition(game_phase_t::Playing);
+			phase.transition(phase_e::Playing);
 
 			game_running = true;
 			process_turn_async();
@@ -450,16 +450,16 @@ namespace necrowarp {
 
 			if (Keyboard::is_key_down(bindings::Quit)) {
 				switch(phase.current_phase) {
-					case game_phase_t::MainMenu:
-						phase.transition(game_phase_t::Exiting);
+					case phase_e::MainMenu:
+						phase.transition(phase_e::Exiting);
 						break;
-					case game_phase_t::Playing:
-						phase.transition(game_phase_t::Paused);
+					case phase_e::Playing:
+						phase.transition(phase_e::Paused);
 						break;
-					case game_phase_t::Paused:
-						phase.transition(game_phase_t::Playing);
+					case phase_e::Paused:
+						phase.transition(phase_e::Playing);
 						break;
-					case game_phase_t::Loading:
+					case phase_e::Loading:
 						break;
 					default:
 						phase.revert();
@@ -467,7 +467,7 @@ namespace necrowarp {
 				}
 			}
 
-			if (phase.current_phase != game_phase_t::Playing) {
+			if (phase.current_phase != phase_e::Playing) {
 				return;
 			}
 
@@ -640,25 +640,25 @@ namespace necrowarp {
 		}
 
 		static inline void update() noexcept {
-			sine_wave.update<wave_type_t::Sine>(Clock::elapsed());
+			sine_wave.update<wave_e::Sine>(Clock::elapsed());
 
 			ui_registry.update();
 
 			if (descent_flag) {
-				phase.transition(game_phase_t::Loading);
-				phase.previous_phase = game_phase_t::Loading;
+				phase.transition(phase_e::Loading);
+				phase.previous_phase = phase_e::Loading;
 
 				descend_async();
 			}
 
-			if (phase.current_phase == game_phase_t::Loading && phase.previous_phase != game_phase_t::Loading) {
-				phase.previous_phase = game_phase_t::Loading;
+			if (phase.current_phase == phase_e::Loading && phase.previous_phase != phase_e::Loading) {
+				phase.previous_phase = phase_e::Loading;
 
 				load_async();
 			}
 
-			if (phase.current_phase == game_phase_t::GameOver && phase.previous_phase != game_phase_t::GameOver) {
-				phase.previous_phase = game_phase_t::GameOver;
+			if (phase.current_phase == phase_e::GameOver && phase.previous_phase != phase_e::GameOver) {
+				phase.previous_phase = phase_e::GameOver;
 
 				unload_async();
 			}
@@ -679,7 +679,7 @@ namespace necrowarp {
 
 			renderer.clear(colors::Black);
 
-			if (phase.current_phase == game_phase_t::Playing) {
+			if (phase.current_phase == phase_e::Playing) {
 				bool exceeds_width{ globals::MapSize.w <= globals::grid_size<grid_type_e::Game>().w };
 				bool exceeds_height{ globals::MapSize.h <= globals::grid_size<grid_type_e::Game>().h };
 
@@ -710,7 +710,7 @@ namespace necrowarp {
 		static inline void unload() noexcept {
 			terminate_process_turn();
 
-			game_map.reset<zone_region_t::All>();
+			game_map.reset<zone_region_e::All>();
 			
 			entity_registry.reset();
 			object_registry.reset();

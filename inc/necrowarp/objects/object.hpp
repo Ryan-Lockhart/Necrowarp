@@ -109,7 +109,7 @@ namespace necrowarp {
 
 	static constexpr runes_t to_colored_string(object_group_e group) noexcept;
 
-	enum class decay_e : i8 {
+	enum struct decay_e : i8 {
 		Rotted = -1,
 		Animate = 0,
 		Fresh = 1,
@@ -151,7 +151,7 @@ namespace necrowarp {
 		}
 	}
 
-	enum class galvanisation_e : u8 {
+	enum struct galvanisation_e : u8 {
 		Twisted = 0,
 		Shimmering = Twisted + 1,
 		Wriggling = Shimmering + 1,

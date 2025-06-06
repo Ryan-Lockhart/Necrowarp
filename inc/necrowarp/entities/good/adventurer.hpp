@@ -49,7 +49,7 @@ namespace necrowarp {
 	};
 
 	template<> struct fluid_type<adventurer_t> {
-		static constexpr fluid_type_e type = fluid_type_e::Blood;
+		static constexpr fluid_e type = fluid_e::Blood;
 	};
 
 	template<> inline constexpr glyph_t entity_glyphs<adventurer_t>{ glyphs::Adventurer };

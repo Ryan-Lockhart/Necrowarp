@@ -45,7 +45,7 @@ namespace necrowarp {
 	};
 
 	template<> struct fluid_type<cultist_t> {
-		static constexpr fluid_type_e type = fluid_type_e::BloodyIchor;
+		static constexpr fluid_e type = fluid_e::BloodyIchor;
 	};
 
 	template<> inline constexpr glyph_t entity_glyphs<cultist_t>{ glyphs::Cultist };

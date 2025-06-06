@@ -56,7 +56,7 @@ namespace necrowarp {
 
 		i8 remaining_damage = initiator.get_damage();
 
-		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			if (remaining_damage <= 0) {
 				break;
 			}

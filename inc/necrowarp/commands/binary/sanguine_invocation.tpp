@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, sanguine_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SanguineInvocation) || !fluid_map.template contains<zone_region_t::Interior>(fluid_type_e::Blood))) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SanguineInvocation) || !fluid_map.template contains<zone_region_e::Interior>(fluid_e::Blood))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -23,10 +23,10 @@ namespace necrowarp {
 
 		ptr<ladder_t> eligible_ladder{ nullptr };
 
-		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
-			const bool no_blood{ fluid_map[position] != fluid_type_e::Blood };
+			const bool no_blood{ fluid_map[position] != fluid_e::Blood };
 
 			if (no_blood && player.bypass_invocations_enabled()) {
 				++pools_consumed;
@@ -36,15 +36,15 @@ namespace necrowarp {
 				}
 			}
 
-			const bool has_blood{ fluid_map[position].contains(fluid_type_e::Blood) };
+			const bool has_blood{ fluid_map[position].contains(fluid_e::Blood) };
 			const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
-			if (!game_map.within<zone_region_t::Interior>(position) || (!has_blood && (eligible_ladder != nullptr || !has_ladder))) {
+			if (!game_map.within<zone_region_e::Interior>(position) || (!has_blood && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
 			if (has_blood) {
-				fluid_map[position] -= fluid_type_e::Blood;
+				fluid_map[position] -= fluid_e::Blood;
 				++pools_consumed;
 
 				if (!is_exalted) {
@@ -71,8 +71,8 @@ namespace necrowarp {
 			}
 		}
 
-		if (fluid_map[target_position].contains(fluid_type_e::Blood)) {
-			fluid_map[target_position] -= fluid_type_e::Blood;
+		if (fluid_map[target_position].contains(fluid_e::Blood)) {
+			fluid_map[target_position] -= fluid_e::Blood;
 			++pools_consumed;
 
 			if (!is_exalted) {
@@ -97,12 +97,12 @@ namespace necrowarp {
 		steam_stats::stats<steam_stat_e::BloodConsumed, f32> += fluid_pool_volume(pools_consumed);
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
-			for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 
 				const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
-				if (!game_map.within<zone_region_t::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
+				if (!game_map.within<zone_region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
 					continue;
 				}
 

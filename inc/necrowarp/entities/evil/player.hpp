@@ -114,7 +114,7 @@ namespace necrowarp {
 
 	template<> inline constexpr glyph_t command_icons<command_e::NecromanticAscendance>{ 0x30, colors::White };
 
-	enum class patron_e : u8 {
+	enum struct patron_e : u8 {
 		None,
 		Rathghul,
 		Akurakhaithan,
@@ -156,7 +156,7 @@ namespace necrowarp {
 		}
 	}
 
-	enum class disposition_e : u8 {
+	enum struct disposition_e : u8 {
 		Sadistic,
 		Apathetic,
 		Cooperative,
@@ -188,7 +188,7 @@ namespace necrowarp {
 		}
 	}
 
-	enum class discount_e : u8 {
+	enum struct discount_e : u8 {
 		RandomWarp,
 		TargetWarp,
 	
@@ -246,7 +246,7 @@ namespace necrowarp {
 		}
 	}
 
-	enum class discount_type_e : u8 {
+	enum struct discount_type_e : u8 {
 		Malus,
 		Placebo,
 		Boon

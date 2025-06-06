@@ -5,24 +5,24 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	enum struct game_phase_t : u8 { None, MainMenu, Credits, NewGame, Loading, Playing, Paused, GameOver, Exiting };
+	enum struct phase_e : u8 { None, MainMenu, Credits, NewGame, Loading, Playing, Paused, GameOver, Exiting };
 
 	struct phase_t {
-		game_phase_t previous_phase{ game_phase_t::None };
-		game_phase_t current_phase{ game_phase_t::MainMenu };
+		phase_e previous_phase{ phase_e::None };
+		phase_e current_phase{ phase_e::MainMenu };
 
 		constexpr phase_t() noexcept{};
 		
-		constexpr phase_t(game_phase_t phase) noexcept : previous_phase{ game_phase_t::None }, current_phase{ phase }{}
+		constexpr phase_t(phase_e phase) noexcept : previous_phase{ phase_e::None }, current_phase{ phase }{}
 
-		constexpr void transition(game_phase_t phase) noexcept {
+		constexpr void transition(phase_e phase) noexcept {
 			previous_phase = current_phase;
 			current_phase = phase;
 		}
 
 		constexpr void revert() noexcept {
 			current_phase = previous_phase;
-			previous_phase = game_phase_t::None;
+			previous_phase = phase_e::None;
 		}
 	};
 } // namespace necrowarp

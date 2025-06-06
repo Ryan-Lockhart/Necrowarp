@@ -14,7 +14,7 @@ namespace necrowarp {
 	using namespace bleak;
 
 	class command_parser_t {
-		enum class command_e : u8 {
+		enum struct command_e : u8 {
 			Unknown = 0,
 			Energy,
 			Armor,
@@ -25,7 +25,7 @@ namespace necrowarp {
 			BypassInvocations
 		};
 
-		enum class state_e : u8 {
+		enum struct state_e : u8 {
 			Unknown = 0,
 			Enable,
 			Disable

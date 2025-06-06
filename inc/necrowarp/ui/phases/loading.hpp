@@ -3,7 +3,7 @@
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
-	template<> struct phase_state_t<game_phase_t::Loading> {
+	template<> struct phase_state_t<phase_e::Loading> {
 		static inline label_t loading_label{
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 }, cardinal_e::Central },
 			embedded_label_t{
@@ -14,7 +14,7 @@ namespace necrowarp {
 		};
 
 		static inline bool any_hovered() noexcept {
-			if (phase.current_phase != game_phase_t::Loading) {
+			if (phase.current_phase != phase_e::Loading) {
 				return false;
 			}
 
@@ -22,7 +22,7 @@ namespace necrowarp {
 		}
 
 		static inline void update(Mouse::button_t button) noexcept {
-			if (phase.current_phase != game_phase_t::Loading) {
+			if (phase.current_phase != phase_e::Loading) {
 				return;
 			}
 		}

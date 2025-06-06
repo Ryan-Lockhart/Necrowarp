@@ -335,10 +335,10 @@ namespace necrowarp {
 	template<typename T> concept BleederEntity = NonNullEntity<T> && is_bleeder<T>::value;
 
 	template<typename T> struct fluid_type {
-		static constexpr fluid_type_e type = fluid_type_e::None;
+		static constexpr fluid_e type = fluid_e::None;
 	};
 
-	template<typename T> constexpr fluid_type_e fluid_type_v = fluid_type<T>::type;
+	template<typename T> constexpr fluid_e fluid_type_v = fluid_type<T>::type;
 
 	template<typename T, entity_e EntityType> struct is_entity_type {
 		static constexpr bool value = false;

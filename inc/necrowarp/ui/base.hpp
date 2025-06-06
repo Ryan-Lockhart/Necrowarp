@@ -7,7 +7,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<game_phase_t Phase> struct phase_state_t;
+	template<phase_e Phase> struct phase_state_t;
 
 	struct anchor_t {
 		offset_t position;

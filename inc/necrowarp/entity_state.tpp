@@ -262,7 +262,7 @@ namespace necrowarp {
 
 	template<NonPlayerEntity EntityType> inline bool entity_registry_t::spawn(usize count) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, entity_registry, object_registry) };
+			cauto maybe_position{ game_map.find_random<zone_region_e::Interior>(random_engine, cell_e::Open, entity_registry, object_registry) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -276,7 +276,7 @@ namespace necrowarp {
 
 	template<NonPlayerEntity EntityType, typename... Args> inline bool entity_registry_t::spawn(usize count, Args... args) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, entity_registry, object_registry) };
+			cauto maybe_position{ game_map.find_random<zone_region_e::Interior>(random_engine, cell_e::Open, entity_registry, object_registry) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -290,7 +290,7 @@ namespace necrowarp {
 
 	template<NonPlayerEntity EntityType> inline bool entity_registry_t::spawn(usize count, u32 minimum_distance) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ entity_goal_map<EntityType>.template find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, entity_registry, object_registry, minimum_distance) };
+			cauto maybe_position{ entity_goal_map<EntityType>.template find_random<zone_region_e::Interior>(game_map, random_engine, cell_e::Open, entity_registry, object_registry, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -298,17 +298,17 @@ namespace necrowarp {
 
 			entity_registry.add(EntityType{ maybe_position.value() });
 
-			entity_goal_map<EntityType>.template recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, entity_registry);
+			entity_goal_map<EntityType>.template recalculate<zone_region_e::Interior>(game_map, cell_e::Open, entity_registry);
 		}
 
 		return true;
 	}
 
 	template<NonPlayerEntity EntityType, typename... Args> inline bool entity_registry_t::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
-		entity_goal_map<EntityType>.template recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, entity_registry);
+		entity_goal_map<EntityType>.template recalculate<zone_region_e::Interior>(game_map, cell_e::Open, entity_registry);
 		
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ entity_goal_map<EntityType>.template find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, entity_registry, object_registry, minimum_distance) };
+			cauto maybe_position{ entity_goal_map<EntityType>.template find_random<zone_region_e::Interior>(game_map, random_engine, cell_e::Open, entity_registry, object_registry, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -316,14 +316,14 @@ namespace necrowarp {
 
 			entity_registry.add(EntityType{ maybe_position.value(), args... });
 
-			entity_goal_map<EntityType>.template recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, entity_registry);
+			entity_goal_map<EntityType>.template recalculate<zone_region_e::Interior>(game_map, cell_e::Open, entity_registry);
 		}
 
 		return true;
 	}
 
 	template<NonPlayerEntity EntityType> inline bool entity_registry_t::update(offset_t current, offset_t target) noexcept {
-		if (entity_registry.empty(current) || !game_map.within<zone_region_t::Interior>(current) || entity_registry.contains(target) || !game_map.within<zone_region_t::Interior>(target)) {
+		if (entity_registry.empty(current) || !game_map.within<zone_region_e::Interior>(current) || entity_registry.contains(target) || !game_map.within<zone_region_e::Interior>(target)) {
 			return false;
 		}
 		
@@ -343,7 +343,7 @@ namespace necrowarp {
 	}
 
 	template<PlayerEntity EntityType> inline bool entity_registry_t::update(offset_t current, offset_t target) noexcept {
-		if (entity_registry.empty(current) || !game_map.within<zone_region_t::Interior>(current) || entity_registry.contains(target) || !game_map.within<zone_region_t::Interior>(target)) {
+		if (entity_registry.empty(current) || !game_map.within<zone_region_e::Interior>(current) || entity_registry.contains(target) || !game_map.within<zone_region_e::Interior>(target)) {
 			return false;
 		}
 
@@ -558,7 +558,7 @@ namespace necrowarp {
 	}
 
 	template<NonNullEntity EntityType> inline void entity_registry_t::recalculate_goal_map() noexcept {
-		entity_goal_map<EntityType>.template recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, entity_registry);
+		entity_goal_map<EntityType>.template recalculate<zone_region_e::Interior>(game_map, cell_e::Open, entity_registry);
 	}
 
 	template<NonNullEntity... EntityTypes>
@@ -568,11 +568,11 @@ namespace necrowarp {
 	}
 
 	inline void entity_registry_t::recalculate_good_goal_map() noexcept {
-		good_goal_map.recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, entity_registry);
+		good_goal_map.recalculate<zone_region_e::Interior>(game_map, cell_e::Open, entity_registry);
 	}
 
 	inline void entity_registry_t::recalculate_evil_goal_map() noexcept {
-		evil_goal_map.recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, entity_registry);
+		evil_goal_map.recalculate<zone_region_e::Interior>(game_map, cell_e::Open, entity_registry);
 	}
 
 	inline void entity_registry_t::recalculate_alignment_goal_maps() noexcept {
@@ -623,7 +623,7 @@ namespace necrowarp {
 			return false;
 		}
 
-		if (!game_map.within<zone_region_t::Interior>(command.source_position) || !entity_registry.contains<EntityType>(command.source_position)) {
+		if (!game_map.within<zone_region_e::Interior>(command.source_position) || !entity_registry.contains<EntityType>(command.source_position)) {
 			return false;
 		}
 
@@ -680,7 +680,7 @@ namespace necrowarp {
 		}
 		
 		if constexpr (is_binary_command<CommandType>::value) {
-			if (!game_map.within<zone_region_t::Interior>(command.target_position)) {
+			if (!game_map.within<zone_region_e::Interior>(command.target_position)) {
 				return false;
 			}
 
@@ -727,7 +727,7 @@ namespace necrowarp {
 			}
 
 			if constexpr (is_ternary_command<CommandType>::value) {
-				if (!game_map.within<zone_region_t::Interior>(command.intermediate_position)) {
+				if (!game_map.within<zone_region_e::Interior>(command.intermediate_position)) {
 					return false;
 				}
 
@@ -749,10 +749,10 @@ namespace necrowarp {
 	}
 
 	inline bool entity_registry_t::random_warp(offset_t source) noexcept {
-		cauto random_safe_position{ evil_goal_map.find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, entity_registry, object_registry, 8) };
+		cauto random_safe_position{ evil_goal_map.find_random<zone_region_e::Interior>(game_map, random_engine, cell_e::Open, entity_registry, object_registry, 8) };
 
 		if (!random_safe_position.has_value()) {
-			cauto random_unsafe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, entity_registry, object_registry) };
+			cauto random_unsafe_position{ game_map.find_random<zone_region_e::Interior>(random_engine, cell_e::Open, entity_registry, object_registry) };
 
 			if (!random_unsafe_position.has_value()) {
 				player.receive_failed_warp_boon();

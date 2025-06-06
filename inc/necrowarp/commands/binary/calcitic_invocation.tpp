@@ -24,7 +24,7 @@ namespace necrowarp {
 
 		ptr<ladder_t> eligible_ladder{ nullptr };
 
-		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
 			const bool has_skull{ object_registry.contains<skull_t>(position) };
@@ -39,7 +39,7 @@ namespace necrowarp {
 
 			const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
-			if (!game_map.within<zone_region_t::Interior>(position) || (!has_skull && (eligible_ladder != nullptr || !has_ladder))) {
+			if (!game_map.within<zone_region_e::Interior>(position) || (!has_skull && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
@@ -103,12 +103,12 @@ namespace necrowarp {
 		steam_stats::stats<steam_stat_e::SkullsConsumed, i32> += accumulated_skulls;
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
-			for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 				
 				const bool has_ladder{ object_registry.contains<ladder_t>(position) };
 
-				if (!game_map.within<zone_region_t::Interior>(position) || (eligible_ladder != nullptr || !has_ladder)) {
+				if (!game_map.within<zone_region_e::Interior>(position) || (eligible_ladder != nullptr || !has_ladder)) {
 					continue;
 				}
 

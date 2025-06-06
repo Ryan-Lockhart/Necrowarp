@@ -41,11 +41,11 @@ namespace necrowarp {
 
 	static inline std::bernoulli_distribution triflip{ 1.0 / 3.0 };
 
-	static inline zone_t<map_cell_t, globals::MapSize, globals::BorderSize> game_map{};
+	static inline  zone_ct_t<map_cell_t, globals::MapSize, globals::BorderSize> game_map{};
 
 	static inline std::vector<offset_t> ladder_positions{};
 
-	static inline zone_t<fluid_cell_t, globals::MapSize, globals::BorderSize> fluid_map{};
+	static inline  zone_ct_t<fluid_cell_t, globals::MapSize, globals::BorderSize> fluid_map{};
 
 	static inline cursor_t ui_cursor{ renderer, "res/gfx/sprites/cursor.png", colors::White };
 
@@ -96,7 +96,7 @@ namespace necrowarp {
 		return amount;
 	}
 
-	enum class attribute_e {
+	enum struct attribute_e {
 		Energy,
 		Armor,
 		Divinity
@@ -214,7 +214,7 @@ namespace necrowarp {
 		}
 	} static inline game_stats{};
 
-	enum class steam_stat_e : u8 {
+	enum struct steam_stat_e : u8 {
 		PlayerKills = 0,
 		PlayerDeaths,
 

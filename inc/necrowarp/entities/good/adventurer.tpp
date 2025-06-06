@@ -9,7 +9,7 @@
 
 namespace necrowarp {
 	inline command_pack_t adventurer_t::think() const noexcept {
-		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
 			if (!entity_registry.contains<ALL_EVIL>(current_position)) {
@@ -19,7 +19,7 @@ namespace necrowarp {
 			return command_pack_t{ command_e::Clash, position, current_position };
 		}
 
-		cauto descent_pos{ good_goal_map.descend<zone_region_t::Interior>(position, entity_registry) };
+		cauto descent_pos{ good_goal_map.descend<zone_region_e::Interior>(position, entity_registry) };
 
 		if (!descent_pos.has_value()) {
 			return command_pack_t{ command_e::None };

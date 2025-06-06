@@ -3,7 +3,7 @@
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
-	template<> struct phase_state_t<game_phase_t::MainMenu> {
+	template<> struct phase_state_t<phase_e::MainMenu> {
 		static inline labeled_button_t credits_button{
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 }, cardinal_e::Central },
 			embedded_label_t{
@@ -32,7 +32,7 @@ namespace necrowarp {
 		};
 
 		static inline bool any_hovered() noexcept {
-			if (phase.current_phase != game_phase_t::MainMenu) {
+			if (phase.current_phase != phase_e::MainMenu) {
 				return false;
 			}
 
@@ -43,7 +43,7 @@ namespace necrowarp {
 		}
 
 		static inline void update(Mouse::button_t button) noexcept {
-			if (phase.current_phase != game_phase_t::MainMenu) {
+			if (phase.current_phase != phase_e::MainMenu) {
 				return;
 			}
 
@@ -52,11 +52,11 @@ namespace necrowarp {
 			quit_button.update(Mouse::button_t::Left);
 
 			if (new_game_button.is_active()) {
-				phase.transition(game_phase_t::NewGame);
+				phase.transition(phase_e::NewGame);
 			} else if (credits_button.is_active()) {
-				phase.transition(game_phase_t::Credits);
+				phase.transition(phase_e::Credits);
 			} else if (quit_button.is_active()) {
-				phase.transition(game_phase_t::Exiting);
+				phase.transition(phase_e::Exiting);
 			}
 		}
 

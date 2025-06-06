@@ -3,7 +3,7 @@
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
-template<> struct phase_state_t<game_phase_t::GameOver> {
+template<> struct phase_state_t<phase_e::GameOver> {
 		static inline bool show_statistics{ false };
 
 		static inline label_t game_over_label{
@@ -62,7 +62,7 @@ template<> struct phase_state_t<game_phase_t::GameOver> {
 		};
 
 		static inline bool any_hovered() noexcept {
-			if (phase.current_phase != game_phase_t::GameOver) {
+			if (phase.current_phase != phase_e::GameOver) {
 				return false;
 			}
 
@@ -74,7 +74,7 @@ template<> struct phase_state_t<game_phase_t::GameOver> {
 		}
 
 		static inline void update(Mouse::button_t button) noexcept {
-			if (phase.current_phase != game_phase_t::GameOver) {
+			if (phase.current_phase != phase_e::GameOver) {
 				return;
 			}
 
@@ -82,9 +82,9 @@ template<> struct phase_state_t<game_phase_t::GameOver> {
 			quit_button.update(Mouse::button_t::Left);
 
 			if (retry_button.is_active()) {
-				phase.transition(game_phase_t::Loading);
+				phase.transition(phase_e::Loading);
 			} else if (quit_button.is_active()) {
-				phase.transition(game_phase_t::Exiting);
+				phase.transition(phase_e::Exiting);
 			}
 
 			game_over_label.text = runes_t{ "You were slain! Game over...", colors::White };

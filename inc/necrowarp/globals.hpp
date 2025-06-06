@@ -5,7 +5,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	enum class grid_type_e : u8 {
+	enum struct grid_type_e : u8 {
 		UI,
 		Game,
 		Icon
@@ -33,7 +33,7 @@ namespace necrowarp {
 			return !between<extent_t::scalar_t>(size.w, MinimumWindowSize.w, MaximumWindowSize.w) || !between<extent_t::scalar_t>(size.h, MinimumWindowSize.h, MaximumWindowSize.h);
 		}
 
-		enum class resolution_e : u8 {
+		enum struct resolution_e : u8 {
 			// 4:3 resolutions
 
 			Resolution640x480,
@@ -220,7 +220,7 @@ namespace necrowarp {
 
 		static constexpr extent_t IconsetSize{ 2, 4 };
 
-		static constexpr distance_function_t DistanceFunction{ distance_function_t::Octile };
+		static constexpr distance_function_e DistanceFunction{ distance_function_e::Octile };
 
 		static constexpr extent_t MapSize{ 128, 128 };
 

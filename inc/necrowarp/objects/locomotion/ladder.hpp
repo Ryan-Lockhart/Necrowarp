@@ -35,16 +35,16 @@ namespace necrowarp {
 
 	template<> inline constexpr glyph_t object_glyphs<ladder_t>{ glyphs::UpLadder };
 
-	enum class verticality_t : u8 {
+	enum struct verticality_e : u8 {
 		Up,
 		Down
 	};
 
-	constexpr cstr to_string(verticality_t type) noexcept {
+	constexpr cstr to_string(verticality_e type) noexcept {
 		switch (type) {
-			case verticality_t::Up: {
+			case verticality_e::Up: {
 				return "up";
-			} case verticality_t::Down: {
+			} case verticality_e::Down: {
 				return "down";
 			} default: {
 				return "unknown";
@@ -52,7 +52,7 @@ namespace necrowarp {
 		}
 	}
 
-	enum class shackle_e : u8 {
+	enum struct shackle_e : u8 {
 		None,
 		Calcitic,
 		Spectral,
@@ -142,22 +142,22 @@ namespace necrowarp {
 	  public:
 		offset_t position;
 		
-		verticality_t verticality;
+		verticality_e verticality;
 		shackle_e shackle;
 
-		inline ladder_t(offset_t position) noexcept : position{ position }, verticality{ verticality_t::Up }, shackle{ shackle_e::None } {}
+		inline ladder_t(offset_t position) noexcept : position{ position }, verticality{ verticality_e::Up }, shackle{ shackle_e::None } {}
 
-		inline ladder_t(offset_t position, verticality_t verticality, bool random = false) noexcept :
+		inline ladder_t(offset_t position, verticality_e verticality, bool random = false) noexcept :
 			position{ position },
 			verticality{ verticality },
 			shackle{ random ? random_shackle(random_engine) : shackle_e::None }
 		{}
 
-		inline ladder_t(offset_t position, verticality_t verticality, shackle_e shackle) noexcept : position{ position }, verticality{ verticality }, shackle{ shackle } {}
+		inline ladder_t(offset_t position, verticality_e verticality, shackle_e shackle) noexcept : position{ position }, verticality{ verticality }, shackle{ shackle } {}
 
-		inline bool is_up_ladder() const noexcept { return verticality == verticality_t::Up; }
+		inline bool is_up_ladder() const noexcept { return verticality == verticality_e::Up; }
 
-		inline bool is_down_ladder() const noexcept { return verticality == verticality_t::Down; }
+		inline bool is_down_ladder() const noexcept { return verticality == verticality_e::Down; }
 
 		inline bool has_shackle() const noexcept { return shackle != shackle_e::None; }
 

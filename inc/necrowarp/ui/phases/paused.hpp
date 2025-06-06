@@ -18,7 +18,7 @@ namespace necrowarp {
 		" F1: Hide Controls "
 	};
 
-	template<> struct phase_state_t<game_phase_t::Paused> {
+	template<> struct phase_state_t<phase_e::Paused> {
 		static inline labeled_button_t resume_button{
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
 			embedded_label_t{
@@ -49,7 +49,7 @@ namespace necrowarp {
 		};
 
 		static inline bool any_hovered() noexcept {
-			if (phase.current_phase != game_phase_t::Paused) {
+			if (phase.current_phase != phase_e::Paused) {
 				return false;
 			}
 
@@ -57,7 +57,7 @@ namespace necrowarp {
 		}
 
 		static inline void update(Mouse::button_t button) noexcept {
-			if (phase.current_phase != game_phase_t::Paused) {
+			if (phase.current_phase != phase_e::Paused) {
 				return;
 			}
 
@@ -71,9 +71,9 @@ namespace necrowarp {
 			}
 
 			if (resume_button.is_active()) {
-				phase.transition(game_phase_t::Playing);
+				phase.transition(phase_e::Playing);
 			} else if (quit_button.is_active()) {
-				phase.transition(game_phase_t::Exiting);
+				phase.transition(phase_e::Exiting);
 			}
 		}
 

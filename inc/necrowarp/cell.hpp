@@ -11,7 +11,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	enum class fluid_type_e : u8 {
+	enum struct fluid_e : u8 {
 		None = 0,
 
 		Blood = 1 << 0,
@@ -20,46 +20,46 @@ namespace necrowarp {
 		BloodyIchor = Blood | Ichor,
 	};
 
-	constexpr cstr to_string(fluid_type_e fluid) noexcept {
+	constexpr cstr to_string(fluid_e fluid) noexcept {
 		switch (fluid) {
-			case fluid_type_e::None: {
+			case fluid_e::None: {
 				return "none";
-			} case fluid_type_e::Blood: {
+			} case fluid_e::Blood: {
 				return "blood";
-			} case fluid_type_e::Ichor: {
+			} case fluid_e::Ichor: {
 				return "ichor";
-			} case fluid_type_e::BloodyIchor: {
+			} case fluid_e::BloodyIchor: {
 				return "bloody ichor";
 			}
 		}
 	}
 
-	static inline color_t fluid_color(fluid_type_e fluid) noexcept {
+	static inline color_t fluid_color(fluid_e fluid) noexcept {
 			switch (fluid) {
-				case fluid_type_e::None: {
+				case fluid_e::None: {
 					return colors::Transparent;
-				} case fluid_type_e::Blood: {
+				} case fluid_e::Blood: {
 					return colors::materials::Blood;
-				} case fluid_type_e::Ichor: {
+				} case fluid_e::Ichor: {
 					return colors::materials::Ichor;
-				} case fluid_type_e::BloodyIchor: {
+				} case fluid_e::BloodyIchor: {
 					return colors::materials::BloodyIchor;
 				}
 			}
 		}
 
-	constexpr runes_t to_colored_string(fluid_type_e fluid) noexcept {
+	constexpr runes_t to_colored_string(fluid_e fluid) noexcept {
 		const cstr string{ to_string(fluid) };
 
 		switch (fluid) {
-			case fluid_type_e::None: {
+			case fluid_e::None: {
 				return runes_t{ string, colors::White };
-			} case fluid_type_e::Blood: {
+			} case fluid_e::Blood: {
 				return runes_t{ string, colors::materials::Blood };
-			} case fluid_type_e::Ichor: {
+			} case fluid_e::Ichor: {
 				// using magenta because I can't read the colored string for ichor
 				return runes_t{ string, colors::dark::Magenta };
-			} case fluid_type_e::BloodyIchor: {
+			} case fluid_e::BloodyIchor: {
 				return runes_t{ string, colors::materials::BloodyIchor };
 			}
 		}
@@ -78,33 +78,33 @@ namespace necrowarp {
 		constexpr ref<fluid_cell_t> operator=(cref<fluid_cell_t> other) noexcept = default;
 		constexpr ref<fluid_cell_t> operator=(rval<fluid_cell_t> other) noexcept = default;
 
-		inline bool contains(fluid_type_e fluid) const noexcept {
+		inline bool contains(fluid_e fluid) const noexcept {
 			switch (fluid) {
-				case fluid_type_e::None: {
+				case fluid_e::None: {
 					return !blood && !ichor;
-				} case fluid_type_e::Blood: {
+				} case fluid_e::Blood: {
 					return blood;
-				} case fluid_type_e::Ichor: {
+				} case fluid_e::Ichor: {
 					return ichor;
-				} case fluid_type_e::BloodyIchor: {
+				} case fluid_e::BloodyIchor: {
 					return blood && ichor;
 				}
 			}
 		}
 
-		inline void set(fluid_type_e fluid) noexcept {
+		inline void set(fluid_e fluid) noexcept {
 			switch (fluid) {
-				case fluid_type_e::None: {
+				case fluid_e::None: {
 					blood = false;
 					ichor = false;
 					break;
-				} case fluid_type_e::Blood: {
+				} case fluid_e::Blood: {
 					blood = true;
 					break;
-				} case fluid_type_e::Ichor: {
+				} case fluid_e::Ichor: {
 					ichor = true;
 					break;
-				} case fluid_type_e::BloodyIchor: {
+				} case fluid_e::BloodyIchor: {
 					blood = true;
 					ichor = true;
 					break;
@@ -112,17 +112,17 @@ namespace necrowarp {
 			}
 		}
 
-		inline void unset(fluid_type_e fluid) noexcept {
+		inline void unset(fluid_e fluid) noexcept {
 			switch (fluid) {
-				case fluid_type_e::None: {
+				case fluid_e::None: {
 					break;
-				} case fluid_type_e::Blood: {
+				} case fluid_e::Blood: {
 					blood = false;
 					break;
-				} case fluid_type_e::Ichor: {
+				} case fluid_e::Ichor: {
 					ichor = false;
 					break;
-				} case fluid_type_e::BloodyIchor: {
+				} case fluid_e::BloodyIchor: {
 					blood = false;
 					ichor = false;
 					break;
@@ -131,14 +131,14 @@ namespace necrowarp {
 		}
 
 		template<typename... Fluids>
-			requires is_homogeneous<fluid_type_e, Fluids...>::value && is_plurary<Fluids...>::value
+			requires is_homogeneous<fluid_e, Fluids...>::value && is_plurary<Fluids...>::value
 		constexpr fluid_cell_t(Fluids... fluids) {
-			for (fluid_type_e fluid : { fluids... }) {
+			for (fluid_e fluid : { fluids... }) {
 				set(fluid);
 			}
 		}
 
-		constexpr inline fluid_cell_t operator+(fluid_type_e fluid) const noexcept {
+		constexpr inline fluid_cell_t operator+(fluid_e fluid) const noexcept {
 			fluid_cell_t state{ *this };
 
 			state.set(fluid);
@@ -146,7 +146,7 @@ namespace necrowarp {
 			return state;
 		}
 
-		constexpr inline fluid_cell_t operator-(fluid_type_e fluid) const noexcept {
+		constexpr inline fluid_cell_t operator-(fluid_e fluid) const noexcept {
 			fluid_cell_t cell{ *this };
 
 			cell.unset(fluid);
@@ -154,19 +154,19 @@ namespace necrowarp {
 			return cell;
 		}
 
-		constexpr inline ref<fluid_cell_t> operator+=(fluid_type_e fluid) noexcept {
+		constexpr inline ref<fluid_cell_t> operator+=(fluid_e fluid) noexcept {
 			set(fluid);
 
 			return *this;
 		}
 
-		constexpr inline ref<fluid_cell_t> operator-=(fluid_type_e fluid) noexcept {
+		constexpr inline ref<fluid_cell_t> operator-=(fluid_e fluid) noexcept {
 			unset(fluid);
 
 			return *this;
 		}
 
-		constexpr ref<fluid_cell_t> operator=(fluid_type_e fluid) noexcept {
+		constexpr ref<fluid_cell_t> operator=(fluid_e fluid) noexcept {
 			set(fluid);
 
 			return *this;
@@ -176,38 +176,38 @@ namespace necrowarp {
 
 		constexpr bool operator!=(fluid_cell_t other) const noexcept { return blood != other.blood || ichor != other.ichor; }
 
-		constexpr bool operator==(fluid_type_e fluid) const noexcept { return contains(fluid); }
+		constexpr bool operator==(fluid_e fluid) const noexcept { return contains(fluid); }
 
-		constexpr bool operator!=(fluid_type_e fluid) const noexcept { return !contains(fluid); }
+		constexpr bool operator!=(fluid_e fluid) const noexcept { return !contains(fluid); }
 
-		constexpr explicit operator fluid_type_e() const noexcept {
+		constexpr explicit operator fluid_e() const noexcept {
 			u8 fluid{ 0 };
 
-			if (blood) { fluid |= static_cast<u8>(fluid_type_e::Blood); }
-			if (ichor) { fluid |= static_cast<u8>(fluid_type_e::Ichor); }
+			if (blood) { fluid |= static_cast<u8>(fluid_e::Blood); }
+			if (ichor) { fluid |= static_cast<u8>(fluid_e::Ichor); }
 
-			return static_cast<fluid_type_e>(fluid);
+			return static_cast<fluid_e>(fluid);
 		}
 
 		inline constexpr std::string to_tooltip() const {
-			const fluid_type_e fluid{ static_cast<fluid_type_e>(*this) };
+			const fluid_e fluid{ static_cast<fluid_e>(*this) };
 
-			return std::format("The cell is {}.", fluid == fluid_type_e::None ? "dry" : std::format("spattered with {}", to_string(fluid)));
+			return std::format("The cell is {}.", fluid == fluid_e::None ? "dry" : std::format("spattered with {}", to_string(fluid)));
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
-			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_type_e>(zone[position])) }, position);
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_e>(zone[position])) }, position);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
-			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_type_e>(zone[position])) }, position + offset);
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
+			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_e>(zone[position])) }, position + offset);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
-			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_type_e>(zone[position])) }, position + offset, nudge);
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_e>(zone[position])) }, position + offset, nudge);
 		}
 
 		struct hasher {
@@ -215,7 +215,7 @@ namespace necrowarp {
 		};
 	};
 
-	enum class cell_trait_t : u8 {
+	enum struct cell_e : u8 {
 		Open,
 		Solid,
 		Transperant,
@@ -226,23 +226,23 @@ namespace necrowarp {
 		Explored
 	};
 
-	constexpr cstr to_string(cell_trait_t trait) noexcept {
+	constexpr cstr to_string(cell_e trait) noexcept {
 		switch (trait) {
-			case cell_trait_t::Open: {
+			case cell_e::Open: {
 				return "open";
-			} case cell_trait_t::Solid: {
+			} case cell_e::Solid: {
 				return "solid";
-			} case cell_trait_t::Transperant: {
+			} case cell_e::Transperant: {
 				return "transperant";
-			} case cell_trait_t::Opaque: {
+			} case cell_e::Opaque: {
 				return "opaque";
-			} case cell_trait_t::Unseen: {
+			} case cell_e::Unseen: {
 				return "unseen";
-			} case cell_trait_t::Seen: {
+			} case cell_e::Seen: {
 				return "seen";
-			} case cell_trait_t::Unexplored: {
+			} case cell_e::Unexplored: {
 				return "unexplored";
-			} case cell_trait_t::Explored: {
+			} case cell_e::Explored: {
 				return "explored";
 			}
 		}
@@ -265,53 +265,53 @@ namespace necrowarp {
 		constexpr ref<map_cell_t> operator=(cref<map_cell_t> other) noexcept = default;
 		constexpr ref<map_cell_t> operator=(rval<map_cell_t> other) noexcept = default;
 
-		constexpr bool contains(cell_trait_t trait) const noexcept {
+		constexpr bool contains(cell_e trait) const noexcept {
 			switch (trait) {
-			case cell_trait_t::Solid:
+			case cell_e::Solid:
 				return solid;
-			case cell_trait_t::Open:
+			case cell_e::Open:
 				return !solid;
-			case cell_trait_t::Opaque:
+			case cell_e::Opaque:
 				return opaque;
-			case cell_trait_t::Transperant:
+			case cell_e::Transperant:
 				return !opaque;
-			case cell_trait_t::Seen:
+			case cell_e::Seen:
 				return seen;
-			case cell_trait_t::Unseen:
+			case cell_e::Unseen:
 				return !seen;
-			case cell_trait_t::Explored:
+			case cell_e::Explored:
 				return explored;
-			case cell_trait_t::Unexplored:
+			case cell_e::Unexplored:
 				return !explored;
 			default:
 				return false;
 			}
 		}
 
-		constexpr void set(cell_trait_t trait) noexcept {
+		constexpr void set(cell_e trait) noexcept {
 			switch (trait) {
-			case cell_trait_t::Open:
+			case cell_e::Open:
 				solid = false;
 				break;
-			case cell_trait_t::Solid:
+			case cell_e::Solid:
 				solid = true;
 				break;
-			case cell_trait_t::Transperant:
+			case cell_e::Transperant:
 				opaque = false;
 				break;
-			case cell_trait_t::Opaque:
+			case cell_e::Opaque:
 				opaque = true;
 				break;
-			case cell_trait_t::Unseen:
+			case cell_e::Unseen:
 				seen = false;
 				break;
-			case cell_trait_t::Seen:
+			case cell_e::Seen:
 				seen = true;
 				break;
-			case cell_trait_t::Unexplored:
+			case cell_e::Unexplored:
 				explored = false;
 				break;
-			case cell_trait_t::Explored:
+			case cell_e::Explored:
 				explored = true;
 				break;
 			default:
@@ -319,30 +319,30 @@ namespace necrowarp {
 			}
 		}
 
-		constexpr void unset(cell_trait_t trait) noexcept {
+		constexpr void unset(cell_e trait) noexcept {
 			switch (trait) {
-			case cell_trait_t::Open:
+			case cell_e::Open:
 				solid = true;
 				break;
-			case cell_trait_t::Solid:
+			case cell_e::Solid:
 				solid = false;
 				break;
-			case cell_trait_t::Transperant:
+			case cell_e::Transperant:
 				opaque = true;
 				break;
-			case cell_trait_t::Opaque:
+			case cell_e::Opaque:
 				opaque = false;
 				break;
-			case cell_trait_t::Unseen:
+			case cell_e::Unseen:
 				seen = true;
 				break;
-			case cell_trait_t::Seen:
+			case cell_e::Seen:
 				seen = false;
 				break;
-			case cell_trait_t::Unexplored:
+			case cell_e::Unexplored:
 				explored = true;
 				break;
-			case cell_trait_t::Explored:
+			case cell_e::Explored:
 				explored = false;
 				break;
 			default:
@@ -351,14 +351,14 @@ namespace necrowarp {
 		}
 
 		template<typename... Traits>
-			requires is_homogeneous<cell_trait_t, Traits...>::value && is_plurary<Traits...>::value
+			requires is_homogeneous<cell_e, Traits...>::value && is_plurary<Traits...>::value
 		constexpr map_cell_t(Traits... traits) {
-			for (cref<cell_trait_t> trait : { traits... }) {
+			for (cref<cell_e> trait : { traits... }) {
 				set(trait);
 			}
 		}
 
-		constexpr inline map_cell_t operator+(cell_trait_t trait) const noexcept {
+		constexpr inline map_cell_t operator+(cell_e trait) const noexcept {
 			map_cell_t state{ *this };
 
 			state.set(trait);
@@ -366,7 +366,7 @@ namespace necrowarp {
 			return state;
 		}
 
-		constexpr inline map_cell_t operator-(cell_trait_t trait) const noexcept {
+		constexpr inline map_cell_t operator-(cell_e trait) const noexcept {
 			map_cell_t state{ *this };
 
 			state.unset(trait);
@@ -374,19 +374,19 @@ namespace necrowarp {
 			return state;
 		}
 
-		constexpr inline ref<map_cell_t> operator+=(cell_trait_t trait) noexcept {
+		constexpr inline ref<map_cell_t> operator+=(cell_e trait) noexcept {
 			set(trait);
 
 			return *this;
 		}
 
-		constexpr inline ref<map_cell_t> operator-=(cell_trait_t trait) noexcept {
+		constexpr inline ref<map_cell_t> operator-=(cell_e trait) noexcept {
 			unset(trait);
 
 			return *this;
 		}
 
-		constexpr ref<map_cell_t> operator=(cell_trait_t trait) noexcept {
+		constexpr ref<map_cell_t> operator=(cell_e trait) noexcept {
 			set(trait);
 
 			return *this;
@@ -400,9 +400,9 @@ namespace necrowarp {
 			return solid != other.solid || opaque != other.opaque || seen != other.seen || explored != other.explored;
 		}
 
-		constexpr bool operator==(cell_trait_t other) const noexcept { return contains(other); }
+		constexpr bool operator==(cell_e other) const noexcept { return contains(other); }
 
-		constexpr bool operator!=(cell_trait_t other) const noexcept { return !contains(other); }
+		constexpr bool operator!=(cell_e other) const noexcept { return !contains(other); }
 
 		inline constexpr std::string to_tooltip() const {
 			if (explored) {
@@ -429,8 +429,8 @@ namespace necrowarp {
 		}
 
 		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void recalculate_index(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, cell_trait_t trait) noexcept {
-			index = zone.template calculate_index<neighbourhood_solver_t::Melded>(position, trait);
+		inline constexpr void recalculate_index(cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, cell_e trait) noexcept {
+			index = zone.template calculate_index<solver_e::Melded>(position, trait);
 		}
 
 		inline glyph_t floor_glyph() const noexcept { return glyph_t{ characters::Floor, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
@@ -440,7 +440,7 @@ namespace necrowarp {
 		inline glyph_t patch_glyph(u8 idx) const noexcept { return glyph_t{ idx, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
 
 		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr u8 determine_patch(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+		inline constexpr u8 determine_patch(cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (zone.on_y_edge(position)) {
 				return 0;
 			}
@@ -481,7 +481,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -496,7 +496,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -513,7 +513,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
+		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -528,7 +528,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -545,7 +545,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -560,7 +560,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
 			if (!explored) {
 				return;
 			}

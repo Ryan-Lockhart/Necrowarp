@@ -40,9 +40,9 @@ namespace necrowarp {
 		}
 
 		return magic_enum::enum_switch([&](auto val) -> bool {
-			constexpr game_phase_t cval{ val };
+			constexpr phase_e cval{ val };
 
-			if constexpr (cval != game_phase_t::None) {
+			if constexpr (cval != phase_e::None) {
 				return phase_state_t<cval>::any_hovered();
 			}
 
@@ -68,9 +68,9 @@ namespace necrowarp {
 			grid_cursor.update(camera);
 
 			magic_enum::enum_switch([&](auto val) -> void {
-				constexpr game_phase_t cval{ val };
+				constexpr phase_e cval{ val };
 
-				if constexpr (cval != game_phase_t::None) {
+				if constexpr (cval != phase_e::None) {
 					phase_state_t<cval>::update(Mouse::button_t::Left);
 				}
 			}, phase.current_phase);
@@ -81,7 +81,7 @@ namespace necrowarp {
 				return;
 			}
 
-			if (phase.current_phase == game_phase_t::Playing) {
+			if (phase.current_phase == phase_e::Playing) {
 				if (!draw_cursor) {
 					grid_cursor.draw(camera, globals::grid_origin<grid_type_e::Game>());
 				}
@@ -92,9 +92,9 @@ namespace necrowarp {
 			}
 
 			magic_enum::enum_switch([&](auto val){
-				constexpr game_phase_t cval{ val };
+				constexpr phase_e cval{ val };
 
-				if constexpr (cval != game_phase_t::None) {
+				if constexpr (cval != phase_e::None) {
 					phase_state_t<cval>::draw(renderer);
 				}				
 			}, phase.current_phase);
@@ -102,7 +102,7 @@ namespace necrowarp {
 			title_label.draw(renderer);
 			fps_label.draw(renderer);
 
-			if (phase.current_phase != game_phase_t::Playing || draw_cursor) {
+			if (phase.current_phase != phase_e::Playing || draw_cursor) {
 				ui_cursor.draw();
 			}
 		}

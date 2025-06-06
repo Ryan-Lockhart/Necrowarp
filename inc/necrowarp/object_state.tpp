@@ -156,7 +156,7 @@ namespace necrowarp {
 
 	template<NonNullObject ObjectType> inline bool object_registry_t::spawn(usize count) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, object_registry) };
+			cauto maybe_position{ game_map.find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -170,7 +170,7 @@ namespace necrowarp {
 
 	template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t::spawn(usize count, Args... args) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map.find_random<zone_region_t::Interior>(random_engine, cell_trait_t::Open, object_registry) };
+			cauto maybe_position{ game_map.find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -184,7 +184,7 @@ namespace necrowarp {
 
 	template<NonNullObject ObjectType> inline bool object_registry_t::spawn(usize count, u32 minimum_distance) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ object_goal_map<ObjectType>.template find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, object_registry, minimum_distance) };
+			cauto maybe_position{ object_goal_map<ObjectType>.template find_random<zone_region_e::Interior>(game_map, random_engine, cell_e::Open, object_registry, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -192,17 +192,17 @@ namespace necrowarp {
 
 			object_registry.add(ObjectType{ maybe_position.value() });
 
-			object_goal_map<ObjectType>.template recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, object_registry);
+			object_goal_map<ObjectType>.template recalculate<zone_region_e::Interior>(game_map, cell_e::Open, object_registry);
 		}
 
 		return true;
 	}
 
 	template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
-		object_goal_map<ObjectType>.template recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, object_registry);
+		object_goal_map<ObjectType>.template recalculate<zone_region_e::Interior>(game_map, cell_e::Open, object_registry);
 		
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ object_goal_map<ObjectType>.template find_random<zone_region_t::Interior>(game_map, random_engine, cell_trait_t::Open, object_registry, minimum_distance) };
+			cauto maybe_position{ object_goal_map<ObjectType>.template find_random<zone_region_e::Interior>(game_map, random_engine, cell_e::Open, object_registry, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -210,14 +210,14 @@ namespace necrowarp {
 
 			object_registry.add(ObjectType{ maybe_position.value(), args... });
 
-			object_goal_map<ObjectType>.template recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, object_registry);
+			object_goal_map<ObjectType>.template recalculate<zone_region_e::Interior>(game_map, cell_e::Open, object_registry);
 		}
 
 		return true;
 	}
 
 	template<NonNullObject ObjectType> inline bool object_registry_t::update(offset_t current, offset_t target) noexcept {
-		if (object_registry.empty(current) || !game_map.within<zone_region_t::Interior>(current) || object_registry.contains(target) || !game_map.within<zone_region_t::Interior>(target)) {
+		if (object_registry.empty(current) || !game_map.within<zone_region_e::Interior>(current) || object_registry.contains(target) || !game_map.within<zone_region_e::Interior>(target)) {
 			return false;
 		}
 		
@@ -231,7 +231,7 @@ namespace necrowarp {
 	}
 
 	template<NonNullObject ObjectType> inline void object_registry_t::recalculate_goal_map() noexcept {
-		object_goal_map<ObjectType>.template recalculate<zone_region_t::Interior>(game_map, cell_trait_t::Open, object_registry);
+		object_goal_map<ObjectType>.template recalculate<zone_region_e::Interior>(game_map, cell_e::Open, object_registry);
 	}
 
 	template<NonNullObject... ObjectTypes>

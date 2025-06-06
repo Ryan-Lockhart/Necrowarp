@@ -10,24 +10,24 @@
 namespace necrowarp {
 	inline command_pack_t priest_t::think() const noexcept {
 		if (!can_resurrect() && !can_anoint() && object_registry.empty<skull_t>()) {
-			cauto flock_to_paladin_pos{ entity_goal_map<paladin_t>.descend<zone_region_t::Interior>(position, entity_registry) };
+			cauto flock_to_paladin_pos{ entity_goal_map<paladin_t>.descend<zone_region_e::Interior>(position, entity_registry) };
 
 			if (flock_to_paladin_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, flock_to_paladin_pos.value() };
 			}
-			cauto flock_to_mercenary_pos{ entity_goal_map<mercenary_t>.descend<zone_region_t::Interior>(position, entity_registry) };
+			cauto flock_to_mercenary_pos{ entity_goal_map<mercenary_t>.descend<zone_region_e::Interior>(position, entity_registry) };
 
 			if (flock_to_mercenary_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, flock_to_mercenary_pos.value() };
 			}
 
-			cauto flock_to_adventurer_pos { entity_goal_map<adventurer_t>.descend<zone_region_t::Interior>(position, entity_registry) };
+			cauto flock_to_adventurer_pos { entity_goal_map<adventurer_t>.descend<zone_region_e::Interior>(position, entity_registry) };
 
 			if (flock_to_adventurer_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, flock_to_adventurer_pos.value() };
 			}
 
-			cauto flee_from_evil_pos{ good_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
+			cauto flee_from_evil_pos{ good_goal_map.ascend<zone_region_e::Interior>(position, entity_registry) };
 
 			if (flee_from_evil_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, flee_from_evil_pos.value() };
@@ -36,7 +36,7 @@ namespace necrowarp {
 			return command_pack_t{ command_e::Suicide, position };
 		}
 
-		for (cauto offset : neighbourhood_offsets<distance_function_t::Chebyshev>) {
+		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t offset_pos{ position + offset };
 
 			if (object_registry.contains<skull_t>(offset_pos)) {
@@ -65,9 +65,9 @@ namespace necrowarp {
 		}
 
 		cauto descent_pos = [&]() -> std::optional<offset_t> {
-			cauto skull_pos = object_goal_map<skull_t>.descend<zone_region_t::Interior>(position, entity_registry);
+			cauto skull_pos = object_goal_map<skull_t>.descend<zone_region_e::Interior>(position, entity_registry);
 
-			cauto adventurer_pos = entity_goal_map<adventurer_t>.descend<zone_region_t::Interior>(position, entity_registry);
+			cauto adventurer_pos = entity_goal_map<adventurer_t>.descend<zone_region_e::Interior>(position, entity_registry);
 
 			if (skull_pos.has_value() && adventurer_pos.has_value()) {
 				cauto skull_distance{ object_goal_map<skull_t>.at(skull_pos.value()) };
@@ -80,7 +80,7 @@ namespace necrowarp {
 				return adventurer_pos;
 			}
 
-			cauto flee_from_evil_pos{ good_goal_map.ascend<zone_region_t::Interior>(position, entity_registry) };
+			cauto flee_from_evil_pos{ good_goal_map.ascend<zone_region_e::Interior>(position, entity_registry) };
 
 			if (!flee_from_evil_pos.has_value()) {
 				return std::nullopt;

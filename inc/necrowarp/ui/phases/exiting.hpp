@@ -3,7 +3,7 @@
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
-	template<> struct phase_state_t<game_phase_t::Exiting> {
+	template<> struct phase_state_t<phase_e::Exiting> {
 		static inline label_t confirm_quit_label{
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
 			embedded_label_t{
@@ -32,7 +32,7 @@ namespace necrowarp {
 		};
 
 		static inline bool any_hovered() noexcept {
-			if (phase.current_phase != game_phase_t::Exiting) {
+			if (phase.current_phase != phase_e::Exiting) {
 				return false;
 			}
 
@@ -43,7 +43,7 @@ namespace necrowarp {
 		}
 
 		static inline void update(Mouse::button_t button) noexcept {
-			if (phase.current_phase != game_phase_t::Exiting) {
+			if (phase.current_phase != phase_e::Exiting) {
 				return;
 			}
 

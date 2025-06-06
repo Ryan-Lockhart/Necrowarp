@@ -34,7 +34,7 @@ namespace necrowarp {
 		" Favor                       "
 	};
 
-	template<> struct phase_state_t<game_phase_t::Playing> {
+	template<> struct phase_state_t<phase_e::Playing> {
 		static inline status_bar_t<3> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
 			std::array<status_t, 3>{
@@ -154,7 +154,7 @@ namespace necrowarp {
 		}
 
 		static inline bool any_hovered() noexcept {
-			if (phase.current_phase != game_phase_t::Playing) {
+			if (phase.current_phase != phase_e::Playing) {
 				return false;
 			}
 			
@@ -162,7 +162,7 @@ namespace necrowarp {
 		}
 
 		static inline void update(Mouse::button_t button) noexcept {
-			if (phase.current_phase != game_phase_t::Playing) {
+			if (phase.current_phase != phase_e::Playing) {
 				return;
 			}
 
@@ -341,9 +341,9 @@ namespace necrowarp {
 			const bool has_entity{ entity_registry.contains(grid_cursor.current_position) };
 			const bool has_object{ object_registry.contains(grid_cursor.current_position) };
 
-			const fluid_type_e fluid{ fluid_map[grid_cursor.current_position] };
+			const fluid_e fluid{ fluid_map[grid_cursor.current_position] };
 
-			show_tooltip = has_entity || has_object || fluid != fluid_type_e::None;
+			show_tooltip = has_entity || has_object || fluid != fluid_e::None;
 
 			if (show_tooltip) {
 				tooltip_label.text = runes_t{};
@@ -360,11 +360,11 @@ namespace necrowarp {
 					tooltip_label.text.concatenate(to_colored_string(object_registry.at(grid_cursor.current_position), grid_cursor.current_position));
 				}
 
-				if ((has_entity || has_object) && fluid != fluid_type_e::None) {
+				if ((has_entity || has_object) && fluid != fluid_e::None) {
 					tooltip_label.text.concatenate({ " | " });
 				}
 				
-				if (fluid != fluid_type_e::None) {
+				if (fluid != fluid_e::None) {
 					tooltip_label.text.concatenate(to_colored_string(fluid));
 				}
 			}

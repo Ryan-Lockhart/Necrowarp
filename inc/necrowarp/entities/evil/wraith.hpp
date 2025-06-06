@@ -49,7 +49,7 @@ namespace necrowarp {
 	};
 
 	template<> struct fluid_type<wraith_t> {
-		static constexpr fluid_type_e type = fluid_type_e::Ichor;
+		static constexpr fluid_e type = fluid_e::Ichor;
 	};
 
 	template<> struct is_entity_command_valid<wraith_t, eviscerate_t> {

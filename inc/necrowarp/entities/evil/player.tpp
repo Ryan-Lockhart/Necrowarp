@@ -60,7 +60,7 @@ namespace necrowarp {
 	}
 
 	inline void player_t::die() noexcept {
-		phase.transition(game_phase_t::GameOver);
+		phase.transition(phase_e::GameOver);
 
 		++steam_stats::stats<steam_stat_e::PlayerDeaths, i32>;
 	}

@@ -57,7 +57,7 @@ namespace necrowarp {
 	};
 
 	template<> struct fluid_type<priest_t> {
-		static constexpr fluid_type_e type = fluid_type_e::Blood;
+		static constexpr fluid_e type = fluid_e::Blood;
 	};
 
 	template<> struct is_entity_command_valid<priest_t, exorcise_t> {
