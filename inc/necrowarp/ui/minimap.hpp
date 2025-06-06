@@ -37,23 +37,64 @@ namespace necrowarp {
 					const offset_t pos{ x, y };
 					const offset_t pixel_pos{ position + (pos * PixelSize) };
 
-					const color_t pixel_color{ [&]() -> color_t {
-						if (entity_registry.contains<player_t>(pos)) {
-							return colors::Magenta;
-						} else if (entity_registry.contains<ALL_EVIL_NPCS>(pos)) {
-							return colors::Green;
-						} else if (entity_registry.contains<ALL_GOOD_NPCS>(pos)) {
-							return colors::Red;
-						} else if (object_registry.contains(pos)) {
-							return colors::Blue;
-						} else if (game_map[pos].solid) {
-							return colors::Charcoal;
-						} else if (!fluid_map[pos].contains(fluid_e::None)) {
-							return fluid_color(static_cast<fluid_e>(fluid_map[pos]));
-						} else {
-							return colors::Marble;
-						}
-					}()};
+					const color_t pixel_color{
+						[&]() -> color_t {
+							if (entity_registry.contains<player_t>(pos)) {
+								return colors::Magenta;
+							} else if (entity_registry.contains<ALL_EVIL_NPCS>(pos)) {
+								return colors::Green;
+							} else if (entity_registry.contains<ALL_GOOD_NPCS>(pos)) {
+								return colors::Red;
+							} else if (object_registry.contains(pos)) {
+								return colors::Blue;
+							} else if (game_map[pos].solid) {
+								return colors::Charcoal;
+							} else if (!fluid_map[pos].contains(fluid_e::None)) {
+								return fluid_color(static_cast<fluid_e>(fluid_map[pos]));
+							} else {
+								return colors::Marble;
+							}
+						}()
+					};
+
+					if constexpr (PixelSize == extent_t{ 1, 1 }) {
+						renderer.draw_point(pixel_pos, pixel_color);
+					} else {
+						renderer.draw_fill_rect(rect_t{ pixel_pos, PixelSize }, pixel_color);
+					}
+				}
+			}
+
+			renderer.draw_outline_rect(rect_t{ position + camera.get_position() * PixelSize, camera.get_size() * PixelSize }, colors::metals::Gold);
+		}
+
+		constexpr void draw(ref<renderer_t> renderer, cref<entity_registry_t> entities, cref<object_registry_t> objects, offset_t position) const noexcept {
+			renderer.draw_composite_rect(rect_t{ apply_padding(position), external_size() }, box.background, box.border.color, box.border.thickness * globals::cell_size<grid_type_e::UI>.w);
+			
+			for (extent_t::scalar_t y{ 0 }; y < ZoneSize.h; ++y) {
+				for (extent_t::scalar_t x{ 0 }; x < ZoneSize.w; ++x) {
+					const offset_t pos{ x, y };
+					const offset_t pixel_pos{ position + (pos * PixelSize) };
+
+					const color_t pixel_color{
+						[&]() -> color_t {
+							if (entities.contains<player_t>(pos)) {
+								return colors::Magenta;
+							} else if (entities.contains<ALL_EVIL_NPCS>(pos)) {
+								return colors::Green;
+							} else if (entities.contains<ALL_GOOD_NPCS>(pos)) {
+								return colors::Red;
+							} else if (objects.contains(pos)) {
+								return colors::Blue;
+							} else if (game_map[pos].solid) {
+								return colors::Charcoal;
+							} else if (!fluid_map[pos].contains(fluid_e::None)) {
+								return fluid_color(static_cast<fluid_e>(fluid_map[pos]));
+							} else {
+								return colors::Marble;
+							}
+						}()
+					};
 
 					if constexpr (PixelSize == extent_t{ 1, 1 }) {
 						renderer.draw_point(pixel_pos, pixel_color);
@@ -77,5 +118,7 @@ namespace necrowarp {
 		}
 
 		constexpr void draw(ref<renderer_t> renderer) const noexcept { embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::draw(renderer, get_offset(embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::external_size())); }
+
+		constexpr void draw(ref<renderer_t> renderer, cref<entity_registry_t> entities, cref<object_registry_t> objects) const noexcept { embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::draw(renderer, entities, objects, get_offset(embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::external_size())); }
 	};
 }

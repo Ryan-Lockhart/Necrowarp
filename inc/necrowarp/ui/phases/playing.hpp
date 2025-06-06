@@ -1,5 +1,7 @@
 #pragma once
 
+#include "necrowarp/entity_state.hpp"
+#include "necrowarp/game_state.hpp"
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
@@ -35,6 +37,9 @@ namespace necrowarp {
 	};
 
 	template<> struct phase_state_t<phase_e::Playing> {
+		static inline entity_registry_t entity_buffer{};
+		static inline object_registry_t object_buffer{};
+
 		static inline status_bar_t<3> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
 			std::array<status_t, 3>{
@@ -187,13 +192,13 @@ namespace necrowarp {
 
 				advancement_label.text = runes_t{
 					std::format(
-						"[{}/{}] (+1 energy slot in {} kill{})\n\n"
-						"[{}/{}] (+1 armor slot in {} kill{})\n\n"
-						"[{}/{}] (+1 divinity turn in {} kill{})",
+						"[{}/{}]{}\n\n"
+						"[{}/{}]{}\n\n"
+						"[{}/{}]{}",
 
-						player.get_energy(), player.max_energy(), kills_energy == 0 ? globals::KillsPerEnergySlot : kills_energy, kills_energy == 1 ? "" : "s",
-						player.get_armor(), player.max_armor(), kills_armor == 0 ? globals::KillsPerArmorSlot : kills_armor, kills_armor == 1 ? "" : "s",
-						player.get_divinity(), player.max_divinity(), kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s"
+						player.get_energy(), player.max_energy(), player.max_energy() >= player_t::MaximumEnergy ? "" : std::format(" (+1 energy slot in {} kill{})", kills_energy == 0 ? globals::KillsPerEnergySlot : kills_energy, kills_energy == 1 ? "" : "s"),
+						player.get_armor(), player.max_armor(), player.max_armor() >= player_t::MaximumArmor ? "" : std::format(" (+1 armor slot in {} kill{})", kills_armor == 0 ? globals::KillsPerArmorSlot : kills_armor, kills_armor == 1 ? "" : "s"),
+						player.get_divinity(), player.max_divinity(), player.max_divinity() >= player_t::MaximumDivinity ? "" : std::format("(+1 divinity turn in {} kill{})", kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s")
 					)
 				};
 			}
@@ -338,8 +343,8 @@ namespace necrowarp {
 				favor_hidden_label.text = runes_t{ " Favor " };
 			}
 
-			const bool has_entity{ entity_registry.contains(grid_cursor.current_position) };
-			const bool has_object{ object_registry.contains(grid_cursor.current_position) };
+			const bool has_entity{ entity_buffer.contains(grid_cursor.current_position) };
+			const bool has_object{ object_buffer.contains(grid_cursor.current_position) };
 
 			const fluid_e fluid{ fluid_map[grid_cursor.current_position] };
 
@@ -349,7 +354,7 @@ namespace necrowarp {
 				tooltip_label.text = runes_t{};
 
 				if (has_entity) {
-					tooltip_label.text.concatenate(to_colored_string(entity_registry.at(grid_cursor.current_position), grid_cursor.current_position));
+					tooltip_label.text.concatenate(to_colored_string(entity_buffer.at(grid_cursor.current_position), grid_cursor.current_position));
 				}
 
 				if (has_entity && has_object) {
@@ -357,7 +362,7 @@ namespace necrowarp {
 				}
 
 				if (has_object) {
-					tooltip_label.text.concatenate(to_colored_string(object_registry.at(grid_cursor.current_position), grid_cursor.current_position));
+					tooltip_label.text.concatenate(to_colored_string(object_buffer.at(grid_cursor.current_position), grid_cursor.current_position));
 				}
 
 				if ((has_entity || has_object) && fluid != fluid_e::None) {
@@ -369,13 +374,13 @@ namespace necrowarp {
 				}
 			}
 
-			if (entity_registry.contains<player_t>(grid_cursor.current_position)) {
+			if (entity_buffer.contains<player_t>(grid_cursor.current_position)) {
 				grid_cursor.color = colors::Magenta;
-			} else if (entity_registry.contains<ALL_EVIL_NPCS>(grid_cursor.current_position)) {
+			} else if (entity_buffer.contains<ALL_EVIL_NPCS>(grid_cursor.current_position)) {
 				grid_cursor.color = colors::Green;
-			} else if (entity_registry.contains<ALL_GOOD_NPCS>(grid_cursor.current_position)) {
+			} else if (entity_buffer.contains<ALL_GOOD_NPCS>(grid_cursor.current_position)) {
 				grid_cursor.color = colors::Red;
-			} else if (object_registry.contains(grid_cursor.current_position)) {
+			} else if (object_buffer.contains(grid_cursor.current_position)) {
 				grid_cursor.color = colors::Blue;
 			} else {
 				grid_cursor.color = colors::metals::Gold;
@@ -418,7 +423,11 @@ namespace necrowarp {
 				tooltip_label.draw(renderer);
 			}
 
-			minimap.draw(renderer);
+			if (!processing_turn) {
+				minimap.draw(renderer);
+			} else if (!buffers_locked) {
+				minimap.draw(renderer, entity_buffer, object_buffer);
+			}
 		}
 	};
 } // necrowarp

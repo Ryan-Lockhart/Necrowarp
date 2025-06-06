@@ -81,6 +81,7 @@ namespace necrowarp {
 	
 	static inline volatile std::atomic_bool player_acted{ false };
 	static inline volatile std::atomic_bool processing_turn{ false };
+	static inline volatile std::atomic_bool buffers_locked{ false };
 
 	static inline volatile std::atomic_bool game_running{ false };
 

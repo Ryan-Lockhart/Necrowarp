@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bleak/constants/colors.hpp"
+#include "bleak/constants/glyphs.hpp"
 #include <necrowarp/objects/object.hpp>
 
 #include <random>
@@ -71,101 +71,18 @@ namespace necrowarp {
 		}
 	}
 
-	enum struct shackle_e : u8 {
-		None,
-		Calcitic,
-		Spectral,
-		Sanguine,
-		Galvanic
-	};
+	static inline std::uniform_int_distribution<u16> stability_dis{ static_cast<u16>(stability_e::Calm), static_cast<u16>(stability_e::Turbulent) };
 
-	constexpr cstr to_string(shackle_e type) noexcept {
-		switch (type) {
-			case shackle_e::Calcitic: {
-				return "spooky shackle";
-			} case shackle_e::Spectral: {
-				return "eldritch shackle";
-			} case shackle_e::Sanguine: {
-				return "bloody shackle";
-			} case shackle_e::Galvanic: {
-				return "glimmering shackle";
-			} default: {
-				return "unshackled";
-			}
-		}
-	}
-
-	constexpr runes_t to_colored_string(shackle_e type) noexcept {
-		const cstr string{ to_string(type) };
-		switch (type) {
-			case shackle_e::Calcitic: {
-				return runes_t{ string, colors::metals::shackles::Calcitic };
-			} case shackle_e::Spectral: {
-				return runes_t{ string, colors::metals::shackles::Spectral };
-			} case shackle_e::Sanguine: {
-				return runes_t{ string, colors::metals::shackles::Sanguine };
-			} case shackle_e::Galvanic: {
-				return runes_t{ string, colors::metals::shackles::Galvanic };
-			} default: {
-				return runes_t{ string, colors::metals::Iron };
-			}
-		}
-	}
-
-	static inline std::uniform_int_distribution<u16> shackle_dis{ static_cast<u16>(shackle_e::Calcitic), static_cast<u16>(shackle_e::Galvanic) };
-
-	template<RandomEngine Generator> static inline shackle_e random_shackle(ref<Generator> generator) noexcept { return static_cast<shackle_e>(shackle_dis(generator)); }
+	template<RandomEngine Generator> static inline stability_e random_stability(ref<Generator> generator) noexcept { return static_cast<stability_e>(stability_dis(generator)); }
 
 	struct portal_t {
-	  private:
-		inline void draw_shackle(offset_t pos) const noexcept {
-			switch (shackle) {
-				case shackle_e::Calcitic: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos);
-					return;
-				} case shackle_e::Spectral: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos);
-					return;
-				} case shackle_e::Sanguine: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos);
-					return;
-				} case shackle_e::Galvanic: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Galvanic }, pos);
-					return;
-				} default: {
-					return;
-				}
-			}
-		}
-
-		inline void draw_shackle(offset_t pos, offset_t offset) const noexcept {
-			switch (shackle) {
-				case shackle_e::Calcitic: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos, offset);
-					return;
-				} case shackle_e::Spectral: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos, offset);
-					return;
-				} case shackle_e::Sanguine: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos, offset);
-					return;
-				} case shackle_e::Galvanic: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Galvanic }, pos, offset);
-					return;
-				} default: {
-					return;
-				}
-			}
-		}
-		
-	  public:
 		offset_t position;
 		
 		const stability_e stability;
 
 		inline portal_t(offset_t position, bool random = false) noexcept :
 			position{ position },
-			stability{ random ? random_stability(random_engine) }
+			stability{ random ? random_stability(random_engine) : stability_e::Calm }
 		{}
 
 		inline portal_t(offset_t position, stability_e stability) noexcept :
@@ -173,7 +90,7 @@ namespace necrowarp {
 			stability{ stability }
 		{}
 
-		inline std::string to_string() const noexcept { return std::format("{} ({} | {})", necrowarp::to_string(object_e::Portal), necrowarp::to_string(verticality), necrowarp::to_string(shackle)); }
+		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(object_e::Portal), necrowarp::to_string(stability)); }
 
 		inline runes_t to_colored_string() const noexcept {
 			runes_t colored_string{ necrowarp::to_colored_string(object_e::Portal) };
@@ -186,81 +103,25 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline glyph_t current_glyph() const noexcept {}
-
-		inline void enshackle() noexcept {
-			if (has_shackle()) {
-				return;
+		inline glyph_t current_glyph() const noexcept {
+			switch (stability) {
+				case stability_e::Calm: {
+					return glyphs::CalmPortal;
+				} case stability_e::Vocal: {
+					return glyphs::VocalPortal;
+				} case stability_e::Turbulent: {
+					return glyphs::TurbulentPortal;
+				}
 			}
-			
-			shackle = random_shackle(random_engine);
-
-			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
 		}
 
-		inline void enshackle(shackle_e type) noexcept {
-			if (has_shackle() || type == shackle_e::None) {
-				return;
-			}
-			
-			shackle = type;
+		inline void draw() const noexcept { entity_atlas.draw(current_glyph(), position); }
 
-			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
-		}
+		inline void draw(offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position, offset); }
 
-		inline void unshackle() noexcept {
-			if (!has_shackle()) {
-				return;
-			}
+		inline void draw(cref<camera_t> camera) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset()); }
 
-			shackle = shackle_e::None;
-
-			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled, i32>;
-		};
-
-		inline void draw() const noexcept {
-			entity_atlas.draw(current_glyph(), position);
-
-			if (!has_shackle()) {
-				return;
-			}
-
-			draw_shackle(position);
-		}
-
-		inline void draw(offset_t offset) const noexcept {
-			entity_atlas.draw(current_glyph(), position, offset);
-
-			if (!has_shackle()) {
-				return;
-			}
-
-			draw_shackle(position, offset);
-		}
-
-		inline void draw(cref<camera_t> camera) const noexcept {
-			const offset_t pos{ position + camera.get_offset() };
-
-			entity_atlas.draw(current_glyph(), pos);
-
-			if (!has_shackle()) {
-				return;
-			}
-
-			draw_shackle(pos);
-		}
-
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept {
-			const offset_t pos{ position + camera.get_offset() };
-
-			entity_atlas.draw(current_glyph(), pos, offset);
-
-			if (!has_shackle()) {
-				return;
-			}
-
-			draw_shackle(pos, offset);
-		}
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator object_e() const noexcept { return object_e::Portal; }
 

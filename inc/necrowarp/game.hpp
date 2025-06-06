@@ -281,6 +281,9 @@ namespace necrowarp {
 			entity_registry.recalculate_goal_map();
 			object_registry.recalculate_goal_map();
 
+			phase_state_t<phase_e::Playing>::entity_buffer = entity_registry;
+			phase_state_t<phase_e::Playing>::object_buffer = object_registry;
+
 			phase.transition(phase_e::Playing);
 
 			game_running = true;
@@ -416,6 +419,13 @@ namespace necrowarp {
 
 			entity_registry.recalculate_goal_map();
 			object_registry.recalculate_goal_map();
+
+			buffers_locked = true;
+
+			phase_state_t<phase_e::Playing>::entity_buffer = entity_registry;
+			phase_state_t<phase_e::Playing>::object_buffer = object_registry;
+
+			buffers_locked = false;
 
 			phase.transition(phase_e::Playing);
 
@@ -623,6 +633,13 @@ namespace necrowarp {
 			
 			entity_registry.update();
 
+			buffers_locked = true;
+
+			phase_state_t<phase_e::Playing>::entity_buffer = entity_registry;
+			phase_state_t<phase_e::Playing>::object_buffer = object_registry;
+
+			buffers_locked = false;
+
 			player_acted = false;
 			processing_turn = false;
 		}
@@ -673,7 +690,7 @@ namespace necrowarp {
 		}
 
 		static inline void render() noexcept {
-			if (window.is_closing()) {
+			if (window.is_closing() || buffers_locked) {
 				return;
 			}
 
@@ -698,8 +715,16 @@ namespace necrowarp {
 				game_map.draw(tile_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 				fluid_map.draw(tile_atlas, camera, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 
-				object_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
-				entity_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
+				if (!processing_turn) {
+					object_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
+					entity_registry.draw(camera, globals::grid_origin<grid_type_e::Game>());
+				} else if (!buffers_locked) {
+					phase_state_t<phase_e::Playing>::object_buffer.draw(camera, globals::grid_origin<grid_type_e::Game>());
+					phase_state_t<phase_e::Playing>::entity_buffer.draw(camera, globals::grid_origin<grid_type_e::Game>());
+				} else {
+					return;
+				}
+
 			}
 
 			ui_registry.render();
