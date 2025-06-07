@@ -12,9 +12,9 @@ namespace necrowarp {
 	};
 
 	namespace globals {
-		constexpr std::string GameName{ "Necrowarp" };
-		constexpr std::string GameVersion{ "0.0.1" };
-		constexpr std::string GameAuthor{ "Ryan Lockhart" };
+		constexpr cstr GameName{ "Necrowarp" };
+		constexpr cstr GameVersion{ "0.0.1" };
+		constexpr cstr GameAuthor{ "Ryan Lockhart" };
 
 		const std::string GameTitle{ std::format("{} v{} by {}", GameName, GameVersion, GameAuthor) };
 
