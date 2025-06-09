@@ -71,7 +71,7 @@ namespace necrowarp {
 				constexpr phase_e cval{ val };
 
 				if constexpr (cval != phase_e::None) {
-					phase_state_t<cval>::update(mouse_s::button_t::Left);
+					phase_state_t<cval>::update(button_e::Left);
 				}
 			}, phase.current_phase);
 		}

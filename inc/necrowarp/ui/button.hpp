@@ -29,9 +29,9 @@ namespace necrowarp {
 
 		constexpr bool is_hovered(offset_t position, extent_t size) const noexcept { return mouse_s::is_inside(position * ui_atlas.get_glyph_size(), size * ui_atlas.get_glyph_size()); }
 
-		constexpr void update(mouse_s::button_t button, offset_t position, extent_t size) noexcept {
+		constexpr void update(button_e button, offset_t position, extent_t size) noexcept {
 			previous_state = current_state;
-			current_state = mouse_s::is_button_down(button) && is_hovered(position, size);
+			current_state = mouse_s::is_button<input_e::Down>(button) && is_hovered(position, size);
 		}
 	};
 
@@ -44,7 +44,7 @@ namespace necrowarp {
 
 		constexpr color_t current_background() const noexcept { return is_active() ? background : is_hovered() ? background.dimmed(0.75f) : background.dimmed(0.5f); }
 
-		constexpr void update(mouse_s::button_t button) noexcept { embedded_button_t::update(button, get_offset(), size); }
+		constexpr void update(button_e button) noexcept { embedded_button_t::update(button, get_offset(), size); }
 
 		constexpr void draw(ref<renderer_t> renderer) const noexcept {
 			embedded_box_t::draw(renderer, get_offset(), size, current_background());
@@ -80,9 +80,9 @@ namespace necrowarp {
 
 		constexpr bool is_hovered(offset_t position, extent_t size) const noexcept { return mouse_s::is_inside(position * ui_atlas.get_glyph_size(), size * ui_atlas.get_glyph_size()); }
 
-		constexpr void update(mouse_s::button_t button, offset_t position, extent_t size) noexcept {
+		constexpr void update(button_e button, offset_t position, extent_t size) noexcept {
 			previous_state = current_state;
-			current_state = mouse_s::is_button_down(button) && is_hovered(position, size);
+			current_state = mouse_s::is_button<input_e::Down>(button) && is_hovered(position, size);
 
 			if (get_state() == input_e::Down) {
 				toggled = !toggled;
@@ -91,9 +91,9 @@ namespace necrowarp {
 		
 		template<typename... Linked>
 			requires is_homogeneous<embedded_toggle_t, Linked...>::value
-		constexpr void update(mouse_s::button_t button, offset_t position, extent_t size, ptr<Linked>... linked) noexcept {
+		constexpr void update(button_e button, offset_t position, extent_t size, ptr<Linked>... linked) noexcept {
 			previous_state = current_state;
-			current_state = mouse_s::is_button_down(button) && is_hovered(position, size);
+			current_state = mouse_s::is_button<input_e::Down>(button) && is_hovered(position, size);
 
 			if (get_state() == input_e::Down) {
 				toggled = !toggled;
@@ -110,7 +110,7 @@ namespace necrowarp {
 		
 		template<typename... Linked>
 			requires is_homogeneous<labeled_toggle_t, Linked...>::value
-		constexpr void update(mouse_s::button_t button, offset_t position, extent_t size, ptr<Linked>... linked) noexcept;
+		constexpr void update(button_e button, offset_t position, extent_t size, ptr<Linked>... linked) noexcept;
 	};
 
 	struct toggle_t : public transform_t, public embedded_toggle_t, public embedded_box_t {
@@ -126,11 +126,11 @@ namespace necrowarp {
 
 		constexpr color_t current_background() const noexcept { return is_active() ? background : is_hovered() ? background.dimmed(0.75f) : background.dimmed(0.5f); }
 
-		constexpr void update(mouse_s::button_t button) noexcept { embedded_toggle_t::update(button, get_offset(), size); }
+		constexpr void update(button_e button) noexcept { embedded_toggle_t::update(button, get_offset(), size); }
 
 		template<typename... Linked>
 			requires is_homogeneous<embedded_toggle_t, Linked...>::value
-		constexpr void update(mouse_s::button_t button, Linked... linked) noexcept { embedded_toggle_t::update(button, get_offset(), size, linked...); }
+		constexpr void update(button_e button, Linked... linked) noexcept { embedded_toggle_t::update(button, get_offset(), size, linked...); }
 
 		constexpr void draw(ref<renderer_t> renderer) const noexcept {
 			embedded_box_t::draw(renderer, get_offset(), size, current_background());

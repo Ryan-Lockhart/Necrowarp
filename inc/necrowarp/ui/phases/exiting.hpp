@@ -42,13 +42,13 @@ namespace necrowarp {
 				cancel_quit_button.is_hovered();
 		}
 
-		static inline void update(mouse_s::button_t button) noexcept {
+		static inline void update(button_e button) noexcept {
 			if (phase.current_phase != phase_e::Exiting) {
 				return;
 			}
 
-			confirm_quit_button.update(mouse_s::button_t::Left);
-			cancel_quit_button.update(mouse_s::button_t::Left);
+			confirm_quit_button.update(button_e::Left);
+			cancel_quit_button.update(button_e::Left);
 
 			if (confirm_quit_button.is_active()) {
 				window.close();

@@ -166,7 +166,7 @@ namespace necrowarp {
 			return player_statuses.is_hovered() || any_icon_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || minimap.is_hovered();
 		}
 
-		static inline void update(mouse_s::button_t button) noexcept {
+		static inline void update(button_e button) noexcept {
 			if (phase.current_phase != phase_e::Playing) {
 				return;
 			}

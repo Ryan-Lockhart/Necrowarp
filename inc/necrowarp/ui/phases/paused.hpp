@@ -56,15 +56,15 @@ namespace necrowarp {
 			return resume_button.is_hovered() || quit_button.is_hovered() || help_label.is_hovered();
 		}
 
-		static inline void update(mouse_s::button_t button) noexcept {
+		static inline void update(button_e button) noexcept {
 			if (phase.current_phase != phase_e::Paused) {
 				return;
 			}
 
-			resume_button.update(mouse_s::button_t::Left);
-			quit_button.update(mouse_s::button_t::Left);
+			resume_button.update(button_e::Left);
+			quit_button.update(button_e::Left);
 
-			if (keyboard_s::is_key_down(bindings::ToggleControls)) {
+			if (keyboard_s::is_key<input_e::Down>(bindings::ToggleControls)) {
 				show_help = !show_help;
 
 				help_label.text = runes_t{ show_help ? help_expanded_text : help_hidden_text, colors::White };

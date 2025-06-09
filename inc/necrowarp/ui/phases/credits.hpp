@@ -36,12 +36,12 @@ namespace necrowarp {
 			return credits_label.is_hovered() || back_button.is_hovered();
 		}
 
-		static inline void update(mouse_s::button_t button) noexcept {
+		static inline void update(button_e button) noexcept {
 			if (phase.current_phase != phase_e::Credits) {
 				return;
 			}
 
-			back_button.update(mouse_s::button_t::Left);
+			back_button.update(button_e::Left);
 
 			if (back_button.is_active()) {
 				phase.revert();

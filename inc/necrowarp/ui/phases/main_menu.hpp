@@ -42,14 +42,14 @@ namespace necrowarp {
 				quit_button.is_hovered();
 		}
 
-		static inline void update(mouse_s::button_t button) noexcept {
+		static inline void update(button_e button) noexcept {
 			if (phase.current_phase != phase_e::MainMenu) {
 				return;
 			}
 
-			new_game_button.update(mouse_s::button_t::Left);
-			credits_button.update(mouse_s::button_t::Left);
-			quit_button.update(mouse_s::button_t::Left);
+			new_game_button.update(button_e::Left);
+			credits_button.update(button_e::Left);
+			quit_button.update(button_e::Left);
 
 			if (new_game_button.is_active()) {
 				phase.transition(phase_e::NewGame);
