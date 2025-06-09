@@ -73,13 +73,13 @@ template<> struct phase_state_t<phase_e::GameOver> {
 				(show_statistics ? statistics_expanded_label.is_hovered() : statistics_hidden_label.is_hovered());
 		}
 
-		static inline void update(Mouse::button_t button) noexcept {
+		static inline void update(mouse_s::button_t button) noexcept {
 			if (phase.current_phase != phase_e::GameOver) {
 				return;
 			}
 
-			retry_button.update(Mouse::button_t::Left);
-			quit_button.update(Mouse::button_t::Left);
+			retry_button.update(mouse_s::button_t::Left);
+			quit_button.update(mouse_s::button_t::Left);
 
 			if (retry_button.is_active()) {
 				phase.transition(phase_e::Loading);

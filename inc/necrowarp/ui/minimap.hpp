@@ -27,7 +27,7 @@ namespace necrowarp {
 
 		constexpr extent_t external_size() const noexcept { return internal_size() + padding * 2; }
 
-		constexpr bool is_hovered(offset_t position) const noexcept { return Mouse::is_inside(apply_padding(position), external_size()); }
+		constexpr bool is_hovered(offset_t position) const noexcept { return mouse_s::is_inside(apply_padding(position), external_size()); }
 
 		constexpr void draw(ref<renderer_t> renderer, offset_t position) const noexcept {
 			renderer.draw_composite_rect(rect_t{ apply_padding(position), external_size() }, box.background, box.border.color, box.border.thickness * globals::cell_size<grid_type_e::UI>.w);

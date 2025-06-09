@@ -19,7 +19,7 @@ namespace necrowarp {
 
 		constexpr extent_t raw_size(extent_t size) const noexcept { return size * ui_atlas.get_glyph_size(); }
 
-		constexpr bool is_hovered(offset_t position, extent_t size) const noexcept { return Mouse::is_inside(raw_position(position), raw_size(size)); }
+		constexpr bool is_hovered(offset_t position, extent_t size) const noexcept { return mouse_s::is_inside(raw_position(position), raw_size(size)); }
 
 		constexpr void draw(ref<renderer_t> renderer, offset_t position, extent_t size) const noexcept {
 			renderer.draw_composite_rect(raw_position(position), raw_size(size), background, border.color, border.thickness);

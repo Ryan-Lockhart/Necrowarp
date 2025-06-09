@@ -21,7 +21,7 @@ namespace necrowarp {
 			return loading_label.is_hovered();
 		}
 
-		static inline void update(Mouse::button_t button) noexcept {
+		static inline void update(mouse_s::button_t button) noexcept {
 			if (phase.current_phase != phase_e::Loading) {
 				return;
 			}

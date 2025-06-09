@@ -265,7 +265,7 @@ namespace necrowarp {
 			i16 number_of_down_ladders;
 			i16 minimum_ladder_distance;
 
-			i16 starting_adventurers;
+			i16 starting_wave;
 
 			i16 starting_skulls;
 			i16 minimum_skull_distance;

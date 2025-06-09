@@ -17,7 +17,7 @@ namespace necrowarp {
 			return embedded_button_t::is_hovered(current_pos, current_size);
 		}
 
-		constexpr void update(Mouse::button_t button) noexcept {
+		constexpr void update(mouse_s::button_t button) noexcept {
 			const extent_t current_size = calculate_size();
 			const offset_t current_pos = apply_padding(get_offset(current_size));
 
@@ -50,7 +50,7 @@ namespace necrowarp {
 			return embedded_toggle_t::is_hovered(current_pos, current_size);
 		}
 
-		constexpr void update(Mouse::button_t button) noexcept {
+		constexpr void update(mouse_s::button_t button) noexcept {
 			const extent_t current_size = calculate_size();
 			const offset_t current_pos = apply_padding(get_offset(current_size));
 
@@ -59,7 +59,7 @@ namespace necrowarp {
 
 		template<typename... Linked>
 			requires is_homogeneous<labeled_toggle_t, Linked...>::value
-		constexpr void update(Mouse::button_t button, ptr<Linked>... linked) noexcept {
+		constexpr void update(mouse_s::button_t button, ptr<Linked>... linked) noexcept {
 			const extent_t current_size = calculate_size();
 			const offset_t current_pos = apply_padding(get_offset(current_size));
 
@@ -78,11 +78,11 @@ namespace necrowarp {
 
 	template<typename... Linked>
 		requires is_homogeneous<labeled_toggle_t, Linked...>::value
-	constexpr void embedded_toggle_t::update(Mouse::button_t button, offset_t position, extent_t size, ptr<Linked>... linked) noexcept {
+	constexpr void embedded_toggle_t::update(mouse_s::button_t button, offset_t position, extent_t size, ptr<Linked>... linked) noexcept {
 		previous_state = current_state;
-		current_state = Mouse::is_button_down(button) && is_hovered(position, size);
+		current_state = mouse_s::is_button_down(button) && is_hovered(position, size);
 
-		if (get_state() == input_state_t::Down) {
+		if (get_state() == input_e::Down) {
 			toggled = !toggled;
 
 			if (!toggled) {

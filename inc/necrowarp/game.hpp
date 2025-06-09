@@ -61,7 +61,7 @@ namespace necrowarp {
 				return true;
 			}
 
-			if (Keyboard::is_key_down(bindings::CameraLock)) {
+			if (keyboard_s::is_key_down(bindings::CameraLock)) {
 				camera_locked = !camera_locked;
 			}
 
@@ -72,13 +72,13 @@ namespace necrowarp {
 			const offset_t direction = []() -> offset_t {
 				offset_t::scalar_t x{ 0 }, y{ 0 };
 
-				if (Keyboard::is_key_pressed(bindings::CameraMovement[cardinal_e::North])) {
+				if (keyboard_s::is_key_pressed(bindings::CameraMovement[cardinal_e::North])) {
 					--y;
-				} if (Keyboard::is_key_pressed(bindings::CameraMovement[cardinal_e::South])) {
+				} if (keyboard_s::is_key_pressed(bindings::CameraMovement[cardinal_e::South])) {
 					++y;
-				} if (Keyboard::is_key_pressed(bindings::CameraMovement[cardinal_e::West])) {
+				} if (keyboard_s::is_key_pressed(bindings::CameraMovement[cardinal_e::West])) {
 					--x;
-				} if (Keyboard::is_key_pressed(bindings::CameraMovement[cardinal_e::East])) {
+				} if (keyboard_s::is_key_pressed(bindings::CameraMovement[cardinal_e::East])) {
 					++x;
 				}
 
@@ -95,15 +95,15 @@ namespace necrowarp {
 		static inline bool character_input() noexcept {
 			player.command = command_pack_t{};
 
-			const bool ignore_objects{ Keyboard::is_key_pressed(bindings::IgnoreObjects) };
+			const bool ignore_objects{ keyboard_s::is_key_pressed(bindings::IgnoreObjects) };
 
-			if (Keyboard::any_keys_pressed<2>(bindings::Wait)) {
+			if (keyboard_s::any_keys_pressed<2>(bindings::Wait)) {
 				player.command = command_pack_t{ command_e::None };
 
 				return true;
-			} else if (Keyboard::is_key_down(bindings::RandomWarp)) {
+			} else if (keyboard_s::is_key_down(bindings::RandomWarp)) {
 				player.command = command_pack_t{ command_e::RandomWarp, player.position };
-			} else if (Keyboard::is_key_down(bindings::TargetWarp)) {
+			} else if (keyboard_s::is_key_down(bindings::TargetWarp)) {
 				player.command = command_pack_t{
 					!entity_registry.empty(grid_cursor.get_position()) || (!ignore_objects && !object_registry.empty(grid_cursor.get_position())) ?
 						command_e::ConsumeWarp :
@@ -111,15 +111,15 @@ namespace necrowarp {
 					player.position,
 					grid_cursor.get_position()
 				};
-			} else if (Keyboard::is_key_down(bindings::CalciticInvocation)) {
+			} else if (keyboard_s::is_key_down(bindings::CalciticInvocation)) {
 				player.command = command_pack_t{ command_e::CalciticInvocation, player.position, player.position };
-			} else if (Keyboard::is_key_down(bindings::SpectralInvocation)) {
+			} else if (keyboard_s::is_key_down(bindings::SpectralInvocation)) {
 				player.command = command_pack_t{ command_e::SpectralInvocation, player.position, player.position };
-			} else if (Keyboard::is_key_down(bindings::SanguineInvocation)) {
+			} else if (keyboard_s::is_key_down(bindings::SanguineInvocation)) {
 				player.command = command_pack_t{ command_e::SanguineInvocation, player.position, player.position };
-			} else if (Keyboard::is_key_down(bindings::GalvanicInvocation)) {
+			} else if (keyboard_s::is_key_down(bindings::GalvanicInvocation)) {
 				player.command = command_pack_t{ command_e::GalvanicInvocation, player.position, player.position };
-			} else if (Keyboard::is_key_down(bindings::NecromanticAscendance)) {
+			} else if (keyboard_s::is_key_down(bindings::NecromanticAscendance)) {
 				player.command = command_pack_t{ command_e::NecromanticAscendance, player.position };
 			}
 
@@ -130,13 +130,13 @@ namespace necrowarp {
 			const offset_t direction = []() -> offset_t {
 				offset_t::scalar_t x{ 0 }, y{ 0 };
 
-				if (Keyboard::any_keys_pressed<4>(bindings::CharacterMovement[cardinal_e::North])) {
+				if (keyboard_s::any_keys_pressed<4>(bindings::CharacterMovement[cardinal_e::North])) {
 					--y;
-				} if (Keyboard::any_keys_pressed<4>(bindings::CharacterMovement[cardinal_e::South])) {
+				} if (keyboard_s::any_keys_pressed<4>(bindings::CharacterMovement[cardinal_e::South])) {
 					++y;
-				} if (Keyboard::any_keys_pressed<4>(bindings::CharacterMovement[cardinal_e::West])) {
+				} if (keyboard_s::any_keys_pressed<4>(bindings::CharacterMovement[cardinal_e::West])) {
 					--x;
-				} if (Keyboard::any_keys_pressed<4>(bindings::CharacterMovement[cardinal_e::East])) {
+				} if (keyboard_s::any_keys_pressed<4>(bindings::CharacterMovement[cardinal_e::East])) {
 					++x;
 				}
 
@@ -174,10 +174,10 @@ namespace necrowarp {
 			steam_stats::transcribe();
 #endif
 
-			Mouse::initialize();
-			Keyboard::initialize();
+			mouse_s::initialize();
+			keyboard_s::initialize();
 
-			Mouse::hide_cursor();
+			mouse_s::hide_cursor();
 
 			Clock::tick();
 
@@ -454,11 +454,11 @@ namespace necrowarp {
 
 			window.poll_events();
 
-			if (Keyboard::is_key_down(bindings::ToggleFullscreen)) {
+			if (keyboard_s::is_key_down(bindings::ToggleFullscreen)) {
 				window.toggle_fullscreen();
 			}
 
-			if (Keyboard::is_key_down(bindings::Quit)) {
+			if (keyboard_s::is_key_down(bindings::Quit)) {
 				switch(phase.current_phase) {
 					case phase_e::MainMenu:
 						phase.transition(phase_e::Exiting);
@@ -606,7 +606,7 @@ namespace necrowarp {
 			processing_turn = true;
 
 			game_stats.wave_size = clamp(
-				static_cast<i16>(globals::map_config.starting_adventurers + game_stats.total_kills() / globals::KillsPerPopulation),
+				static_cast<i16>(globals::map_config.starting_wave + game_stats.total_kills() / globals::KillsPerPopulation),
 				globals::MinimumWaveSize,
 				globals::MaximumWaveSize
 			);
@@ -754,8 +754,8 @@ namespace necrowarp {
 		static inline void shutdown() noexcept {
 			terminate_process_turn();
 
-			Keyboard::terminate();
-			Mouse::terminate();
+			keyboard_s::terminate();
+			mouse_s::terminate();
 #if defined (BLEAK_DEBUG)
 			message_log.flush_to_console();
 			error_log.flush_to_console();

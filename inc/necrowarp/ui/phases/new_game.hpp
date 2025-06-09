@@ -190,12 +190,12 @@ namespace necrowarp {
 			saeiligarkeuss_toggle.toggle_off();
 		}
 
-		static inline void update(Mouse::button_t button) noexcept {
+		static inline void update(mouse_s::button_t button) noexcept {
 			if (phase.current_phase != phase_e::NewGame) {
 				return;
 			}
 
-			no_patron_toggle.update(Mouse::button_t::Left,
+			no_patron_toggle.update(mouse_s::button_t::Left,
 				&rathghul_toggle,
 				&akurakhaithan_toggle,
 				&merirfin_toggle,
@@ -204,7 +204,7 @@ namespace necrowarp {
 			
 			no_patron_label.text = to_colored_string<patron_e::None>();
 
-			rathghul_toggle.update(Mouse::button_t::Left,
+			rathghul_toggle.update(mouse_s::button_t::Left,
 				&no_patron_toggle,
 				&akurakhaithan_toggle,
 				&merirfin_toggle,
@@ -213,7 +213,7 @@ namespace necrowarp {
 			
 			rathghul_label.text = to_colored_string<patron_e::Rathghul>();
 
-			akurakhaithan_toggle.update(Mouse::button_t::Left,
+			akurakhaithan_toggle.update(mouse_s::button_t::Left,
 				&no_patron_toggle,
 				&rathghul_toggle,
 				&merirfin_toggle,
@@ -222,7 +222,7 @@ namespace necrowarp {
 
 			akurakhaithan_label.text = to_colored_string<patron_e::Akurakhaithan>();
 
-			merirfin_toggle.update(Mouse::button_t::Left,
+			merirfin_toggle.update(mouse_s::button_t::Left,
 				&no_patron_toggle,
 				&rathghul_toggle,
 				&akurakhaithan_toggle,
@@ -231,7 +231,7 @@ namespace necrowarp {
 			
 			merirfin_label.text = to_colored_string<patron_e::Merirfin>();
 
-			saeiligarkeuss_toggle.update(Mouse::button_t::Left,
+			saeiligarkeuss_toggle.update(mouse_s::button_t::Left,
 				&no_patron_toggle,
 				&rathghul_toggle,
 				&akurakhaithan_toggle,
@@ -249,10 +249,10 @@ namespace necrowarp {
 			play_button.box.background = any_patron_selected() ? colors::Grey : colors::Black;
 
 			if (any_patron_selected()) {
-				play_button.update(Mouse::button_t::Left);
+				play_button.update(mouse_s::button_t::Left);
 			}
 
-			back_button.update(Mouse::button_t::Left);
+			back_button.update(mouse_s::button_t::Left);
 
 			if (play_button.is_active() && any_patron_selected()) {
 				desired_patron = get_selected_patron();

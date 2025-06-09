@@ -22,7 +22,9 @@ namespace necrowarp {
 	} static inline api_state;
 
 	enum struct dimension_e : u8 {
-		
+		Underworld,
+		Purgatory,
+		Overworld
 	};
 
 	enum struct attribute_e : u8 {
@@ -111,8 +113,8 @@ namespace necrowarp {
 
 		usize game_depth{ 0 };
 
-		usize wave_size{ static_cast<usize>(globals::map_config.starting_adventurers) };
-		usize spawns_remaining{ static_cast<usize>(globals::map_config.starting_adventurers) };
+		usize wave_size{ static_cast<usize>(globals::map_config.starting_wave) };
+		usize spawns_remaining{ static_cast<usize>(globals::map_config.starting_wave) };
 
 		inline usize has_spawns() const noexcept { return spawns_remaining > 0; }
 
@@ -135,8 +137,8 @@ namespace necrowarp {
 			game_seed = std::random_device{}();
 			random_engine.seed(game_seed);
 
-			wave_size = globals::map_config.starting_adventurers;
-			spawns_remaining = globals::map_config.starting_adventurers;
+			wave_size = globals::map_config.starting_wave;
+			spawns_remaining = globals::map_config.starting_wave;
 
 			player_kills = 0;
 			minion_kills = 0;
