@@ -40,29 +40,42 @@ namespace necrowarp {
 		Down
 	};
 
+	template<verticality_e Verticality> constexpr glyph_t ladder_glyph;
+
+	template<> inline constexpr glyph_t ladder_glyph<verticality_e::Up>{ glyphs::UpLadder };
+	template<> inline constexpr glyph_t ladder_glyph<verticality_e::Down>{ glyphs::DownLadder };
+
 	constexpr cstr to_string(verticality_e type) noexcept {
 		switch (type) {
 			case verticality_e::Up: {
 				return "up";
 			} case verticality_e::Down: {
 				return "down";
-			} default: {
-				return "unknown";
 			}
 		}
 	}
 
 	enum struct shackle_e : u8 {
-		None,
+		Unshackled,
 		Calcitic,
 		Spectral,
 		Sanguine,
 		Galvanic
 	};
 
+	template<shackle_e Shackle> constexpr glyph_t shackle_glyph;
+
+	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Unshackled>{ glyphs::Unshackled };
+	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Calcitic>{ glyphs::CalciticShackle };
+	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Spectral>{ glyphs::SpectralShackle };
+	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Sanguine>{ glyphs::SanguineShackle };
+	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Galvanic>{ glyphs::GalvanicShackle };
+
 	constexpr cstr to_string(shackle_e type) noexcept {
 		switch (type) {
-			case shackle_e::Calcitic: {
+			case shackle_e::Unshackled: {
+				return "unshackled";
+			} case shackle_e::Calcitic: {
 				return "spooky shackle";
 			} case shackle_e::Spectral: {
 				return "eldritch shackle";
@@ -70,16 +83,17 @@ namespace necrowarp {
 				return "bloody shackle";
 			} case shackle_e::Galvanic: {
 				return "glimmering shackle";
-			} default: {
-				return "unshackled";
 			}
 		}
 	}
 
 	constexpr runes_t to_colored_string(shackle_e type) noexcept {
 		const cstr string{ to_string(type) };
+
 		switch (type) {
-			case shackle_e::Calcitic: {
+			case shackle_e::Unshackled: {
+				return runes_t{ string, colors::metals::Iron };
+			} case shackle_e::Calcitic: {
 				return runes_t{ string, colors::metals::shackles::Calcitic };
 			} case shackle_e::Spectral: {
 				return runes_t{ string, colors::metals::shackles::Spectral };
@@ -87,8 +101,6 @@ namespace necrowarp {
 				return runes_t{ string, colors::metals::shackles::Sanguine };
 			} case shackle_e::Galvanic: {
 				return runes_t{ string, colors::metals::shackles::Galvanic };
-			} default: {
-				return runes_t{ string, colors::metals::Iron };
 			}
 		}
 	}
@@ -100,57 +112,37 @@ namespace necrowarp {
 	struct ladder_t {
 	  private:
 		inline void draw_shackle(offset_t pos) const noexcept {
-			switch (shackle) {
-				case shackle_e::Calcitic: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos);
-					return;
-				} case shackle_e::Spectral: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos);
-					return;
-				} case shackle_e::Sanguine: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos);
-					return;
-				} case shackle_e::Galvanic: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Galvanic }, pos);
-					return;
-				} default: {
-					return;
-				}
-			}
+			magic_enum::enum_switch([&](auto val) -> void {
+				constexpr shackle_e cval{ val };
+
+				if constexpr (cval != shackle_e::Unshackled) {
+					entity_atlas.draw(shackle_glyph<cval>, pos);
+				}				
+			}, shackle);
 		}
 
 		inline void draw_shackle(offset_t pos, offset_t offset) const noexcept {
-			switch (shackle) {
-				case shackle_e::Calcitic: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Calcitic }, pos, offset);
-					return;
-				} case shackle_e::Spectral: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Spectral }, pos, offset);
-					return;
-				} case shackle_e::Sanguine: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Sanguine }, pos, offset);
-					return;
-				} case shackle_e::Galvanic: {
-					entity_atlas.draw(glyph_t{ characters::Shackle, colors::metals::shackles::Galvanic }, pos, offset);
-					return;
-				} default: {
-					return;
-				}
-			}
+			magic_enum::enum_switch([&](auto val) -> void {
+				constexpr shackle_e cval{ val };
+
+				if constexpr (cval != shackle_e::Unshackled) {
+					entity_atlas.draw(shackle_glyph<cval>, pos, offset);
+				}				
+			}, shackle);
 		}
 		
 	  public:
 		offset_t position;
 		
-		verticality_e verticality;
+		const verticality_e verticality;
 		shackle_e shackle;
 
-		inline ladder_t(offset_t position) noexcept : position{ position }, verticality{ verticality_e::Up }, shackle{ shackle_e::None } {}
+		inline ladder_t(offset_t position) noexcept : position{ position }, verticality{ verticality_e::Up }, shackle{ shackle_e::Unshackled } {}
 
 		inline ladder_t(offset_t position, verticality_e verticality, bool random = false) noexcept :
 			position{ position },
 			verticality{ verticality },
-			shackle{ random ? random_shackle(random_engine) : shackle_e::None }
+			shackle{ random ? random_shackle(random_engine) : shackle_e::Unshackled }
 		{}
 
 		inline ladder_t(offset_t position, verticality_e verticality, shackle_e shackle) noexcept : position{ position }, verticality{ verticality }, shackle{ shackle } {}
@@ -159,7 +151,7 @@ namespace necrowarp {
 
 		inline bool is_down_ladder() const noexcept { return verticality == verticality_e::Down; }
 
-		inline bool has_shackle() const noexcept { return shackle != shackle_e::None; }
+		inline bool has_shackle() const noexcept { return shackle != shackle_e::Unshackled; }
 
 		inline std::string to_string() const noexcept { return std::format("{} ({} | {})", necrowarp::to_string(object_e::Ladder), necrowarp::to_string(verticality), necrowarp::to_string(shackle)); }
 
@@ -176,7 +168,21 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline glyph_t current_glyph() const noexcept { return is_up_ladder() ? object_glyphs<ladder_t> : glyphs::DownLadder; }
+		template<typename E> requires (std::is_same<E, verticality_e>::value || std::is_same<E, shackle_e>::value) inline glyph_t current_glyph() const noexcept {
+			if constexpr (std::is_same<E, verticality_e>::value) {
+				return magic_enum::enum_switch([&](auto val) -> glyph_t {
+					constexpr verticality_e cval{ val };
+
+					return ladder_glyph<cval>;
+				}, verticality);
+			} else if constexpr (std::is_same<E, shackle_e>::value) {
+				return magic_enum::enum_switch([&](auto val) -> glyph_t {
+					constexpr shackle_e cval{ val };
+
+					return shackle_glyph<cval>;
+				}, shackle);
+			}
+		}
 
 		inline void enshackle() noexcept {
 			if (has_shackle()) {
@@ -189,7 +195,7 @@ namespace necrowarp {
 		}
 
 		inline void enshackle(shackle_e type) noexcept {
-			if (has_shackle() || type == shackle_e::None) {
+			if (has_shackle() || type == shackle_e::Unshackled) {
 				return;
 			}
 			
@@ -203,53 +209,33 @@ namespace necrowarp {
 				return;
 			}
 
-			shackle = shackle_e::None;
+			shackle = shackle_e::Unshackled;
 
 			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled, i32>;
 		};
 
 		inline void draw() const noexcept {
-			entity_atlas.draw(current_glyph(), position);
-
-			if (!has_shackle()) {
-				return;
-			}
-
-			draw_shackle(position);
+			entity_atlas.draw(current_glyph<verticality_e>(), position);
+			entity_atlas.draw(current_glyph<shackle_e>(), position);
 		}
 
 		inline void draw(offset_t offset) const noexcept {
-			entity_atlas.draw(current_glyph(), position, offset);
-
-			if (!has_shackle()) {
-				return;
-			}
-
-			draw_shackle(position, offset);
+			entity_atlas.draw(current_glyph<verticality_e>(), position, offset);
+			entity_atlas.draw(current_glyph<shackle_e>(), position, offset);
 		}
 
 		inline void draw(cref<camera_t> camera) const noexcept {
 			const offset_t pos{ position + camera.get_offset() };
-
-			entity_atlas.draw(current_glyph(), pos);
-
-			if (!has_shackle()) {
-				return;
-			}
-
-			draw_shackle(pos);
+	
+			entity_atlas.draw(current_glyph<verticality_e>(), pos);
+			entity_atlas.draw(current_glyph<shackle_e>(), pos);
 		}
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept {
 			const offset_t pos{ position + camera.get_offset() };
-
-			entity_atlas.draw(current_glyph(), pos, offset);
-
-			if (!has_shackle()) {
-				return;
-			}
-
-			draw_shackle(pos, offset);
+	
+			entity_atlas.draw(current_glyph<verticality_e>(), pos, offset);
+			entity_atlas.draw(current_glyph<shackle_e>(), pos, offset);
 		}
 
 		constexpr operator object_e() const noexcept { return object_e::Ladder; }

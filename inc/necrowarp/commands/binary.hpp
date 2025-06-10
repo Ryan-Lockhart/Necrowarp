@@ -3,6 +3,7 @@
 // IWYU pragma: begin_exports
 #include <necrowarp/commands/binary/move.hpp>
 #include <necrowarp/commands/binary/descend.hpp>
+#include <necrowarp/commands/binary/plunge.hpp>
 #include <necrowarp/commands/binary/consume.hpp>
 #include <necrowarp/commands/binary/clash.hpp>
 #include <necrowarp/commands/binary/target_warp.hpp>

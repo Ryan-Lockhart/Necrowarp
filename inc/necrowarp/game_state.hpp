@@ -74,11 +74,13 @@ namespace necrowarp {
 
 	static inline mixer_s mixer{};
 	
-	static inline volatile std::atomic_bool player_acted{ false };
-	static inline volatile std::atomic_bool processing_turn{ false };
-	static inline volatile std::atomic_bool buffers_locked{ false };
+	static inline volatile std::atomic<bool> player_acted{ false };
+	static inline volatile std::atomic<bool> processing_turn{ false };
+	static inline volatile std::atomic<bool> buffers_locked{ false };
 
-	static inline volatile std::atomic_bool game_running{ false };
+	static inline volatile std::atomic<bool> game_running{ false };
+
+	static inline volatile std::atomic<dimension_e> current_dimension{ dimension_e::Underworld };
 
 	static inline f32 fluid_pool_volume() noexcept { return globals::fluid_pool_dis(random_engine); }
 

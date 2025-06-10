@@ -18,6 +18,7 @@ namespace necrowarp {
 
 	struct move_t;
 	struct descend_t;
+	struct plunge_t;
 	struct consume_t;
 	struct clash_t;
 	struct target_warp_t;
@@ -43,6 +44,7 @@ namespace necrowarp {
 	#define ALL_BINARY_COMMANDS \
 		move_t, \
 		descend_t, \
+		plunge_t, \
 		consume_t, \
 		clash_t, \
 		target_warp_t, \
@@ -73,6 +75,7 @@ namespace necrowarp {
 	
 	#define ALL_NECRO_COMMANDS \
 		descend_t, \
+		plunge_t, \
 		consume_t, \
 		random_warp_t, \
 		target_warp_t, \
@@ -108,6 +111,7 @@ namespace necrowarp {
 		None = 0,
 		Move,
 		Descend,
+		Plunge,
 		Consume,
 		Clash,
 		Lunge,
@@ -152,6 +156,8 @@ namespace necrowarp {
 				return "move";
 			} case command_e::Descend: {
 				return "descend";
+			} case command_e::Plunge: {
+				return "plunge";
 			} case command_e::Consume: {
 				return "consume";
 			} case command_e::Clash: {

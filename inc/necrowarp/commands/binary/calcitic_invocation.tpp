@@ -58,7 +58,7 @@ namespace necrowarp {
 				eligible_ladder = object_registry.at<ladder_t>(position);
 
 				switch (eligible_ladder->shackle) {
-					case shackle_e::None: {
+					case shackle_e::Unshackled: {
 						if (eligible_ladder->is_down_ladder()) {
 							eligible_ladder = nullptr;
 						}
@@ -116,7 +116,7 @@ namespace necrowarp {
 					eligible_ladder = object_registry.at<ladder_t>(position);
 
 					switch (eligible_ladder->shackle) {
-						case shackle_e::None: {
+						case shackle_e::Unshackled: {
 							if (eligible_ladder->is_down_ladder()) {
 								eligible_ladder = nullptr;
 							}

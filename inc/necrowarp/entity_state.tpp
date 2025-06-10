@@ -8,6 +8,7 @@
 #include <necrowarp/object_state.hpp>
 #include <necrowarp/object_state.tpp>
 
+#include <atomic>
 #include <optional>
 
 #include <bleak/sparse.hpp>
@@ -79,11 +80,15 @@ namespace necrowarp {
 
 	template<NonNullEntity EntityType> static inline field_t<float, globals::DistanceFunction, globals::MapSize, globals::BorderSize> entity_goal_map{};
 
-	static inline bool descent_flag{ false };
+	static inline volatile std::atomic<bool> descent_flag{ false };
 
-	static inline bool player_turn_invalidated{ false };
+	static inline volatile std::atomic<bool> plunge_flag{ false };
 
-	static inline bool freshly_divine{ false };
+	static inline volatile std::atomic<dimension_e> plunge_target{ dimension_e::Abyss };
+
+	static inline volatile std::atomic<bool> player_turn_invalidated{ false };
+
+	static inline volatile std::atomic<bool> freshly_divine{ false };
 
 	template<NonPlayerEntity EntityType> inline bool entity_registry_t::contains(offset_t position) const noexcept { return entity_storage<EntityType>.contains(position); }
 

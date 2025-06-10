@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bleak/constants/glyphs.hpp"
 #include <necrowarp/objects/object.hpp>
 
 #include <random>
@@ -37,10 +36,39 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t object_glyphs<portal_t>{ glyphs::CalmPortal };
 
 	enum struct stability_e : u8 {
-		Calm,
-		Vocal,
-		Turbulent
+		Calm, // calm portals  take you to a pocket dimension with lesser ability improvements without tribulation
+		Vocal, // vocal portals take you to an audience chamber with your patron
+		Turbulent, // turbulent portals take you to a pocket dimension with unique ability unlocks after tribulation
+		Insightful, // insightful portals take you to the tutorial dimension
+		Yawning, // yawning portals take you to the overworld
+		Echoing, // echoing portals take you to the ruins
 	};
+
+	static constexpr bool operator==(stability_e lhs, dimension_e rhs) noexcept {
+		switch (lhs) {
+			case stability_e::Calm: {
+				return rhs == dimension_e::Voitykras;
+			} case stability_e::Vocal: {
+				return rhs == dimension_e::Sudokras;
+			} case stability_e::Turbulent: {
+				return rhs == dimension_e::Tribulation;
+			} case stability_e::Insightful: {
+				return rhs == dimension_e::Yyndikras;
+			} case stability_e::Yawning: {
+				return rhs == dimension_e::Overworld;
+			}  case stability_e::Echoing: {
+				return rhs == dimension_e::AncientVault;
+			}
+		}
+	}
+
+	template<stability_e Stability> constexpr glyph_t portal_glyph;
+
+	template<> inline constexpr glyph_t portal_glyph<stability_e::Calm>{ glyphs::CalmPortal };
+	template<> inline constexpr glyph_t portal_glyph<stability_e::Vocal>{ glyphs::VocalPortal };
+	template<> inline constexpr glyph_t portal_glyph<stability_e::Turbulent>{ glyphs::TurbulentPortal };
+	template<> inline constexpr glyph_t portal_glyph<stability_e::Insightful>{ glyphs::InsightfulPortal };
+	template<> inline constexpr glyph_t portal_glyph<stability_e::Yawning>{ glyphs::YawningPortal };
 
 	constexpr cstr to_string(stability_e type) noexcept {
 		switch (type) {
@@ -50,6 +78,10 @@ namespace necrowarp {
 				return "vocal";
 			} case stability_e::Turbulent: {
 				return "turbulent";
+			} case stability_e::Insightful: {
+				return "insightful";
+			} case stability_e::Yawning: {
+				return "yawning";
 			} default: {
 				return "unknown";
 			}
@@ -65,6 +97,10 @@ namespace necrowarp {
 				return runes_t{ string, colors::light::Orange };
 			} case stability_e::Turbulent: {
 				return runes_t{ string, colors::light::Red };
+			} case stability_e::Insightful: {
+				return runes_t{ string, colors::light::Green };
+			} case stability_e::Yawning: {
+				return runes_t{ string, colors::light::Yellow };
 			} default: {
 				return runes_t{ string, colors::metals::Iron };
 			}
@@ -104,15 +140,11 @@ namespace necrowarp {
 		}
 
 		inline glyph_t current_glyph() const noexcept {
-			switch (stability) {
-				case stability_e::Calm: {
-					return glyphs::CalmPortal;
-				} case stability_e::Vocal: {
-					return glyphs::VocalPortal;
-				} case stability_e::Turbulent: {
-					return glyphs::TurbulentPortal;
-				}
-			}
+			return magic_enum::enum_switch([&](auto val) -> glyph_t {
+				constexpr stability_e cval{ val };
+
+				return portal_glyph<cval>;
+			}, stability);
 		}
 
 		inline void draw() const noexcept { entity_atlas.draw(current_glyph(), position); }

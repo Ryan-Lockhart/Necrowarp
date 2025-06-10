@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bleak/input.hpp"
 #include <bleak.hpp>
 
 #include <cstdlib>
@@ -20,6 +19,7 @@
 #include <necrowarp/ui_state.hpp>
 #include <necrowarp/globals.hpp>
 #include <necrowarp/scorekeeper.hpp>
+#include <necrowarp/dimensions.hpp>
 
 #include <magic_enum/magic_enum_all.hpp>
 
@@ -434,13 +434,26 @@ namespace necrowarp {
 			process_turn_async();
 		}
 
-		static inline void load_async() noexcept {
-			std::thread([]() -> void { load(); }).detach();
+		static inline void plunge() noexcept {
+			terminate_process_turn();
+
+			current_dimension = plunge_target;
+			plunge_target = dimension_e::Abyss;
+
+			magic_enum::enum_switch([&](auto val) -> void {
+				constexpr dimension_e cval{ val };
+
+				if constexpr (cval != dimension_e::Abyss) {
+					necrowarp::plunge<cval>();
+				}
+			}, static_cast<dimension_e>(current_dimension));
 		}
 
-		static inline void descend_async() noexcept {
-			std::thread([]() -> void { descend(); }).detach();
-		}
+		static inline void load_async() noexcept { std::thread([]() -> void { load(); }).detach(); }
+
+		static inline void descend_async() noexcept { std::thread([]() -> void { descend(); }).detach(); }
+
+		static inline void plunge_async() noexcept { std::thread([]() -> void { plunge(); }).detach(); }
 
 		static inline void input() noexcept {
 			if (window.is_closing()) {
@@ -667,6 +680,13 @@ namespace necrowarp {
 				phase.previous_phase = phase_e::Loading;
 
 				descend_async();
+			}
+
+			if (plunge_flag && plunge_target != dimension_e::Abyss && plunge_target != current_dimension) {
+				phase.transition(phase_e::Loading);
+				phase.previous_phase = phase_e::Loading;
+
+				plunge_async();
 			}
 
 			if (phase.current_phase == phase_e::Loading && phase.previous_phase != phase_e::Loading) {

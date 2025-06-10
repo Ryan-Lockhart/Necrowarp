@@ -7,6 +7,7 @@
 #include <necrowarp/cell.hpp>
 #include <necrowarp/globals.hpp>
 #include <necrowarp/phase.hpp>
+#include <necrowarp/dimensions/dimension.hpp>
 
 #include <magic_enum/magic_enum_utility.hpp>
 
@@ -20,12 +21,6 @@ namespace necrowarp {
 		static inline usize user_id{ 0 };
 		static inline i32 pipe_id{ 0 };
 	} static inline api_state;
-
-	enum struct dimension_e : u8 {
-		Underworld,
-		Purgatory,
-		Overworld
-	};
 
 	enum struct attribute_e : u8 {
 		Energy,
@@ -162,6 +157,7 @@ namespace necrowarp {
 		MetersMoved,
 		MetersWarped,
 		LowestDepth,
+		PortalsTraversed,
 
 		SkullsConsumed,
 		MetalConsumed,
@@ -205,6 +201,7 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::MetersMoved> { using type = f32; };
 	template<> struct to_stat_type<steam_stat_e::MetersWarped> { using type = f32; };
 	template<> struct to_stat_type<steam_stat_e::LowestDepth> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::PortalsTraversed> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::SkullsConsumed> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::MetalConsumed> { using type = i32; };
@@ -257,6 +254,8 @@ namespace necrowarp {
 				return "meters_warped";
 			} case steam_stat_e::LowestDepth: {
 				return "lowest_depth";
+			} case steam_stat_e::PortalsTraversed: {
+				return "portals_traversed";
 			} case steam_stat_e::SkullsConsumed: {
 				return "skulls_consumed";
 			} case steam_stat_e::MetalConsumed: {
@@ -321,6 +320,8 @@ namespace necrowarp {
 				return "Meters Warped";
 			} case steam_stat_e::LowestDepth: {
 				return "Lowest Depth";
+			} case steam_stat_e::PortalsTraversed: {
+				return "Portals Traversed";
 			} case steam_stat_e::SkullsConsumed: {
 				return "Skulls Consumed";
 			} case steam_stat_e::MetalConsumed: {

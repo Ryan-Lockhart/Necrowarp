@@ -1,7 +1,5 @@
 #pragma once
 
-#include "necrowarp/entity_state.hpp"
-#include "necrowarp/game_state.hpp"
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
