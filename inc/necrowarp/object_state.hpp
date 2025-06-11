@@ -7,7 +7,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	struct object_registry_t {
+	template<map_type_e MapType> struct object_registry_t {
 		inline object_group_e at(offset_t position) const noexcept;
 
 		template<NonNullObject ObjectType> inline cptr<ObjectType> at(offset_t position) const noexcept;
@@ -119,5 +119,5 @@ namespace necrowarp {
 		inline void draw(cref<camera_t> camera) const noexcept;
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
-	} static inline object_registry{};
+	};
 } // namespace necrowarp

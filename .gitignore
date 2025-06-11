@@ -5,7 +5,6 @@
 *.pch
 
 # Executables
-*.exe
 *.out
 *.app
 
@@ -29,5 +28,3 @@ build/**/*
 
 bin/*
 test/test_runner
-
-install/**

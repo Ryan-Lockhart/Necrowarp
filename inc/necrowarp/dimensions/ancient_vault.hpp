@@ -2,8 +2,10 @@
 
 #include <necrowarp/dimensions/dimension.hpp>
 
+#include <necrowarp/game.hpp>
+
 namespace necrowarp {
-	template<> inline void plunge<dimension_e::AncientVault>() noexcept {
+	template<> inline void game_s::plunge<dimension_e::AncientVault>() noexcept {
 		
 	}
 } // necrowarp

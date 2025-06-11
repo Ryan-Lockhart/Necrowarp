@@ -83,9 +83,9 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return target != entity_e::Paladin ? MaximumDamage : 0; }
 
-		inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
-		inline void die() noexcept;
+		template<map_type_e MapType> inline void die() noexcept;
 
 		inline void draw() const noexcept { entity_atlas.draw(entity_glyphs<bloodhound_t>, position); }
 

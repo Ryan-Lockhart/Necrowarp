@@ -89,9 +89,9 @@ namespace necrowarp {
 
 		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
-		inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
-		inline void die() noexcept;
+		template<map_type_e MapType> inline void die() noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::FleshGolem), get_health(), max_health()); }
 

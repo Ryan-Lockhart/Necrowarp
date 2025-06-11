@@ -23,7 +23,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::Eviscerate;
 	};
 
-	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	static inline bool brutalize(ref<InitiatorType> initiator, ref<VictimType> victim, ref<i8> damage) noexcept;
 
@@ -37,6 +37,6 @@ namespace necrowarp {
 		const offset_t source_position;
 		const offset_t target_position;
 
-		inline void process() const noexcept;
+		template<map_type_e MapType> inline void process() const noexcept;
 	};
 } // namespace necrowarp

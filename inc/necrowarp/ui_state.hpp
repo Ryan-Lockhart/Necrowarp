@@ -34,7 +34,7 @@ namespace necrowarp {
 		}
 	};
 
-	static inline bool any_hovered() noexcept {
+	template<map_type_e MapType> static inline bool any_hovered() noexcept {
 		if (title_label.is_hovered() || fps_label.is_hovered()) {
 			return true;
 		}
@@ -43,7 +43,11 @@ namespace necrowarp {
 			constexpr phase_e cval{ val };
 
 			if constexpr (cval != phase_e::None) {
-				return phase_state_t<cval>::any_hovered();
+				if constexpr (cval == phase_e::Playing) {
+					return phase_state_t<cval>::template any_hovered<MapType>();
+				} else {
+					return phase_state_t<cval>::any_hovered();
+				}				
 			}
 
 			return false;
@@ -51,7 +55,7 @@ namespace necrowarp {
 	}
 
 	struct ui_registry_t {
-		inline void update() noexcept {
+		template<map_type_e MapType> inline void update() noexcept {
 			if (window.is_closing()) {
 				return;
 			}
@@ -61,33 +65,37 @@ namespace necrowarp {
 				colors::Green
 			};
 
-			draw_cursor = any_hovered() || !(((globals::map_bounds() + extent_t{ 1, 1 }) * globals::cell_size<grid_type_e::Game>) + globals::grid_origin<grid_type_e::Game>()).within(ui_cursor.get_position());
+			draw_cursor = any_hovered<MapType>() || !(((globals::map_bounds<MapType>() + extent_t{ 1, 1 }) * globals::cell_size<grid_type_e::game_s>) + globals::grid_origin<grid_type_e::game_s>()).within(ui_cursor.get_position());
 
 			ui_cursor.update();
 			
-			grid_cursor.update(camera);
+			grid_cursor<MapType>.update(camera<MapType>);
 
 			magic_enum::enum_switch([&](auto val) -> void {
 				constexpr phase_e cval{ val };
 
 				if constexpr (cval != phase_e::None) {
-					phase_state_t<cval>::update(button_e::Left);
+					if constexpr (cval == phase_e::Playing) {
+						phase_state_t<cval>::template update<MapType>(button_e::Left);
+					} else {
+						phase_state_t<cval>::update(button_e::Left);
+					}				
 				}
 			}, phase.current_phase);
 		}
 
-		inline void render() const noexcept {
+		template<map_type_e MapType> inline void render() const noexcept {
 			if (window.is_closing()) {
 				return;
 			}
 
 			if (phase.current_phase == phase_e::Playing) {
 				if (!draw_cursor) {
-					grid_cursor.draw(camera, globals::grid_origin<grid_type_e::Game>());
+					grid_cursor<MapType>.draw(grid_cursor_texture, camera<MapType>, globals::grid_origin<grid_type_e::game_s>());
 				}
 
 				if (draw_warp_cursor) {
-					warp_cursor.draw(camera, globals::grid_origin<grid_type_e::Game>());
+					warp_cursor<MapType>.draw(grid_cursor_texture, camera<MapType>, globals::grid_origin<grid_type_e::game_s>());
 				}
 			}
 
@@ -95,15 +103,19 @@ namespace necrowarp {
 				constexpr phase_e cval{ val };
 
 				if constexpr (cval != phase_e::None) {
-					phase_state_t<cval>::draw(renderer);
-				}				
+					if constexpr (cval == phase_e::Playing) {
+						phase_state_t<cval>::template draw<MapType>(renderer);
+					} else {
+						phase_state_t<cval>::draw(renderer);
+					}
+				}
 			}, phase.current_phase);
 
 			title_label.draw(renderer);
 			fps_label.draw(renderer);
 
 			if (phase.current_phase != phase_e::Playing || draw_cursor) {
-				ui_cursor.draw();
+				ui_cursor.draw(ui_cursor_texture);
 			}
 		}
 	} static inline ui_registry;

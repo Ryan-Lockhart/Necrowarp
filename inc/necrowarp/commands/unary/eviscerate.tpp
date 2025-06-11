@@ -12,7 +12,7 @@
 #include <necrowarp/objects/object.tpp>
 
 namespace necrowarp {
-	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	inline bool brutalize(ref<InitiatorType> initiator, ref<VictimType> victim, ref<i8> damage) noexcept {
 		if constexpr (is_clumsy<InitiatorType>::value) {
@@ -30,7 +30,7 @@ namespace necrowarp {
 				victim.receive_damage(damage);
 
 				if constexpr (is_bleeder<VictimType>::value) {
-					fluid_map[victim.position] += fluid_type<VictimType>::type;
+					fluid_map<MapType>[victim.position] += fluid_type<VictimType>::type;
 				}
 
 				damage = 0;
@@ -45,8 +45,8 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<CombatantEntity EntityType> inline void entity_command_t<EntityType, eviscerate_t>::process() const noexcept {
-		ptr<EntityType> initiator_ptr{ entity_registry.at<EntityType>(source_position) };
+	template<CombatantEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, eviscerate_t>::process() const noexcept {
+		ptr<EntityType> initiator_ptr{ entity_registry<MapType>.template at<EntityType>(source_position) };
 
 		if (initiator_ptr == nullptr) {
 			return;
@@ -63,7 +63,7 @@ namespace necrowarp {
 
 			cauto position{ initiator.position + offset };
 
-			const entity_e victim_enum{ determine_target<EntityType>(entity_registry.at(position)) };
+			const entity_e victim_enum{ determine_target<EntityType>(entity_registry<MapType>.at(position)) };
 
 			if (victim_enum == entity_e::None) {
 				return;
@@ -76,7 +76,7 @@ namespace necrowarp {
 
 				if constexpr (!is_evil_entity<victim_type>::value) {
 					if constexpr (!is_null_entity<victim_type>::value && !std::is_same<EntityType, victim_type>::value) {
-						ptr<victim_type> victim_ptr{ entity_registry.at<victim_type>(position) };
+						ptr<victim_type> victim_ptr{ entity_registry<MapType>.template at<victim_type>(position) };
 
 						if (victim_ptr == nullptr) {
 							return;
@@ -84,13 +84,13 @@ namespace necrowarp {
 
 						ref<victim_type> victim{ *victim_ptr };
 
-						const bool target_killed{ brutalize(initiator, victim, remaining_damage) };
+						const bool target_killed{ brutalize<MapType>(initiator, victim, remaining_damage) };
 
 						if (target_killed) {
-							victim.die();
+							victim.template die<MapType>();
 
 							if constexpr (is_npc_entity<victim_type>::value) {
-								entity_registry.remove<victim_type>(victim.position);
+								entity_registry<MapType>.template remove<victim_type>(victim.position);
 							}
 
 							switch (to_entity_enum<EntityType>::value) {

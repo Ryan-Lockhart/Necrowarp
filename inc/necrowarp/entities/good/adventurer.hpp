@@ -95,9 +95,9 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
-		inline void die() noexcept;
+		template<map_type_e MapType> inline void die() noexcept;
 
 		inline void draw() const noexcept { entity_atlas.draw(entity_glyphs<adventurer_t>, position); }
 

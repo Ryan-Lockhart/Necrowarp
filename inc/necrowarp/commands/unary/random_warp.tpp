@@ -10,13 +10,13 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, random_warp_t>::process() const noexcept {
+	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, random_warp_t>::process() const noexcept {
 		if (!player.can_perform(discount_e::RandomWarp)) {
 			return;
 		}
 
 		player.pay_cost(discount_e::RandomWarp);
 
-		entity_registry.random_warp(source_position);
+		entity_registry<MapType>.random_warp(source_position);
 	}
 } // namespace necrowarp

@@ -1,9 +1,9 @@
-#include <necrowarp/game.hpp>
+#include <necrowarp/game.tpp>
 
 int main(int argc, char* argv[]) {
 	using namespace necrowarp;
 
-	const int exit_code{ Game::run() };
+	const int exit_code{ game_s::run() };
 
 	if (exit_code == EXIT_FAILURE) {
 		if constexpr (IsReleaseBuild) {

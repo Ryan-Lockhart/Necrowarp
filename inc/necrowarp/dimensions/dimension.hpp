@@ -14,6 +14,30 @@ namespace necrowarp {
 		AncientVault, // ruins map
 	};
 
+	template<dimension_e Dimension> struct is_abyssal{
+		static constexpr bool value = false;
+	};
+
+	template<dimension_e Dimension> constexpr bool is_abyssal_v = is_abyssal<Dimension>::value;
+
+	template<dimension_e Dimension> concept AbyssalDimension = is_abyssal<Dimension>::value;
+
+	template<> struct is_abyssal<dimension_e::Abyss> {
+		static constexpr bool value = true;
+	};
+
+	template<dimension_e Dimension> struct is_material{
+		static constexpr bool value = true;
+	};
+
+	template<dimension_e Dimension> constexpr bool is_material_v = is_material<Dimension>::value;
+
+	template<dimension_e Dimension> concept MaterialDimension = is_material<Dimension>::value;
+
+	template<> struct is_material<dimension_e::Abyss> {
+		static constexpr bool value = false;
+	};
+
 	constexpr cstr to_string(dimension_e dimension) {
 		switch (dimension) {
 			case dimension_e::Abyss: {
@@ -58,5 +82,15 @@ namespace necrowarp {
 		}
 	}
 
-	template<dimension_e Dimension> requires (Dimension != dimension_e::Abyss) static inline void plunge() noexcept;
+	template<dimension_e Dimension> requires is_material<Dimension>::value static constexpr map_type_e determine_map() noexcept {
+		switch (Dimension) {
+			case dimension_e::Underworld:
+			case dimension_e::Overworld:
+			case dimension_e::AncientVault: {
+				return map_type_e::Standard;
+			} default: {
+				return map_type_e::Pocket;
+			}
+		}
+	}
 }

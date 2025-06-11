@@ -10,16 +10,16 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, suicide_t>::process() const noexcept {
-		if (!entity_registry.contains<priest_t>(source_position)) {
+	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, suicide_t>::process() const noexcept {
+		if (!entity_registry<MapType>.template contains<priest_t>(source_position)) {
 			return;
 		}
 
-		entity_registry.remove<priest_t>(source_position);
+		entity_registry<MapType>.template remove<priest_t>(source_position);
 
-		object_registry.add(skull_t{ source_position });
+		object_registry<MapType>.add(skull_t{ source_position });
 
-		fluid_map[source_position] += fluid_type<priest_t>::type;
+		fluid_map<MapType>[source_position] += fluid_type<priest_t>::type;
 
 		++steam_stats::stats<steam_stat_e::PlayerKills, i32>;
 

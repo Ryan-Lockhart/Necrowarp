@@ -32,6 +32,6 @@ namespace necrowarp {
 
 		const offset_t source_position;
 
-		inline void process() const noexcept;
+		template<map_type_e MapType> inline void process() const noexcept;
 	};
 } // namespace necrowarp

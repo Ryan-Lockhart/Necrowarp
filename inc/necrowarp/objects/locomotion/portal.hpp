@@ -40,6 +40,7 @@ namespace necrowarp {
 		Vocal, // vocal portals take you to an audience chamber with your patron
 		Turbulent, // turbulent portals take you to a pocket dimension with unique ability unlocks after tribulation
 		Insightful, // insightful portals take you to the tutorial dimension
+		Collapsing, // collapsing portals return you to the underworld
 		Yawning, // yawning portals take you to the overworld
 		Echoing, // echoing portals take you to the ruins
 	};
@@ -54,6 +55,8 @@ namespace necrowarp {
 				return rhs == dimension_e::Tribulation;
 			} case stability_e::Insightful: {
 				return rhs == dimension_e::Yyndikras;
+			} case stability_e::Collapsing: {
+				return rhs == dimension_e::Underworld;
 			} case stability_e::Yawning: {
 				return rhs == dimension_e::Overworld;
 			}  case stability_e::Echoing: {
@@ -68,6 +71,7 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t portal_glyph<stability_e::Vocal>{ glyphs::VocalPortal };
 	template<> inline constexpr glyph_t portal_glyph<stability_e::Turbulent>{ glyphs::TurbulentPortal };
 	template<> inline constexpr glyph_t portal_glyph<stability_e::Insightful>{ glyphs::InsightfulPortal };
+	template<> inline constexpr glyph_t portal_glyph<stability_e::Collapsing>{ glyphs::CollapsingPortal };
 	template<> inline constexpr glyph_t portal_glyph<stability_e::Yawning>{ glyphs::YawningPortal };
 
 	constexpr cstr to_string(stability_e type) noexcept {
@@ -80,6 +84,8 @@ namespace necrowarp {
 				return "turbulent";
 			} case stability_e::Insightful: {
 				return "insightful";
+			} case stability_e::Collapsing: {
+				return "collpasing";
 			} case stability_e::Yawning: {
 				return "yawning";
 			} default: {
@@ -99,6 +105,8 @@ namespace necrowarp {
 				return runes_t{ string, colors::light::Red };
 			} case stability_e::Insightful: {
 				return runes_t{ string, colors::light::Green };
+			} case stability_e::Collapsing: {
+				return runes_t{ string, colors::light::Magenta };
 			} case stability_e::Yawning: {
 				return runes_t{ string, colors::light::Yellow };
 			} default: {
@@ -107,7 +115,7 @@ namespace necrowarp {
 		}
 	}
 
-	static inline std::uniform_int_distribution<u16> stability_dis{ static_cast<u16>(stability_e::Calm), static_cast<u16>(stability_e::Turbulent) };
+	static inline std::uniform_int_distribution<u16> stability_dis{ static_cast<u16>(stability_e::Calm), static_cast<u16>(stability_e::Yawning) };
 
 	template<RandomEngine Generator> static inline stability_e random_stability(ref<Generator> generator) noexcept { return static_cast<stability_e>(stability_dis(generator)); }
 
@@ -161,7 +169,7 @@ namespace necrowarp {
 			struct offset {
 				using is_transparent = void;
 
-				static constexpr usize operator()(cref<portal_t> ladder) noexcept { return offset_t::std_hasher::operator()(ladder.position); }
+				static constexpr usize operator()(cref<portal_t> portal) noexcept { return offset_t::std_hasher::operator()(portal.position); }
 
 				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
 			};

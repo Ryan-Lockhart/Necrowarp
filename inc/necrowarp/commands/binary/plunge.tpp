@@ -20,20 +20,22 @@ namespace necrowarp {
 				return dimension_e::Tribulation;
 			} case stability_e::Insightful: {
 				return dimension_e::Yyndikras;
+			} case stability_e::Collapsing: {
+				return dimension_e::Underworld;
 			} case stability_e::Yawning: {
 				return dimension_e::Overworld;
 			} case stability_e::Echoing: {
-				return dimension_e::Underworld;
+				return dimension_e::AncientVault;
 			}
 		}
 	}
 
-	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, plunge_t>::process() const noexcept {
-		if (!game_map.within<zone_region_e::Interior>(target_position) || !object_registry.contains<portal_t>(target_position)) {
+	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, plunge_t>::process() const noexcept {
+		if (!game_map<MapType>.template within<zone_region_e::Interior>(target_position) || !object_registry<MapType>.template contains<portal_t>(target_position)) {
 			return;
 		}
 
-		cptr<portal_t> portal{ object_registry.at<portal_t>(target_position) };
+		cptr<portal_t> portal{ object_registry<MapType>.template at<portal_t>(target_position) };
 
 		if (portal == nullptr || portal->stability == current_dimension) {
 			return;

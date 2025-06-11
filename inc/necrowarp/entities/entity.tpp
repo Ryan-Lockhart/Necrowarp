@@ -82,7 +82,7 @@ namespace necrowarp {
 		return runes;
 	}
 
-	static constexpr runes_t to_colored_string(entity_group_e group, offset_t position) noexcept {
+	template<map_type_e MapType> static constexpr runes_t to_colored_string(entity_group_e group, offset_t position) noexcept {
 		runes_t runes{};
 
 		magic_enum::enum_for_each<entity_e>([&](auto val) -> void {
@@ -99,7 +99,7 @@ namespace necrowarp {
 			using entity_type = to_entity_type<cval>::type;
 
 			if constexpr (globals::has_unique_descriptor<entity_type>::value) {
-				cauto entity_ptr{ entity_registry.at<entity_type>(position) };
+				cauto entity_ptr{ entity_registry<MapType>.template at<entity_type>(position) };
 
 				if (entity_ptr != nullptr) {
 					runes.concatenate(entity_ptr->to_colored_string());

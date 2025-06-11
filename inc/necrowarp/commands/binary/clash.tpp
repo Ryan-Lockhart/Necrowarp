@@ -12,7 +12,7 @@
 #include <necrowarp/objects/object.tpp>
 
 namespace necrowarp {
-	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	inline bool instigate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		if constexpr (is_clumsy<InitiatorType>::value) {
@@ -32,7 +32,7 @@ namespace necrowarp {
 				victim.receive_damage(damage);
 
 				if constexpr (is_bleeder<VictimType>::value) {
-					fluid_map[victim.position] += fluid_type<VictimType>::type;
+					fluid_map<MapType>[victim.position] += fluid_type<VictimType>::type;
 				}
 
 				return false;
@@ -42,7 +42,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	inline bool retaliate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		if constexpr (is_clumsy<VictimType>::value) {
@@ -62,7 +62,7 @@ namespace necrowarp {
 				initiator.receive_damage(damage);
 
 				if constexpr (is_bleeder<InitiatorType>::value) {
-					fluid_map[initiator.position] += fluid_type<InitiatorType>::type;
+					fluid_map<MapType>[initiator.position] += fluid_type<InitiatorType>::type;
 				}
 
 				return false;
@@ -72,7 +72,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<CombatantEntity InitiatorType, CombatantEntity VictimType>
+	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	inline bool reflect(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		if constexpr (is_clumsy<InitiatorType>::value) {
@@ -92,7 +92,7 @@ namespace necrowarp {
 				initiator.receive_damage(damage);
 
 				if constexpr (is_bleeder<InitiatorType>::value) {
-					fluid_map[initiator.position] += fluid_type<InitiatorType>::type;
+					fluid_map<MapType>[initiator.position] += fluid_type<InitiatorType>::type;
 				}
 
 				return false;
@@ -102,8 +102,8 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<CombatantEntity EntityType> inline void entity_command_t<EntityType, clash_t>::process() const noexcept {
-		ptr<EntityType> initiator_ptr{ entity_registry.at<EntityType>(source_position) };
+	template<CombatantEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, clash_t>::process() const noexcept {
+		ptr<EntityType> initiator_ptr{ entity_registry<MapType>.template at<EntityType>(source_position) };
 
 		if (initiator_ptr == nullptr) {
 			return;
@@ -111,7 +111,7 @@ namespace necrowarp {
 
 		ref<EntityType> initiator{ *initiator_ptr };
 		
-		const entity_e victim_enum{ determine_target<EntityType>(entity_registry.at(target_position)) };
+		const entity_e victim_enum{ determine_target<EntityType>(entity_registry<MapType>.at(target_position)) };
 
 		if (victim_enum == entity_e::None) {
 			return;
@@ -123,7 +123,7 @@ namespace necrowarp {
 			using victim_type = to_entity_type<cval>::type;
 
 			if constexpr (!is_null_entity<victim_type>::value && !std::is_same<EntityType, victim_type>::value) {
-				ptr<victim_type> victim_ptr{ entity_registry.at<victim_type>(target_position) };
+				ptr<victim_type> victim_ptr{ entity_registry<MapType>.template at<victim_type>(target_position) };
 
 				if (victim_ptr == nullptr) {
 					return;
@@ -131,21 +131,21 @@ namespace necrowarp {
 
 				ref<victim_type> victim{ *victim_ptr };
 
-				const bool target_killed{ instigate(initiator, victim) };
+				const bool target_killed{ instigate<MapType>(initiator, victim) };
 
 				const bool source_killed{ [&]() -> bool {
 					if constexpr (cval == entity_e::Bonespur) {
-						return reflect(initiator, victim);
+						return reflect<MapType>(initiator, victim);
 					} else {
-						return retaliate(initiator, victim);
+						return retaliate<MapType>(initiator, victim);
 					}
 				}()};
 
 				if (target_killed) {
-					victim.die();
+					victim.template die<MapType>();
 
 					if constexpr (is_npc_entity<victim_type>::value) {
-						entity_registry.remove<victim_type>(victim.position);
+						entity_registry<MapType>.template remove<victim_type>(victim.position);
 					}
 
 					switch (to_entity_enum<EntityType>::value) {
@@ -173,10 +173,10 @@ namespace necrowarp {
 				}
 
 				if (source_killed) {
-					initiator.die();
+					initiator.template die<MapType>();
 
 					if constexpr (is_npc_entity<EntityType>::value) {
-						entity_registry.remove<EntityType>(initiator.position);
+						entity_registry<MapType>.template remove<EntityType>(initiator.position);
 					}
 
 					switch (victim_enum) {

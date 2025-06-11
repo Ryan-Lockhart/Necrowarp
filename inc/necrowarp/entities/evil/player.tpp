@@ -24,8 +24,8 @@ namespace necrowarp {
 
 	template<NonNullEntity EntityType> inline void player_t::receive_death_boon() noexcept { set_energy(energy + EntityType::DeathBoon); }
 
-	inline command_e player_t::clash_or_consume(offset_t position) const noexcept {
-		const entity_group_e entity_group{ entity_registry.at(position) };
+	template<map_type_e MapType> inline command_e player_t::clash_or_consume(offset_t position) const noexcept {
+		const entity_group_e entity_group{ entity_registry<MapType>.at(position) };
 
 		const entity_e entity_target { determine_target<player_t>(entity_group) };
 		
@@ -42,7 +42,7 @@ namespace necrowarp {
 			}
 		}
 		
-		const object_group_e object_group{ object_registry.at(position) };
+		const object_group_e object_group{ object_registry<MapType>.at(position) };
 
 		const object_e object_target { determine_target<player_t>(object_group) };
 		
@@ -51,6 +51,8 @@ namespace necrowarp {
 				return command_e::Consume;
 			} case object_e::Ladder: {
 				return command_e::Descend;
+			} case object_e::Portal: {
+				return command_e::Plunge;
 			} default: {
 				break;
 			}
@@ -59,7 +61,7 @@ namespace necrowarp {
 		return command_e::None;
 	}
 
-	inline void player_t::die() noexcept {
+	template<map_type_e MapType> inline void player_t::die() noexcept {
 		phase.transition(phase_e::GameOver);
 
 		++steam_stats::stats<steam_stat_e::PlayerDeaths, i32>;

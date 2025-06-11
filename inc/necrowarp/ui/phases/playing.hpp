@@ -35,8 +35,8 @@ namespace necrowarp {
 	};
 
 	template<> struct phase_state_t<phase_e::Playing> {
-		static inline entity_registry_t entity_buffer{};
-		static inline object_registry_t object_buffer{};
+		template<map_type_e MapType> static inline entity_registry_t<MapType> entity_buffer{};
+		template<map_type_e MapType> static inline object_registry_t<MapType> object_buffer{};
 
 		static inline status_bar_t<3> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
@@ -96,14 +96,14 @@ namespace necrowarp {
 
 		static constexpr extent_t MinimapPixelSize{ 2, 2 };
 
-		static inline minimap_t<globals::MapSize, globals::BorderSize, MinimapPixelSize> minimap{
+		template<map_type_e MapType> static inline minimap_t<MapType, MinimapPixelSize> minimap{
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() * globals::cell_size<grid_type_e::UI> }, cardinal_e::Southeast },
 			embedded_box_t{ colors::Black, { colors::White, 1 } },
 			extent_t{ 1, 1 }
 		};
 
-		static inline label_t tooltip_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() - offset_t{ globals::MapSize.w / 4, 0 } }, cardinal_e::Southeast },
+		template<map_type_e MapType> static inline label_t tooltip_label{
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() - offset_t{ globals::MapSize<MapType>.w / 4, 0 } }, cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{},
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
@@ -156,15 +156,15 @@ namespace necrowarp {
 			return false;
 		}
 
-		static inline bool any_hovered() noexcept {
+		template<map_type_e MapType> static inline bool any_hovered() noexcept {
 			if (phase.current_phase != phase_e::Playing) {
 				return false;
 			}
 			
-			return player_statuses.is_hovered() || any_icon_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || minimap.is_hovered();
+			return player_statuses.is_hovered() || any_icon_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || minimap<MapType>.is_hovered();
 		}
 
-		static inline void update(button_e button) noexcept {
+		template<map_type_e MapType> static inline void update(button_e button) noexcept {
 			if (phase.current_phase != phase_e::Playing) {
 				return;
 			}
@@ -196,7 +196,7 @@ namespace necrowarp {
 
 						player.get_energy(), player.max_energy(), player.max_energy() >= player_t::MaximumEnergy ? "" : std::format(" (+1 energy slot in {} kill{})", kills_energy == 0 ? globals::KillsPerEnergySlot : kills_energy, kills_energy == 1 ? "" : "s"),
 						player.get_armor(), player.max_armor(), player.max_armor() >= player_t::MaximumArmor ? "" : std::format(" (+1 armor slot in {} kill{})", kills_armor == 0 ? globals::KillsPerArmorSlot : kills_armor, kills_armor == 1 ? "" : "s"),
-						player.get_divinity(), player.max_divinity(), player.max_divinity() >= player_t::MaximumDivinity ? "" : std::format("(+1 divinity turn in {} kill{})", kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s")
+						player.get_divinity(), player.max_divinity(), player.max_divinity() >= player_t::MaximumDivinity ? "" : std::format(" (+1 divinity turn in {} kill{})", kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s")
 					)
 				};
 			}
@@ -341,54 +341,54 @@ namespace necrowarp {
 				favor_hidden_label.text = runes_t{ " Favor " };
 			}
 
-			const bool has_entity{ entity_buffer.contains(grid_cursor.current_position) };
-			const bool has_object{ object_buffer.contains(grid_cursor.current_position) };
+			const bool has_entity{ entity_buffer<MapType>.contains(grid_cursor<MapType>.current_position) };
+			const bool has_object{ object_buffer<MapType>.contains(grid_cursor<MapType>.current_position) };
 
-			const fluid_e fluid{ fluid_map[grid_cursor.current_position] };
+			const fluid_e fluid{ fluid_map<MapType>[grid_cursor<MapType>.current_position] };
 
 			show_tooltip = has_entity || has_object || fluid != fluid_e::None;
 
 			if (show_tooltip) {
-				tooltip_label.text = runes_t{};
+				tooltip_label<MapType>.text = runes_t{};
 
 				if (has_entity) {
-					tooltip_label.text.concatenate(to_colored_string(entity_buffer.at(grid_cursor.current_position), grid_cursor.current_position));
+					tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(entity_buffer<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
 				}
 
 				if (has_entity && has_object) {
-					tooltip_label.text.concatenate({ " | " });
+					tooltip_label<MapType>.text.concatenate({ " | " });
 				}
 
 				if (has_object) {
-					tooltip_label.text.concatenate(to_colored_string(object_buffer.at(grid_cursor.current_position), grid_cursor.current_position));
+					tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(object_buffer<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
 				}
 
 				if ((has_entity || has_object) && fluid != fluid_e::None) {
-					tooltip_label.text.concatenate({ " | " });
+					tooltip_label<MapType>.text.concatenate({ " | " });
 				}
 				
 				if (fluid != fluid_e::None) {
-					tooltip_label.text.concatenate(to_colored_string(fluid));
+					tooltip_label<MapType>.text.concatenate(to_colored_string(fluid));
 				}
 			}
 
-			if (entity_buffer.contains<player_t>(grid_cursor.current_position)) {
-				grid_cursor.color = colors::Magenta;
-			} else if (entity_buffer.contains<ALL_EVIL_NPCS>(grid_cursor.current_position)) {
-				grid_cursor.color = colors::Green;
-			} else if (entity_buffer.contains<ALL_GOOD_NPCS>(grid_cursor.current_position)) {
-				grid_cursor.color = colors::Red;
-			} else if (object_buffer.contains(grid_cursor.current_position)) {
-				grid_cursor.color = colors::Blue;
+			if (entity_buffer<MapType>.template contains<player_t>(grid_cursor<MapType>.current_position)) {
+				grid_cursor<MapType>.color = colors::Magenta;
+			} else if (entity_buffer<MapType>.template contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
+				grid_cursor<MapType>.color = colors::Green;
+			} else if (entity_buffer<MapType>.template contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
+				grid_cursor<MapType>.color = colors::Red;
+			} else if (object_buffer<MapType>.contains(grid_cursor<MapType>.current_position)) {
+				grid_cursor<MapType>.color = colors::Blue;
 			} else {
-				grid_cursor.color = colors::metals::Gold;
+				grid_cursor<MapType>.color = colors::metals::Gold;
 			}
 
-			grid_cursor.color.set_alpha(sine_wave.current_value());
-			warp_cursor.color.set_alpha(sine_wave.current_value());
+			grid_cursor<MapType>.color.set_alpha(sine_wave.current_value());
+			warp_cursor<MapType>.color.set_alpha(sine_wave.current_value());
 		}
 
-		static inline void draw(ref<renderer_t> renderer) noexcept {
+		template<map_type_e MapType> static inline void draw(ref<renderer_t> renderer) noexcept {
 			player_statuses.draw(renderer);
 
 			if (show_advancement) {
@@ -418,13 +418,13 @@ namespace necrowarp {
 				favor_hidden_label.draw(renderer);
 
 			if (!draw_cursor && show_tooltip) {
-				tooltip_label.draw(renderer);
+				tooltip_label<MapType>.draw(renderer);
 			}
 
 			if (!processing_turn) {
-				minimap.draw(renderer);
+				minimap<MapType>.draw(renderer);
 			} else if (!buffers_locked) {
-				minimap.draw(renderer, entity_buffer, object_buffer);
+				minimap<MapType>.draw(renderer, entity_buffer<MapType>, object_buffer<MapType>);
 			}
 		}
 	};

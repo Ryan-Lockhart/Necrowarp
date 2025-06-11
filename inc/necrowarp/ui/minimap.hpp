@@ -13,7 +13,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<extent_t ZoneSize, extent_t BorderSize, extent_t PixelSize = extent_t{ 1, 1 }> struct embedded_minimap_t {
+	template<map_type_e MapType, extent_t PixelSize = extent_t{ 1, 1 }> struct embedded_minimap_t {
 		embedded_box_t box;
 		extent_t padding;
 
@@ -23,7 +23,7 @@ namespace necrowarp {
 
 		constexpr offset_t apply_padding(offset_t position) const noexcept { return position - padding; }
 
-		constexpr extent_t internal_size() const noexcept { return ZoneSize * PixelSize; }
+		constexpr extent_t internal_size() const noexcept { return globals::MapSize<MapType> * PixelSize; }
 
 		constexpr extent_t external_size() const noexcept { return internal_size() + padding * 2; }
 
@@ -32,25 +32,25 @@ namespace necrowarp {
 		constexpr void draw(ref<renderer_t> renderer, offset_t position) const noexcept {
 			renderer.draw_composite_rect(rect_t{ apply_padding(position), external_size() }, box.background, box.border.color, box.border.thickness * globals::cell_size<grid_type_e::UI>.w);
 			
-			for (extent_t::scalar_t y{ 0 }; y < ZoneSize.h; ++y) {
-				for (extent_t::scalar_t x{ 0 }; x < ZoneSize.w; ++x) {
+			for (extent_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
+				for (extent_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
 					const offset_t pos{ x, y };
 					const offset_t pixel_pos{ position + (pos * PixelSize) };
 
 					const color_t pixel_color{
 						[&]() -> color_t {
-							if (entity_registry.contains<player_t>(pos)) {
+							if (entity_registry<MapType>.template contains<player_t>(pos)) {
 								return colors::Magenta;
-							} else if (entity_registry.contains<ALL_EVIL_NPCS>(pos)) {
+							} else if (entity_registry<MapType>.template contains<ALL_EVIL_NPCS>(pos)) {
 								return colors::Green;
-							} else if (entity_registry.contains<ALL_GOOD_NPCS>(pos)) {
+							} else if (entity_registry<MapType>.template contains<ALL_GOOD_NPCS>(pos)) {
 								return colors::Red;
-							} else if (object_registry.contains(pos)) {
+							} else if (object_registry<MapType>.contains(pos)) {
 								return colors::Blue;
-							} else if (game_map[pos].solid) {
+							} else if (game_map<MapType>[pos].solid) {
 								return colors::Charcoal;
-							} else if (!fluid_map[pos].contains(fluid_e::None)) {
-								return fluid_color(static_cast<fluid_e>(fluid_map[pos]));
+							} else if (!fluid_map<MapType>[pos].contains(fluid_e::None)) {
+								return fluid_color(static_cast<fluid_e>(fluid_map<MapType>[pos]));
 							} else {
 								return colors::Marble;
 							}
@@ -65,31 +65,31 @@ namespace necrowarp {
 				}
 			}
 
-			renderer.draw_outline_rect(rect_t{ position + camera.get_position() * PixelSize, camera.get_size() * PixelSize }, colors::metals::Gold);
+			renderer.draw_outline_rect(rect_t{ position + camera<MapType>.get_position() * PixelSize, camera<MapType>.get_size() * PixelSize }, colors::metals::Gold);
 		}
 
-		constexpr void draw(ref<renderer_t> renderer, cref<entity_registry_t> entities, cref<object_registry_t> objects, offset_t position) const noexcept {
+		constexpr void draw(ref<renderer_t> renderer, cref<entity_registry_t<MapType>> entities, cref<object_registry_t<MapType>> objects, offset_t position) const noexcept {
 			renderer.draw_composite_rect(rect_t{ apply_padding(position), external_size() }, box.background, box.border.color, box.border.thickness * globals::cell_size<grid_type_e::UI>.w);
 			
-			for (extent_t::scalar_t y{ 0 }; y < ZoneSize.h; ++y) {
-				for (extent_t::scalar_t x{ 0 }; x < ZoneSize.w; ++x) {
+			for (extent_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
+				for (extent_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
 					const offset_t pos{ x, y };
 					const offset_t pixel_pos{ position + (pos * PixelSize) };
 
 					const color_t pixel_color{
 						[&]() -> color_t {
-							if (entities.contains<player_t>(pos)) {
+							if (entities.template contains<player_t>(pos)) {
 								return colors::Magenta;
-							} else if (entities.contains<ALL_EVIL_NPCS>(pos)) {
+							} else if (entities.template contains<ALL_EVIL_NPCS>(pos)) {
 								return colors::Green;
-							} else if (entities.contains<ALL_GOOD_NPCS>(pos)) {
+							} else if (entities.template contains<ALL_GOOD_NPCS>(pos)) {
 								return colors::Red;
 							} else if (objects.contains(pos)) {
 								return colors::Blue;
-							} else if (game_map[pos].solid) {
+							} else if (game_map<MapType>[pos].solid) {
 								return colors::Charcoal;
-							} else if (!fluid_map[pos].contains(fluid_e::None)) {
-								return fluid_color(static_cast<fluid_e>(fluid_map[pos]));
+							} else if (!fluid_map<MapType>[pos].contains(fluid_e::None)) {
+								return fluid_color(static_cast<fluid_e>(fluid_map<MapType>[pos]));
 							} else {
 								return colors::Marble;
 							}
@@ -104,21 +104,21 @@ namespace necrowarp {
 				}
 			}
 
-			renderer.draw_outline_rect(rect_t{ position + camera.get_position() * PixelSize, camera.get_size() * PixelSize }, colors::metals::Gold);
+			renderer.draw_outline_rect(rect_t{ position + camera<MapType>.get_position() * PixelSize, camera<MapType>.get_size() * PixelSize }, colors::metals::Gold);
 		}
 	};
 	
-	template<extent_t ZoneSize, extent_t BorderSize, extent_t PixelSize = extent_t{ 1, 1 }> struct minimap_t : public anchor_t, public embedded_minimap_t<ZoneSize, BorderSize, PixelSize> {
-		constexpr minimap_t() noexcept : anchor_t{}, embedded_minimap_t<ZoneSize, BorderSize, PixelSize>{} {}
+	template<map_type_e MapType, extent_t PixelSize = extent_t{ 1, 1 }> struct minimap_t : public anchor_t, public embedded_minimap_t<MapType, PixelSize> {
+		constexpr minimap_t() noexcept : anchor_t{}, embedded_minimap_t<MapType, PixelSize>{} {}
 
-		constexpr minimap_t(anchor_t anchor, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_minimap_t<ZoneSize, BorderSize, PixelSize>{ box, padding } {}
+		constexpr minimap_t(anchor_t anchor, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_minimap_t<MapType, PixelSize>{ box, padding } {}
 
 		constexpr bool is_hovered() const noexcept {
-			return embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::is_hovered(anchor_t::get_offset(embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::external_size()));
+			return embedded_minimap_t<MapType, PixelSize>::is_hovered(anchor_t::get_offset(embedded_minimap_t<MapType, PixelSize>::external_size()));
 		}
 
-		constexpr void draw(ref<renderer_t> renderer) const noexcept { embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::draw(renderer, get_offset(embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::external_size())); }
+		constexpr void draw(ref<renderer_t> renderer) const noexcept { embedded_minimap_t<MapType, PixelSize>::draw(renderer, get_offset(embedded_minimap_t<MapType, PixelSize>::external_size())); }
 
-		constexpr void draw(ref<renderer_t> renderer, cref<entity_registry_t> entities, cref<object_registry_t> objects) const noexcept { embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::draw(renderer, entities, objects, get_offset(embedded_minimap_t<ZoneSize, BorderSize, PixelSize>::external_size())); }
+		constexpr void draw(ref<renderer_t> renderer, cref<entity_registry_t<MapType>> entities, cref<object_registry_t<MapType>> objects) const noexcept { embedded_minimap_t<MapType, PixelSize>::draw(renderer, entities, objects, get_offset(embedded_minimap_t<MapType, PixelSize>::external_size())); }
 	};
 }

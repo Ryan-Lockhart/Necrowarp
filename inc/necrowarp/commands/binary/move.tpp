@@ -10,8 +10,8 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> inline void entity_command_t<EntityType, move_t>::process() const noexcept {
-		entity_registry.update<EntityType>(source_position, target_position);
+	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, move_t>::process() const noexcept {
+		entity_registry<MapType>.template update<EntityType>(source_position, target_position);
 
 		if constexpr (!is_player<EntityType>::value) {
 			return;

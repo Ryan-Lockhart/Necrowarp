@@ -10,6 +10,7 @@
 
 #include <necrowarp/commands/binary/consume.hpp>
 #include <necrowarp/commands/binary/descend.hpp>
+#include <necrowarp/commands/binary/plunge.hpp>
 #include <necrowarp/commands/binary/target_warp.hpp>
 #include <necrowarp/commands/binary/consume_warp.hpp>
 #include <necrowarp/commands/binary/calcitic_invocation.hpp>
@@ -75,6 +76,10 @@ namespace necrowarp {
 	};
 
 	template<> struct is_entity_command_valid<player_t, descend_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<player_t, plunge_t> {
 		static constexpr bool value = true;
 	};
 
@@ -195,12 +200,12 @@ namespace necrowarp {
 	 // Repulse,    (planned; circular area of effect combat command)
 	 // Annihilate, (planned; linear area of effect combat command)
 
-		CalciticInvocation,
-		SpectralInvocation,
-		SanguineInvocation,
-		GalvanicInvocation,
-	 // RavenousInvocation, (planned; cross domain of Spectral and Sanguine)
-	 // WretchedInvocation, (planned; cross domain of Calcitic and Sanguine)
+		CalciticInvocation, // domain of bones; patrons are Kalypdrot, Rathghul, Ionna; minions are skeletons and bonespurs
+		SpectralInvocation, // domain of ichor; patrons are Akurakhaithan, Rathghul, Saeiligarkeuss; minions are cultists and wraithes
+		SanguineInvocation, // domain of blood; patrons are Viedskavn, Merirfin, Neolithia; minions are bloodhounds and hemogheists
+		GalvanicInvocation, // domain of metal; patrons are Thuljanor, Praethornyn, Exar; minions are animated suits of armor and death knights
+	 // RavenousInvocation, // domain of flesh; patrons are Tselgwedixxikog, Sketzuum; minions are rakes and flesh golems
+	 // WretchedInvocation, // domain of filth; patrons are Ionna, Kalypdrot; minions are draugr and dreadwyrms
 
 	 // MaliceIncarnate, (planned; discard body temporarily and enter wraith-world)
 		NecromanticAscendance
@@ -493,12 +498,13 @@ namespace necrowarp {
 			entity_e::Priest,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
-			entity_e::Paladin,
+			entity_e::Paladin
 		};
 
-		static constexpr std::array<object_e, 2> ObjectPriorities{
-			object_e::Skull,
+		static constexpr std::array<object_e, 3> ObjectPriorities{
+			object_e::Portal,
 			object_e::Ladder,
+			object_e::Skull
 		};
 
 		template<discount_e Type> static constexpr i8 Cost{};
@@ -712,9 +718,9 @@ namespace necrowarp {
 
 		template<NonNullEntity EntityType> inline void receive_death_boon() noexcept;
 
-		inline command_e clash_or_consume(offset_t position) const noexcept;
+		template<map_type_e MapType> inline command_e clash_or_consume(offset_t position) const noexcept;
 
-		inline void die() noexcept;
+		template<map_type_e MapType> inline void die() noexcept;
 
 		inline void reinvigorate(i8 value) noexcept { set_energy(energy + value); }
 

@@ -16,7 +16,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
+#if defined(BLEAK_RELEASE)
+	static inline subsystem_s subsystem{ api_state.app_id };
+#elif defined(BLEAK_DEBUG)
 	static inline subsystem_s subsystem{};
+#endif
 
 	static inline phase_t phase{};
 
@@ -29,6 +33,9 @@ namespace necrowarp {
 	static inline atlas_t<globals::EntitysetSize> entity_atlas{ renderer, "res/gfx/tiles/entities_64x64.png" };
 
 	static inline atlas_t<globals::IconsetSize> icon_atlas{ renderer, "res/gfx/icons/icons_32x32.png" };
+
+	static inline texture_t ui_cursor_texture{ renderer, "res/gfx/sprites/cursor.png" };
+	static inline texture_t grid_cursor_texture{ renderer, "res/gfx/sprites/grid_cursor.png" };
 	
 	static inline game_stats_t game_stats{};
 
@@ -36,25 +43,25 @@ namespace necrowarp {
 
 	static inline std::bernoulli_distribution triflip{ 1.0 / 3.0 };
 
-	static inline zone_ct_t<map_cell_t, globals::MapSize, globals::BorderSize> game_map{};
+	template<map_type_e MapType> static inline zone_ct_t<map_cell_t, globals::MapSize<MapType>, globals::BorderSize<MapType>> game_map{};
 
 	static inline std::vector<offset_t> ladder_positions{};
 
-	static inline zone_ct_t<fluid_cell_t, globals::MapSize, globals::BorderSize> fluid_map{};
+	template<map_type_e MapType> static inline zone_ct_t<fluid_cell_t, globals::MapSize<MapType>, globals::BorderSize<MapType>> fluid_map{};
 
-	static inline cursor_t ui_cursor{ renderer, "res/gfx/sprites/cursor.png", colors::White };
+	static inline cursor_t ui_cursor{};
 
-	static inline grid_cursor_t<globals::cell_size<grid_type_e::Game>> grid_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::metals::Gold, game_map.zone_origin, game_map.zone_extent };
-	static inline grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor{ renderer, "res/gfx/sprites/grid_cursor.png", colors::Magenta, game_map.zone_origin, game_map.zone_extent };
+	template<map_type_e MapType> static inline grid_cursor_t<globals::cell_size<grid_type_e::game_s>> grid_cursor{ colors::metals::Gold, game_map<MapType>.zone_origin, game_map<MapType>.zone_extent };
+	template<map_type_e MapType> static inline grid_cursor_t<globals::cell_size<grid_type_e::game_s>> warp_cursor{ colors::Magenta, game_map<MapType>.zone_origin, game_map<MapType>.zone_extent };
 
 	static inline bool draw_cursor{ true };
 	static inline bool draw_warp_cursor{ false };
 
-	static inline camera_t camera{ globals::grid_size<grid_type_e::Game>(), extent_t::Zero, globals::camera_extent() };
+	template<map_type_e MapType> static inline camera_t camera{ globals::grid_size<grid_type_e::game_s>(), extent_t::Zero, globals::camera_extent<MapType>() };
 
 	static inline bool camera_locked{ true };
 
-	static inline bool camera_forced() noexcept { return globals::MapSize.w <= globals::grid_size<grid_type_e::Game>().w || globals::MapSize.h <= globals::grid_size<grid_type_e::Game>().h; }
+	template<map_type_e MapType> static inline bool camera_forced() noexcept { return globals::MapSize<MapType>.w <= globals::grid_size<grid_type_e::game_s>().w || globals::MapSize<MapType>.h <= globals::grid_size<grid_type_e::game_s>().h; }
 	
 	static constexpr usize input_interval{ 125ULL };
 	static inline bleak::timer_t input_timer{ input_interval };

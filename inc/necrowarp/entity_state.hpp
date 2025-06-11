@@ -10,7 +10,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	struct entity_registry_t {
+	template<map_type_e MapType> struct entity_registry_t {
 		inline entity_group_e at(offset_t position) const noexcept;
 
 		template<NonPlayerEntity EntityType> inline cptr<EntityType> at(offset_t position) const noexcept;
@@ -176,5 +176,5 @@ namespace necrowarp {
 		inline void draw(cref<camera_t> camera) const noexcept;
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
-	} static inline entity_registry{};
+	};
 } // namespace necrowarp
