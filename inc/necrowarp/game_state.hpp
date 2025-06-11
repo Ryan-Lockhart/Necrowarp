@@ -43,11 +43,11 @@ namespace necrowarp {
 
 	static inline std::bernoulli_distribution triflip{ 1.0 / 3.0 };
 
-	template<map_type_e MapType> static inline zone_ct_t<map_cell_t, globals::MapSize<MapType>, globals::BorderSize<MapType>> game_map{};
+	template<map_type_e MapType> static inline zone_t<map_cell_t, globals::MapSize<MapType>, globals::BorderSize<MapType>> game_map{};
 
 	static inline std::vector<offset_t> ladder_positions{};
 
-	template<map_type_e MapType> static inline zone_ct_t<fluid_cell_t, globals::MapSize<MapType>, globals::BorderSize<MapType>> fluid_map{};
+	template<map_type_e MapType> static inline zone_t<fluid_cell_t, globals::MapSize<MapType>, globals::BorderSize<MapType>> fluid_map{};
 
 	static inline cursor_t ui_cursor{};
 

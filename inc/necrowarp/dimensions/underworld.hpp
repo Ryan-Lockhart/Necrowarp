@@ -7,18 +7,10 @@
 namespace necrowarp {
 	template<> inline void game_s::plunge<dimension_e::Underworld>() noexcept {
 		constexpr map_type_e map_type = map_type_e::Standard;
-		
-		randomize_patrons();
 #if !defined(STEAMLESS)
 		steam_stats::store();
 
 		stat_store_timer.record();
-#endif
-		++game_stats.game_depth;
-#if !defined(STEAMLESS)
-		if (steam_stats_s::stats<steam_stat_e::LowestDepth, i32>.get_value() > -static_cast<i32>(game_stats.game_depth)) {
-			steam_stats_s::stats<steam_stat_e::LowestDepth, i32> = -static_cast<i32>(game_stats.game_depth);
-		}
 #endif
 		constexpr map_cell_t open_state{ cell_e::Open, cell_e::Transperant, cell_e::Seen, cell_e::Explored };
 		constexpr map_cell_t closed_state{ cell_e::Solid, cell_e::Opaque, cell_e::Seen, cell_e::Explored };

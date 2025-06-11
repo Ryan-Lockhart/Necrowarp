@@ -196,17 +196,17 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_e>(zone[position])) }, position);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
 			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_e>(zone[position])) }, position + offset);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
 			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_e>(zone[position])) }, position + offset, nudge);
 		}
 
@@ -429,7 +429,7 @@ namespace necrowarp {
 		}
 
 		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void recalculate_index(cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, cell_e trait) noexcept {
+		inline constexpr void recalculate_index(cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, cell_e trait) noexcept {
 			index = zone.template calculate_index<solver_e::Melded>(position, trait);
 		}
 
@@ -440,7 +440,7 @@ namespace necrowarp {
 		inline glyph_t patch_glyph(u8 idx) const noexcept { return glyph_t{ idx, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
 
 		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr u8 determine_patch(cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+		inline constexpr u8 determine_patch(cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (zone.on_y_edge(position)) {
 				return 0;
 			}
@@ -481,7 +481,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -496,7 +496,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -513,7 +513,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
+		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -528,7 +528,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -545,7 +545,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
 			if (!explored) {
 				return;
 			}
@@ -560,7 +560,7 @@ namespace necrowarp {
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
-		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_ct_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
 			if (!explored) {
 				return;
 			}
