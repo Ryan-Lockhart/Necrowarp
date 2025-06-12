@@ -669,7 +669,9 @@ namespace necrowarp {
 		template<map_type_e MapType> static inline void update() noexcept;
 
 		template<map_type_e MapType> static inline void render() noexcept {
-			if (window.is_closing() || buffers_locked) {
+			constexpr bool render_async{ !IsReleaseBuild };
+
+			if (window.is_closing() || (processing_turn && render_async)) {
 				return;
 			}
 

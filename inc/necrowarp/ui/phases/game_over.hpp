@@ -11,7 +11,7 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			embedded_label_t{
 				runes_t{
 					runes_t{
-						"You were slain! game_s over...",
+						"You were slain! Game over...",
 						colors::White
 					}.concatenate(
 						runes_t{
@@ -87,7 +87,7 @@ template<> struct phase_state_t<phase_e::GameOver> {
 				phase.transition(phase_e::Exiting);
 			}
 
-			game_over_label.text = runes_t{ "You were slain! game_s over...", colors::White };
+			game_over_label.text = runes_t{ "You were slain! Game over...", colors::White };
 
 			if (retry_button.is_hovered()) {
 				game_over_label.text.concatenate(runes_t{ "\n\n        ...or is it?", colors::dark::Magenta });
