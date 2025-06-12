@@ -70,11 +70,12 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 9 };
 		static constexpr i8 MaximumDamage{ 5 };
 
-		static constexpr std::array<entity_e, 4> EntityPriorities{
+		static constexpr std::array<entity_e, 5> EntityPriorities{
 			entity_e::Priest,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
 			entity_e::Paladin,
+			entity_e::Berserker,
 		};
 		
 		inline wraith_t(offset_t position, i8 health) noexcept : position{ position }, health{ health } {}

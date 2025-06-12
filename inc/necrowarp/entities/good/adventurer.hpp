@@ -68,6 +68,10 @@ namespace necrowarp {
 	};
 
 	struct adventurer_t {
+	  private:
+		static inline std::bernoulli_distribution fumble_dis{ 0.75 };
+
+	  public:
 		offset_t position;
 
 		static constexpr i8 MaximumHealth{ 1 };
@@ -90,6 +94,8 @@ namespace necrowarp {
 		inline adventurer_t(offset_t position) noexcept : position{ position } {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+
+		template<RandomEngine Engine> static inline bool fumble(ref<Engine> engine) noexcept { return fumble_dis(engine); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

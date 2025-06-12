@@ -172,6 +172,7 @@ namespace necrowarp {
 		AdventurersSlain,
 		MercenariesSlain,
 		PaladinsSlain,
+		BerserkersSlain,
 		PriestsSlain,
 
 		AdventurersResurrected,
@@ -216,6 +217,7 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::AdventurersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::MercenariesSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::PaladinsSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::BerserkersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::PriestsSlain> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::AdventurersResurrected> { using type = i32; };

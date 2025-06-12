@@ -350,7 +350,7 @@ namespace necrowarp {
 
 		constexpr i16 FloorsPerReinforcement{ 8 };
 
-		constexpr bool CheatsAllowed{ true };
+		constexpr bool CheatsAllowed{ false };
 
 		constexpr f32 FluidPoolMinimumVolume{ 4.5f };
 		constexpr f32 FluidPoolMaximumVolume{ 5.7f };
@@ -363,6 +363,7 @@ namespace necrowarp {
 		constexpr bool OopsAllAdventurers{ false };
 		constexpr bool OopsAllMercenaries{ false };
 		constexpr bool OopsAllPaladins{ false };
+		constexpr bool OopsAllBerserkers{ false };
 		constexpr bool OopsAllPriests{ false };
 
 		template<typename T> struct has_unique_descriptor {

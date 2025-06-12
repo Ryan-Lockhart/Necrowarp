@@ -56,11 +56,12 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 4> EntityPriorities{
+		static constexpr std::array<entity_e, 5> EntityPriorities{
 			entity_e::Priest,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
 			entity_e::Paladin,
+			entity_e::Berserker,
 		};
 
 		inline cultist_t(offset_t position) noexcept : position{ position } {}

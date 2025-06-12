@@ -533,6 +533,12 @@ namespace necrowarp {
 				return true;
 			}
 
+			if constexpr (globals::OopsAllBerserkers) {
+				entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() });
+
+				return true;
+			}
+
 			if constexpr (globals::OopsAllPriests) {
 				entity_registry<MapType>.template add<true>(priest_t{ spawn_pos.value() });
 
@@ -540,50 +546,60 @@ namespace necrowarp {
 			}
 
 			if (game_stats.wave_size >= globals::MassiveWaveSize) {
-				if (spawn_chance < 80) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 80%
+				if (spawn_chance < 40) {
+					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 40%
+				} else if (spawn_chance < 80) {
+					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 40%
+				} else if (spawn_chance < 89) {
+					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 9%
 				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 16%
+					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 9%
 				} else {
 					entity_registry<MapType>.template add<true>(priest_t{ spawn_pos.value() }); // 2%
 				}
 			} else if (game_stats.wave_size >= globals::HugeWaveSize) {
 				if (spawn_chance < 50) {
 					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 50%
-				} else if (spawn_chance < 90) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 40%
-				} else if (spawn_chance < 98) {
+				} else if (spawn_chance < 80) {
+					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 30%
+				} else if (spawn_chance < 89) {
 					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 8%
+				} else if (spawn_chance < 98) {
+					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 8%
 				} else {
 					entity_registry<MapType>.template add<true>(priest_t{ spawn_pos.value() }); // 2%
 				}
 			} else if (game_stats.wave_size >= globals::LargeWaveSize) {
 				if (spawn_chance < 70) {
 					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 70%
+				} else if (spawn_chance < 90) {
+					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 20%
 				} else if (spawn_chance < 94) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 24%
-				} else if (spawn_chance < 98) {
 					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 4%
+				} else if (spawn_chance < 98) {
+					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 4%
 				} else {
 					entity_registry<MapType>.template add<true>(priest_t{ spawn_pos.value() }); // 2%
 				}
 			} else if (game_stats.wave_size >= globals::MediumWaveSize) {
 				if (spawn_chance < 80) {
 					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 80%
-				} else if (spawn_chance < 97) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 17%
-				} else if (spawn_chance < 99) {
+				} else if (spawn_chance < 96) {
+					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 16%
+				} else if (spawn_chance < 98) {
 					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 2%
 				} else {
-					entity_registry<MapType>.template add<true>(priest_t{ spawn_pos.value() }); // 1%
+					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 2%
 				}
 			} else if (game_stats.wave_size >= globals::SmallWaveSize) {
 				if (spawn_chance < 90) {
 					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 90%
+				} else if (spawn_chance < 98) {
+					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 8%
 				} else if (spawn_chance < 99) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 9%
-				} else {
 					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 1%
+				} else {
+					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 1%
 				}
 			} else {
 				entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() });

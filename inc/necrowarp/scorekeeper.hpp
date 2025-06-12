@@ -82,14 +82,13 @@ namespace necrowarp {
 				case entity_e::Adventurer: {
 					add(10);
 					break;
-				} case entity_e::Mercenary: {
+				} case entity_e::Mercenary:
+				  case entity_e::Priest: {
 					add(50);
 					break;
-				} case entity_e::Paladin: {
+				} case entity_e::Paladin:
+				  case entity_e::Berserker: {
 					add(100);
-					break;
-				} case entity_e::Priest: {
-					add(50);
 					break;
 				} default: {
 					break;

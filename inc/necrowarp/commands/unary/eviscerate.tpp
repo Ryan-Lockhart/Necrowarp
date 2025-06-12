@@ -33,15 +33,26 @@ namespace necrowarp {
 					fluid_map<MapType>[victim.position] += fluid_type<VictimType>::type;
 				}
 
-				damage = 0;
+				if constexpr (is_berker<VictimType>::value) {
+					--damage;
+				} else {
+					damage = 0;
+				}
+
 				return false;
 			}
 
-			damage -= victim.get_health();
+			if constexpr (is_berker<VictimType>::value) {
+				--damage;
+			} else {
+				damage -= victim.get_health();
+			}
+
 			return true;
 		}
 
 		--damage;
+
 		return true;
 	}
 

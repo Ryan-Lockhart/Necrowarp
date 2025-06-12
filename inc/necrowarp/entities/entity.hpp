@@ -33,6 +33,7 @@ namespace necrowarp {
 	struct adventurer_t;
 	struct mercenary_t;
 	struct paladin_t;
+	struct berserker_t;
 	struct priest_t;
 
 	#define ALL_EVIL_NPCS \
@@ -53,6 +54,7 @@ namespace necrowarp {
 		adventurer_t, \
 		mercenary_t, \
 		paladin_t, \
+		berserker_t, \
 		priest_t
 	
 	#define ALL_GOOD \
@@ -80,6 +82,7 @@ namespace necrowarp {
 		Adventurer,
 		Mercenary,
 		Paladin,
+		Berserker,
 		Priest
 	};
 
@@ -111,10 +114,10 @@ namespace necrowarp {
 				return "mercenary";
 			} case entity_e::Paladin: {
 				return "paladin";
+			} case entity_e::Berserker: {
+				return "berserker";
 			} case entity_e::Priest: {
 				return "priest";
-			} default: {
-				return "unknown";
 			}
 		}
 	}
@@ -149,10 +152,10 @@ namespace necrowarp {
 				return runes_t{ string, colors::metals::Brass };
 			} case entity_e::Paladin: {
 				return runes_t{ string, colors::metals::Steel };
+			} case entity_e::Berserker: {
+				return runes_t{ string, colors::dark::Orange };
 			} case entity_e::Priest: {
 				return runes_t{ string, colors::metals::Gold };
-			} default: {
-				return runes_t{ string, colors::White };
 			}
 		}
 	}
@@ -175,7 +178,8 @@ namespace necrowarp {
 		Adventurer = DeathKnight << 1,
 		Mercenary = Adventurer << 1,
 		Paladin = Mercenary << 1,
-		Priest = Paladin << 1
+		Berserker = Paladin << 1,
+		Priest = Berserker << 1
 	};
 
 	constexpr entity_group_e operator+(entity_group_e lhs, entity_group_e rhs) noexcept { return static_cast<entity_group_e>(static_cast<entity_group_t>(lhs) | static_cast<entity_group_t>(rhs)); }
@@ -325,6 +329,14 @@ namespace necrowarp {
 	template<typename T> constexpr bool is_fast_v = is_fast<T>::value;
 
 	template<typename T> concept FastEntity = NonNullEntity<T> && is_fast<T>::value;
+
+	template<typename T> struct is_berker {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_berker_v = is_fodder<T>::value;
+
+	template<typename T> concept BerkerEntity = NonNullEntity<T> && is_berker<T>::value;
 
 	template<typename T> struct is_bleeder {
 		static constexpr bool value = false;

@@ -16,7 +16,7 @@ namespace necrowarp {
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	inline bool instigate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		if constexpr (is_clumsy<InitiatorType>::value) {
-			if (!coinflip(random_engine)) {
+			if (InitiatorType::fumble(random_engine)) {
 				return false;
 			}
 		}
@@ -27,16 +27,34 @@ namespace necrowarp {
 			return false;
 		}
 
+		if constexpr (is_berker<InitiatorType>::value) {
+			initiator.enrage();
+
+			if (!initiator.is_exhausted()) {
+				initiator.recuperate();
+			}
+		}
+
 		if constexpr (!is_fodder<VictimType>::value) {
 			if (victim.can_survive(damage)) {
 				victim.receive_damage(damage);
 
 				if constexpr (is_bleeder<VictimType>::value) {
-					fluid_map<MapType>[victim.position] += fluid_type<VictimType>::type;
+					constexpr fluid_e fluid{ fluid_type<VictimType>::type };
+
+					fluid_map<MapType>[victim.position] += fluid;
+
+					if constexpr (is_berker<InitiatorType>::value) {
+						initiator.enspatter(fluid);
+					}
 				}
 
 				return false;
 			}
+		}
+
+		if constexpr (is_bleeder<VictimType>::value && is_berker<InitiatorType>::value) {
+			initiator.enspatter(fluid_type<VictimType>::type);
 		}
 
 		return true;
@@ -46,7 +64,7 @@ namespace necrowarp {
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	inline bool retaliate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		if constexpr (is_clumsy<VictimType>::value) {
-			if (!coinflip(random_engine)) {
+			if (VictimType::fumble(random_engine)) {
 				return false;
 			}
 		}
@@ -57,16 +75,34 @@ namespace necrowarp {
 			return false;
 		}
 
+		if constexpr (is_berker<VictimType>::value) {
+			victim.enrage();
+
+			if (!victim.is_exhausted()) {
+				victim.recuperate();
+			}
+		}
+
 		if constexpr (!is_fodder<InitiatorType>::value) {
 			if (initiator.can_survive(damage)) {
 				initiator.receive_damage(damage);
 
 				if constexpr (is_bleeder<InitiatorType>::value) {
-					fluid_map<MapType>[initiator.position] += fluid_type<InitiatorType>::type;
+					constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
+
+					fluid_map<MapType>[initiator.position] += fluid;
+
+					if constexpr (is_berker<VictimType>::value) {
+						victim.enspatter(fluid);
+					}
 				}
 
 				return false;
 			}
+		}
+
+		if constexpr (is_bleeder<InitiatorType>::value && is_berker<VictimType>::value) {
+			victim.enspatter(fluid_type<InitiatorType>::type);
 		}
 
 		return true;
@@ -76,7 +112,7 @@ namespace necrowarp {
 		requires (!std::is_same<InitiatorType, VictimType>::value)
 	inline bool reflect(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		if constexpr (is_clumsy<InitiatorType>::value) {
-			if (!coinflip(random_engine)) {
+			if (InitiatorType::fumble(random_engine)) {
 				return false;
 			}
 		}
@@ -87,12 +123,26 @@ namespace necrowarp {
 			return false;
 		}
 
+		if constexpr (is_berker<InitiatorType>::value) {
+			initiator.enrage();
+
+			if (!initiator.is_exhausted()) {
+				initiator.recuperate();
+			}
+		}
+
 		if constexpr (!is_fodder<InitiatorType>::value) {
 			if (initiator.can_survive(damage)) {
 				initiator.receive_damage(damage);
 
 				if constexpr (is_bleeder<InitiatorType>::value) {
-					fluid_map<MapType>[initiator.position] += fluid_type<InitiatorType>::type;
+					constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
+
+					fluid_map<MapType>[initiator.position] += fluid;
+
+					if constexpr (is_berker<InitiatorType>::value) {
+						initiator.enspatter(fluid);
+					}
 				}
 
 				return false;

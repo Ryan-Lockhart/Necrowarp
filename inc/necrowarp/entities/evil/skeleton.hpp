@@ -60,17 +60,22 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t entity_glyphs<skeleton_t>{ glyphs::FreshSkeleton };
 
 	struct skeleton_t {
+	  private:
+		static inline std::bernoulli_distribution fumble_dis{ 0.75 };
+
+	  public:
 		offset_t position;
 		const decay_e state;
 
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 4> EntityPriorities{
+		static constexpr std::array<entity_e, 5> EntityPriorities{
 			entity_e::Priest,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
 			entity_e::Paladin,
+			entity_e::Berserker,
 		};
 		
 		constexpr i8 armor_boon() const noexcept {
@@ -88,6 +93,8 @@ namespace necrowarp {
 		inline bool is_rotted() const noexcept { return state == decay_e::Rotted; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+
+		template<RandomEngine Engine> static inline bool fumble(ref<Engine> engine) noexcept { return fumble_dis(engine); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
