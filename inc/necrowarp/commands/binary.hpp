@@ -12,7 +12,4 @@
 #include <necrowarp/commands/binary/spectral_invocation.hpp>
 #include <necrowarp/commands/binary/sanguine_invocation.hpp>
 #include <necrowarp/commands/binary/galvanic_invocation.hpp>
-#include <necrowarp/commands/binary/exorcise.hpp>
-#include <necrowarp/commands/binary/resurrect.hpp>
-#include <necrowarp/commands/binary/anoint.hpp>
 // IWYU pragma: end_exports

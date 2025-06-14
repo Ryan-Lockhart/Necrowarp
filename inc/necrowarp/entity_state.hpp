@@ -133,6 +133,12 @@ namespace necrowarp {
 
 		inline void recalculate_alignment_goal_maps() noexcept;
 
+		inline void recalculate_ranger_goal_map() noexcept;
+
+		inline void recalculate_skulker_goal_map() noexcept;
+
+		inline void recalculate_specialist_goal_maps() noexcept;
+
 		template<NonNullEntity EntityType> inline void reset_goal_map() noexcept;
 
 		template<NonNullEntity... EntityTypes>
@@ -146,6 +152,8 @@ namespace necrowarp {
 		inline void reset_evil_goal_map() noexcept;
 
 		inline void reset_alignment_goal_maps() noexcept;
+
+		inline void reset_specialist_goal_maps() noexcept;
 
 		template<NonPlayerEntity EntityType> inline void draw() const noexcept;
 

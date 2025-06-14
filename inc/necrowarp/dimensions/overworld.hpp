@@ -8,4 +8,4 @@ namespace necrowarp {
 	template<> inline void game_s::plunge<dimension_e::Overworld>() noexcept {
 		
 	}
-} // necrowarp
+} // namespace necrowarp

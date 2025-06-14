@@ -64,4 +64,4 @@ namespace necrowarp {
 			cancel_quit_button.draw(renderer);
 		}
 	};
-} // necrowarp
+} // namespace necrowarp

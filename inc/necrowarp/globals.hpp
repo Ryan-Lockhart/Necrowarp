@@ -364,7 +364,6 @@ namespace necrowarp {
 		constexpr bool OopsAllMercenaries{ false };
 		constexpr bool OopsAllPaladins{ false };
 		constexpr bool OopsAllBerserkers{ false };
-		constexpr bool OopsAllPriests{ false };
 
 		template<typename T> struct has_unique_descriptor {
 			static constexpr bool value = false;

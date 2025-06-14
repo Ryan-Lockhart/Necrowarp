@@ -118,4 +118,4 @@ namespace necrowarp {
 
 		return EXIT_SUCCESS;
 	};
-} // necrowarp
+} // namespace necrowarp

@@ -83,4 +83,4 @@ namespace necrowarp {
 			help_label.draw(renderer);
 		}
 	};
-} // necrowarp
+} // namespace necrowarp

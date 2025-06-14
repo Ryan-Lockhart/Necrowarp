@@ -88,4 +88,4 @@ namespace necrowarp {
 			decay_e::Animate
 		);
 	}
-} // necrowarp
+} // namespace necrowarp

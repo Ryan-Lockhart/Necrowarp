@@ -63,9 +63,8 @@ namespace necrowarp {
 		Galvanic
 	};
 
-	template<shackle_e Shackle> constexpr glyph_t shackle_glyph;
+	template<shackle_e Shackle> requires (Shackle != shackle_e::Unshackled) constexpr glyph_t shackle_glyph;
 
-	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Unshackled>{ glyphs::Unshackled };
 	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Calcitic>{ glyphs::CalciticShackle };
 	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Spectral>{ glyphs::SpectralShackle };
 	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Sanguine>{ glyphs::SanguineShackle };
@@ -179,7 +178,11 @@ namespace necrowarp {
 				return magic_enum::enum_switch([&](auto val) -> glyph_t {
 					constexpr shackle_e cval{ val };
 
-					return shackle_glyph<cval>;
+					if constexpr (cval != shackle_e::Unshackled) {
+						return shackle_glyph<cval>;
+					}
+
+					return glyph_t{};
 				}, shackle);
 			}
 		}
@@ -216,26 +219,38 @@ namespace necrowarp {
 
 		inline void draw() const noexcept {
 			entity_atlas.draw(current_glyph<verticality_e>(), position);
-			entity_atlas.draw(current_glyph<shackle_e>(), position);
+
+			if (has_shackle()) {
+				entity_atlas.draw(current_glyph<shackle_e>(), position);
+			}
 		}
 
 		inline void draw(offset_t offset) const noexcept {
 			entity_atlas.draw(current_glyph<verticality_e>(), position, offset);
-			entity_atlas.draw(current_glyph<shackle_e>(), position, offset);
+
+			if (has_shackle()) {
+				entity_atlas.draw(current_glyph<shackle_e>(), position, offset);
+			}
 		}
 
 		inline void draw(cref<camera_t> camera) const noexcept {
 			const offset_t pos{ position + camera.get_offset() };
 	
 			entity_atlas.draw(current_glyph<verticality_e>(), pos);
-			entity_atlas.draw(current_glyph<shackle_e>(), pos);
+
+			if (has_shackle()) {
+				entity_atlas.draw(current_glyph<shackle_e>(), pos);
+			}
 		}
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept {
 			const offset_t pos{ position + camera.get_offset() };
 	
 			entity_atlas.draw(current_glyph<verticality_e>(), pos, offset);
-			entity_atlas.draw(current_glyph<shackle_e>(), pos, offset);
+
+			if (has_shackle()) {
+				entity_atlas.draw(current_glyph<shackle_e>(), pos, offset);
+			}
 		}
 
 		constexpr operator object_e() const noexcept { return object_e::Ladder; }

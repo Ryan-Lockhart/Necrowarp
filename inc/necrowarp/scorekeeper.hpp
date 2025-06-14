@@ -82,8 +82,12 @@ namespace necrowarp {
 				case entity_e::Adventurer: {
 					add(10);
 					break;
-				} case entity_e::Mercenary:
-				  case entity_e::Priest: {
+				} case entity_e::Ranger:
+				  case entity_e::Skulker:
+				  case entity_e::BattleMonk: {
+					add(25);
+					break;
+				} case entity_e::Mercenary: {
 					add(50);
 					break;
 				} case entity_e::Paladin:
@@ -98,4 +102,4 @@ namespace necrowarp {
 
 		inline void reset() noexcept { score = 0.0f; }
 	} static inline scorekeeper;
-} // necrowarp
+} // namespace necrowarp

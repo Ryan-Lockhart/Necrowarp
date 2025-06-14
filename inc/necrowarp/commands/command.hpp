@@ -14,7 +14,6 @@ namespace necrowarp {
 	struct random_warp_t;
 	struct necromantic_ascendance_t;
 	struct eviscerate_t;
-	struct suicide_t;
 
 	struct move_t;
 	struct descend_t;
@@ -27,9 +26,6 @@ namespace necrowarp {
 	struct spectral_invocation_t;
 	struct sanguine_invocation_t;
 	struct galvanic_invocation_t;
-	struct exorcise_t;
-	struct resurrect_t;
-	struct anoint_t;
 
 	struct lunge_t;
 
@@ -38,8 +34,7 @@ namespace necrowarp {
 
 	#define ALL_UNARY_COMMANDS \
 		random_warp_t, \
-		necromantic_ascendance_t, \
-		suicide_t
+		necromantic_ascendance_t
 
 	#define ALL_BINARY_COMMANDS \
 		move_t, \
@@ -52,10 +47,7 @@ namespace necrowarp {
 		calcitic_invocation_t, \
 		spectral_invocation_t, \
 		sanguine_invocation_t, \
-		galvanic_invocation_t, \
-		exorcise_t, \
-		resurrect_t, \
-		anoint_t
+		galvanic_invocation_t
 
 	#define ALL_TERNARY_COMMANDS \
 		lunge_t
@@ -92,16 +84,10 @@ namespace necrowarp {
 	#define ALL_WRAITH_COMMANDS \
 		eviscerate_t
 	
-	#define ALL_PRIEST_COMMANDS \
-		exorcise_t, \
-		resurrect_t, \
-		anoint_t
-	
 	#define ALL_NPC_COMMANDS \
 		ALL_BASIC_COMMANDS, \
 		ALL_BLOODHOUND_COMMANDS, \
-		ALL_WRAITH_COMMANDS, \
-		ALL_PRIEST_COMMANDS
+		ALL_WRAITH_COMMANDS
 	
 	#define ALL_PLAYER_COMMANDS \
 		ALL_BASIC_COMMANDS, \
@@ -124,10 +110,6 @@ namespace necrowarp {
 		SanguineInvocation,
 		GalvanicInvocation,
 		NecromanticAscendance,
-		Exorcise,
-		Resurrect,
-		Anoint,
-		Suicide
 	};
 
 	struct command_pack_t {
@@ -182,14 +164,6 @@ namespace necrowarp {
 				return "galvanic invocation";
 			} case command_e::NecromanticAscendance: {
 				return "necromantic ascendance";
-			} case command_e::Exorcise: {
-				return "exorcise";
-			} case command_e::Resurrect: {
-				return "resurrect";
-			} case command_e::Anoint: {
-				return "anoint";
-			} case command_e::Suicide: {
-				return "suicide";
 			} default: {
 				return "unknown";
 			}

@@ -31,10 +31,12 @@ namespace necrowarp {
 	// do-gooders
 
 	struct adventurer_t;
+	struct ranger_t;
+	struct skulker_t;
+	struct battle_monk_t;
 	struct mercenary_t;
 	struct paladin_t;
 	struct berserker_t;
-	struct priest_t;
 
 	#define ALL_EVIL_NPCS \
 		skeleton_t, \
@@ -52,10 +54,12 @@ namespace necrowarp {
 
 	#define ALL_GOOD_NPCS \
 		adventurer_t, \
+		ranger_t, \
+		skulker_t, \
+		battle_monk_t, \
 		mercenary_t, \
 		paladin_t, \
-		berserker_t, \
-		priest_t
+		berserker_t
 	
 	#define ALL_GOOD \
 		ALL_GOOD_NPCS
@@ -80,10 +84,12 @@ namespace necrowarp {
 		FleshGolem,
 		DeathKnight,
 		Adventurer,
+		Ranger,
+		Skulker,
+		BattleMonk,
 		Mercenary,
 		Paladin,
 		Berserker,
-		Priest
 	};
 
 	static constexpr cstr to_string(entity_e type) noexcept {
@@ -110,14 +116,18 @@ namespace necrowarp {
 				return "death knight";
 			} case entity_e::Adventurer: {
 				return "adventurer";
+			} case entity_e::Ranger: {
+				return "ranger";
+			} case entity_e::Skulker: {
+				return "skulker";
+			} case entity_e::BattleMonk: {
+				return "battle monk";
 			} case entity_e::Mercenary: {
 				return "mercenary";
 			} case entity_e::Paladin: {
 				return "paladin";
 			} case entity_e::Berserker: {
 				return "berserker";
-			} case entity_e::Priest: {
-				return "priest";
 			}
 		}
 	}
@@ -148,19 +158,23 @@ namespace necrowarp {
 				return runes_t{ string, colors::metals::Iron };
 			} case entity_e::Adventurer: {
 				return runes_t{ string, colors::metals::Bronze };
+			} case entity_e::Ranger: {
+				return runes_t{ string, colors::dark::Green };
+			} case entity_e::Skulker: {
+				return runes_t{ string, colors::dark::Grey };
+			} case entity_e::BattleMonk: {
+				return runes_t{ string, colors::light::Yellow };
 			} case entity_e::Mercenary: {
 				return runes_t{ string, colors::metals::Brass };
 			} case entity_e::Paladin: {
 				return runes_t{ string, colors::metals::Steel };
 			} case entity_e::Berserker: {
 				return runes_t{ string, colors::dark::Orange };
-			} case entity_e::Priest: {
-				return runes_t{ string, colors::metals::Gold };
 			}
 		}
 	}
 
-	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Priest) + 1 };
+	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Berserker) + 1 };
 
 	using entity_group_t = u16;
 
@@ -176,10 +190,12 @@ namespace necrowarp {
 		FleshGolem = Wraith << 1,
 		DeathKnight = FleshGolem << 1,
 		Adventurer = DeathKnight << 1,
-		Mercenary = Adventurer << 1,
+		Ranger = Adventurer << 1,
+		Skulker = Ranger << 1,
+		BattleMonk = Skulker << 1,
+		Mercenary = BattleMonk << 1,
 		Paladin = Mercenary << 1,
 		Berserker = Paladin << 1,
-		Priest = Berserker << 1
 	};
 
 	constexpr entity_group_e operator+(entity_group_e lhs, entity_group_e rhs) noexcept { return static_cast<entity_group_e>(static_cast<entity_group_t>(lhs) | static_cast<entity_group_t>(rhs)); }
@@ -321,6 +337,14 @@ namespace necrowarp {
 	template<typename T> constexpr bool is_clumsy_v = is_clumsy<T>::value;
 
 	template<typename T> concept ClumsyEntity = NonNullEntity<T> && is_clumsy<T>::value;
+
+	template<typename T> struct is_elusive {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_elusive_v = is_elusive<T>::value;
+
+	template<typename T> concept ElusiveEntity = NonNullEntity<T> && is_elusive<T>::value;
 
 	template<typename T> struct is_fast {
 		static constexpr bool value = false;

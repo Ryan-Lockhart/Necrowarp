@@ -63,4 +63,4 @@ namespace necrowarp {
 
 		object_registry<map_type>.add(portal_t{ portal_pos.value(), stability_e::Collapsing });
 	}
-} // necrowarp
+} // namespace necrowarp

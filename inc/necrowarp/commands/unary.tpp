@@ -4,5 +4,4 @@
 #include <necrowarp/commands/unary/random_warp.tpp>
 #include <necrowarp/commands/unary/necromantic_ascendance.tpp>
 #include <necrowarp/commands/unary/eviscerate.tpp>
-#include <necrowarp/commands/unary/suicide.tpp>
 // IWYU pragma: end_exports

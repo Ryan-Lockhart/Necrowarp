@@ -173,15 +173,11 @@ namespace necrowarp {
 		MercenariesSlain,
 		PaladinsSlain,
 		BerserkersSlain,
-		PriestsSlain,
-
-		AdventurersResurrected,
-		PaladinsOrdained,
-		PriestsDepleted,
+		RangersSlain,
+		SkulkersSlain,
+		BattleMonksSlain,
 
 		MinionKills,
-
-		SkullsExorcised,
 	};
 
 	template<steam_stat_e Stat> struct to_stat_type;
@@ -218,15 +214,11 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::MercenariesSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::PaladinsSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::BerserkersSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::PriestsSlain> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::AdventurersResurrected> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::PaladinsOrdained> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::PriestsDepleted> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::RangersSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::SkulkersSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::BattleMonksSlain> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::MinionKills> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::SkullsExorcised> { using type = i32; };
 
 	template<steam_stat_e StatType> using to_stat_type_t = typename to_stat_type<StatType>::type;
 
@@ -278,20 +270,16 @@ namespace necrowarp {
 				return "mercenaries_slain";
 			} case steam_stat_e::PaladinsSlain: {
 				return "paladins_slain";
-			} case steam_stat_e::PriestsSlain: {
-				return "priests_slain";
-			} case steam_stat_e::AdventurersResurrected: {
-				return "adventurers_resurrected";
-			} case steam_stat_e::PaladinsOrdained: {
-				return "paladins_ordained";
-			} case steam_stat_e::PriestsDepleted: {
-				return "priests_depleted";
+			} case steam_stat_e::BerserkersSlain: {
+				return "berserkers_slain";
+			} case steam_stat_e::RangersSlain: {
+				return "rangers_slain";
+			} case steam_stat_e::SkulkersSlain: {
+				return "skulkers_slain";
+			} case steam_stat_e::BattleMonksSlain: {
+				return "battle_monks_slain";
 			} case steam_stat_e::MinionKills: {
 				return "minion_kills";
-			} case steam_stat_e::SkullsExorcised: {
-				return "skulls_exorcised";
-			} default: {
-				return "unknown";
 			}
 		}
 	}
@@ -344,20 +332,16 @@ namespace necrowarp {
 				return "Mercenaries Slain";
 			} case steam_stat_e::PaladinsSlain: {
 				return "Paladins Slain";
-			} case steam_stat_e::PriestsSlain: {
-				return "Priests Slain";
-			} case steam_stat_e::AdventurersResurrected: {
-				return "Adventurers Resurrected";
-			} case steam_stat_e::PaladinsOrdained: {
-				return "Paladins Ordained";
-			} case steam_stat_e::PriestsDepleted: {
-				return "Priests Depleted";
+			} case steam_stat_e::BerserkersSlain: {
+				return "Berserkers Slain";
+			} case steam_stat_e::RangersSlain: {
+				return "Rangers Slain";
+			} case steam_stat_e::SkulkersSlain: {
+				return "Skulkers Slain";
+			} case steam_stat_e::BattleMonksSlain: {
+				return "Battle Monks Slain";
 			} case steam_stat_e::MinionKills: {
 				return "Minion Kills";
-			} case steam_stat_e::SkullsExorcised: {
-				return "Skulls Exorcised";
-			} default: {
-				return "Unknown";
 			}
 		}
 	}
@@ -528,4 +512,4 @@ namespace necrowarp {
 			return;
 		}
 	}
-} // necrowarp
+} // namespace necrowarp

@@ -33,7 +33,7 @@ namespace necrowarp {
 			case entity_e::Adventurer:
 			case entity_e::Mercenary:
 			case entity_e::Paladin:
-			case entity_e::Priest: {
+			case entity_e::Berserker: {
 				return command_e::Clash;
 			} case entity_e::Skeleton: {
 				return command_e::Consume;

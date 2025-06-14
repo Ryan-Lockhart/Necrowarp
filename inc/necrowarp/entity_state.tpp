@@ -76,9 +76,13 @@ namespace necrowarp {
 	template<NonPlayerEntity EntityType, NonNullCommand CommandType> static inline std::queue<entity_command_t<EntityType, CommandType>> entity_commands{};
 
 	static inline sparse_t<sparseling_t<bool>> newborns{};
+	static inline sparse_t<sparseling_t<bool>> stunned{};
 
 	template<map_type_e MapType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> good_goal_map{};
 	template<map_type_e MapType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> evil_goal_map{};
+
+	template<map_type_e MapType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> ranger_goal_map{};
+	template<map_type_e MapType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> skulker_goal_map{};
 
 	template<map_type_e MapType, NonNullEntity EntityType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> entity_goal_map{};
 
@@ -155,8 +159,8 @@ namespace necrowarp {
 		return &player;
 	}
 
-	template<map_type_e MapType> template<NonPlayerEntity EntityTypes> inline usize entity_registry_t<MapType>::count() const noexcept {
-		return entity_storage<EntityTypes>.size();
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline usize entity_registry_t<MapType>::count() const noexcept {
+		return entity_storage<EntityType>.size();
 	}
 
 	template<map_type_e MapType>
@@ -352,6 +356,10 @@ namespace necrowarp {
 
 		entity_goal_map<MapType, EntityType>.update(current, target);
 
+		if (stunned.contains(current)) {
+			stunned.move(current, target);
+		}
+
 		return true;
 	}
 
@@ -447,6 +455,11 @@ namespace necrowarp {
 		for (crauto entity : entity_storage<EntityType>) {
 			if (newborns.contains(entity.position)) {
 				newborns.remove(entity.position);
+				continue;
+			}
+
+			if (stunned.contains(entity.position)) {
+				stunned.remove(entity.position);
 				continue;
 			}
 
@@ -596,10 +609,24 @@ namespace necrowarp {
 		recalculate_evil_goal_map();
 	}
 
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_ranger_goal_map() noexcept {
+		ranger_goal_map<MapType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_skulker_goal_map() noexcept {
+		skulker_goal_map<MapType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_specialist_goal_maps() noexcept {
+		recalculate_ranger_goal_map();
+		recalculate_skulker_goal_map();
+	}
+
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
 		recalculate_goal_map<ALL_ENTITIES>();
 
 		recalculate_alignment_goal_maps();
+		recalculate_specialist_goal_maps();
 	}
 
 	template<map_type_e MapType> template<NonNullEntity EntityType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
@@ -683,19 +710,6 @@ namespace necrowarp {
 				}
 			}
 		}
-
-		if (entity_enum != entity_e::Priest) {
-			switch (command_enum) {
-				case command_e::Exorcise:
-				case command_e::Resurrect:
-				case command_e::Anoint:
-				case command_e::Suicide: {
-					return false;
-				} default: {
-					break;
-				}
-			}
-		}
 		
 		if constexpr (is_binary_command<CommandType>::value) {
 			if (!game_map<MapType>.template within<zone_region_e::Interior>(command.target_position)) {
@@ -711,10 +725,7 @@ namespace necrowarp {
 
 					break;
 				} case command_e::Clash:
-				  case command_e::Lunge:
-				  case command_e::Exorcise:
-				  case command_e::Resurrect:
-				  case command_e::Anoint: {
+				  case command_e::Lunge: {
 					if (empty(command.target_position)) {
 						return false;
 					}

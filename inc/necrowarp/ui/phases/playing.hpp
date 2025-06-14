@@ -428,4 +428,4 @@ namespace necrowarp {
 			}
 		}
 	};
-} // necrowarp
+} // namespace necrowarp

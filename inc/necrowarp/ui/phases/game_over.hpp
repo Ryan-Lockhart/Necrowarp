@@ -130,4 +130,4 @@ template<> struct phase_state_t<phase_e::GameOver> {
 				statistics_hidden_label.draw(renderer);
 		}
 	};
-} // necrowarp
+} // namespace necrowarp

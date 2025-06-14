@@ -18,24 +18,31 @@ namespace necrowarp {
 	struct ladder_t;
 	struct portal_t;
 
+	struct arrow_t;
+
 	#define ALL_CATALYST_OBJECTS \
 		skull_t, \
 		metal_t
-	
+
 	#define ALL_LOCOMOTION_OBJECTS \
 		ladder_t, \
 		portal_t
-	
+
+	#define ALL_DEBRIS_OBJECTS \
+		arrow_t
+
 	#define ALL_OBJECTS \
 		ALL_CATALYST_OBJECTS, \
-		ALL_LOCOMOTION_OBJECTS
+		ALL_LOCOMOTION_OBJECTS, \
+		ALL_DEBRIS_OBJECTS
 
 	enum struct object_e : u8 {
 		None = 0,
 		Skull,
 		Metal,
 		Ladder,
-		Portal
+		Portal,
+		Arrow,
 	};
 
 	static constexpr cstr to_string(object_e type) noexcept {
@@ -50,8 +57,8 @@ namespace necrowarp {
 				return "ladder";
 			} case object_e::Portal: {
 				return "portal";
-			} default: {
-				return "unknown";
+			} case object_e::Arrow: {
+				return "arrow";
 			}
 		}
 	}
@@ -70,13 +77,13 @@ namespace necrowarp {
 				return runes_t{ string, colors::materials::Oak };
 			} case object_e::Portal: {
 				return runes_t{ string, colors::light::Green };
-			} default: {
-				return runes_t{ string, colors::White };
+			} case object_e::Arrow: {
+				return runes_t{ string, colors::materials::Oak };
 			}
 		}
 	}
 
-	constexpr usize ObjectTypeCount{ static_cast<usize>(object_e::Portal) + 1 };
+	constexpr usize ObjectTypeCount{ static_cast<usize>(object_e::Arrow) + 1 };
 
 	using object_group_t = u16;
 
@@ -86,6 +93,7 @@ namespace necrowarp {
 		Metal = Skull << 1,
 		Ladder = Metal << 1,
 		Portal = Ladder << 1,
+		Arrow = Portal << 1,
 	};
 
 	constexpr object_group_e operator+(object_group_e lhs, object_group_e rhs) noexcept { return static_cast<object_group_e>(static_cast<object_group_t>(lhs) | static_cast<object_group_t>(rhs)); }

@@ -8,4 +8,4 @@ namespace necrowarp {
 	template<> inline void game_s::plunge<dimension_e::Voitykras>() noexcept {
 		
 	}
-} // necrowarp
+} // namespace necrowarp
