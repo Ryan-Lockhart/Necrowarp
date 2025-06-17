@@ -21,6 +21,18 @@ namespace necrowarp {
 			}
 		}
 
+		if constexpr (is_elusive<VictimType>::value) {
+			if constexpr (VictimType::HasStaticDodge) {
+				if (VictimType::dodge(random_engine)) {
+					return false;
+				}
+			} else {
+				if (victim.dodge(random_engine)) {
+					return false;
+				}
+			}
+		}
+
 		const i8 damage{ initiator.get_damage(to_entity_enum<VictimType>::value) };
 
 		if (damage <= 0) {
@@ -69,6 +81,18 @@ namespace necrowarp {
 			}
 		}
 
+		if constexpr (is_elusive<InitiatorType>::value) {
+			if constexpr (InitiatorType::HasStaticDodge) {
+				if (InitiatorType::dodge(random_engine)) {
+					return false;
+				}
+			} else {
+				if (initiator.dodge(random_engine)) {
+					return false;
+				}
+			}
+		}
+
 		const i8 damage{ victim.get_damage(to_entity_enum<InitiatorType>::value) };
 
 		if (damage <= 0) {
@@ -114,6 +138,18 @@ namespace necrowarp {
 		if constexpr (is_clumsy<InitiatorType>::value) {
 			if (InitiatorType::fumble(random_engine)) {
 				return false;
+			}
+		}
+
+		if constexpr (is_elusive<InitiatorType>::value) {
+			if constexpr (InitiatorType::HasStaticDodge) {
+				if (InitiatorType::dodge(random_engine)) {
+					return false;
+				}
+			} else {
+				if (initiator.dodge(random_engine)) {
+					return false;
+				}
 			}
 		}
 

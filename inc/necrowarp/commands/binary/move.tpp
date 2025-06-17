@@ -25,6 +25,6 @@ namespace necrowarp {
 
 		if constexpr (is_player<EntityType>::value) {
 			steam_stats::stats<steam_stat_e::MetersMoved, f32> += offset_t::distance<f32>(source_position, target_position);
-		}		
+		}
 	}
 } // namespace necrowarp

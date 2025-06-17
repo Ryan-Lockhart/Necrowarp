@@ -40,6 +40,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_concussable<bonespur_t> {
+		static constexpr bool value = false;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<bonespur_t>{ glyphs::Bonespur };
 
 	struct bonespur_t {

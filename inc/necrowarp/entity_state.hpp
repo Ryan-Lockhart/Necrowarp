@@ -99,8 +99,6 @@ namespace necrowarp {
 
 		template<NonNullEntity EntityType, Command CommandType> inline bool is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept;
 
-		inline bool random_warp(offset_t source) noexcept;
-
 		template<NPCEntity EntityType, NonNullCommand... CommandTypes>
 			requires is_plurary<CommandTypes...>::value
 		inline void process_commands() noexcept;

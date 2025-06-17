@@ -30,6 +30,12 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t object_glyphs<arrow_t>{ glyphs::Arrow };
 
 	struct arrow_t {
+	  private:
+		static inline std::bernoulli_distribution snap_dis{ 0.25 };
+
+	  public:
+		template<RandomEngine Engine> static inline bool snap(ref<Engine> engine) noexcept { return snap_dis(engine); }
+
 		offset_t position;
 
 		inline arrow_t(offset_t position) noexcept : position{ position } {}

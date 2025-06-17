@@ -6,6 +6,9 @@
 #include <necrowarp/commands/binary/plunge.hpp>
 #include <necrowarp/commands/binary/consume.hpp>
 #include <necrowarp/commands/binary/clash.hpp>
+#include <necrowarp/commands/binary/retrieve.hpp>
+#include <necrowarp/commands/binary/loose.hpp>
+#include <necrowarp/commands/binary/batter.hpp>
 #include <necrowarp/commands/binary/target_warp.hpp>
 #include <necrowarp/commands/binary/consume_warp.hpp>
 #include <necrowarp/commands/binary/calcitic_invocation.hpp>

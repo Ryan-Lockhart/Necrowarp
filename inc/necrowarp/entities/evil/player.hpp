@@ -63,6 +63,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_concussable<player_t> {
+		static constexpr bool value = false;
+	};
+
 	template<> struct is_entity_command_valid<player_t, random_warp_t> {
 		static constexpr bool value = true;
 	};
@@ -173,7 +177,7 @@ namespace necrowarp {
 		template<> constexpr i8 Cost<discount_e::NecromanticAscendance>{ 16 };
 
 		static constexpr i8 SkullBoon{ 1 };
-		static constexpr i8 FailedWarpBoon{ 1 };
+		static constexpr i8 FailedWarpBoon{ 2 };
 		static constexpr i8 UnsafeWarpBoon{ 1 };
 
 	  private:
@@ -349,9 +353,9 @@ namespace necrowarp {
 
 		inline void receive_skull_boon() noexcept { set_energy(energy + SkullBoon); }
 
-		inline void receive_failed_warp_boon() noexcept { set_energy(energy + FailedWarpBoon); }
+		inline void receive_failed_warp_boon() noexcept { set_energy(energy + clamp<i8>(FailedWarpBoon, 0, get_cost(discount_e::RandomWarp))); }
 
-		inline void receive_unsafe_warp_boon() noexcept { set_energy(energy + UnsafeWarpBoon); }
+		inline void receive_unsafe_warp_boon() noexcept { set_energy(energy + clamp<i8>(UnsafeWarpBoon, 0, get_cost(discount_e::RandomWarp))); }
 
 		inline void max_out_energy() noexcept { energy = max_energy(); }
 

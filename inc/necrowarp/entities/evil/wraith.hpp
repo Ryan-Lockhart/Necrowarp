@@ -52,6 +52,10 @@ namespace necrowarp {
 		static constexpr fluid_e type = fluid_e::Ichor;
 	};
 
+	template<> struct is_concussable<wraith_t> {
+		static constexpr bool value = false;
+	};
+
 	template<> struct is_entity_command_valid<wraith_t, eviscerate_t> {
 		static constexpr bool value = true;
 	};

@@ -710,6 +710,29 @@ namespace necrowarp {
 				}
 			}
 		}
+
+		if constexpr (entity_enum != entity_e::Ranger) {
+			switch (command_enum) {
+				case command_e::Knock:
+				case command_e::Retrieve:
+				case command_e::Loose: {
+					return false;
+				} default: {
+					break;
+				}
+			}
+		}
+
+		if constexpr (entity_enum != entity_e::BattleMonk) {
+			switch (command_enum) {
+				case command_e::Meditate:
+				case command_e::Batter: {
+					return false;
+				} default: {
+					break;
+				}
+			}
+		}
 		
 		if constexpr (is_binary_command<CommandType>::value) {
 			if (!game_map<MapType>.template within<zone_region_e::Interior>(command.target_position)) {
@@ -725,7 +748,9 @@ namespace necrowarp {
 
 					break;
 				} case command_e::Clash:
-				  case command_e::Lunge: {
+				  case command_e::Lunge:
+				  case command_e::Loose:
+				  case command_e::Batter: {
 					if (empty(command.target_position)) {
 						return false;
 					}
@@ -762,6 +787,12 @@ namespace necrowarp {
 					}
 
 					break;
+				} case command_e::Retrieve: {
+					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.template contains<arrow_t>(command.target_position)) {
+						return false;
+					}
+
+					break;
 				} default: {
 					break;
 				}
@@ -776,55 +807,15 @@ namespace necrowarp {
 
 				switch (command_enum) {
 					case command_e::Lunge: {
-						if (contains(command.intermediate_position) || intermediate_types != entity_e::None) {
+						if (!empty(command.intermediate_position) || intermediate_types != entity_e::None) {
 							return false;
 						}
 					} default: {
-						break;
+						return false;
 					}
 				}
 			}
 		}		
-
-		return true;
-	}
-
-	template<map_type_e MapType> inline bool entity_registry_t<MapType>::random_warp(offset_t source) noexcept {
-		cauto random_safe_position{ evil_goal_map<MapType>.template find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, 8) };
-
-		if (!random_safe_position.has_value()) {
-			cauto random_unsafe_position{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
-
-			if (!random_unsafe_position.has_value()) {
-				player.receive_failed_warp_boon();
-
-				draw_warp_cursor = false;
-
-				return false;
-			}
-
-			player.receive_unsafe_warp_boon();
-
-			update<player_t>(source, random_unsafe_position.value());
-
-			++steam_stats::stats<steam_stat_e::RandomWarps, i32>;
-
-			steam_stats::stats<steam_stat_e::MetersWarped, f32> += offset_t::distance<f32>(source, player.position);
-
-			warp_cursor<MapType>.set(player.position);
-			draw_warp_cursor = true;
-
-			return true;
-		}
-
-		update<player_t>(source, random_safe_position.value());
-
-		++steam_stats::stats<steam_stat_e::RandomWarps, i32>;
-
-		steam_stats::stats<steam_stat_e::MetersWarped, f32> += offset_t::distance<f32>(source, player.position);
-
-		warp_cursor<MapType>.set(player.position);
-		draw_warp_cursor = true;
 
 		return true;
 	}

@@ -70,6 +70,8 @@ namespace necrowarp {
 		template<> inline i8 dodge_threshold<concealment_e::Shrouded>{ 75 };
 		template<> inline i8 dodge_threshold<concealment_e::Imperceptible>{ 100 };
 
+		template<RandomEngine Engine> static inline i8 get_dodge_chance(ref<Engine> engine) noexcept { return static_cast<i8>(skulker_t::dodge_dis(engine)); }
+
 	  public:
 		offset_t position;
 		concealment_e concealment;
@@ -101,7 +103,7 @@ namespace necrowarp {
 		static constexpr bool HasStaticDodge{ false };
 
 		template<RandomEngine Engine> inline bool dodge(ref<Engine> engine) noexcept {
-			const i8 chance{ skulker_t::dodge_dis(engine) };
+			const i8 chance{ skulker_t::get_dodge_chance(engine) };
 
 			return magic_enum::enum_switch([&](auto val) -> bool {
 				constexpr concealment_e cval{ val };

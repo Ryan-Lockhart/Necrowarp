@@ -14,12 +14,17 @@ namespace necrowarp {
 	struct random_warp_t;
 	struct necromantic_ascendance_t;
 	struct eviscerate_t;
+	struct knock_t;
+	struct meditate_t;
 
 	struct move_t;
 	struct descend_t;
 	struct plunge_t;
 	struct consume_t;
 	struct clash_t;
+	struct loose_t;
+	struct retrieve_t;
+	struct batter_t;
 	struct target_warp_t;
 	struct consume_warp_t;
 	struct calcitic_invocation_t;
@@ -34,7 +39,10 @@ namespace necrowarp {
 
 	#define ALL_UNARY_COMMANDS \
 		random_warp_t, \
-		necromantic_ascendance_t
+		necromantic_ascendance_t, \
+		eviscerate_t, \
+		knock_t, \
+		meditate_t
 
 	#define ALL_BINARY_COMMANDS \
 		move_t, \
@@ -42,6 +50,9 @@ namespace necrowarp {
 		plunge_t, \
 		consume_t, \
 		clash_t, \
+		loose_t, \
+		retreive_t, \
+		batter_t, \
 		target_warp_t, \
 		consume_warp_t, \
 		calcitic_invocation_t, \
@@ -84,10 +95,21 @@ namespace necrowarp {
 	#define ALL_WRAITH_COMMANDS \
 		eviscerate_t
 	
+	#define ALL_RANGER_COMMANDS \
+		knock_t, \
+		retrieve_t, \
+		loose_t
+	
+	#define ALL_BATTLE_MONK_COMMANDS \
+		meditate_t, \
+		batter_t
+	
 	#define ALL_NPC_COMMANDS \
 		ALL_BASIC_COMMANDS, \
 		ALL_BLOODHOUND_COMMANDS, \
-		ALL_WRAITH_COMMANDS
+		ALL_WRAITH_COMMANDS, \
+		ALL_RANGER_COMMANDS, \
+		ALL_BATTLE_MONK_COMMANDS
 	
 	#define ALL_PLAYER_COMMANDS \
 		ALL_BASIC_COMMANDS, \
@@ -95,21 +117,29 @@ namespace necrowarp {
 
 	enum struct command_e : u8 {
 		None = 0,
+
+		RandomWarp,
+		NecromanticAscendance,
+		Eviscerate,
+		Knock,
+		Meditate,
+
 		Move,
 		Descend,
 		Plunge,
 		Consume,
 		Clash,
-		Lunge,
-		Eviscerate,
-		RandomWarp,
+		Retrieve,
+		Loose,
+		Batter,
 		TargetWarp,
 		ConsumeWarp,
 		CalciticInvocation,
 		SpectralInvocation,
 		SanguineInvocation,
 		GalvanicInvocation,
-		NecromanticAscendance,
+
+		Lunge,
 	};
 
 	struct command_pack_t {
@@ -134,6 +164,16 @@ namespace necrowarp {
 		switch (command) {
 			case command_e::None: {
 				return "none";
+			} case command_e::RandomWarp: {
+				return "random warp";
+			} case command_e::NecromanticAscendance: {
+				return "necromantic ascendance";
+			} case command_e::Eviscerate: {
+				return "eviscerate";
+			} case command_e::Knock: {
+				return "knock";
+			} case command_e::Meditate: {
+				return "meditate";
 			} case command_e::Move: {
 				return "move";
 			} case command_e::Descend: {
@@ -144,12 +184,12 @@ namespace necrowarp {
 				return "consume";
 			} case command_e::Clash: {
 				return "clash";
-			} case command_e::Lunge: {
-				return "lunge";
-			} case command_e::Eviscerate: {
-				return "eviscerate";
-			} case command_e::RandomWarp: {
-				return "random warp";
+			} case command_e::Retrieve: {
+				return "retrieve";
+			} case command_e::Loose: {
+				return "loose";
+			} case command_e::Batter: {
+				return "batter";
 			} case command_e::TargetWarp: {
 				return "target warp";
 			} case command_e::ConsumeWarp: {
@@ -162,10 +202,8 @@ namespace necrowarp {
 				return "sanguine invocation";
 			} case command_e::GalvanicInvocation: {
 				return "galvanic invocation";
-			} case command_e::NecromanticAscendance: {
-				return "necromantic ascendance";
-			} default: {
-				return "unknown";
+			} case command_e::Lunge: {
+				return "lunge";
 			}
 		}
 	}

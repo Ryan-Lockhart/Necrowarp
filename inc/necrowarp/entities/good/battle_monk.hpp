@@ -3,6 +3,11 @@
 #include <necrowarp/entities/entity.hpp>
 #include <necrowarp/commands/command.hpp>
 
+#include <necrowarp/entity_command.hpp>
+
+#include <necrowarp/commands/unary/meditate.hpp>
+#include <necrowarp/commands/binary/batter.hpp>
+
 #include <necrowarp/game_state.hpp>
 
 namespace necrowarp {
@@ -52,6 +57,14 @@ namespace necrowarp {
 		static constexpr fluid_e type = fluid_e::Blood;
 	};
 
+	template<> struct is_entity_command_valid<battle_monk_t, meditate_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<battle_monk_t, batter_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<battle_monk_t>{ glyphs::BattleMonk };
 
 	enum struct tranquility_e : u8 {
@@ -64,7 +77,7 @@ namespace necrowarp {
 		offset_t position;
 
 		static constexpr i8 MaximumHealth{ 1 };
-		static constexpr i8 MaximumDamage{ 1 };
+		static constexpr i8 MaximumDamage{ 2 };
 
 		static constexpr i8 StartingTranquility{ 4 };
 
@@ -94,6 +107,8 @@ namespace necrowarp {
 		template<> inline i8 dodge_threshold<tranquility_e::Zen>{ 90 };
 
 		static inline std::uniform_int_distribution<i16> dodge_dis{ 0, 100 };
+
+		template<RandomEngine Engine> static inline i8 get_dodge_chance(ref<Engine> engine) noexcept { return static_cast<i8>(battle_monk_t::dodge_dis(engine)); }
 		
 		i8 qi;
 
@@ -129,7 +144,7 @@ namespace necrowarp {
 		static constexpr bool HasStaticDodge{ false };
 
 		template<RandomEngine Engine> inline bool dodge(ref<Engine> engine) noexcept {
-			const i8 chance{ battle_monk_t::dodge_dis(engine) };
+			const i8 chance{ battle_monk_t::get_dodge_chance(engine) };
 
 			return magic_enum::enum_switch([&](auto val) -> bool {
 				constexpr tranquility_e cval{ val };

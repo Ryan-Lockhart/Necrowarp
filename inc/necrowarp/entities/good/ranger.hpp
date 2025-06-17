@@ -3,6 +3,12 @@
 #include <necrowarp/entities/entity.hpp>
 #include <necrowarp/commands/command.hpp>
 
+#include <necrowarp/entity_command.hpp>
+
+#include <necrowarp/commands/unary/knock.hpp>
+#include <necrowarp/commands/binary/retrieve.hpp>
+#include <necrowarp/commands/binary/loose.hpp>
+
 #include <necrowarp/game_state.hpp>
 
 namespace necrowarp {
@@ -52,11 +58,28 @@ namespace necrowarp {
 		static constexpr fluid_e type = fluid_e::Blood;
 	};
 
+	template<> struct is_entity_command_valid<ranger_t, knock_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<ranger_t, retrieve_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<ranger_t, loose_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<ranger_t>{ glyphs::Ranger };
 
 	struct ranger_t {
 	  private:
 		static inline std::bernoulli_distribution dodge_dis{ 0.4 };
+
+		i8 ammunition;
+		bool knocked;
+
+		inline void set_ammunition(i8 value) noexcept { ammunition = clamp<i8>(value, 0, max_ammunition()); }
 
 	  public:
 		offset_t position;
@@ -64,8 +87,16 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
+		static constexpr i8 QuiverCapacity{ 8 };
+
 		static constexpr i8 MinimumRange{ 2 };
 		static constexpr i8 MaximumRange{ 8 };
+
+		static inline bool in_range(offset_t origin, offset_t target) noexcept {
+			return between<f32>(offset_t::distance<f32>(origin, target), ranger_t::MinimumRange, ranger_t::MaximumRange);
+		}
+
+		inline bool in_range(offset_t target) const noexcept { return in_range(position, target); }
 
 		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,
@@ -82,12 +113,46 @@ namespace necrowarp {
 		static constexpr i8 DeathBoon{ 1 };
 
 		inline ranger_t(offset_t position) noexcept : position{ position } {}
+		
+		inline i8 get_ammunition() const noexcept { return ammunition; }
+
+		inline bool has_ammunition() const noexcept { return ammunition > 0; }
+
+		inline bool ammunition_full() const noexcept { return ammunition >= QuiverCapacity; }
+
+		constexpr i8 max_ammunition() const noexcept { return QuiverCapacity; }
+
+		inline bool can_knock() const noexcept { return !knocked && has_ammunition(); }
+		
+		inline void knock() noexcept {
+			if (!can_knock()) {
+				return;
+			}
+
+			set_ammunition(ammunition - 1);
+
+			knocked = true;
+		}
+
+		inline bool can_retrieve() const noexcept { return !ammunition_full(); }
+		
+		inline void retrieve() noexcept {
+			if (!can_retrieve()) {
+				return;
+			}
+
+			set_ammunition(ammunition + 1);
+		}
+
+		inline bool can_loose() const noexcept { return knocked; }
+		
+		template<map_type_e MapType> inline void loose(offset_t position) noexcept;
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
 		static constexpr bool HasStaticDodge{ true };
 
-		template<RandomEngine Engine> static inline bool dodge(ref<Engine> engine) noexcept { return fumble_dis(engine); }
+		template<RandomEngine Engine> static inline bool dodge(ref<Engine> engine) noexcept { return dodge_dis(engine); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

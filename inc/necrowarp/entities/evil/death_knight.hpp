@@ -49,6 +49,10 @@ namespace necrowarp {
 		static constexpr fluid_e type = fluid_e::Ichor;
 	};
 
+	template<> struct is_concussable<death_knight_t> {
+		static constexpr bool value = false;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<death_knight_t>{ glyphs::TwistedSuit };
 
 	struct death_knight_t {
