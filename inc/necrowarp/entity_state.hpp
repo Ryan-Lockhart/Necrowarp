@@ -65,6 +65,18 @@ namespace necrowarp {
 
 		template<NullEntity EntityType> inline bool contains(offset_t position) const noexcept;
 
+		template<distance_function_e Distance, NonNullEntity EntityType> inline bool nearby(offset_t position) const noexcept;
+
+		template<distance_function_e Distance, NonNullEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline bool nearby(offset_t position) const noexcept;
+
+		template<distance_function_e Distance, NonNullEntity EntityType> inline std::optional<offset_t> nearest(offset_t position) const noexcept;
+
+		template<distance_function_e Distance, NonNullEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline std::optional<offset_t> nearest(offset_t position) const noexcept;
+
 		template<bool Force = false, NonPlayerEntity T> inline bool add(rval<T> entity) noexcept;
 
 		template<NonPlayerEntity EntityType> inline bool remove(offset_t position) noexcept;

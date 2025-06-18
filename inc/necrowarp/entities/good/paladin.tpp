@@ -30,6 +30,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void paladin_t::die() noexcept {
 		object_registry<MapType>.template add<true>(skull_t{ position });
+		object_registry<MapType>.template add<true>(flesh_t{ position });
 		object_registry<MapType>.template add<true>(metal_t{ position, galvanisation_e::Shimmering });
 
 		fluid_map<MapType>[position] += fluid_type<paladin_t>::type;

@@ -13,6 +13,7 @@ namespace necrowarp {
 	using namespace bleak;
 
 	struct skull_t;
+	struct flesh_t;
 	struct metal_t;
 
 	struct ladder_t;
@@ -22,6 +23,7 @@ namespace necrowarp {
 
 	#define ALL_CATALYST_OBJECTS \
 		skull_t, \
+		flesh_t, \
 		metal_t
 
 	#define ALL_LOCOMOTION_OBJECTS \
@@ -39,6 +41,7 @@ namespace necrowarp {
 	enum struct object_e : u8 {
 		None = 0,
 		Skull,
+		Flesh,
 		Metal,
 		Ladder,
 		Portal,
@@ -51,6 +54,8 @@ namespace necrowarp {
 				return "none";
 			} case object_e::Skull: {
 				return "skull";
+			} case object_e::Flesh: {
+				return "flesh";
 			} case object_e::Metal: {
 				return "metal";
 			} case object_e::Ladder: {
@@ -71,6 +76,8 @@ namespace necrowarp {
 				return runes_t{ string, colors::Grey };
 			} case object_e::Skull: {
 				return runes_t{ string, colors::White };
+			} case object_e::Flesh: {
+				return runes_t{ string, colors::Orange };
 			} case object_e::Metal: {
 				return runes_t{ string, colors::metals::Iron };
 			} case object_e::Ladder: {
@@ -90,7 +97,8 @@ namespace necrowarp {
 	enum struct object_group_e : object_group_t {
 		None = 0,
 		Skull = 1 << 0,
-		Metal = Skull << 1,
+		Flesh = Skull << 1,
+		Metal = Flesh << 1,
 		Ladder = Metal << 1,
 		Portal = Ladder << 1,
 		Arrow = Portal << 1,

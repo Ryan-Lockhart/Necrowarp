@@ -110,7 +110,7 @@ namespace necrowarp {
 			entity_e::DeathKnight,
 		};
 
-		static constexpr i8 DeathBoon{ 1 };
+		static constexpr i8 DeathBoon{ 2 };
 
 		inline ranger_t(offset_t position) noexcept : position{ position } {}
 		

@@ -9,15 +9,19 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline command_pack_t battle_monk_t::think() const noexcept {
-		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
-			const offset_t current_position{ position + offset };
+		if (!entity_registry<MapType>.template nearby<distance_function_e::Chebyshev, ALL_EVIL>(position) && !is_zen()) {
+			return command_pack_t{ command_e::Meditate, position };
+		} else {
+			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
+				const offset_t current_position{ position + offset };
 
-			if (!entity_registry<MapType>.template contains<ALL_EVIL>(current_position)) {
-				continue;
+				if (!entity_registry<MapType>.template contains<ALL_EVIL>(current_position)) {
+					continue;
+				}
+
+				return command_pack_t{ command_e::Batter, position, current_position };
 			}
-
-			return command_pack_t{ command_e::Clash, position, current_position };
-		}
+		}		
 
 		cauto descent_pos{ good_goal_map<MapType>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
 
@@ -30,6 +34,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void battle_monk_t::die() noexcept {
 		object_registry<MapType>.template add<true>(skull_t{ position });
+		object_registry<MapType>.template add<true>(flesh_t{ position });
 
 		fluid_map<MapType>[position] += fluid_type<battle_monk_t>::type;
 

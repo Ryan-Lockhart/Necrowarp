@@ -111,6 +111,114 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return contains<ALL_ENTITIES>(position); }
 
+	template<map_type_e MapType> template<distance_function_e Distance, NonNullEntity EntityType> inline bool entity_registry_t<MapType>::nearby(offset_t position) const noexcept {
+		for (cauto offset : neighbourhood_offsets<Distance>) {
+			cauto current_pos{ position + offset };
+
+			if (contains<EntityType>(current_pos)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	template<map_type_e MapType>
+	template<distance_function_e Distance, NonNullEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline bool entity_registry_t<MapType>::nearby(offset_t position) const noexcept {
+		return (nearby<Distance, EntityTypes>(position) || ...);
+	}
+
+	template<map_type_e MapType> template<distance_function_e Distance, NonNullEntity EntityType> inline std::optional<offset_t> entity_registry_t<MapType>::nearest(offset_t position) const noexcept {
+		if (empty<EntityType>()) {
+			return std::nullopt;
+		}
+
+		if (contains<EntityType>(position)) {
+			return position;
+		}
+
+		std::queue<creeper_t<offset_t::float_t>> frontier{};
+		std::unordered_set<offset_t, offset_t::std_hasher> visited{};
+
+		frontier.emplace(position, 0);
+		visited.insert(position);
+
+		if (frontier.empty()) {
+			return *this;
+		}
+
+		while (!frontier.empty()) {
+			const creeper_t<offset_t::float_t> current{ frontier.front() };
+			frontier.pop();
+
+			if (contains<EntityType>(current.position)) {
+				return current.position;
+			}
+
+			visited.insert(current.position);
+
+			for (cauto offset : neighbourhood_offsets<Distance>) {
+				const offset_t offset_position{ current.position + offset };
+
+				if (!visited.insert(offset_position).second || !contains<EntityType>(offset_position)) {
+					continue;
+				}
+
+				frontier.emplace(offset_position, offset_t::float_t{ current.distance + 1 });
+			}
+		}
+
+		return std::nullopt;
+	}
+
+	template<map_type_e MapType>
+	template<distance_function_e Distance, NonNullEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline std::optional<offset_t> entity_registry_t<MapType>::nearest(offset_t position) const noexcept {
+		if (empty<EntityTypes...>()) {
+			return std::nullopt;
+		}
+
+		if (contains<EntityTypes...>(position)) {
+			return position;
+		}
+
+		std::queue<creeper_t<offset_t::float_t>> frontier{};
+		std::unordered_set<offset_t, offset_t::std_hasher> visited{};
+
+		frontier.emplace(position, 0);
+		visited.insert(position);
+
+		if (frontier.empty()) {
+			return *this;
+		}
+
+		while (!frontier.empty()) {
+			const creeper_t<offset_t::float_t> current{ frontier.front() };
+			frontier.pop();
+
+			if (contains<EntityTypes...>(current.position)) {
+				return current.position;
+			}
+
+			visited.insert(current.position);
+
+			for (cauto offset : neighbourhood_offsets<Distance>) {
+				const offset_t offset_position{ current.position + offset };
+
+				if (!visited.insert(offset_position).second || !contains<EntityTypes...>(offset_position)) {
+					continue;
+				}
+
+				frontier.emplace(offset_position, offset_t::float_t{ current.distance + 1 });
+			}
+		}
+
+		return std::nullopt;
+	}
+
 	template<map_type_e MapType> inline entity_group_e entity_registry_t<MapType>::at(offset_t position) const noexcept {
 		entity_group_e entities{ entity_group_e::None };
 

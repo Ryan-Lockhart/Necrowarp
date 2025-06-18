@@ -30,6 +30,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void adventurer_t::die() noexcept {
 		object_registry<MapType>.template add<true>(skull_t{ position });
+		object_registry<MapType>.template add<true>(flesh_t{ position });
 
 		fluid_map<MapType>[position] += fluid_type<adventurer_t>::type;
 
