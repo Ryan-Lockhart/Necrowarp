@@ -29,7 +29,7 @@ namespace necrowarp {
 			return;
 		}
 
-		const entity_e target{ determine_target(entity_registry<MapType>.at(target_position)) };
+		const entity_e target{ determine_target<ranger_t>(entity_registry<MapType>.at(target_position)) };
 		
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr entity_e cval{ val };

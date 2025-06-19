@@ -69,7 +69,7 @@ namespace necrowarp {
 
 				player.pay_cost(discount_e::TargetWarp, boon);
 
-				entity_registry<MapType>.random_warp(source_position);
+				random_warp_t::execute<MapType>(source_position);
 
 				return;
 			} default: {

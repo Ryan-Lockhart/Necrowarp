@@ -10,9 +10,9 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, random_warp_t>::process() const noexcept {
+	template<map_type_e MapType> inline bool random_warp_t::execute(offset_t position) noexcept {
 		if (!player.can_perform(discount_e::RandomWarp)) {
-			return;
+			return false;
 		}
 
 		player.pay_cost(discount_e::RandomWarp);
@@ -27,30 +27,36 @@ namespace necrowarp {
 
 				draw_warp_cursor = false;
 
-				return;
+				return false;
 			}
 
 			player.receive_unsafe_warp_boon();
 
-			update<player_t>(source_position, random_unsafe_position.value());
+			entity_registry<MapType>.template update<player_t>(position, random_unsafe_position.value());
 
 			++steam_stats::stats<steam_stat_e::RandomWarps, i32>;
 
-			steam_stats::stats<steam_stat_e::MetersWarped, f32> += offset_t::distance<f32>(source_position, player.position);
+			steam_stats::stats<steam_stat_e::MetersWarped, f32> += offset_t::distance<f32>(position, player.position);
 
 			warp_cursor<MapType>.set(player.position);
 			draw_warp_cursor = true;
 
-			return;
+			return true;
 		}
 
-		update<player_t>(source_position, random_safe_position.value());
+		entity_registry<MapType>.template update<player_t>(position, random_safe_position.value());
 
 		++steam_stats::stats<steam_stat_e::RandomWarps, i32>;
 
-		steam_stats::stats<steam_stat_e::MetersWarped, f32> += offset_t::distance<f32>(source_position, player.position);
+		steam_stats::stats<steam_stat_e::MetersWarped, f32> += offset_t::distance<f32>(position, player.position);
 
 		warp_cursor<MapType>.set(player.position);
 		draw_warp_cursor = true;
+
+		return true;
+	}
+
+	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, random_warp_t>::process() const noexcept {
+		random_warp_t::execute<MapType>(source_position);
 	}
 } // namespace necrowarp

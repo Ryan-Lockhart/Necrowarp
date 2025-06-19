@@ -13,7 +13,8 @@ namespace necrowarp {
 				"Sam Lantinga and the team responsible for the following libraries: SDL2, SDL2_image, SDL2_mixer, SDL2_net, and SDL2_ttf\n\n\n"
 				"                         Valve and the team responsible for the Steamworks API and Storefront                          \n\n\n"
 				"               Tejon, the author of the 8x8 Potash bitmap font from the Dwarf Fortress Tileset Repository              \n\n\n\n\n"
-				"                              My father, Jeff, and my friends Jackson, Donald, and Robert                              "
+				"                      My father, Jeff, and my friends Jackson, Donald, Robert, Beaches and Hunter                      \n\n\n\n\n"
+				"    Dedicated to my late cousin, Gaige Gilbert, the man that introduced me to programming almost two decades ago...    "
 				},
 				embedded_box_t{ colors::Black, { colors::White, 1 } },
 				extent_t{ 2, 2 }

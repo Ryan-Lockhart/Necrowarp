@@ -86,7 +86,7 @@ namespace necrowarp {
 			aggregate_quality += static_cast<u8>(state) + 1;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !entity_registry<MapType>.random_warp(source_position)) {
+				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position)) {
 					player.bolster_armor(metal_consumed);
 				} else {
 					entity_registry<MapType>.template add<true>(animated_suit_t{ target_position, triflip(random_engine) ? galvanise(state) : state });
@@ -97,7 +97,7 @@ namespace necrowarp {
 			aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !entity_registry<MapType>.random_warp(source_position)) {
+				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position)) {
 					player.bolster_armor(metal_consumed);
 				} else {
 					entity_registry<MapType>.template add<true>(animated_suit_t{ target_position, galvanisation_e::Writhing });
@@ -169,7 +169,7 @@ namespace necrowarp {
 			return;
 		}
 
-		if (!entity_registry<MapType>.random_warp(source_position)) {
+		if (!random_warp_t::execute<MapType>(source_position)) {
 			player.bolster_armor(metal_consumed * 2);
 
 			return;

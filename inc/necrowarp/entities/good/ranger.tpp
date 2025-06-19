@@ -20,7 +20,7 @@ namespace necrowarp {
 				return command_pack_t{ command_e::None };
 			}
 
-			const entity_e target { determine_target(entity_registry<MapType>.at(maybe_position.value())) };
+			const entity_e target { determine_target<ranger_t>(entity_registry<MapType>.at(maybe_position.value())) };
 
 			if (target == entity_e::None) {
 				return command_pack_t{ command_e::None };
@@ -84,6 +84,8 @@ namespace necrowarp {
 
 			return command_pack_t{ command_e::Move, position, retreat_pos.value() };
 		}
+
+		return command_pack_t{ command_e::None };
 	}
 
 	template<map_type_e MapType> inline void ranger_t::die() noexcept {

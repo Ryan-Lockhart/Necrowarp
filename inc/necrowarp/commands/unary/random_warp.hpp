@@ -23,6 +23,10 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::RandomWarp;
 	};
 
+	struct random_warp_t {
+		template<map_type_e MapType> static inline bool execute(offset_t position) noexcept;
+	};
+
 	template<NonNullEntity EntityType> struct entity_command_t<EntityType, random_warp_t> {
 		using entity_type = EntityType;
 		using command_type = random_warp_t;

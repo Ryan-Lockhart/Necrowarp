@@ -146,7 +146,7 @@ namespace necrowarp {
 		visited.insert(position);
 
 		if (frontier.empty()) {
-			return *this;
+			return std::nullopt;
 		}
 
 		while (!frontier.empty()) {
@@ -192,7 +192,7 @@ namespace necrowarp {
 		visited.insert(position);
 
 		if (frontier.empty()) {
-			return *this;
+			return std::nullopt;
 		}
 
 		while (!frontier.empty()) {

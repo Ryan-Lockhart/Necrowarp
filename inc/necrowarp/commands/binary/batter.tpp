@@ -17,7 +17,7 @@ namespace necrowarp {
 			return;
 		}
 
-		const entity_e target{ determine_target(entity_registry<MapType>.at(target_position)) };
+		const entity_e target{ determine_target<battle_monk_t>(entity_registry<MapType>.at(target_position)) };
 		
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr entity_e cval{ val };
@@ -41,7 +41,7 @@ namespace necrowarp {
 					}
 				}
 
-				const i8 damage{ maybe_monk->get_damage(cval) * (critical_strike ? 2 : 1) };
+				const i8 damage{ static_cast<i8>(maybe_monk->get_damage(cval) * (critical_strike ? 2 : 1)) };
 
 				if constexpr (!is_fodder<entity_type>::value) {
 					if (maybe_target->can_survive(damage)) {
