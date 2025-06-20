@@ -8,7 +8,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h / 4 }, cardinal_e::Central },
 			embedded_label_t{
 				runes_t{ "Please select your desired patron...", colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -17,7 +17,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 2 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{},
-				embedded_box_t{ colors::Black, { colors::light::Magenta, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::light::Magenta, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -29,7 +29,7 @@ namespace necrowarp {
 					"Akurakhaithan",
 					colors::light::Magenta
 				},
-				embedded_box_t{ colors::Charcoal, { colors::light::Magenta, 1 } },
+				embedded_box_t{ colors::Charcoal, border_t{ colors::light::Magenta, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -38,7 +38,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ (akurakhaithan_label.calculate_size().w * 2) * globals::cell_size<grid_type_e::UI>.w + 12, 2 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{},
-				embedded_box_t{ colors::Black, { colors::light::Green, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::light::Green, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -50,7 +50,7 @@ namespace necrowarp {
 					"Rathghul",
 					colors::light::Green
 				},
-				embedded_box_t{ colors::Charcoal, { colors::light::Green, 1 } },
+				embedded_box_t{ colors::Charcoal, border_t{ colors::light::Green, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -59,7 +59,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ (akurakhaithan_label.calculate_size().w * 2) * globals::cell_size<grid_type_e::UI>.w + 12, -2 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{},
-				embedded_box_t{ colors::Black, { colors::light::Red, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::light::Red, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -71,7 +71,7 @@ namespace necrowarp {
 					"Merirfin",
 					colors::light::Red
 				},
-				embedded_box_t{ colors::Charcoal, { colors::light::Red, 1 } },
+				embedded_box_t{ colors::Charcoal, border_t{ colors::light::Red, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -80,7 +80,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ (akurakhaithan_label.calculate_size().w * 4) * globals::cell_size<grid_type_e::UI>.w + 24, 2 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{},
-				embedded_box_t{ colors::Black, { colors::light::Grey, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::light::Grey, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -92,7 +92,7 @@ namespace necrowarp {
 					"None",
 					colors::light::Grey
 				},
-				embedded_box_t{ colors::Charcoal, { colors::light::Grey, 1 } },
+				embedded_box_t{ colors::Charcoal, border_t{ colors::light::Grey, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -101,7 +101,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ (akurakhaithan_label.calculate_size().w * 4) * globals::cell_size<grid_type_e::UI>.w + 25, -2 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{},
-				embedded_box_t{ colors::Black, { colors::dark::Orange, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::dark::Orange, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -113,7 +113,7 @@ namespace necrowarp {
 					"Saeiligarkeuss",
 					colors::dark::Orange
 				},
-				embedded_box_t{ colors::Charcoal, { colors::dark::Orange, 1 } },
+				embedded_box_t{ colors::Charcoal, border_t{ colors::dark::Orange, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -122,7 +122,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2 - 1, globals::grid_size<grid_type_e::UI>().h - globals::grid_size<grid_type_e::UI>().h / 3 }, cardinal_e::East },
 			embedded_label_t{
 				runes_t{ "Play", colors::White },
-				embedded_box_t{ colors::Grey, { colors::White, 1 } },
+				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -131,7 +131,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2 + 1, globals::grid_size<grid_type_e::UI>().h - globals::grid_size<grid_type_e::UI>().h / 3 }, cardinal_e::West },
 			embedded_label_t{
 				runes_t{ "Back", colors::White },
-				embedded_box_t{ colors::Grey, { colors::White, 1 } },
+				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};

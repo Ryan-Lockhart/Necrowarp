@@ -8,7 +8,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 }, cardinal_e::Central },
 			embedded_label_t{
 				runes_t{ "Loading...", colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};

@@ -39,9 +39,9 @@ namespace necrowarp {
 
 		extent_t padding;
 
-		constexpr embedded_status_bar_t(std::array<status_t, Statuses> statuses) noexcept : statuses{ statuses } {}
+		constexpr embedded_status_bar_t(cref<std::array<status_t, Statuses>> statuses) noexcept : statuses{ statuses } {}
 
-		constexpr embedded_status_bar_t(std::array<status_t, Statuses> statuses, embedded_box_t box, extent_t padding) noexcept : statuses{ statuses }, box{ box }, padding{ padding } {}
+		constexpr embedded_status_bar_t(cref<std::array<status_t, Statuses>> statuses, embedded_box_t box, extent_t padding) noexcept : statuses{ statuses }, box{ box }, padding{ padding } {}
 
 		constexpr cref<status_t> operator[](usize index) const noexcept { return statuses[index]; }
 		constexpr ref<status_t> operator[](usize index) noexcept { return statuses[index]; }
@@ -88,9 +88,9 @@ namespace necrowarp {
 	};
 	
 	template<usize Statuses> struct status_bar_t : public anchor_t, public embedded_status_bar_t<Statuses> {
-		constexpr status_bar_t(std::array<status_t, Statuses> statuses) noexcept : anchor_t{}, embedded_status_bar_t<Statuses>{ statuses } {}
+		constexpr status_bar_t(cref<std::array<status_t, Statuses>> statuses) noexcept : anchor_t{}, embedded_status_bar_t<Statuses>{ statuses } {}
 
-		constexpr status_bar_t(anchor_t anchor, std::array<status_t, Statuses> statuses, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_status_bar_t<Statuses>{ statuses, box, padding } {}
+		constexpr status_bar_t(anchor_t anchor, cref<std::array<status_t, Statuses>> statuses, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_status_bar_t<Statuses>{ statuses, box, padding } {}
 
 		constexpr bool is_hovered() const noexcept {
 			return embedded_status_bar_t<Statuses>::is_hovered(anchor_t::get_offset(embedded_status_bar_t<Statuses>::external_size()));

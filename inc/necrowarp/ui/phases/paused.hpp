@@ -23,7 +23,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{ "Resume", colors::Green },
-				embedded_box_t{ colors::Grey, { colors::White, 1 } },
+				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -32,7 +32,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 0, 1 } }, cardinal_e::North },
 			embedded_label_t{
 				runes_t{ "Quit", colors::White },
-				embedded_box_t{ colors::Grey, { colors::White, 1 } },
+				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -43,7 +43,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ show_help ? help_expanded_text : help_hidden_text, colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};

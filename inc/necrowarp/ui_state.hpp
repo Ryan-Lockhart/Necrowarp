@@ -29,7 +29,7 @@ namespace necrowarp {
 		anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w, 1 }, cardinal_e::Northeast },
 		embedded_label_t{
 			runes_t{ "FPS: 0000", colors::Green },
-			embedded_box_t{ colors::Black, { colors::White, 1 } },
+			embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 			extent_t{ 1, 1 }
 		}
 	};

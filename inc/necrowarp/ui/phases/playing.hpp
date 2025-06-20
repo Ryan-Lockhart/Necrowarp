@@ -45,15 +45,41 @@ namespace necrowarp {
 				status_t{ runes_t{ "   armor: ", colors::Marble }, player_t::MaximumArmor, ActiveArmorColor, InactiveArmorColor },
 				status_t{ runes_t{ "divinity: ", colors::metals::Gold }, player_t::MaximumDivinity, ActiveDivinityColor, InactiveDivinityColor }
 			},
-			embedded_box_t{ colors::Black, { colors::White, 1 } },
+			embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 			extent_t{ 1, 1 }
+		};
+
+		static inline command_bar_t<7> player_commands{
+			anchor_t{ offset_t{ 0, 0 }, cardinal_e::West },
+			std::array<embedded_command_icon_t, 7>{
+				embedded_command_icon_t{ icons::RandomWarp, embedded_box_t{ colors::Black, border_t{ colors::White, 1 } }, extent_t{ 1, 1 } },
+				embedded_command_icon_t{ icons::TargetWarp, embedded_box_t{ colors::Black, border_t{ colors::White, 1 } }, extent_t{ 1, 1 } },
+
+				embedded_command_icon_t{ icons::CalciticInvocation, embedded_box_t{ colors::Black, border_t{ colors::White, 1 } }, extent_t{ 1, 1 } },
+				embedded_command_icon_t{ icons::SpectralInvocation, embedded_box_t{ colors::Black, border_t{ colors::White, 1 } }, extent_t{ 1, 1 } },
+				embedded_command_icon_t{ icons::SanguineInvocation, embedded_box_t{ colors::Black, border_t{ colors::White, 1 } }, extent_t{ 1, 1 } },
+				embedded_command_icon_t{ icons::GalvanicInvocation, embedded_box_t{ colors::Black, border_t{ colors::White, 1 } }, extent_t{ 1, 1 } },
+
+				embedded_command_icon_t{ icons::NecromanticAscendance, embedded_box_t{ colors::Black, border_t{ colors::White, 1 } }, extent_t{ 1, 1 } }
+			},
+			embedded_box_t{ colors::Black, border_t{ colors::White, 1} },
+			extent_t{ 1, 1 }
+		};
+
+		static inline label_t command_label{
+			anchor_t{ offset_t{}, cardinal_e::Northwest },
+			embedded_label_t{
+				runes_t{},
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
+				extent_t{ 1, 1 }
+			}
 		};
 
 		static inline label_t depth_hidden_label{
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{ depth_hidden_text, colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -62,7 +88,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{ depth_expanded_text, colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -71,7 +97,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ favor_hidden_text, colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -80,7 +106,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ favor_expanded_text, colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -89,7 +115,7 @@ namespace necrowarp {
 			anchor_t{},
 			embedded_label_t{
 				runes_t{},
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -98,7 +124,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> static inline minimap_t<MapType, MinimapPixelSize> minimap{
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() * globals::cell_size<grid_type_e::UI> }, cardinal_e::Southeast },
-			embedded_box_t{ colors::Black, { colors::White, 1 } },
+			embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 			extent_t{ 1, 1 }
 		};
 
@@ -106,16 +132,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() - offset_t{ globals::MapSize<MapType>.w / 4, 0 } }, cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{},
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
-				extent_t{ 1, 1 }
-			}
-		};
-
-		static inline label_t command_label{
-			anchor_t{ offset_t{}, cardinal_e::Northwest },
-			embedded_label_t{
-				runes_t{},
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -126,42 +143,12 @@ namespace necrowarp {
 		static inline bool show_depth{ false };
 		static inline bool show_favor{ false };
 
-		static constexpr offset_t random_warp_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 4 }; }
-		static constexpr offset_t target_warp_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 3 }; }
-
-		static constexpr offset_t calcitic_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 1 }; }
-		static constexpr offset_t spectral_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 }; }
-		static constexpr offset_t sanguine_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 1 }; }
-		static constexpr offset_t galvanic_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 2 }; }
-
-		static constexpr offset_t necromantic_ascendance_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 4 }; }
-
-		static constexpr bool any_icon_hovered() noexcept {
-			if (mouse_s::is_inside(random_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(target_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(calcitic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(spectral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(sanguine_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(galvanic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			}
-
-			return false;
-		}
-
 		template<map_type_e MapType> static inline bool any_hovered() noexcept {
 			if (phase.current_phase != phase_e::Playing) {
 				return false;
 			}
 			
-			return player_statuses.is_hovered() || any_icon_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || minimap<MapType>.is_hovered();
+			return player_statuses.is_hovered() || player_commands.is_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || minimap<MapType>.is_hovered();
 		}
 
 		template<map_type_e MapType> static inline void update(button_e button) noexcept {
@@ -201,7 +188,7 @@ namespace necrowarp {
 				};
 			}
 
-			show_command = any_icon_hovered();
+			show_command = player_commands.any_hovered();
 
 			if (show_command) {
 				const offset_t mouse_pos{ mouse_s::get_position() };

@@ -20,7 +20,7 @@ template<> struct phase_state_t<phase_e::GameOver> {
 						}
 					)
 				},
-				embedded_box_t{ colors::Red, { colors::White, 1 } },
+				embedded_box_t{ colors::Red, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -29,7 +29,7 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ -1, 1 } }, cardinal_e::Northeast },
 			embedded_label_t{
 				runes_t{ "Retry", colors::Green },
-				embedded_box_t{ colors::Grey, { colors::White, 1 } },
+				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -38,7 +38,7 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 1, 1 } }, cardinal_e::Northwest },
 			embedded_label_t{
 				runes_t{ "Quit", colors::Red },
-				embedded_box_t{ colors::Grey, { colors::White, 1 } },
+				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -47,7 +47,7 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ " Statistics ", colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -56,7 +56,7 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ " Statistics ", colors::White },
-				embedded_box_t{ colors::Black, { colors::White, 1 } },
+				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};

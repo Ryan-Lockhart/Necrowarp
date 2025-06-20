@@ -8,7 +8,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
 			embedded_label_t{
 				runes_t{ "Are you sure you want to quit?", colors::White },
-				embedded_box_t{ colors::Red, { colors::White, 1 } },
+				embedded_box_t{ colors::Red, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -17,7 +17,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ -1, 2 } }, cardinal_e::East },
 			embedded_label_t{
 				runes_t{ "Yes", colors::Green },
-				embedded_box_t{ colors::Grey, { colors::White, 1 } },
+				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
@@ -26,7 +26,7 @@ namespace necrowarp {
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 1, 2 } }, cardinal_e::West },
 			embedded_label_t{
 				runes_t{ "No", colors::Red },
-				embedded_box_t{ colors::Grey, { colors::White, 1 } },
+				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
 				extent_t{ 1, 1 }
 			}
 		};
