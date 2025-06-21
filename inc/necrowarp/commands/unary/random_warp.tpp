@@ -10,12 +10,14 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline bool random_warp_t::execute(offset_t position) noexcept {
-		if (!player.can_perform(discount_e::RandomWarp)) {
+	template<map_type_e MapType> inline bool random_warp_t::execute(offset_t position, bool free) noexcept {
+		if (!free && !player.can_perform(discount_e::RandomWarp)) {
 			return false;
 		}
 
-		player.pay_cost(discount_e::RandomWarp);
+		if (!free) {
+			player.pay_cost(discount_e::RandomWarp);
+		}
 		
 		cauto random_safe_position{ evil_goal_map<MapType>.template find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, 8) };
 
@@ -23,14 +25,18 @@ namespace necrowarp {
 			cauto random_unsafe_position{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
 
 			if (!random_unsafe_position.has_value()) {
-				player.receive_failed_warp_boon();
+				if (!free) {
+					player.receive_failed_warp_boon();
+				}
 
 				draw_warp_cursor = false;
 
 				return false;
 			}
 
-			player.receive_unsafe_warp_boon();
+			if (!free) {
+				player.receive_unsafe_warp_boon();
+			}
 
 			entity_registry<MapType>.template update<player_t>(position, random_unsafe_position.value());
 

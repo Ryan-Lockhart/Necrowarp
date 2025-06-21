@@ -68,6 +68,10 @@ namespace necrowarp {
 		ALL_EVIL_NPCS, \
 		ALL_GOOD_NPCS
 
+	#define ALL_ANIMATED_ENTITIES \
+		animated_suit_t, \
+		death_knight_t
+
 	#define ALL_ENTITIES \
 		player_t, \
 		ALL_NON_PLAYER
@@ -265,6 +269,8 @@ namespace necrowarp {
 	template<> struct is_null_entity<std::nullptr_t> {
 		static constexpr bool value = true;
 	};
+
+	template<typename T> concept AnimatedEntity = NonNullEntity<T> && globals::has_animation<T>::value;
 
 	template<typename T> struct is_good_entity {
 		static constexpr bool value = false;

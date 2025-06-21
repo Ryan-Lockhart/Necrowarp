@@ -16,7 +16,7 @@
 namespace necrowarp {	
 	using namespace bleak;
 	
-	template<map_type_e MapType> extern grid_cursor_t<globals::cell_size<grid_type_e::game_s>> warp_cursor;
+	template<map_type_e MapType> extern grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor;
 
 	extern bool draw_cursor;
 	extern bool draw_warp_cursor;
@@ -46,8 +46,8 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> static inline bool update_camera() noexcept {
-		bool force_width{ globals::MapSize<MapType>.w <= globals::grid_size<grid_type_e::game_s>().w };
-		bool force_height{ globals::MapSize<MapType>.h <= globals::grid_size<grid_type_e::game_s>().h };
+		bool force_width{ globals::MapSize<MapType>.w <= globals::grid_size<grid_type_e::Game>().w };
+		bool force_height{ globals::MapSize<MapType>.h <= globals::grid_size<grid_type_e::Game>().h };
 
 		bool moved{ false };
 
@@ -669,6 +669,32 @@ namespace necrowarp {
 
 		steam_stats::store();
 	}
+
+	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::advance() noexcept {
+		for (crauto entity : entity_storage<EntityType>) { entity.idle_animation.advance(); }
+	}
+
+	template<map_type_e MapType> 
+	template<AnimatedEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline void entity_registry_t<MapType>::advance() noexcept {
+		(advance<EntityTypes>(), ...);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::advance() noexcept { advance<ALL_ANIMATED_ENTITIES>(); }
+
+	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::retreat() noexcept {
+		for (crauto entity : entity_storage<EntityType>) { entity.idle_animation.retreat(); }
+	}
+
+	template<map_type_e MapType> 
+	template<AnimatedEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline void entity_registry_t<MapType>::retreat() noexcept {
+		(retreat<EntityTypes>(), ...);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_ENTITIES>(); }
 
 	template<map_type_e MapType> template<NPCEntity EntityType, NonNullCommand CommandType> inline void entity_registry_t<MapType>::process_commands() noexcept {
 		if constexpr (is_entity_command_valid<EntityType, CommandType>::value) {

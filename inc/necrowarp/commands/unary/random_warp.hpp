@@ -24,7 +24,7 @@ namespace necrowarp {
 	};
 
 	struct random_warp_t {
-		template<map_type_e MapType> static inline bool execute(offset_t position) noexcept;
+		template<map_type_e MapType> static inline bool execute(offset_t position, bool free = false) noexcept;
 	};
 
 	template<NonNullEntity EntityType> struct entity_command_t<EntityType, random_warp_t> {

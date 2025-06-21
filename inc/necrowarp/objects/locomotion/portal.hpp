@@ -13,6 +13,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_animation<portal_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_object<portal_t> {
 		static constexpr bool value = true;
 	};
@@ -32,8 +36,6 @@ namespace necrowarp {
 	template<> struct to_object_group<object_e::Portal> {
 		static constexpr object_group_e value = object_group_e::Portal;
 	};
-
-	template<> inline constexpr glyph_t object_glyphs<portal_t>{ glyphs::CalmPortal };
 
 	enum struct stability_e : u8 {
 		Calm, // calm portals  take you to a pocket dimension with lesser ability improvements without tribulation
@@ -65,15 +67,6 @@ namespace necrowarp {
 		}
 	}
 
-	template<stability_e Stability> constexpr glyph_t portal_glyph;
-
-	template<> inline constexpr glyph_t portal_glyph<stability_e::Calm>{ glyphs::CalmPortal };
-	template<> inline constexpr glyph_t portal_glyph<stability_e::Vocal>{ glyphs::VocalPortal };
-	template<> inline constexpr glyph_t portal_glyph<stability_e::Turbulent>{ glyphs::TurbulentPortal };
-	template<> inline constexpr glyph_t portal_glyph<stability_e::Insightful>{ glyphs::InsightfulPortal };
-	template<> inline constexpr glyph_t portal_glyph<stability_e::Collapsing>{ glyphs::CollapsingPortal };
-	template<> inline constexpr glyph_t portal_glyph<stability_e::Yawning>{ glyphs::YawningPortal };
-
 	constexpr cstr to_string(stability_e type) noexcept {
 		switch (type) {
 			case stability_e::Calm: {
@@ -88,8 +81,8 @@ namespace necrowarp {
 				return "collpasing";
 			} case stability_e::Yawning: {
 				return "yawning";
-			} default: {
-				return "unknown";
+			} case stability_e::Echoing: {
+				return "echoing";
 			}
 		}
 	}
@@ -109,8 +102,8 @@ namespace necrowarp {
 				return runes_t{ string, colors::light::Magenta };
 			} case stability_e::Yawning: {
 				return runes_t{ string, colors::light::Yellow };
-			} default: {
-				return runes_t{ string, colors::metals::Iron };
+			} case stability_e::Echoing: {
+				return runes_t{ string, colors::light::Cyan };
 			}
 		}
 	}
@@ -124,14 +117,40 @@ namespace necrowarp {
 		
 		const stability_e stability;
 
+	  private:
+		static constexpr u8 get_index(stability_e stability) noexcept {
+			switch (stability) {
+				case stability_e::Calm: {
+					return indices::CalmPortal;
+				} case stability_e::Vocal: {
+					return indices::VocalPortal;
+				} case stability_e::Turbulent: {
+					return indices::TurbulentPortal;
+				} case stability_e::Insightful: {
+					return indices::InsightfulPortal;
+				} case stability_e::Collapsing: {
+					return indices::CollapsingPortal;
+				} case stability_e::Yawning: {
+					return indices::YawningPortal;
+				} case stability_e::Echoing: {
+					return indices::EchoingPortal;
+				}
+			}
+		}
+
+	  public:
+		keyframe_t idle_animation;
+
 		inline portal_t(offset_t position, bool random = false) noexcept :
 			position{ position },
-			stability{ random ? random_stability(random_engine) : stability_e::Calm }
+			stability{ random ? random_stability(random_engine) : stability_e::Calm },
+			idle_animation{ get_index(stability), random_engine, true }
 		{}
 
 		inline portal_t(offset_t position, stability_e stability) noexcept :
 			position{ position },
-			stability{ stability }
+			stability{ stability },
+			idle_animation{ get_index(stability), random_engine, true }
 		{}
 
 		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(object_e::Portal), necrowarp::to_string(stability)); }
@@ -147,21 +166,13 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline glyph_t current_glyph() const noexcept {
-			return magic_enum::enum_switch([&](auto val) -> glyph_t {
-				constexpr stability_e cval{ val };
+		inline void draw() const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-				return portal_glyph<cval>;
-			}, stability);
-		}
+		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position, offset); }
 
-		inline void draw() const noexcept { entity_atlas.draw(current_glyph(), position); }
+		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset()); }
 
-		inline void draw(offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position, offset); }
-
-		inline void draw(cref<camera_t> camera) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset()); }
-
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator object_e() const noexcept { return object_e::Portal; }
 

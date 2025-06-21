@@ -34,13 +34,13 @@ namespace necrowarp {
 
 		inline flesh_t(offset_t position) noexcept : position{ position } {}
 
-		inline void draw() const noexcept { entity_atlas.draw(object_glyphs<flesh_t>, position); }
+		inline void draw() const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position); }
 
-		inline void draw(offset_t offset) const noexcept { entity_atlas.draw(object_glyphs<flesh_t>, position, offset); }
+		inline void draw(offset_t offset) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { entity_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset()); }
+		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { entity_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset(), offset); }
 
 		constexpr operator object_e() const noexcept { return object_e::Flesh; }
 

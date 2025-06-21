@@ -86,7 +86,7 @@ namespace necrowarp {
 			aggregate_quality += static_cast<u8>(state) + 1;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position)) {
+				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(metal_consumed);
 				} else {
 					entity_registry<MapType>.template add<true>(animated_suit_t{ target_position, triflip(random_engine) ? galvanise(state) : state });
@@ -97,7 +97,7 @@ namespace necrowarp {
 			aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position)) {
+				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(metal_consumed);
 				} else {
 					entity_registry<MapType>.template add<true>(animated_suit_t{ target_position, galvanisation_e::Writhing });
@@ -145,11 +145,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first eldritch shackle achievment placeholder : A Chilling Draft
+				// unshackle first glimmering shackle achievment placeholder : The Riddle of Steel
 			} else {
 				eligible_ladder->enshackle(shackle_e::Galvanic);
 
-				// eldritch enshackle first ladder achievment placeholder : Isn't it incorporeal?
+				// glimmering enshackle first ladder achievment placeholder : Unbreakable Chains
 			}
 
 			eligible_ladder = nullptr;
@@ -169,7 +169,7 @@ namespace necrowarp {
 			return;
 		}
 
-		if (!random_warp_t::execute<MapType>(source_position)) {
+		if (!random_warp_t::execute<MapType>(source_position, true)) {
 			player.bolster_armor(metal_consumed * 2);
 
 			return;

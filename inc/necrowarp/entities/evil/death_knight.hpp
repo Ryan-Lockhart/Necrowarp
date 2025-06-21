@@ -12,6 +12,10 @@ namespace necrowarp {
 	template<> struct globals::has_unique_descriptor<death_knight_t> {
 		static constexpr bool value = true;
 	};
+
+	template<> struct globals::has_animation<death_knight_t> {
+		static constexpr bool value = true;
+	};
 	
 	template<> struct is_entity<death_knight_t> {
 		static constexpr bool value = true;
@@ -53,8 +57,6 @@ namespace necrowarp {
 		static constexpr bool value = false;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<death_knight_t>{ glyphs::TwistedSuit };
-
 	struct death_knight_t {
 		offset_t position;
 		const galvanisation_e state;
@@ -63,8 +65,24 @@ namespace necrowarp {
 		i8 health;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
+
+		static constexpr u8 get_index(galvanisation_e state) noexcept {
+			switch (state) {
+				case galvanisation_e::Twisted: {
+					return indices::TwistedKnight;
+				} case galvanisation_e::Shimmering: {
+					return indices::ShimmeringKnight;
+				} case galvanisation_e::Wriggling: {
+					return indices::WrigglingKnight;
+				} case galvanisation_e::Writhing: {
+					return indices::WrithingKnight;
+				}
+			}
+		}
 	
 	public:
+		keyframe_t idle_animation;
+
 		static constexpr f32 HealthMultiplier{ 1.5f };
 
 		static constexpr i8 BaseMaximumHealth{ 9 };
@@ -83,9 +101,19 @@ namespace necrowarp {
 			entity_e::Adventurer,
 		};
 
-		inline death_knight_t(offset_t position, i8 health) noexcept : position{ position }, state{ galvanisation_e::Twisted }, health{ static_cast<i8>(health * HealthMultiplier) } {}
+		inline death_knight_t(offset_t position, i8 health) noexcept :
+			position{ position },
+			state{ galvanisation_e::Twisted },
+			health{ static_cast<i8>(health * HealthMultiplier) },
+			idle_animation{ get_index(state), random_engine, true }
+		{}
 
-		inline death_knight_t(offset_t position, i8 health, galvanisation_e state) noexcept : position{ position }, state{ state }, health{ static_cast<i8>(health * HealthMultiplier) } {}
+		inline death_knight_t(offset_t position, i8 health, galvanisation_e state) noexcept :
+			position{ position },
+			state{ state },
+			health{ static_cast<i8>(health * HealthMultiplier) },
+			idle_animation{ get_index(state), random_engine, true }
+		{}
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -135,27 +163,13 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline glyph_t current_glyph() const noexcept {
-			switch (state) {
-				case galvanisation_e::Twisted: {
-					return glyphs::TwistedKnight;
-				} case galvanisation_e::Shimmering: {
-					return glyphs::ShimmeringKnight;
-				} case galvanisation_e::Wriggling: {
-					return glyphs::WrigglingKnight;
-				} case galvanisation_e::Writhing: {
-					return glyphs::WrithingKnight;
-				}
-			}
-		}
+		inline void draw() const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-		inline void draw() const noexcept { entity_atlas.draw(current_glyph(), position); }
+		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position, offset); }
 
-		inline void draw(offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position, offset); }
+		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset()); }
-
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::DeathKnight; }
 

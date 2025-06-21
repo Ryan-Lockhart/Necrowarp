@@ -129,6 +129,22 @@ namespace necrowarp {
 
 		inline void update() noexcept;
 
+		template<AnimatedEntity EntityType> inline void advance() noexcept;
+
+		template<AnimatedEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline void advance() noexcept;
+
+		inline void advance() noexcept;
+
+		template<AnimatedEntity EntityType> inline void retreat() noexcept;
+
+		template<AnimatedEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline void retreat() noexcept;
+
+		inline void retreat() noexcept;
+
 		template<NonNullEntity EntityType> inline void recalculate_goal_map() noexcept;
 
 		template<NonNullEntity... EntityTypes>

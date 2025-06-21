@@ -82,7 +82,7 @@ namespace necrowarp {
 			++accumulated_skulls;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position)) {
+				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(accumulated_skulls);
 				} else {
 					entity_registry<MapType>.template add<true>(skeleton_t{ pos, state });
@@ -92,7 +92,7 @@ namespace necrowarp {
 			++accumulated_skulls;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position)) {
+				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(accumulated_skulls);
 				} else {
 					entity_registry<MapType>.template add<true>(skeleton_t{ target_position });
@@ -164,7 +164,7 @@ namespace necrowarp {
 			return;
 		}
 
-		if (!random_warp_t::execute<MapType>(source_position)) {
+		if (!random_warp_t::execute<MapType>(source_position, true)) {
 			player.bolster_armor(accumulated_skulls);
 
 			return;

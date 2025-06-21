@@ -143,12 +143,42 @@ namespace necrowarp {
 		static inline bool show_depth{ false };
 		static inline bool show_favor{ false };
 
+		static constexpr offset_t random_warp_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 4 }; }
+		static constexpr offset_t target_warp_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 3 }; }
+
+		static constexpr offset_t calcitic_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 1 }; }
+		static constexpr offset_t spectral_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 }; }
+		static constexpr offset_t sanguine_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 1 }; }
+		static constexpr offset_t galvanic_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 2 }; }
+
+		static constexpr offset_t necromantic_ascendance_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 4 }; }
+
+		static constexpr bool any_icon_hovered() noexcept {
+			if (mouse_s::is_inside(random_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				return true;
+			} else if (mouse_s::is_inside(target_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				return true;
+			} else if (mouse_s::is_inside(calcitic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				return true;
+			} else if (mouse_s::is_inside(spectral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				return true;
+			} else if (mouse_s::is_inside(sanguine_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				return true;
+			} else if (mouse_s::is_inside(galvanic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				return true;
+			} else if (mouse_s::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				return true;
+			}
+
+			return false;
+		}
+
 		template<map_type_e MapType> static inline bool any_hovered() noexcept {
 			if (phase.current_phase != phase_e::Playing) {
 				return false;
 			}
 			
-			return player_statuses.is_hovered() || player_commands.is_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || minimap<MapType>.is_hovered();
+			return player_statuses.is_hovered() || any_icon_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || minimap<MapType>.is_hovered();
 		}
 
 		template<map_type_e MapType> static inline void update(button_e button) noexcept {
@@ -188,7 +218,7 @@ namespace necrowarp {
 				};
 			}
 
-			show_command = player_commands.any_hovered();
+			show_command = any_icon_hovered();
 
 			if (show_command) {
 				const offset_t mouse_pos{ mouse_s::get_position() };

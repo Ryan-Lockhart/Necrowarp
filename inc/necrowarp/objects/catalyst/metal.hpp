@@ -11,6 +11,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_animation<metal_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_object<metal_t> {
 		static constexpr bool value = true;
 	};
@@ -31,15 +35,31 @@ namespace necrowarp {
 		static constexpr object_group_e value = object_group_e::Metal;
 	};
 
-	template<> inline constexpr glyph_t object_glyphs<metal_t>{ glyphs::TwistedMetal };
-
 	struct metal_t {
 		offset_t position;
 		const galvanisation_e state;
 
-		inline metal_t(offset_t position) noexcept : position{ position }, state{ galvanisation_e::Twisted } {}
+	  private:
+		static constexpr u8 get_index(galvanisation_e state) noexcept {
+			switch (state) {
+				case galvanisation_e::Twisted: {
+					return indices::TwistedMetal;
+				} case galvanisation_e::Shimmering: {
+					return indices::ShimmeringMetal;
+				} case galvanisation_e::Wriggling: {
+					return indices::WrigglingMetal;
+				} case galvanisation_e::Writhing: {
+					return indices::WrithingMetal;
+				}
+			}
+		}
 
-		inline metal_t(offset_t position, galvanisation_e state) noexcept : position{ position }, state{ state } {}
+	  public:
+		keyframe_t idle_animation;
+
+		inline metal_t(offset_t position) noexcept : position{ position }, state{ galvanisation_e::Twisted }, idle_animation{ get_index(state), random_engine, true } {}
+
+		inline metal_t(offset_t position, galvanisation_e state) noexcept : position{ position }, state{ state }, idle_animation{ get_index(state), random_engine, true } {}
 
 		inline bool is_twisted() const noexcept { return state == galvanisation_e::Twisted; }
 
@@ -62,27 +82,13 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline glyph_t current_glyph() const noexcept {
-			switch (state) {
-				case galvanisation_e::Twisted: {
-					return glyphs::TwistedMetal;
-				} case galvanisation_e::Shimmering: {
-					return glyphs::ShimmeringMetal;
-				} case galvanisation_e::Wriggling: {
-					return glyphs::WrigglingMetal;
-				} case galvanisation_e::Writhing: {
-					return glyphs::WrithingMetal;
-				}
-			}
-		}
+		inline void draw() const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-		inline void draw() const noexcept { entity_atlas.draw(current_glyph(), position); }
+		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position, offset); }
 
-		inline void draw(offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position, offset); }
+		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset()); }
-
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { entity_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator object_e() const noexcept { return object_e::Metal; }
 

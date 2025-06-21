@@ -237,6 +237,32 @@ namespace necrowarp {
 		return true;
 	}
 
+	template<map_type_e MapType> template<AnimatedObject ObjectType> inline void object_registry_t<MapType>::advance() noexcept {
+		for (crauto object : object_storage<ObjectType>) { object.idle_animation.advance(); }
+	}
+
+	template<map_type_e MapType> 
+	template<AnimatedObject... ObjectTypes>
+		requires is_plurary<ObjectTypes...>::value
+	inline void object_registry_t<MapType>::advance() noexcept {
+		(advance<ObjectTypes>(), ...);
+	}
+
+	template<map_type_e MapType> inline void object_registry_t<MapType>::advance() noexcept { advance<ALL_ANIMATED_OBJECTS>(); }
+
+	template<map_type_e MapType> template<AnimatedObject ObjectType> inline void object_registry_t<MapType>::retreat() noexcept {
+		for (crauto object : object_storage<ObjectType>) { object.idle_animation.retreat(); }
+	}
+
+	template<map_type_e MapType> 
+	template<AnimatedObject... ObjectTypes>
+		requires is_plurary<ObjectTypes...>::value
+	inline void object_registry_t<MapType>::retreat() noexcept {
+		(retreat<ObjectTypes>(), ...);
+	}
+
+	template<map_type_e MapType> inline void object_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_OBJECTS>(); }
+
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
 		object_goal_map<MapType, ObjectType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 	}

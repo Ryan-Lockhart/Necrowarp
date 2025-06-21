@@ -19,6 +19,7 @@
 #include <necrowarp/ui_state.hpp>
 #include <necrowarp/globals.hpp>
 #include <necrowarp/scorekeeper.hpp>
+#include <necrowarp/animation.hpp>
 
 #include <magic_enum/magic_enum_all.hpp>
 
@@ -251,7 +252,7 @@ namespace necrowarp {
 				static_cast<usize>(globals::map_config.number_of_down_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
-				verticality_e::Down, true
+				verticality_e::Down, random_engine
 			);
 
 			object_registry<MapType>.template spawn<skull_t>(
@@ -399,7 +400,7 @@ namespace necrowarp {
 				static_cast<usize>(globals::map_config.number_of_down_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
-				verticality_e::Down, true
+				verticality_e::Down, random_engine
 			);
 
 			object_registry<MapType>.template spawn<skull_t>(
@@ -666,30 +667,30 @@ namespace necrowarp {
 			renderer.clear(colors::Black);
 
 			if (phase.current_phase == phase_e::Playing) {
-				bool exceeds_width{ globals::MapSize<MapType>.w <= globals::grid_size<grid_type_e::game_s>().w };
-				bool exceeds_height{ globals::MapSize<MapType>.h <= globals::grid_size<grid_type_e::game_s>().h };
+				bool exceeds_width{ globals::MapSize<MapType>.w <= globals::grid_size<grid_type_e::Game>().w };
+				bool exceeds_height{ globals::MapSize<MapType>.h <= globals::grid_size<grid_type_e::Game>().h };
 
-				const extent_t excess_size{ (globals::grid_size<grid_type_e::game_s>() - globals::MapSize<MapType> + 1) * globals::cell_size<grid_type_e::game_s> / 2 };
+				const extent_t excess_size{ (globals::grid_size<grid_type_e::Game>() - globals::MapSize<MapType> + 1) * globals::cell_size<grid_type_e::Game> / 2 };
 
 				if (exceeds_width) {
-					renderer.draw_fill_rect(rect_t{ offset_t::Zero, extent_t{ excess_size.w, globals::window_size.h } }, color_t { 0xC0 });
-					renderer.draw_fill_rect(rect_t{ offset_t{ globals::window_size.w - excess_size.w - 1, 0}, extent_t{ excess_size.w, globals::window_size.h } }, color_t { 0xC0 });
+					renderer.draw_fill_rect(rect_t{ offset_t::Zero, extent_t{ excess_size.w, globals::window_size.h } }, color_t{ u8{ 0xC0 } });
+					renderer.draw_fill_rect(rect_t{ offset_t{ globals::window_size.w - excess_size.w - 1, 0}, extent_t{ excess_size.w, globals::window_size.h } }, color_t{ u8{ 0xC0 } });
 				}
 
 				if (exceeds_height) {
-					renderer.draw_fill_rect(rect_t{ offset_t::Zero, extent_t{ globals::window_size.w, excess_size.h } }, color_t { 0xC0 });
-					renderer.draw_fill_rect(rect_t{ offset_t{ 0, globals::window_size.h - excess_size.h - 1 }, extent_t{ globals::window_size.w, excess_size.h } }, color_t { 0xC0 });
+					renderer.draw_fill_rect(rect_t{ offset_t::Zero, extent_t{ globals::window_size.w, excess_size.h } }, color_t{ u8{ 0xC0 } });
+					renderer.draw_fill_rect(rect_t{ offset_t{ 0, globals::window_size.h - excess_size.h - 1 }, extent_t{ globals::window_size.w, excess_size.h } }, color_t{ u8{ 0xC0 } });
 				}
 
-				game_map<MapType>.draw(tile_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::game_s>());
-				fluid_map<MapType>.draw(tile_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::game_s>());
+				game_map<MapType>.draw(game_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::Game>());
+				fluid_map<MapType>.draw(game_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 
 				if (!processing_turn) {
-					object_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::game_s>());
-					entity_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::game_s>());
+					object_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					entity_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
 				} else if (!buffers_locked) {
-					phase_state_t<phase_e::Playing>::object_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::game_s>());
-					phase_state_t<phase_e::Playing>::entity_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::game_s>());
+					phase_state_t<phase_e::Playing>::object_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					phase_state_t<phase_e::Playing>::entity_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
 				} else {
 					return;
 				}

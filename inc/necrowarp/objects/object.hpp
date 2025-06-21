@@ -33,6 +33,11 @@ namespace necrowarp {
 	#define ALL_DEBRIS_OBJECTS \
 		arrow_t
 
+	#define ALL_ANIMATED_OBJECTS \
+		metal_t, \
+		ladder_t, \
+		portal_t
+
 	#define ALL_OBJECTS \
 		ALL_CATALYST_OBJECTS, \
 		ALL_LOCOMOTION_OBJECTS, \
@@ -263,6 +268,8 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<typename T> concept AnimatedObject = NonNullObject<T> && globals::has_animation<T>::value;
+
 	template<typename T, object_e ObjectType> struct is_object_type {
 		static constexpr bool value = false;
 	};
@@ -273,7 +280,9 @@ namespace necrowarp {
 
 	template<typename T, object_e ObjectType> constexpr bool is_object_type_v = is_object_type<T, ObjectType>::value;
 
-	template<Object ObjectType> inline constexpr glyph_t object_glyphs;
+	template<Object ObjectType>
+		requires (!globals::has_animation<ObjectType>::value)
+	inline constexpr glyph_t object_glyphs;
 
 	template<> inline constexpr glyph_t object_glyphs<std::nullptr_t>{ 0x40, colors::White };
 } // namespace necrowarp

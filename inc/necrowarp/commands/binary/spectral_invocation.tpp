@@ -77,7 +77,7 @@ namespace necrowarp {
 			++pools_consumed;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position)) {
+				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.template add<true>(cultist_t{ pos });
@@ -88,7 +88,7 @@ namespace necrowarp {
 			++pools_consumed;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position)) {
+				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.template add<true>(cultist_t{ pos });
@@ -160,7 +160,7 @@ namespace necrowarp {
 			return;
 		}
 
-		if (!random_warp_t::execute<MapType>(source_position)) {
+		if (!random_warp_t::execute<MapType>(source_position, true)) {
 			player.reinvigorate(pools_consumed);
 
 			return;

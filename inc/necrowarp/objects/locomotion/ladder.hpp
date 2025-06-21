@@ -13,6 +13,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_animation<ladder_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_object<ladder_t> {
 		static constexpr bool value = true;
 	};
@@ -32,8 +36,6 @@ namespace necrowarp {
 	template<> struct to_object_group<object_e::Ladder> {
 		static constexpr object_group_e value = object_group_e::Ladder;
 	};
-
-	template<> inline constexpr glyph_t object_glyphs<ladder_t>{ glyphs::UpLadder };
 
 	enum struct verticality_e : u8 {
 		Up,
@@ -62,13 +64,6 @@ namespace necrowarp {
 		Sanguine,
 		Galvanic
 	};
-
-	template<shackle_e Shackle> requires (Shackle != shackle_e::Unshackled) constexpr glyph_t shackle_glyph;
-
-	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Calcitic>{ glyphs::CalciticShackle };
-	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Spectral>{ glyphs::SpectralShackle };
-	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Sanguine>{ glyphs::SanguineShackle };
-	template<> inline constexpr glyph_t shackle_glyph<shackle_e::Galvanic>{ glyphs::GalvanicShackle };
 
 	constexpr cstr to_string(shackle_e type) noexcept {
 		switch (type) {
@@ -109,42 +104,66 @@ namespace necrowarp {
 	template<RandomEngine Generator> static inline shackle_e random_shackle(ref<Generator> generator) noexcept { return static_cast<shackle_e>(shackle_dis(generator)); }
 
 	struct ladder_t {
-	  private:
-		inline void draw_shackle(offset_t pos) const noexcept {
-			magic_enum::enum_switch([&](auto val) -> void {
-				constexpr shackle_e cval{ val };
-
-				if constexpr (cval != shackle_e::Unshackled) {
-					entity_atlas.draw(shackle_glyph<cval>, pos);
-				}				
-			}, shackle);
-		}
-
-		inline void draw_shackle(offset_t pos, offset_t offset) const noexcept {
-			magic_enum::enum_switch([&](auto val) -> void {
-				constexpr shackle_e cval{ val };
-
-				if constexpr (cval != shackle_e::Unshackled) {
-					entity_atlas.draw(shackle_glyph<cval>, pos, offset);
-				}				
-			}, shackle);
-		}
-		
-	  public:
 		offset_t position;
 		
 		const verticality_e verticality;
 		shackle_e shackle;
 
-		inline ladder_t(offset_t position) noexcept : position{ position }, verticality{ verticality_e::Up }, shackle{ shackle_e::Unshackled } {}
+	  private:
+		static constexpr u8 get_index(shackle_e shackle) noexcept {
+			switch (shackle) {
+				case shackle_e::Calcitic: {
+					return indices::CalciticShackle;
+				} case shackle_e::Spectral: {
+					return indices::SpectralShackle;
+				} case shackle_e::Sanguine: {
+					return indices::SanguineShackle;
+				} case shackle_e::Galvanic: {
+					return indices::GalvanicShackle;
+				} case shackle_e::Unshackled: {
+					return 0;
+				}				
+			}
+		}
 
-		inline ladder_t(offset_t position, verticality_e verticality, bool random = false) noexcept :
+		inline void sync_animation() noexcept {
+			if (has_shackle()) {
+				idle_animation.start();
+			} else {
+				idle_animation.stop();
+			}
+		}
+	
+	public:
+		keyframe_t idle_animation;
+
+		inline ladder_t(offset_t position) noexcept :
+			position{ position },
+			verticality{ verticality_e::Up },
+			shackle{ shackle_e::Unshackled },
+			idle_animation{ get_index(shackle), random_engine }
+		{ sync_animation(); }
+
+		inline ladder_t(offset_t position, verticality_e verticality) noexcept :
 			position{ position },
 			verticality{ verticality },
-			shackle{ random ? random_shackle(random_engine) : shackle_e::Unshackled }
-		{}
+			shackle{ shackle_e::Unshackled },
+			idle_animation{ get_index(shackle), random_engine }
+		{ sync_animation(); }
 
-		inline ladder_t(offset_t position, verticality_e verticality, shackle_e shackle) noexcept : position{ position }, verticality{ verticality }, shackle{ shackle } {}
+		template<RandomEngine Engine> inline ladder_t(offset_t position, verticality_e verticality, ref<Engine> engine) noexcept :
+			position{ position },
+			verticality{ verticality },
+			shackle{ random_shackle(engine) },
+			idle_animation{ get_index(shackle), random_engine }
+		{ sync_animation(); }
+
+		inline ladder_t(offset_t position, verticality_e verticality, shackle_e shackle) noexcept :
+			position{ position },
+			verticality{ verticality },
+			shackle{ shackle },
+			idle_animation{ get_index(shackle), random_engine }
+		{ sync_animation(); }
 
 		inline bool is_up_ladder() const noexcept { return verticality == verticality_e::Up; }
 
@@ -167,24 +186,12 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		template<typename E> requires (std::is_same<E, verticality_e>::value || std::is_same<E, shackle_e>::value) inline glyph_t current_glyph() const noexcept {
-			if constexpr (std::is_same<E, verticality_e>::value) {
-				return magic_enum::enum_switch([&](auto val) -> glyph_t {
-					constexpr verticality_e cval{ val };
+		inline glyph_t current_glyph() const noexcept {
+			return magic_enum::enum_switch([&](auto val) -> glyph_t {
+				constexpr verticality_e cval{ val };
 
-					return ladder_glyph<cval>;
-				}, verticality);
-			} else if constexpr (std::is_same<E, shackle_e>::value) {
-				return magic_enum::enum_switch([&](auto val) -> glyph_t {
-					constexpr shackle_e cval{ val };
-
-					if constexpr (cval != shackle_e::Unshackled) {
-						return shackle_glyph<cval>;
-					}
-
-					return glyph_t{};
-				}, shackle);
-			}
+				return ladder_glyph<cval>;
+			}, verticality);
 		}
 
 		inline void enshackle() noexcept {
@@ -195,6 +202,8 @@ namespace necrowarp {
 			shackle = random_shackle(random_engine);
 
 			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
+
+			sync_animation();
 		}
 
 		inline void enshackle(shackle_e type) noexcept {
@@ -205,6 +214,8 @@ namespace necrowarp {
 			shackle = type;
 
 			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
+
+			sync_animation();
 		}
 
 		inline void unshackle() noexcept {
@@ -215,41 +226,43 @@ namespace necrowarp {
 			shackle = shackle_e::Unshackled;
 
 			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled, i32>;
+
+			sync_animation();
 		};
 
 		inline void draw() const noexcept {
-			entity_atlas.draw(current_glyph<verticality_e>(), position);
+			game_atlas.draw(current_glyph(), position);
 
 			if (has_shackle()) {
-				entity_atlas.draw(current_glyph<shackle_e>(), position);
+				animated_atlas.draw(idle_animation, colors::White, position);
 			}
 		}
 
 		inline void draw(offset_t offset) const noexcept {
-			entity_atlas.draw(current_glyph<verticality_e>(), position, offset);
+			game_atlas.draw(current_glyph(), position, offset);
 
 			if (has_shackle()) {
-				entity_atlas.draw(current_glyph<shackle_e>(), position, offset);
+				animated_atlas.draw(idle_animation, colors::White, position, offset);
 			}
 		}
 
 		inline void draw(cref<camera_t> camera) const noexcept {
 			const offset_t pos{ position + camera.get_offset() };
 	
-			entity_atlas.draw(current_glyph<verticality_e>(), pos);
+			game_atlas.draw(current_glyph(), pos);
 
 			if (has_shackle()) {
-				entity_atlas.draw(current_glyph<shackle_e>(), pos);
+				animated_atlas.draw(idle_animation, colors::White, pos);
 			}
 		}
 
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept {
 			const offset_t pos{ position + camera.get_offset() };
 	
-			entity_atlas.draw(current_glyph<verticality_e>(), pos, offset);
+			game_atlas.draw(current_glyph(), pos, offset);
 
 			if (has_shackle()) {
-				entity_atlas.draw(current_glyph<shackle_e>(), pos, offset);
+				animated_atlas.draw(idle_animation, colors::White, pos, offset);
 			}
 		}
 

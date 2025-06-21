@@ -80,6 +80,22 @@ namespace necrowarp {
 
 		template<NonNullObject ObjectType> inline bool update(offset_t current, offset_t target) noexcept;
 
+		template<AnimatedObject ObjectType> inline void advance() noexcept;
+
+		template<AnimatedObject... ObjectTypes>
+			requires is_plurary<ObjectTypes...>::value
+		inline void advance() noexcept;
+		
+		inline void advance() noexcept;
+
+		template<AnimatedObject ObjectType> inline void retreat() noexcept;
+
+		template<AnimatedObject... ObjectTypes>
+			requires is_plurary<ObjectTypes...>::value
+		inline void retreat() noexcept;
+
+		inline void retreat() noexcept;
+
 		template<NonNullObject ObjectType> inline void recalculate_goal_map() noexcept;
 
 		template<NonNullObject... ObjectTypes>

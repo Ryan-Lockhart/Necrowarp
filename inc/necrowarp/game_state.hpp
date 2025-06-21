@@ -29,8 +29,8 @@ namespace necrowarp {
 
 	static inline atlas_t<globals::GlyphsetSize> ui_atlas{ renderer, "res/gfx/glyphs/glyphs_8x8.png" };
 
-	static inline atlas_t<globals::TilesetSize> tile_atlas{ renderer, "res/gfx/tiles/tileset_64x64.png" };
-	static inline atlas_t<globals::EntitysetSize> entity_atlas{ renderer, "res/gfx/tiles/entities_64x64.png" };
+	static inline atlas_t<globals::TilesetSize> game_atlas{ renderer, "res/gfx/tiles/static_64x64.png" };
+	static inline atlas_t<globals::AnimatedSize> animated_atlas{ renderer, "res/gfx/tiles/animated_64x64.png" };
 
 	static inline atlas_t<globals::IconsetSize> icon_atlas{ renderer, "res/gfx/icons/icons_32x32.png" };
 
@@ -51,17 +51,17 @@ namespace necrowarp {
 
 	static inline cursor_t ui_cursor{};
 
-	template<map_type_e MapType> static inline grid_cursor_t<globals::cell_size<grid_type_e::game_s>> grid_cursor{ colors::metals::Gold, game_map<MapType>.zone_origin, game_map<MapType>.zone_extent };
-	template<map_type_e MapType> static inline grid_cursor_t<globals::cell_size<grid_type_e::game_s>> warp_cursor{ colors::Magenta, game_map<MapType>.zone_origin, game_map<MapType>.zone_extent };
+	template<map_type_e MapType> static inline grid_cursor_t<globals::cell_size<grid_type_e::Game>> grid_cursor{ colors::metals::Gold, game_map<MapType>.zone_origin, game_map<MapType>.zone_extent };
+	template<map_type_e MapType> static inline grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor{ colors::Magenta, game_map<MapType>.zone_origin, game_map<MapType>.zone_extent };
 
 	static inline bool draw_cursor{ true };
 	static inline bool draw_warp_cursor{ false };
 
-	template<map_type_e MapType> static inline camera_t camera{ globals::grid_size<grid_type_e::game_s>(), extent_t::Zero, globals::camera_extent<MapType>() };
+	template<map_type_e MapType> static inline camera_t camera{ globals::grid_size<grid_type_e::Game>(), extent_t::Zero, globals::camera_extent<MapType>() };
 
 	static inline bool camera_locked{ true };
 
-	template<map_type_e MapType> static inline bool camera_forced() noexcept { return globals::MapSize<MapType>.w <= globals::grid_size<grid_type_e::game_s>().w || globals::MapSize<MapType>.h <= globals::grid_size<grid_type_e::game_s>().h; }
+	template<map_type_e MapType> static inline bool camera_forced() noexcept { return globals::MapSize<MapType>.w <= globals::grid_size<grid_type_e::Game>().w || globals::MapSize<MapType>.h <= globals::grid_size<grid_type_e::Game>().h; }
 	
 	static constexpr usize input_interval{ 125ULL };
 	static inline bleak::timer_t input_timer{ input_interval };

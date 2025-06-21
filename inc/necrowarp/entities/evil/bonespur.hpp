@@ -102,13 +102,13 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { entity_atlas.draw(entity_glyphs<bonespur_t>, position); }
+		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<bonespur_t>, position); }
 
-		inline void draw(offset_t offset) const noexcept { entity_atlas.draw(entity_glyphs<bonespur_t>, position, offset); }
+		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<bonespur_t>, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { entity_atlas.draw(entity_glyphs<bonespur_t>, position + camera.get_offset()); }
+		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<bonespur_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { entity_atlas.draw(entity_glyphs<bonespur_t>, position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<bonespur_t>, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Bonespur; }
 

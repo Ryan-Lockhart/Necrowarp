@@ -78,7 +78,7 @@ namespace necrowarp {
 			static_cast<usize>(globals::map_config.number_of_down_ladders),
 			static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
-			verticality_e::Down, true
+			verticality_e::Down, random_engine
 		);
 
 		object_registry<map_type>.template spawn<skull_t>(
