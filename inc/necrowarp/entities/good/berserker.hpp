@@ -181,9 +181,9 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return !is_vulnerable() || damage_amount <= 0; }
 
-		inline i8 get_damage() const noexcept { return MaximumDamage; }
+		constexpr i8 get_damage() const noexcept { return MaximumDamage; }
 
-		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+		constexpr i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
 		inline void receive_damage(i8 damage_amount) noexcept {
 			if (damage_amount <= 0) {

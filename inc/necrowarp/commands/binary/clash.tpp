@@ -48,20 +48,38 @@ namespace necrowarp {
 		}
 
 		if constexpr (!is_fodder<VictimType>::value) {
-			if (victim.can_survive(damage)) {
-				victim.receive_damage(damage);
+			if constexpr (is_cleaver<InitiatorType>::value && is_armored<VictimType>::value) {
+				if (victim.template can_survive<InitiatorType>(damage)) {
+					victim.template receive_damage<InitiatorType>(damage);
 
-				if constexpr (is_bleeder<VictimType>::value) {
-					constexpr fluid_e fluid{ fluid_type<VictimType>::type };
+					if constexpr (is_bleeder<VictimType>::value) {
+						constexpr fluid_e fluid{ fluid_type<VictimType>::type };
 
-					fluid_map<MapType>[victim.position] += fluid;
+						fluid_map<MapType>[victim.position] += fluid;
 
-					if constexpr (is_berker<InitiatorType>::value) {
-						initiator.enspatter(fluid);
+						if constexpr (is_berker<InitiatorType>::value) {
+							initiator.enspatter(fluid);
+						}
 					}
-				}
 
-				return false;
+					return false;
+				}
+			} else {
+				if (victim.can_survive(damage)) {
+					victim.receive_damage(damage);
+
+					if constexpr (is_bleeder<VictimType>::value) {
+						constexpr fluid_e fluid{ fluid_type<VictimType>::type };
+
+						fluid_map<MapType>[victim.position] += fluid;
+
+						if constexpr (is_berker<InitiatorType>::value) {
+							initiator.enspatter(fluid);
+						}
+					}
+
+					return false;
+				}
 			}
 		}
 
@@ -108,20 +126,38 @@ namespace necrowarp {
 		}
 
 		if constexpr (!is_fodder<InitiatorType>::value) {
-			if (initiator.can_survive(damage)) {
-				initiator.receive_damage(damage);
+			if constexpr (is_cleaver<VictimType>::value && is_armored<InitiatorType>::value) {
+				if (initiator.template can_survive<VictimType>(damage)) {
+					initiator.template receive_damage<VictimType>(damage);
 
-				if constexpr (is_bleeder<InitiatorType>::value) {
-					constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
+					if constexpr (is_bleeder<InitiatorType>::value) {
+						constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
 
-					fluid_map<MapType>[initiator.position] += fluid;
+						fluid_map<MapType>[initiator.position] += fluid;
 
-					if constexpr (is_berker<VictimType>::value) {
-						victim.enspatter(fluid);
+						if constexpr (is_berker<VictimType>::value) {
+							victim.enspatter(fluid);
+						}
 					}
-				}
 
-				return false;
+					return false;
+				}
+			} else {
+				if (initiator.can_survive(damage)) {
+					initiator.receive_damage(damage);
+
+					if constexpr (is_bleeder<InitiatorType>::value) {
+						constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
+
+						fluid_map<MapType>[initiator.position] += fluid;
+
+						if constexpr (is_berker<VictimType>::value) {
+							victim.enspatter(fluid);
+						}
+					}
+
+					return false;
+				}
 			}
 		}
 

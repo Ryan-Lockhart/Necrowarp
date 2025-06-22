@@ -56,6 +56,14 @@ namespace necrowarp {
 		static constexpr bool value = false;
 	};
 
+	template<> struct is_cleaver<wraith_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_vigilant<wraith_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity_command_valid<wraith_t, eviscerate_t> {
 		static constexpr bool value = true;
 	};
@@ -74,14 +82,15 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 9 };
 		static constexpr i8 MaximumDamage{ 5 };
 
-		static constexpr std::array<entity_e, 7> EntityPriorities{
+		static constexpr std::array<entity_e, 8> EntityPriorities{
 			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Thetwo,
 			entity_e::Ranger,
 			entity_e::Skulker,
 			entity_e::BattleMonk,
-			entity_e::Mercenary,
-			entity_e::Paladin,
 			entity_e::Berserker,
+			entity_e::Paladin,
 		};
 		
 		inline wraith_t(offset_t position, i8 health) noexcept : position{ position }, health{ health } {}

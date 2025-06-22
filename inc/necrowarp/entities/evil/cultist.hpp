@@ -48,6 +48,10 @@ namespace necrowarp {
 		static constexpr fluid_e type = fluid_e::BloodyIchor;
 	};
 
+	template<> struct is_vigilant<cultist_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<cultist_t>{ glyphs::Cultist };
 
 	struct cultist_t {
@@ -56,14 +60,15 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 7> EntityPriorities{
+		static constexpr std::array<entity_e, 8> EntityPriorities{
 			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Thetwo,
 			entity_e::Ranger,
 			entity_e::Skulker,
 			entity_e::BattleMonk,
-			entity_e::Mercenary,
-			entity_e::Paladin,
 			entity_e::Berserker,
+			entity_e::Paladin,
 		};
 
 		inline cultist_t(offset_t position) noexcept : position{ position } {}

@@ -9,9 +9,9 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline command_pack_t battle_monk_t::think() const noexcept {
-		if (!entity_registry<MapType>.template nearby<distance_function_e::Chebyshev, ALL_EVIL>(position) && !is_zen()) {
+		if (!entity_registry<MapType>.template nearby<distance_function_e::Chebyshev, ALL_EVIL>(position) && !object_registry<MapType>.template contains<ladder_t>(position) && !is_zen()) {
 			return command_pack_t{ command_e::Meditate, position };
-		} else {
+		} else if (entity_registry<MapType>.template nearby<distance_function_e::Chebyshev, ALL_EVIL>(position)){
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t current_position{ position + offset };
 

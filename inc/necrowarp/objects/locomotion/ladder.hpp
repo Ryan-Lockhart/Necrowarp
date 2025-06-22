@@ -99,10 +99,6 @@ namespace necrowarp {
 		}
 	}
 
-	static inline std::uniform_int_distribution<u16> shackle_dis{ static_cast<u16>(shackle_e::Calcitic), static_cast<u16>(shackle_e::Galvanic) };
-
-	template<RandomEngine Generator> static inline shackle_e random_shackle(ref<Generator> generator) noexcept { return static_cast<shackle_e>(shackle_dis(generator)); }
-
 	struct ladder_t {
 		offset_t position;
 		
@@ -110,6 +106,10 @@ namespace necrowarp {
 		shackle_e shackle;
 
 	  private:
+		static inline std::uniform_int_distribution<u16> shackle_dis{ static_cast<u16>(shackle_e::Calcitic), static_cast<u16>(shackle_e::Galvanic) };
+
+		template<RandomEngine Generator> static inline shackle_e random_shackle(ref<Generator> generator) noexcept { return static_cast<shackle_e>(shackle_dis(generator)); }
+
 		static constexpr u8 get_index(shackle_e shackle) noexcept {
 			switch (shackle) {
 				case shackle_e::Calcitic: {

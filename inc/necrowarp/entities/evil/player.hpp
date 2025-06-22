@@ -67,6 +67,14 @@ namespace necrowarp {
 		static constexpr bool value = false;
 	};
 
+	template<> struct is_cleaver<player_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_vigilant<player_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity_command_valid<player_t, random_warp_t> {
 		static constexpr bool value = true;
 	};
@@ -147,21 +155,24 @@ namespace necrowarp {
 		static constexpr i8 MaximumDamage{ 1 };
 		static constexpr i8 MinimumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 8> EntityPriorities{
+		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Skeleton,
 			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Thetwo,
 			entity_e::Ranger,
 			entity_e::Skulker,
 			entity_e::BattleMonk,
-			entity_e::Mercenary,
+			entity_e::Berserker,
 			entity_e::Paladin,
-			entity_e::Berserker
 		};
 
-		static constexpr std::array<object_e, 3> ObjectPriorities{
+		static constexpr std::array<object_e, 5> ObjectPriorities{
 			object_e::Portal,
 			object_e::Ladder,
-			object_e::Skull
+			object_e::Skull,
+			object_e::Metal,
+			object_e::Flesh,
 		};
 
 		template<discount_e Type> static constexpr i8 Cost{};

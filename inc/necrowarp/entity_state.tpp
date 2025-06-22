@@ -321,6 +321,10 @@ namespace necrowarp {
 				evil_goal_map<MapType>.add(position);
 			}
 
+			if constexpr (is_vigilant<EntityType>::value) {
+				skulker_goal_map<MapType>.add(position);
+			}
+
 			entity_goal_map<MapType, EntityType>.add(position);
 
 			newborns.add(sparseling_t<bool>{ position });
@@ -342,6 +346,10 @@ namespace necrowarp {
 			good_goal_map<MapType>.remove(position);
 		} else if constexpr (is_good_entity<EntityType>::value) {
 			evil_goal_map<MapType>.remove(position);
+		}
+
+		if constexpr (is_vigilant<EntityType>::value) {
+			skulker_goal_map<MapType>.remove(position);
 		}
 
 		entity_goal_map<MapType, EntityType>.remove(position);
@@ -462,6 +470,10 @@ namespace necrowarp {
 			evil_goal_map<MapType>.update(current, target);
 		}
 
+		if constexpr (is_vigilant<EntityType>::value) {
+			skulker_goal_map<MapType>.update(current, target);
+		}
+
 		entity_goal_map<MapType, EntityType>.update(current, target);
 
 		if (stunned.contains(current)) {
@@ -483,6 +495,10 @@ namespace necrowarp {
 			good_goal_map<MapType>.update(current, target);
 		} else if constexpr (is_good_entity<EntityType>::value) {
 			evil_goal_map<MapType>.update(current, target);
+		}
+
+		if constexpr (is_vigilant<EntityType>::value) {
+			skulker_goal_map<MapType>.update(current, target);
 		}
 
 		entity_goal_map<MapType, EntityType>.update(current, target);

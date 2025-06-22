@@ -31,6 +31,9 @@ namespace necrowarp {
 		
 		switch (entity_target) {
 			case entity_e::Adventurer:
+			case entity_e::Ranger:
+			case entity_e::Skulker:
+			case entity_e::BattleMonk:
 			case entity_e::Mercenary:
 			case entity_e::Paladin:
 			case entity_e::Berserker: {
@@ -47,7 +50,9 @@ namespace necrowarp {
 		const object_e object_target { determine_target<player_t>(object_group) };
 		
 		switch (object_target) {
-			case object_e::Skull: {
+			case object_e::Skull:
+			case object_e::Flesh:
+			case object_e::Metal: {
 				return command_e::Consume;
 			} case object_e::Ladder: {
 				return command_e::Descend;

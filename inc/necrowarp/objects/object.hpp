@@ -45,11 +45,14 @@ namespace necrowarp {
 
 	enum struct object_e : u8 {
 		None = 0,
+
 		Skull,
 		Flesh,
 		Metal,
+
 		Ladder,
 		Portal,
+
 		Arrow,
 	};
 
@@ -97,15 +100,18 @@ namespace necrowarp {
 
 	constexpr usize ObjectTypeCount{ static_cast<usize>(object_e::Arrow) + 1 };
 
-	using object_group_t = u16;
+	using object_group_t = u8;
 
 	enum struct object_group_e : object_group_t {
 		None = 0,
+
 		Skull = 1 << 0,
 		Flesh = Skull << 1,
 		Metal = Flesh << 1,
+
 		Ladder = Metal << 1,
 		Portal = Ladder << 1,
+
 		Arrow = Portal << 1,
 	};
 

@@ -13,7 +13,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	class command_parser_t {
+	struct command_parser_t {
 		enum struct command_e : u8 {
 			Unknown = 0,
 			Energy,

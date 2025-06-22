@@ -66,14 +66,15 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ static_cast<i8>(BaseMaximumHealth * HealthMultiplier) };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 7> EntityPriorities{
+		static constexpr std::array<entity_e, 8> EntityPriorities{
 			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Thetwo,
 			entity_e::Ranger,
 			entity_e::Skulker,
 			entity_e::BattleMonk,
-			entity_e::Mercenary,
-			entity_e::Paladin,
 			entity_e::Berserker,
+			entity_e::Paladin,
 		};
 		
 		inline flesh_golem_t(offset_t position, i8 health) noexcept : position{ position }, health{ static_cast<i8>(health * HealthMultiplier) } {}

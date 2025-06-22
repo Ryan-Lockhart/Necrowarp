@@ -48,13 +48,83 @@ namespace necrowarp {
 		static constexpr fluid_e type = fluid_e::Blood;
 	};
 
+	template<> struct is_armored<paladin_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_cleaver<paladin_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<paladin_t>{ glyphs::Paladin };
+
+	enum struct zeal_e : u8 {
+		Downtrodden, // ultra-low zeal; lowest damage attacks with lowest damage reduction (5%)
+
+		Vengeant, // lowest zeal; highest damage attacks with lowest damage reduction (10%)
+		Fallen, // lower zeal; high damage attacks with low damage reduction (20%)
+
+		Alacritous, // middling zeal (30%)
+
+		Righteous, // higher zeal; low damage attacks with high damage reduction (20%)
+		Zealous, // highest zeal; lowest damage attacks with highest damage reduction (10%)
+
+		Ascendant // ultra-high zeal; highest damage attacks with highest damage reduction (5%)
+	};
+
+	constexpr cstr to_string(zeal_e zeal) noexcept {
+		switch (zeal) {
+			case zeal_e::Downtrodden:{
+				return "downtrodden";
+			} case zeal_e::Vengeant:{
+				return "vengeant";
+			} case zeal_e::Fallen:{
+				return "fallen";
+			} case zeal_e::Alacritous:{
+				return "alacritous";
+			} case zeal_e::Righteous:{
+				return "righteous";
+			} case zeal_e::Zealous:{
+				return "zealous";
+			} case zeal_e::Ascendant:{
+				return "ascendant";
+			}
+		}
+	}
+
+	constexpr runes_t to_colored_string(zeal_e zeal) noexcept {
+		const cstr string{ to_string(zeal) };
+
+		switch (zeal) {
+			case zeal_e::Downtrodden:{
+				return runes_t{ string, colors::dark::Orange };
+			} case zeal_e::Vengeant:{
+				return runes_t{ string, colors::Red };
+			} case zeal_e::Fallen:{
+				return runes_t{ string, colors::Orange };
+			} case zeal_e::Alacritous:{
+				return runes_t{ string, colors::Blue };
+			} case zeal_e::Righteous:{
+				return runes_t{ string, colors::Magenta };
+			} case zeal_e::Zealous:{
+				return runes_t{ string, colors::Yellow };
+			} case zeal_e::Ascendant:{
+				return runes_t{ string, colors::Green };
+			}
+		}
+	}
 
 	struct paladin_t {
 		offset_t position;
+		const zeal_e zeal;
 
-		static constexpr i8 MaximumHealth{ 4 };
-		static constexpr i8 MaximumDamage{ 3 };
+		static constexpr i8 MinimumHealth{ 4 };
+		static constexpr i8 MiddlingHealth{ 8 };
+		static constexpr i8 MaximumHealth{ 12 };
+
+		static constexpr i8 MinimumDamage{ 2 };
+		static constexpr i8 MiddlingDamage{ 4 };
+		static constexpr i8 MaximumDamage{ 6 };
 
 		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,
@@ -68,15 +138,59 @@ namespace necrowarp {
 			entity_e::Bonespur,
 		};
 
+		static constexpr i8 MinimumDamageReceived{ 1 };
+		static constexpr i8 MiddlingDamageReceived{ 3 };
+		static constexpr i8 MaximumDamageReceived{ 5 };
+
 		static constexpr i8 DeathBoon{ 3 };
 		
 	private:
+		static inline std::uniform_int_distribution<u16> zeal_dis{ static_cast<u16>(zeal_e::Downtrodden), static_cast<u16>(zeal_e::Ascendant) };
+
+		template<RandomEngine Generator> static inline zeal_e random_zeal(ref<Generator> generator) noexcept { return static_cast<zeal_e>(zeal_dis(generator)); }
+
+		static constexpr i8 determine_health(zeal_e zeal) noexcept {
+			switch (zeal) {
+				case zeal_e::Downtrodden: {
+					return MinimumHealth;
+				} case zeal_e::Vengeant: {
+					return MinimumHealth;
+				} case zeal_e::Fallen: {
+					return MiddlingHealth - ((MiddlingHealth - MinimumHealth) / 2);
+				} case zeal_e::Alacritous: {
+					return MiddlingHealth;
+				} case zeal_e::Righteous: {
+					return MiddlingHealth + ((MaximumHealth - MiddlingHealth) / 2);
+				} case zeal_e::Zealous: {
+					return MaximumHealth;
+				} case zeal_e::Ascendant: {
+					return MaximumHealth;
+				}
+			}
+		}
+
 		i8 health;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 
 	public:
-		inline paladin_t(offset_t position) noexcept : position{ position }, health{ MaximumHealth } {}
+		inline paladin_t(offset_t position) noexcept :
+			position{ position },
+			zeal{ zeal_e::Alacritous },
+			health{ determine_health(zeal) }
+		{}
+
+		inline paladin_t(offset_t position, zeal_e zeal) noexcept :
+			position{ position },
+			zeal{ zeal },
+			health{ determine_health(zeal) }
+		{}
+
+		template<RandomEngine Engine> inline paladin_t(offset_t position, ref<Engine> engine) noexcept :
+			position{ position },
+			zeal{ random_zeal(engine) },
+			health{ determine_health(zeal) }
+		{}
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -84,24 +198,72 @@ namespace necrowarp {
 
 		constexpr i8 max_health() const noexcept { return MaximumHealth; }
 
-		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
+		inline i8 get_minimum_damage_received() const noexcept {
+			switch (zeal) {
+				case zeal_e::Ascendant: {
+					return MinimumDamageReceived;
+				} case zeal_e::Zealous: {
+					return MinimumDamageReceived;
+				} case zeal_e::Righteous: {
+					return MiddlingDamageReceived - ((MiddlingDamageReceived - MinimumDamageReceived) / 2);
+				} case zeal_e::Alacritous: {
+					return MiddlingDamageReceived;
+				} case zeal_e::Fallen: {
+					return MiddlingDamageReceived + ((MaximumDamageReceived - MiddlingDamageReceived) / 2);
+				} case zeal_e::Vengeant: {
+					return MaximumDamageReceived;
+				} case zeal_e::Downtrodden: {
+					return MaximumDamageReceived;
+				}
+			}
+		}
 
-		inline i8 get_damage() const noexcept { return MaximumDamage; }
+		inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(get_minimum_damage_received(), damage_amount); }
 
-		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+		inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage(damage_amount); }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
+		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - filter_damage(damage_amount)); }
+
+		template<CombatantEntity Attacker> constexpr i8 get_minimum_damage_received() const noexcept {
+			const i8 min_damage{ get_minimum_damage_received() };
+
+			if constexpr (is_cleaver<Attacker>::value) {
+				return max<i8>(static_cast<i8>(min_damage * 1.5), 1);
+			} else {
+				return min_damage;
+			}
+		}
+
+		template<CombatantEntity Attacker> inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(get_minimum_damage_received<Attacker>(), damage_amount); }
+
+		template<CombatantEntity Attacker> inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage<Attacker>(damage_amount); }
+
+		template<CombatantEntity Attacker> inline void receive_damage(i8 damage_amount) noexcept { set_health(health - filter_damage<Attacker>(damage_amount)); }
+
+		constexpr i8 get_damage() const noexcept { return MaximumDamage; }
+
+		constexpr i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
 		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
 		template<map_type_e MapType> inline void die() noexcept;
 
-		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::Paladin), get_health(), max_health()); }
+		inline std::string to_string() const noexcept {
+			return std::format("{} ({}) [{}/{}]",
+				necrowarp::to_string(entity_e::Paladin),
+				necrowarp::to_string(zeal),
+				get_health(),
+				max_health()
+			);
+		}
 
 		inline runes_t to_colored_string() const noexcept {
 			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Paladin) };
 
-			colored_string.concatenate(runes_t{ std::format(" [{}/{}]", get_health(), max_health()) });
+			colored_string
+				.concatenate(runes_t{" (" })
+				.concatenate(necrowarp::to_colored_string(zeal))
+				.concatenate(runes_t{ std::format(") [{}/{}]", get_health(), max_health()) });
 			
 			return colored_string;
 		}
@@ -130,11 +292,17 @@ namespace necrowarp {
 			struct offset {
 				using is_transparent = void;
 			
-				static constexpr bool operator()(cref<paladin_t> lhs, cref<paladin_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
+				static constexpr bool operator()(cref<paladin_t> lhs, cref<paladin_t> rhs) noexcept {
+					return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position);
+				}
 
-				static constexpr bool operator()(cref<paladin_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
+				static constexpr bool operator()(cref<paladin_t> lhs, offset_t rhs) noexcept {
+					return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs);
+				}
 
-				static constexpr bool operator()(offset_t lhs, cref<paladin_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
+				static constexpr bool operator()(offset_t lhs, cref<paladin_t> rhs) noexcept {
+					return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position);
+				}
 			};
 		};
 	};

@@ -30,7 +30,7 @@ namespace necrowarp {
 				continue;
 			}
 
-			return command_pack_t{ command_e::Clash, position, current_position };
+			return command_pack_t{ command_e::Lunge, position, descent_pos.value(), current_position };
 		}
 
 		cauto further_descent_pos{ evil_goal_map<MapType>.template descend<zone_region_e::Interior>(descent_pos.value(), entity_registry<MapType>) };

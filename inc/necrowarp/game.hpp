@@ -26,7 +26,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	class game_s {
+	struct game_s {
 	  public:
 		static inline int run() noexcept;
 
@@ -522,6 +522,24 @@ namespace necrowarp {
 				return true;
 			}
 
+			if constexpr (globals::OopsAllRangers) {
+				entity_registry<MapType>.template add<true>(ranger_t{ spawn_pos.value() });
+
+				return true;
+			}
+
+			if constexpr (globals::OopsAllSkulkers) {
+				entity_registry<MapType>.template add<true>(skulker_t{ spawn_pos.value() });
+
+				return true;
+			}
+
+			if constexpr (globals::OopsAllBattleMonks) {
+				entity_registry<MapType>.template add<true>(battle_monk_t{ spawn_pos.value() });
+
+				return true;
+			}
+
 			if constexpr (globals::OopsAllMercenaries) {
 				entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() });
 
@@ -583,15 +601,21 @@ namespace necrowarp {
 			} else if (game_stats.wave_size >= globals::SmallWaveSize) {
 				if (spawn_chance < 90) {
 					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 90%
+				} else if (spawn_chance < 96) {
+					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 6%
 				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 8%
+					entity_registry<MapType>.template add<true>(battle_monk_t{ spawn_pos.value() }); // 2%
 				} else if (spawn_chance < 99) {
 					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 1%
 				} else {
 					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 1%
 				}
 			} else {
-				entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() });
+				if (spawn_chance < 99) {
+					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 99%
+				} else {
+					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 1%
+				}
 			}
 
 			return true;
@@ -658,7 +682,7 @@ namespace necrowarp {
 		template<map_type_e MapType> static inline void update() noexcept;
 
 		template<map_type_e MapType> static inline void render() noexcept {
-			constexpr bool render_async{ !IsReleaseBuild };
+			constexpr bool render_async{ IsReleaseBuild };
 
 			if (window.is_closing() || (processing_turn && render_async)) {
 				return;

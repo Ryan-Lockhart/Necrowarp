@@ -13,7 +13,7 @@ namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, meditate_t>::process() const noexcept {
 		ptr<battle_monk_t> maybe_monk{ entity_registry<MapType>.template at<battle_monk_t>(source_position) };
 
-		if (maybe_monk == nullptr || maybe_monk->max_qi()) {
+		if (maybe_monk == nullptr || maybe_monk->is_zen()) {
 			return;
 		}
 		

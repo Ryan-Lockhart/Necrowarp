@@ -56,6 +56,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_vigilant<bloodhound_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity_command_valid<bloodhound_t, lunge_t> {
 		static constexpr bool value = true;
 	};
@@ -68,14 +72,15 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 7> EntityPriorities{
+		static constexpr std::array<entity_e, 8> EntityPriorities{
 			entity_e::Skulker,
-			entity_e::Ranger,
 			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Thetwo,
+			entity_e::Ranger,
+			entity_e::BattleMonk,
 			entity_e::Berserker,
 			entity_e::Paladin,
-			entity_e::Mercenary,
-			entity_e::BattleMonk,
 		};
 
 		inline bloodhound_t(offset_t position) noexcept : position{ position } {}

@@ -13,6 +13,10 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	template<> struct globals::has_unique_descriptor<battle_monk_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<battle_monk_t> {
 		static constexpr bool value = true;
 	};
@@ -41,10 +45,6 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_fodder<battle_monk_t> {
-		static constexpr bool value = true;
-	};
-
 	template<> struct is_elusive<battle_monk_t> {
 		static constexpr bool value = true;
 	};
@@ -55,6 +55,10 @@ namespace necrowarp {
 
 	template<> struct fluid_type<battle_monk_t> {
 		static constexpr fluid_e type = fluid_e::Blood;
+	};
+
+	template<> struct is_serene<battle_monk_t> {
+		static constexpr bool value = true;
 	};
 
 	template<> struct is_entity_command_valid<battle_monk_t, meditate_t> {
@@ -73,11 +77,37 @@ namespace necrowarp {
 		Zen
 	};
 
+	constexpr cstr to_string(tranquility_e tranquility) noexcept {
+		switch (tranquility) {
+			case tranquility_e::Distraught: {
+				return "distraught";
+			} case tranquility_e::Focused: {
+				return "focused";
+			} case tranquility_e::Zen: {
+				return "zen";
+			}
+		}
+	}
+
+	constexpr runes_t to_colored_string(tranquility_e tranquility) noexcept {
+		const cstr string{ to_string(tranquility) };
+
+		switch (tranquility) {
+			case tranquility_e::Distraught: {
+				return runes_t{ string, colors::dark::Red };
+			} case tranquility_e::Focused: {
+				return runes_t{ string, colors::dark::Yellow };
+			} case tranquility_e::Zen: {
+				return runes_t{ string, colors::light::Cyan };
+			}
+		}
+	}
+
 	struct battle_monk_t {
 		offset_t position;
 
 		static constexpr i8 MaximumHealth{ 1 };
-		static constexpr i8 MaximumDamage{ 2 };
+		static constexpr i8 MaximumDamage{ 1 };
 
 		static constexpr i8 StartingTranquility{ 4 };
 
@@ -137,9 +167,9 @@ namespace necrowarp {
 			}
 		}
 
-		inline bool max_qi() const noexcept { return MaximumQi; }
+		constexpr i8 max_qi() const noexcept { return MaximumQi; }
 
-		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+		inline bool can_survive(i8 damage_amount) const noexcept { return !is_distraught() || damage_amount <= 0; }
 
 		static constexpr bool HasStaticDodge{ false };
 
@@ -153,9 +183,17 @@ namespace necrowarp {
 			}, get_tranquility());
 		}
 
-		inline i8 get_damage() const noexcept { return MaximumDamage; }
+		constexpr i8 get_damage() const noexcept { return MaximumDamage; }
 
-		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+		constexpr i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
+		inline void receive_damage(i8 damage_amount) noexcept {
+			if (damage_amount <= 0) {
+				return;
+			}
+
+			destabilize();
+		}
 
 		inline void harmonize() noexcept { set_qi(qi + 1); }
 
@@ -168,6 +206,21 @@ namespace necrowarp {
 		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
 		template<map_type_e MapType> inline void die() noexcept;
+
+		inline std::string to_string() const noexcept {
+			return std::format("{} [{}/{} ({})]", necrowarp::to_string(entity_e::BattleMonk), get_qi(), max_qi(), necrowarp::to_string(get_tranquility()));
+		}
+
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::BattleMonk) };
+
+			colored_string
+				.concatenate(runes_t{ std::format(" [{}/{} (", get_qi(), max_qi()) })
+				.concatenate(necrowarp::to_colored_string(get_tranquility()))
+				.concatenate(runes_t{ ")]" });
+
+			return colored_string;
+		}
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<battle_monk_t>, position); }
 

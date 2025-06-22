@@ -8,6 +8,10 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	template<> struct globals::has_unique_descriptor<skulker_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<skulker_t> {
 		static constexpr bool value = true;
 	};
@@ -44,6 +48,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_sneaky<skulker_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_bleeder<skulker_t> {
 		static constexpr bool value = true;
 	};
@@ -60,27 +68,71 @@ namespace necrowarp {
 		Imperceptible
 	};
 
+	constexpr cstr to_string(concealment_e concealment) noexcept {
+		switch (concealment) {
+			case concealment_e::Visible: {
+				return "visible";
+			} case concealment_e::Shrouded: {
+				return "shrouded";
+			} case concealment_e::Imperceptible: {
+				return "imperceptible";
+			}
+		}
+	}
+
+	constexpr runes_t to_colored_string(concealment_e concealment) noexcept {
+		const cstr string{ to_string(concealment) };
+
+		switch (concealment) {
+			case concealment_e::Visible: {
+				return runes_t{ string, colors::White };
+			} case concealment_e::Shrouded: {
+				return runes_t{ string, colors::light::Grey };
+			} case concealment_e::Imperceptible: {
+				return runes_t{ string, colors::dark::Grey };
+			}
+		}
+	}
+
 	struct skulker_t {
 	  private:
 		static inline std::uniform_int_distribution<i16> dodge_dis{ 0, 100 };
 
 		template<concealment_e Concealment> static inline i8 dodge_threshold;
 
-		template<> inline i8 dodge_threshold<concealment_e::Visible>{ 50 };
+		template<> inline i8 dodge_threshold<concealment_e::Visible>{ 60 };
 		template<> inline i8 dodge_threshold<concealment_e::Shrouded>{ 75 };
-		template<> inline i8 dodge_threshold<concealment_e::Imperceptible>{ 100 };
+		template<> inline i8 dodge_threshold<concealment_e::Imperceptible>{ 90 };
 
 		template<RandomEngine Engine> static inline i8 get_dodge_chance(ref<Engine> engine) noexcept { return static_cast<i8>(skulker_t::dodge_dis(engine)); }
 
 	  public:
 		offset_t position;
-		concealment_e concealment;
+		mutable concealment_e concealment;
+
+		inline bool is_imperceptible() const noexcept { return concealment == concealment_e::Imperceptible; }
+
+		inline bool is_shrouded() const noexcept { return concealment == concealment_e::Shrouded; }
+
+		inline bool is_visible() const noexcept { return concealment == concealment_e::Visible; }
 
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr i8 MinimumRange{ 2 };
-		static constexpr i8 MaximumRange{ 8 };
+		static constexpr i8 MinimumRange{ 3 };
+		static constexpr i8 MaximumRange{ 7 };
+
+		static constexpr concealment_e determine_concealment(f32 distance) noexcept {
+			distance = std::round(distance);
+
+			if (distance >= MaximumRange) {
+				return concealment_e::Imperceptible;
+			} else if (distance <= MinimumRange) {
+				return concealment_e::Visible;
+			} else {
+				return concealment_e::Shrouded;
+			}
+		}
 
 		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,
@@ -94,9 +146,11 @@ namespace necrowarp {
 			entity_e::DeathKnight,
 		};
 
-		static constexpr i8 DeathBoon{ 2 };
+		static constexpr i8 DeathBoon{ 1 };
 
-		inline skulker_t(offset_t position) noexcept : position{ position } {}
+		inline skulker_t(offset_t position) noexcept : position{ position }, concealment{ concealment_e::Shrouded } {}
+
+		inline skulker_t(offset_t position, concealment_e concealment) noexcept : position{ position }, concealment{ concealment } {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
@@ -116,19 +170,62 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		template<map_type_e MapType> inline void update() noexcept;
-
 		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
 		template<map_type_e MapType> inline void die() noexcept;
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<skulker_t>, position); }
+		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(entity_e::Skulker), necrowarp::to_string(concealment)); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<skulker_t>, position, offset); }
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Skulker) };
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<skulker_t>, position + camera.get_offset()); }
+			colored_string
+				.concatenate(runes_t{ " (" })
+				.concatenate(necrowarp::to_colored_string(concealment))
+				.concatenate(runes_t{ ")" });
+			
+			return colored_string;
+		}
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<skulker_t>, position + camera.get_offset(), offset); }
+		inline void draw() const noexcept {
+			glyph_t glyph{ entity_glyphs<skulker_t> };
+
+			if (!is_visible()) {
+				glyph.color.fade(is_imperceptible() ? 0.1f : 0.5f);
+			}
+
+			game_atlas.draw(glyph, position);
+		}
+
+		inline void draw(offset_t offset) const noexcept {
+			glyph_t glyph{ entity_glyphs<skulker_t> };
+
+			if (!is_visible()) {
+				glyph.color.fade(is_imperceptible() ? 0.1f : 0.5f);
+			}
+
+			game_atlas.draw(glyph, position, offset);
+		}
+
+		inline void draw(cref<camera_t> camera) const noexcept {
+			glyph_t glyph{ entity_glyphs<skulker_t> };
+
+			if (!is_visible()) {
+				glyph.color.fade(is_imperceptible() ? 0.1f : 0.5f);
+			}
+
+			game_atlas.draw(glyph, position + camera.get_offset());
+		}
+
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept {
+			glyph_t glyph{ entity_glyphs<skulker_t> };
+
+			if (!is_visible()) {
+				glyph.color.fade(is_imperceptible() ? 0.1f : 0.5f);
+			}
+
+			game_atlas.draw(glyph, position + camera.get_offset(), offset);
+		}
 
 		constexpr operator entity_e() const noexcept { return entity_e::Skulker; }
 

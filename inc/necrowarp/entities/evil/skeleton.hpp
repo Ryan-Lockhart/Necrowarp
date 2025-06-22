@@ -61,7 +61,7 @@ namespace necrowarp {
 
 	struct skeleton_t {
 	  private:
-		static inline std::bernoulli_distribution fumble_dis{ 0.75 };
+		static inline std::bernoulli_distribution fumble_dis{ 0.25 };
 
 	  public:
 		offset_t position;
@@ -70,14 +70,15 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 7> EntityPriorities{
+		static constexpr std::array<entity_e, 8> EntityPriorities{
 			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::Thetwo,
 			entity_e::Ranger,
 			entity_e::Skulker,
 			entity_e::BattleMonk,
-			entity_e::Mercenary,
-			entity_e::Paladin,
 			entity_e::Berserker,
+			entity_e::Paladin,
 		};
 		
 		constexpr i8 armor_boon() const noexcept {

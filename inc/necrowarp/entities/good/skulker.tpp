@@ -8,11 +8,9 @@
 #include <necrowarp/scorekeeper.hpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline void skulker_t::update() noexcept {
-		
-	}
-
 	template<map_type_e MapType> inline command_pack_t skulker_t::think() const noexcept {
+		concealment = skulker_t::determine_concealment(skulker_goal_map<MapType>.at(position));
+
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 

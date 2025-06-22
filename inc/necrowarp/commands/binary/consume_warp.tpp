@@ -41,6 +41,21 @@ namespace necrowarp {
 				draw_warp_cursor = false;
 
 				return;
+			} case entity_e::Bonespur: {
+				const i8 armor_boon = entity_registry<MapType>.template at<bonespur_t>(target_position)->armor_boon();
+
+				entity_registry<MapType>.template remove<bonespur_t>(target_position);
+
+				++steam_stats::stats<steam_stat_e::BonespursConsumed, i32>;
+
+				entity_registry<MapType>.template update<EntityType>(source_position, target_position);
+
+				player.pay_cost(discount_e::TargetWarp);
+				player.bolster_armor(armor_boon + player.max_armor() / 4);
+
+				draw_warp_cursor = false;
+
+				return;
 			} default: {
 				break;
 			}

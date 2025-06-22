@@ -14,6 +14,10 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	template<> struct globals::has_unique_descriptor<ranger_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<ranger_t> {
 		static constexpr bool value = true;
 	};
@@ -110,7 +114,7 @@ namespace necrowarp {
 			entity_e::DeathKnight,
 		};
 
-		static constexpr i8 DeathBoon{ 2 };
+		static constexpr i8 DeathBoon{ 1 };
 
 		inline ranger_t(offset_t position) noexcept : position{ position } {}
 		
@@ -161,6 +165,22 @@ namespace necrowarp {
 		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
 		template<map_type_e MapType> inline void die() noexcept;
+
+		inline std::string to_string() const noexcept {
+			return std::format("{} [{}/{}]",
+				necrowarp::to_string(entity_e::Ranger),
+				get_ammunition(),
+				max_ammunition()
+			);
+		}
+
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Ranger) };
+
+			colored_string.concatenate(runes_t{ std::format(" [{}/{}]", get_ammunition(), max_ammunition()) });
+			
+			return colored_string;
+		}
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<ranger_t>, position); }
 

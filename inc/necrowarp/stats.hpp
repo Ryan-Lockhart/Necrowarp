@@ -160,22 +160,26 @@ namespace necrowarp {
 		PortalsTraversed,
 
 		SkullsConsumed,
+		FleshConsumed,
 		MetalConsumed,
-		SkeletonsConsumed,
 
 		BloodConsumed,
 		IchorConsumed,
+
+		SkeletonsConsumed,
+		BonespursConsumed,
 
 		LaddersUnshackled,
 		LaddersShackled,
 
 		AdventurersSlain,
 		MercenariesSlain,
-		PaladinsSlain,
-		BerserkersSlain,
+		ThetwoSlain,
 		RangersSlain,
 		SkulkersSlain,
 		BattleMonksSlain,
+		BerserkersSlain,
+		PaladinsSlain,
 
 		MinionKills,
 	};
@@ -201,22 +205,26 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::PortalsTraversed> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::SkullsConsumed> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::FleshConsumed> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::MetalConsumed> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::SkeletonsConsumed> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::BloodConsumed> { using type = f32; };
 	template<> struct to_stat_type<steam_stat_e::IchorConsumed> { using type = f32; };
+
+	template<> struct to_stat_type<steam_stat_e::SkeletonsConsumed> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::BonespursConsumed> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::LaddersUnshackled> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::LaddersShackled> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::AdventurersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::MercenariesSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::PaladinsSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::BerserkersSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::ThetwoSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::RangersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::SkulkersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::BattleMonksSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::BerserkersSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::PaladinsSlain> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::MinionKills> { using type = i32; };
 
@@ -252,14 +260,18 @@ namespace necrowarp {
 				return "portals_traversed";
 			} case steam_stat_e::SkullsConsumed: {
 				return "skulls_consumed";
+			} case steam_stat_e::FleshConsumed: {
+				return "flesh_consumed";
 			} case steam_stat_e::MetalConsumed: {
 				return "metal_consumed";
-			} case steam_stat_e::SkeletonsConsumed: {
-				return "skeletons_consumed";
 			} case steam_stat_e::BloodConsumed: {
 				return "blood_consumed";
 			} case steam_stat_e::IchorConsumed: {
 				return "ichor_consumed";
+			} case steam_stat_e::SkeletonsConsumed: {
+				return "skeletons_consumed";
+			} case steam_stat_e::BonespursConsumed: {
+				return "bonespurs_consumed";
 			} case steam_stat_e::LaddersUnshackled: {
 				return "ladders_unshackled";
 			} case steam_stat_e::LaddersShackled: {
@@ -268,16 +280,18 @@ namespace necrowarp {
 				return "adventurers_slain";
 			} case steam_stat_e::MercenariesSlain: {
 				return "mercenaries_slain";
-			} case steam_stat_e::PaladinsSlain: {
-				return "paladins_slain";
-			} case steam_stat_e::BerserkersSlain: {
-				return "berserkers_slain";
+			} case steam_stat_e::ThetwoSlain: {
+				return "thetwo_slain";
 			} case steam_stat_e::RangersSlain: {
 				return "rangers_slain";
 			} case steam_stat_e::SkulkersSlain: {
 				return "skulkers_slain";
 			} case steam_stat_e::BattleMonksSlain: {
 				return "battle_monks_slain";
+			} case steam_stat_e::BerserkersSlain: {
+				return "berserkers_slain";
+			} case steam_stat_e::PaladinsSlain: {
+				return "paladins_slain";
 			} case steam_stat_e::MinionKills: {
 				return "minion_kills";
 			}
@@ -314,14 +328,18 @@ namespace necrowarp {
 				return "Portals Traversed";
 			} case steam_stat_e::SkullsConsumed: {
 				return "Skulls Consumed";
+			} case steam_stat_e::FleshConsumed: {
+				return "Skulls Consumed";
 			} case steam_stat_e::MetalConsumed: {
 				return "Metal Consumed";
-			} case steam_stat_e::SkeletonsConsumed: {
-				return "Skeletons Consumed";
 			} case steam_stat_e::BloodConsumed: {
 				return "Blood Consumed";
 			} case steam_stat_e::IchorConsumed: {
 				return "Ichor Consumed";
+			} case steam_stat_e::SkeletonsConsumed: {
+				return "Skeletons Consumed";
+			} case steam_stat_e::BonespursConsumed: {
+				return "Bonespurs Consumed";
 			} case steam_stat_e::LaddersUnshackled: {
 				return "Ladders Unshackled";
 			} case steam_stat_e::LaddersShackled: {
@@ -330,16 +348,18 @@ namespace necrowarp {
 				return "Adventurers Slain";
 			} case steam_stat_e::MercenariesSlain: {
 				return "Mercenaries Slain";
-			} case steam_stat_e::PaladinsSlain: {
-				return "Paladins Slain";
-			} case steam_stat_e::BerserkersSlain: {
-				return "Berserkers Slain";
+			} case steam_stat_e::ThetwoSlain: {
+				return "Thetwo Slain";
 			} case steam_stat_e::RangersSlain: {
 				return "Rangers Slain";
 			} case steam_stat_e::SkulkersSlain: {
 				return "Skulkers Slain";
 			} case steam_stat_e::BattleMonksSlain: {
 				return "Battle Monks Slain";
+			} case steam_stat_e::BerserkersSlain: {
+				return "Berserkers Slain";
+			} case steam_stat_e::PaladinsSlain: {
+				return "Paladins Slain";
 			} case steam_stat_e::MinionKills: {
 				return "Minion Kills";
 			}

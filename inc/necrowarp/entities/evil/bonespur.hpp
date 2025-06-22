@@ -67,6 +67,8 @@ namespace necrowarp {
 			entity_e::Ranger,
 			entity_e::Adventurer,
 		};
+		
+		inline i8 armor_boon() const noexcept { return health; }
 
 		static constexpr i8 MinimumDamageReceived{ 1 };
 		

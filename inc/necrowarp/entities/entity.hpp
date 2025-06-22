@@ -16,27 +16,51 @@ namespace necrowarp {
 
 	// lesser minions
 
+	// a lesser minion that loses offensive potency as it decays
 	struct skeleton_t;
+	// a lesser minion that will drown the map in ichor
 	struct cultist_t;
+	// a lesser minion that harries enemies with its speed
 	struct bloodhound_t;
+	// a lesser minion that gains defensive potency as it galvanises
 	struct animated_suit_t;
 
 	// exalted minions
 
+	// an exalted minion that reflects all damage while taking hardly any
 	struct bonespur_t;
+	// an exalted minion that strikes (fear into) all enemies around it
 	struct wraith_t;
+	// an exalted minion that consumes enemies with less health
 	struct flesh_golem_t;
+	// an exalted minion that gains defensive potency as it galvanises
 	struct death_knight_t;
 
 	// do-gooders
 
+	// a common adversary that provides the basic catalysts
 	struct adventurer_t;
-	struct ranger_t;
-	struct skulker_t;
-	struct battle_monk_t;
+
+	// a common adversary that provides metal
 	struct mercenary_t;
-	struct paladin_t;
+
+	// a common adversary that grows off of the flesh of its comrades
+	struct thetwo_t;
+
+	// a specialist adversary that attacks from range
+	struct ranger_t;
+
+	// a specialist adversary that traverses the interstice to avoid detection
+	struct skulker_t;
+
+	// a powerful adversary that is undefeatable in decisive battle
+	struct battle_monk_t;
+
+	// a powerful adversary that is inextinguishable amidst the heat of battle
 	struct berserker_t;
+
+	// a dangerous adversary that crushes lesser minions without effort
+	struct paladin_t;
 
 	#define ALL_EVIL_NPCS \
 		skeleton_t, \
@@ -54,10 +78,11 @@ namespace necrowarp {
 
 	#define ALL_GOOD_NPCS \
 		adventurer_t, \
+		mercenary_t, \
+		thetwo_t, \
 		ranger_t, \
 		skulker_t, \
 		battle_monk_t, \
-		mercenary_t, \
 		paladin_t, \
 		berserker_t
 	
@@ -71,6 +96,13 @@ namespace necrowarp {
 	#define ALL_ANIMATED_ENTITIES \
 		animated_suit_t, \
 		death_knight_t
+	
+	#define ALL_VIGILANT_ENTITIES \
+		player_t, \
+		cultist_t, \
+		bloodhound_t, \
+		wraith_t, \
+		death_knight_t
 
 	#define ALL_ENTITIES \
 		player_t, \
@@ -78,20 +110,25 @@ namespace necrowarp {
 
 	enum struct entity_e : u8 {
 		None = 0,
+
 		Player,
+
 		Skeleton,
 		Cultist,
 		Bloodhound,
 		AnimatedSuit,
+
 		Bonespur,
 		Wraith,
 		FleshGolem,
 		DeathKnight,
+
 		Adventurer,
+		Mercenary,
+		Thetwo,
 		Ranger,
 		Skulker,
 		BattleMonk,
-		Mercenary,
 		Paladin,
 		Berserker,
 	};
@@ -120,14 +157,16 @@ namespace necrowarp {
 				return "death knight";
 			} case entity_e::Adventurer: {
 				return "adventurer";
+			} case entity_e::Mercenary: {
+				return "mercenary";
+			} case entity_e::Thetwo: {
+				return "thetwo";
 			} case entity_e::Ranger: {
 				return "ranger";
 			} case entity_e::Skulker: {
 				return "skulker";
 			} case entity_e::BattleMonk: {
 				return "battle monk";
-			} case entity_e::Mercenary: {
-				return "mercenary";
 			} case entity_e::Paladin: {
 				return "paladin";
 			} case entity_e::Berserker: {
@@ -162,14 +201,16 @@ namespace necrowarp {
 				return runes_t{ string, colors::metals::Iron };
 			} case entity_e::Adventurer: {
 				return runes_t{ string, colors::metals::Bronze };
+			} case entity_e::Mercenary: {
+				return runes_t{ string, colors::dark::Yellow };
+			} case entity_e::Thetwo: {
+				return runes_t{ string, colors::metals::Brass };
 			} case entity_e::Ranger: {
 				return runes_t{ string, colors::dark::Green };
 			} case entity_e::Skulker: {
 				return runes_t{ string, colors::dark::Grey };
 			} case entity_e::BattleMonk: {
 				return runes_t{ string, colors::light::Yellow };
-			} case entity_e::Mercenary: {
-				return runes_t{ string, colors::metals::Brass };
 			} case entity_e::Paladin: {
 				return runes_t{ string, colors::metals::Steel };
 			} case entity_e::Berserker: {
@@ -180,25 +221,30 @@ namespace necrowarp {
 
 	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Berserker) + 1 };
 
-	using entity_group_t = u16;
+	using entity_group_t = u32;
 
 	enum struct entity_group_e : entity_group_t {
 		None = 0,
+
 		Player = 1 << 0,
+
 		Skeleton = Player << 1,
 		Cultist = Skeleton << 1,
 		Bloodhound = Cultist << 1,
 		AnimatedSuit = Bloodhound << 1,
+
 		Bonespur = AnimatedSuit << 1,
 		Wraith = Bonespur << 1,
 		FleshGolem = Wraith << 1,
 		DeathKnight = FleshGolem << 1,
+
 		Adventurer = DeathKnight << 1,
-		Ranger = Adventurer << 1,
+		Mercenary = Adventurer << 1,
+		Thetwo = Mercenary << 1,
+		Ranger = Thetwo << 1,
 		Skulker = Ranger << 1,
 		BattleMonk = Skulker << 1,
-		Mercenary = BattleMonk << 1,
-		Paladin = Mercenary << 1,
+		Paladin = BattleMonk << 1,
 		Berserker = Paladin << 1,
 	};
 
@@ -360,13 +406,53 @@ namespace necrowarp {
 
 	template<typename T> concept FastEntity = NonNullEntity<T> && is_fast<T>::value;
 
+	template<typename T> struct is_serene {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_serene_v = is_serene<T>::value;
+
+	template<typename T> concept SereneEntity = NonNullEntity<T> && is_serene<T>::value;
+
 	template<typename T> struct is_berker {
 		static constexpr bool value = false;
 	};
 
-	template<typename T> constexpr bool is_berker_v = is_fodder<T>::value;
+	template<typename T> constexpr bool is_berker_v = is_berker<T>::value;
 
 	template<typename T> concept BerkerEntity = NonNullEntity<T> && is_berker<T>::value;
+
+	template<typename T> struct is_armored {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_armored_v = is_armored<T>::value;
+
+	template<typename T> concept ArmoredEntity = NonNullEntity<T> && is_armored<T>::value;
+
+	template<typename T> struct is_cleaver {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_cleaver_v = is_cleaver<T>::value;
+
+	template<typename T> concept CleaverEntity = NonNullEntity<T> && is_cleaver<T>::value;
+
+	template<typename T> struct is_sneaky {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_sneaky_v = is_sneaky<T>::value;
+
+	template<typename T> concept SneakyEntity = NonNullEntity<T> && is_sneaky<T>::value;
+
+	template<typename T> struct is_vigilant {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_vigilant_v = is_vigilant<T>::value;
+
+	template<typename T> concept VigilantEntity = NonNullEntity<T> && is_vigilant<T>::value;
 
 	template<typename T> struct is_bleeder {
 		static constexpr bool value = false;
@@ -389,6 +475,14 @@ namespace necrowarp {
 	template<typename T> constexpr bool is_concussable_v = is_concussable<T>::value;
 
 	template<typename T> concept ConcussableEntity = NonNullEntity<T> && is_concussable<T>::value;
+
+	template<typename T> struct is_updateable {
+		static constexpr bool value = true;
+	};
+
+	template<typename T> constexpr bool is_updateable_v = is_updateable<T>::value;
+
+	template<typename T> concept UpdateableEntity = NonNullEntity<T> && is_updateable<T>::value;
 
 	template<typename T, entity_e EntityType> struct is_entity_type {
 		static constexpr bool value = false;

@@ -69,7 +69,7 @@ namespace necrowarp {
 
 	struct adventurer_t {
 	  private:
-		static inline std::bernoulli_distribution fumble_dis{ 0.75 };
+		static inline std::bernoulli_distribution fumble_dis{ 0.25 };
 
 	  public:
 		offset_t position;
