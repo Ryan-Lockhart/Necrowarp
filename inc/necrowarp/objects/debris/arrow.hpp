@@ -34,7 +34,7 @@ namespace necrowarp {
 		static inline std::bernoulli_distribution snap_dis{ 0.25 };
 
 	  public:
-		template<RandomEngine Engine> static inline bool snap(ref<Engine> engine) noexcept { return snap_dis(engine); }
+		template<RandomEngine Generator> static inline bool snap(ref<Generator> generator) noexcept { return snap_dis(generator); }
 
 		offset_t position;
 

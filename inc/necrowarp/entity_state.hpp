@@ -179,6 +179,10 @@ namespace necrowarp {
 
 		inline void reset_alignment_goal_maps() noexcept;
 
+		inline void reset_ranger_goal_map() noexcept;
+
+		inline void reset_skulker_goal_map() noexcept;
+
 		inline void reset_specialist_goal_maps() noexcept;
 
 		template<NonPlayerEntity EntityType> inline void draw() const noexcept;

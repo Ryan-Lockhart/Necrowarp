@@ -27,8 +27,8 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void death_knight_t::die() noexcept {
-		object_registry<MapType>.template add<true>(metal_t{ position, state });
+		object_registry<MapType>.spill(metal_t{ position, state });
 
-		fluid_map<MapType>[position] += fluid_type<death_knight_t>::type;
+		spill_fluid<MapType>(position, fluid_type<death_knight_t>::type);
 	}
 } // namespace necrowarp

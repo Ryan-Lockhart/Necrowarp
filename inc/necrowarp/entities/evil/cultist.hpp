@@ -7,6 +7,10 @@
 
 namespace necrowarp {
 	using namespace bleak;
+
+	template<> struct globals::has_unique_descriptor<cultist_t> {
+		static constexpr bool value = true;
+	};
 	
 	template<> struct is_entity<cultist_t> {
 		static constexpr bool value = true;
@@ -36,10 +40,6 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_fodder<cultist_t> {
-		static constexpr bool value = true;
-	};
-
 	template<> struct is_bleeder<cultist_t> {
 		static constexpr bool value = true;
 	};
@@ -57,7 +57,7 @@ namespace necrowarp {
 	struct cultist_t {
 		offset_t position;
 
-		static constexpr i8 MaximumHealth{ 1 };
+		static constexpr i8 MaximumHealth{ 2 };
 		static constexpr i8 MaximumDamage{ 1 };
 
 		static constexpr std::array<entity_e, 8> EntityPriorities{
@@ -70,10 +70,24 @@ namespace necrowarp {
 			entity_e::Berserker,
 			entity_e::Paladin,
 		};
+		
+	private:
+		i8 health;
 
-		inline cultist_t(offset_t position) noexcept : position{ position } {}
+		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 
-		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+	public:
+		inline cultist_t(offset_t position) noexcept : position{ position }, health{ MaximumHealth } {}
+		
+		inline i8 get_health() const noexcept { return health; }
+
+		inline bool has_health() const noexcept { return health > 0; }
+
+		constexpr i8 max_health() const noexcept { return MaximumHealth; }
+
+		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
+
+		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
@@ -82,6 +96,16 @@ namespace necrowarp {
 		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
 		template<map_type_e MapType> inline void die() noexcept;
+
+		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::Cultist), get_health(), max_health()); }
+
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Cultist) };
+
+			colored_string.concatenate(runes_t{ std::format(" [{}/{}]", get_health(), max_health()) });
+			
+			return colored_string;
+		}
 
 		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<cultist_t>, position); }
 

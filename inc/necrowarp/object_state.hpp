@@ -50,7 +50,9 @@ namespace necrowarp {
 
 		template<NullObject ObjectType> inline bool contains(offset_t position) const noexcept;
 
-		template<bool Force = false, NonNullObject T> inline bool add(rval<T> object) noexcept;
+		template<bool Force = false, NonNullObject ObjectType> inline bool add(rval<ObjectType> object) noexcept;
+
+		template<NonNullObject ObjectType> inline bool spill(rval<ObjectType> object) noexcept;
 
 		template<NonNullObject ObjectType> inline bool remove(offset_t position) noexcept;
 

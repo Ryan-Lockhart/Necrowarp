@@ -28,9 +28,9 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void skeleton_t::die() noexcept {
 		if (state != decay_e::Rotted) {
-			object_registry<MapType>.template add<true>(skull_t{ position, decay(state) });
+			object_registry<MapType>.spill(skull_t{ position, decay(state) });
 		} else {
-			fluid_map<MapType>[position] += fluid_type<skeleton_t>::type;
+			spill_fluid<MapType>(position, fluid_type<skeleton_t>::type);
 		}
 	}
 } // namespace necrowarp

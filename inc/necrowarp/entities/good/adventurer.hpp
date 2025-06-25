@@ -95,7 +95,7 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
-		template<RandomEngine Engine> static inline bool fumble(ref<Engine> engine) noexcept { return fumble_dis(engine); }
+		template<RandomEngine Generator> static inline bool fumble(ref<Generator> generator) noexcept { return fumble_dis(generator); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

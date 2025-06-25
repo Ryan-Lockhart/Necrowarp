@@ -51,7 +51,7 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t current_position{ position + offset };
 
-				if (!entity_registry<MapType>.template contains<ALL_EVIL>(current_position)) {
+				if (entity_registry<MapType>.template empty<ALL_EVIL>(current_position)) {
 					continue;
 				}
 
@@ -89,14 +89,14 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void ranger_t::die() noexcept {
-		object_registry<MapType>.template add<true>(skull_t{ position });
-		object_registry<MapType>.template add<true>(flesh_t{ position });
+		object_registry<MapType>.spill(skull_t{ position });
+		object_registry<MapType>.spill(flesh_t{ position });
 
 		if (has_ammunition()) {
 			object_registry<MapType>.template add<true>(arrow_t{ position });
 		}
 
-		fluid_map<MapType>[position] += fluid_type<ranger_t>::type;
+		spill_fluid<MapType>(position, fluid_type<ranger_t>::type);
 
 		player.receive_death_boon<ranger_t>();
 

@@ -104,7 +104,7 @@ namespace necrowarp {
 		template<> inline i8 dodge_threshold<concealment_e::Shrouded>{ 75 };
 		template<> inline i8 dodge_threshold<concealment_e::Imperceptible>{ 90 };
 
-		template<RandomEngine Engine> static inline i8 get_dodge_chance(ref<Engine> engine) noexcept { return static_cast<i8>(skulker_t::dodge_dis(engine)); }
+		template<RandomEngine Generator> static inline i8 get_dodge_chance(ref<Generator> generator) noexcept { return static_cast<i8>(skulker_t::dodge_dis(generator)); }
 
 	  public:
 		offset_t position;
@@ -123,11 +123,11 @@ namespace necrowarp {
 		static constexpr i8 MaximumRange{ 7 };
 
 		static constexpr concealment_e determine_concealment(f32 distance) noexcept {
-			distance = std::round(distance);
+			const isize rough_distance{ static_cast<isize>(std::round(distance)) };
 
-			if (distance >= MaximumRange) {
+			if (rough_distance >= MaximumRange) {
 				return concealment_e::Imperceptible;
-			} else if (distance <= MinimumRange) {
+			} else if (rough_distance <= MinimumRange) {
 				return concealment_e::Visible;
 			} else {
 				return concealment_e::Shrouded;
@@ -156,8 +156,8 @@ namespace necrowarp {
 
 		static constexpr bool HasStaticDodge{ false };
 
-		template<RandomEngine Engine> inline bool dodge(ref<Engine> engine) noexcept {
-			const i8 chance{ skulker_t::get_dodge_chance(engine) };
+		template<RandomEngine Generator> inline bool dodge(ref<Generator> generator) noexcept {
+			const i8 chance{ skulker_t::get_dodge_chance(generator) };
 
 			return magic_enum::enum_switch([&](auto val) -> bool {
 				constexpr concealment_e cval{ val };

@@ -27,6 +27,6 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void wraith_t::die() noexcept {
-		fluid_map<MapType>[position] += fluid_type<wraith_t>::type;
+		spill_fluid<MapType>(position, fluid_type<wraith_t>::type);
 	}
 } // namespace necrowarp

@@ -151,10 +151,10 @@ namespace necrowarp {
 			idle_animation{ get_index(shackle), random_engine }
 		{ sync_animation(); }
 
-		template<RandomEngine Engine> inline ladder_t(offset_t position, verticality_e verticality, ref<Engine> engine) noexcept :
+		template<RandomEngine Generator> inline ladder_t(offset_t position, verticality_e verticality, ref<Generator> generator) noexcept :
 			position{ position },
 			verticality{ verticality },
-			shackle{ random_shackle(engine) },
+			shackle{ random_shackle(generator) },
 			idle_animation{ get_index(shackle), random_engine }
 		{ sync_animation(); }
 

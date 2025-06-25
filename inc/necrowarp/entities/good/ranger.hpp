@@ -156,7 +156,7 @@ namespace necrowarp {
 
 		static constexpr bool HasStaticDodge{ true };
 
-		template<RandomEngine Engine> static inline bool dodge(ref<Engine> engine) noexcept { return dodge_dis(engine); }
+		template<RandomEngine Generator> static inline bool dodge(ref<Generator> generator) noexcept { return dodge_dis(generator); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

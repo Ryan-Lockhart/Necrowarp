@@ -186,9 +186,9 @@ namespace necrowarp {
 			health{ determine_health(zeal) }
 		{}
 
-		template<RandomEngine Engine> inline paladin_t(offset_t position, ref<Engine> engine) noexcept :
+		template<RandomEngine Generator> inline paladin_t(offset_t position, ref<Generator> generator) noexcept :
 			position{ position },
-			zeal{ random_zeal(engine) },
+			zeal{ random_zeal(generator) },
 			health{ determine_health(zeal) }
 		{}
 		

@@ -113,6 +113,58 @@ namespace necrowarp {
 		return inserted;
 	}
 
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spill(rval<ObjectType> object) noexcept {
+		if (!game_map<MapType>.template within<zone_region_e::Interior>(object.position) || game_map<MapType>[object.position] != cell_e::Open) {
+			return false;
+		}
+
+		if (!contains<ObjectType>(object.position)) {
+			const bool inserted{ object_storage<ObjectType>.add(std::move(object)) };
+
+			if (inserted) {
+				object_goal_map<MapType, ObjectType>.add(object.position);
+			}
+
+			return inserted;
+		}
+
+		std::queue<creeper_t<offset_t::product_t>> frontier{};
+		std::unordered_set<offset_t, offset_t::std_hasher> visited{};
+
+		frontier.emplace(object.position, 0);
+		visited.insert(object.position);
+
+		while (!frontier.empty()) {
+			const creeper_t<offset_t::product_t> current{ frontier.front() };
+			frontier.pop();
+
+			visited.insert(current.position);
+
+			if (!contains<ObjectType>(current.position)) {
+				object.position = current.position;
+				const bool inserted{ object_storage<ObjectType>.add(std::move(object)) };
+
+				if (inserted) {
+					object_goal_map<MapType, ObjectType>.add(current.position);
+				}
+
+				return inserted;
+			}
+
+			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
+				const offset_t offset_position{ current.position + offset };
+
+				if (!visited.insert(offset_position).second || !game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
+					continue;
+				}
+
+				frontier.emplace(offset_position, offset_t::product_t{ current.distance + 1 });					
+			}
+		}
+
+		return false;
+	}
+
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::remove(offset_t position) noexcept {
 		if (empty(position)) {
 			return false;

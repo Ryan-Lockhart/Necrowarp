@@ -230,7 +230,11 @@ namespace necrowarp {
 			}
 
 			player.position = player_pos.value();
-			good_goal_map<MapType>.add(player_pos.value());
+
+			entity_goal_map<MapType, player_t>.add(player.position);
+
+			good_goal_map<MapType>.add(player.position);
+			skulker_goal_map<MapType>.add(player.position);
 
 			cauto portal_pos{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
@@ -362,8 +366,11 @@ namespace necrowarp {
 
 				player.position = player_pos.value();
 			}
-			
+
+			entity_goal_map<MapType, player_t>.add(player.position);
+
 			good_goal_map<MapType>.add(player.position);
+			skulker_goal_map<MapType>.add(player.position);
 
 			cauto portal_pos{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 

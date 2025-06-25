@@ -89,6 +89,49 @@ namespace necrowarp {
 
 	static inline volatile std::atomic<dimension_e> current_dimension{ dimension_e::Underworld };
 
+	template<map_type_e MapType> inline bool spill_fluid(offset_t position, fluid_e fluid) noexcept {
+		if (!game_map<MapType>.template within<zone_region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open) {
+			return false;
+		}
+
+		if (fluid_map<MapType>[position] != fluid) {
+			fluid_map<MapType>[position] += fluid;
+
+			return true;
+		}
+
+		std::queue<creeper_t<offset_t::product_t>> frontier{};
+		std::unordered_set<offset_t, offset_t::std_hasher> visited{};
+
+		frontier.emplace(position, 0);
+		visited.insert(position);
+
+		while (!frontier.empty()) {
+			const creeper_t<offset_t::product_t> current{ frontier.front() };
+			frontier.pop();
+
+			visited.insert(current.position);
+
+			if (fluid_map<MapType>[current.position] != fluid) {
+				fluid_map<MapType>[current.position] += fluid;
+
+				return true;
+			}
+
+			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
+				const offset_t offset_position{ current.position + offset };
+
+				if (!visited.insert(offset_position).second || !game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
+					continue;
+				}
+
+				frontier.emplace(offset_position, offset_t::product_t{ current.distance + 1 });					
+			}
+		}
+
+		return false;
+	}
+
 	static inline f32 fluid_pool_volume() noexcept { return globals::fluid_pool_dis(random_engine); }
 
 	static inline f32 fluid_pool_volume(i8 count) noexcept { 

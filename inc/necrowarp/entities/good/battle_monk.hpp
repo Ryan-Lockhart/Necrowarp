@@ -138,7 +138,7 @@ namespace necrowarp {
 
 		static inline std::uniform_int_distribution<i16> dodge_dis{ 0, 100 };
 
-		template<RandomEngine Engine> static inline i8 get_dodge_chance(ref<Engine> engine) noexcept { return static_cast<i8>(battle_monk_t::dodge_dis(engine)); }
+		template<RandomEngine Generator> static inline i8 get_dodge_chance(ref<Generator> generator) noexcept { return static_cast<i8>(battle_monk_t::dodge_dis(generator)); }
 		
 		i8 qi;
 
@@ -173,8 +173,8 @@ namespace necrowarp {
 
 		static constexpr bool HasStaticDodge{ false };
 
-		template<RandomEngine Engine> inline bool dodge(ref<Engine> engine) noexcept {
-			const i8 chance{ battle_monk_t::get_dodge_chance(engine) };
+		template<RandomEngine Generator> inline bool dodge(ref<Generator> generator) noexcept {
+			const i8 chance{ battle_monk_t::get_dodge_chance(generator) };
 
 			return magic_enum::enum_switch([&](auto val) -> bool {
 				constexpr tranquility_e cval{ val };
