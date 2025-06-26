@@ -60,6 +60,8 @@ namespace necrowarp {
 		entity_goal_map<map_type, player_t>.add(player.position);
 
 		good_goal_map<map_type>.add(player.position);
+
+		ranger_goal_map<map_type>.add(player.position);
 		skulker_goal_map<map_type>.add(player.position);
 
 		cauto portal_pos{ game_map<map_type>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };

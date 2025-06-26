@@ -242,6 +242,8 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance) noexcept {
+		object_goal_map<MapType, ObjectType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ object_goal_map<MapType, ObjectType>.template find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
 

@@ -16,10 +16,10 @@ namespace necrowarp {
 		}
 
 		if (!arrow_t::snap(random_engine)) {
-			object_registry<MapType>.add(arrow_t{ position });
+			object_registry<MapType>.spill(arrow_t{ position });
 		}
 
-		knocked = false;
+		nocked = false;
 	}
 
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, loose_t>::process() const noexcept {

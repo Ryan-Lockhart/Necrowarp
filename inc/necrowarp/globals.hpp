@@ -361,12 +361,12 @@ namespace necrowarp {
 		static inline std::uniform_real_distribution<f32> fluid_pool_dis{ FluidPoolMinimumVolume, FluidPoolMaximumVolume };
 
 		constexpr bool OopsAllAdventurers{ false };
-		constexpr bool OopsAllRangers{ false };
-		constexpr bool OopsAllSkulkers{ true };
-		constexpr bool OopsAllBattleMonks{ false };
 		constexpr bool OopsAllMercenaries{ false };
-		constexpr bool OopsAllPaladins{ false };
+		constexpr bool OopsAllRangers{ false };
+		constexpr bool OopsAllSkulkers{ false };
+		constexpr bool OopsAllBattleMonks{ false };
 		constexpr bool OopsAllBerserkers{ false };
+		constexpr bool OopsAllPaladins{ false };
 
 		template<typename T> struct has_unique_descriptor {
 			static constexpr bool value = false;

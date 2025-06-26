@@ -14,7 +14,7 @@ namespace necrowarp {
 	struct random_warp_t;
 	struct necromantic_ascendance_t;
 	struct eviscerate_t;
-	struct knock_t;
+	struct nock_t;
 	struct meditate_t;
 
 	struct move_t;
@@ -41,7 +41,7 @@ namespace necrowarp {
 		random_warp_t, \
 		necromantic_ascendance_t, \
 		eviscerate_t, \
-		knock_t, \
+		nock_t, \
 		meditate_t
 
 	#define ALL_BINARY_COMMANDS \
@@ -96,7 +96,7 @@ namespace necrowarp {
 		eviscerate_t
 	
 	#define ALL_RANGER_COMMANDS \
-		knock_t, \
+		nock_t, \
 		retrieve_t, \
 		loose_t
 	
@@ -121,7 +121,7 @@ namespace necrowarp {
 		RandomWarp,
 		NecromanticAscendance,
 		Eviscerate,
-		Knock,
+		Nock,
 		Meditate,
 
 		Move,
@@ -170,8 +170,8 @@ namespace necrowarp {
 				return "necromantic ascendance";
 			} case command_e::Eviscerate: {
 				return "eviscerate";
-			} case command_e::Knock: {
-				return "knock";
+			} case command_e::Nock: {
+				return "nock";
 			} case command_e::Meditate: {
 				return "meditate";
 			} case command_e::Move: {

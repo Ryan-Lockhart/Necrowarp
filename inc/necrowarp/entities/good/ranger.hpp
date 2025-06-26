@@ -5,7 +5,7 @@
 
 #include <necrowarp/entity_command.hpp>
 
-#include <necrowarp/commands/unary/knock.hpp>
+#include <necrowarp/commands/unary/nock.hpp>
 #include <necrowarp/commands/binary/retrieve.hpp>
 #include <necrowarp/commands/binary/loose.hpp>
 
@@ -62,7 +62,7 @@ namespace necrowarp {
 		static constexpr fluid_e type = fluid_e::Blood;
 	};
 
-	template<> struct is_entity_command_valid<ranger_t, knock_t> {
+	template<> struct is_entity_command_valid<ranger_t, nock_t> {
 		static constexpr bool value = true;
 	};
 
@@ -81,7 +81,7 @@ namespace necrowarp {
 		static inline std::bernoulli_distribution dodge_dis{ 0.4 };
 
 		i8 ammunition;
-		bool knocked;
+		bool nocked;
 
 		inline void set_ammunition(i8 value) noexcept { ammunition = clamp<i8>(value, 0, max_ammunition()); }
 
@@ -93,11 +93,16 @@ namespace necrowarp {
 
 		static constexpr i8 QuiverCapacity{ 8 };
 
-		static constexpr i8 MinimumRange{ 2 };
+		static constexpr i8 MinimumRange{ 4 };
+		static constexpr i8 OptimalRange{ 6 };
 		static constexpr i8 MaximumRange{ 8 };
 
 		static inline bool in_range(offset_t origin, offset_t target) noexcept {
-			return between<f32>(offset_t::distance<f32>(origin, target), ranger_t::MinimumRange, ranger_t::MaximumRange);
+			return between<offset_t::product_t>(offset_t::distance<distance_function_e::Chebyshev>(origin, target), ranger_t::MinimumRange, ranger_t::MaximumRange);
+		}
+
+		static inline bool in_range(offset_t::product_t distance) noexcept {
+			return between<offset_t::product_t>(distance, ranger_t::MinimumRange, ranger_t::MaximumRange);
 		}
 
 		inline bool in_range(offset_t target) const noexcept { return in_range(position, target); }
@@ -116,7 +121,7 @@ namespace necrowarp {
 
 		static constexpr i8 DeathBoon{ 1 };
 
-		inline ranger_t(offset_t position) noexcept : position{ position } {}
+		inline ranger_t(offset_t position) noexcept : ammunition{ QuiverCapacity }, nocked{ false }, position{ position } {}
 		
 		inline i8 get_ammunition() const noexcept { return ammunition; }
 
@@ -126,16 +131,16 @@ namespace necrowarp {
 
 		constexpr i8 max_ammunition() const noexcept { return QuiverCapacity; }
 
-		inline bool can_knock() const noexcept { return !knocked && has_ammunition(); }
+		inline bool can_nock() const noexcept { return !nocked && has_ammunition(); }
 		
-		inline void knock() noexcept {
-			if (!can_knock()) {
+		inline void nock() noexcept {
+			if (!can_nock()) {
 				return;
 			}
 
 			set_ammunition(ammunition - 1);
 
-			knocked = true;
+			nocked = true;
 		}
 
 		inline bool can_retrieve() const noexcept { return !ammunition_full(); }
@@ -148,7 +153,7 @@ namespace necrowarp {
 			set_ammunition(ammunition + 1);
 		}
 
-		inline bool can_loose() const noexcept { return knocked; }
+		inline bool can_loose() const noexcept { return nocked; }
 		
 		template<map_type_e MapType> inline void loose(offset_t position) noexcept;
 
@@ -167,17 +172,21 @@ namespace necrowarp {
 		template<map_type_e MapType> inline void die() noexcept;
 
 		inline std::string to_string() const noexcept {
-			return std::format("{} [{}/{}]",
+			return std::format("{} [{}/{} ({})]",
 				necrowarp::to_string(entity_e::Ranger),
 				get_ammunition(),
-				max_ammunition()
+				max_ammunition(),
+				nocked ? "nocked" : "unnocked"
 			);
 		}
 
 		inline runes_t to_colored_string() const noexcept {
 			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Ranger) };
 
-			colored_string.concatenate(runes_t{ std::format(" [{}/{}]", get_ammunition(), max_ammunition()) });
+			colored_string
+				.concatenate(runes_t{ std::format(" [{}/{} (", get_ammunition(), max_ammunition()) })
+				.concatenate(nocked ? runes_t{ "nocked", colors::dark::Green } : runes_t{ "unnocked", colors::dark::Yellow })
+				.concatenate(runes_t{ ")]" });
 			
 			return colored_string;
 		}

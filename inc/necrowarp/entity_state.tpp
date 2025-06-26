@@ -81,7 +81,7 @@ namespace necrowarp {
 	template<map_type_e MapType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> good_goal_map{};
 	template<map_type_e MapType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> evil_goal_map{};
 
-	template<map_type_e MapType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> ranger_goal_map{};
+	template<map_type_e MapType> static inline field_t<offset_t::product_t, distance_function_e::Chebyshev, globals::MapSize<MapType>, globals::BorderSize<MapType>> ranger_goal_map{};
 	template<map_type_e MapType> static inline field_t<offset_t::product_t, distance_function_e::Chebyshev, globals::MapSize<MapType>, globals::BorderSize<MapType>> skulker_goal_map{};
 
 	template<map_type_e MapType, NonNullEntity EntityType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> entity_goal_map{};
@@ -162,7 +162,7 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<Distance>) {
 				const offset_t offset_position{ current.position + offset };
 
-				if (!visited.insert(offset_position).second || !contains<EntityType>(offset_position)) {
+				if (!game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open ||!visited.insert(offset_position).second) {
 					continue;
 				}
 
@@ -199,7 +199,7 @@ namespace necrowarp {
 			const creeper_t<offset_t::float_t> current{ frontier.front() };
 			frontier.pop();
 
-			if (contains<EntityTypes...>(current.position)) {
+			if ((contains<EntityTypes>(current.position) || ...)) {
 				return current.position;
 			}
 
@@ -208,7 +208,7 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<Distance>) {
 				const offset_t offset_position{ current.position + offset };
 
-				if (!visited.insert(offset_position).second || !contains<EntityTypes...>(offset_position)) {
+				if (!game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open ||!visited.insert(offset_position).second) {
 					continue;
 				}
 
@@ -317,6 +317,7 @@ namespace necrowarp {
 		if (inserted) {
 			if constexpr (is_evil_entity<EntityType>::value) {
 				good_goal_map<MapType>.add(position);
+				ranger_goal_map<MapType>.add(position);
 			} else if constexpr (is_good_entity<EntityType>::value) {
 				evil_goal_map<MapType>.add(position);
 			}
@@ -344,6 +345,7 @@ namespace necrowarp {
 		
 		if constexpr (is_evil_entity<EntityType>::value) {
 			good_goal_map<MapType>.remove(position);
+			ranger_goal_map<MapType>.remove(position);
 		} else if constexpr (is_good_entity<EntityType>::value) {
 			evil_goal_map<MapType>.remove(position);
 		}
@@ -466,6 +468,7 @@ namespace necrowarp {
 
 		if constexpr (is_evil_entity<EntityType>::value) {
 			good_goal_map<MapType>.update(current, target);
+			ranger_goal_map<MapType>.update(current, target);
 		} else if constexpr (is_good_entity<EntityType>::value) {
 			evil_goal_map<MapType>.update(current, target);
 		}
@@ -492,6 +495,7 @@ namespace necrowarp {
 
 		if constexpr (is_evil_entity<EntityType>::value) {
 			good_goal_map<MapType>.update(current, target);
+			ranger_goal_map<MapType>.update(current, target);
 		} else if constexpr (is_good_entity<EntityType>::value) {
 			evil_goal_map<MapType>.update(current, target);
 		}
@@ -684,7 +688,8 @@ namespace necrowarp {
 
 		update<ALL_NON_PLAYER>();
 
-		recalculate_goal_map();
+		entity_registry<MapType>.recalculate_goal_map();
+		object_registry<MapType>.recalculate_goal_map();
 
 		steam_stats::store();
 	}
@@ -763,7 +768,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_ranger_goal_map() noexcept {
-		ranger_goal_map<MapType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		ranger_goal_map<MapType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_skulker_goal_map() noexcept {
@@ -807,11 +812,11 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_ranger_goal_map() noexcept {
-		ranger_goal_map<MapType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		ranger_goal_map<MapType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_skulker_goal_map() noexcept {
-		skulker_goal_map<MapType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		skulker_goal_map<MapType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_specialist_goal_maps() noexcept {
@@ -880,7 +885,7 @@ namespace necrowarp {
 
 		if constexpr (entity_enum != entity_e::Ranger) {
 			switch (command_enum) {
-				case command_e::Knock:
+				case command_e::Nock:
 				case command_e::Retrieve:
 				case command_e::Loose: {
 					return false;
