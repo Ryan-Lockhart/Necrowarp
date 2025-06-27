@@ -1,5 +1,6 @@
 #pragma once
 
+#include "necrowarp/game_state.hpp"
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
@@ -35,9 +36,6 @@ namespace necrowarp {
 	};
 
 	template<> struct phase_state_t<phase_e::Playing> {
-		template<map_type_e MapType> static inline entity_registry_t<MapType> entity_buffer{};
-		template<map_type_e MapType> static inline object_registry_t<MapType> object_buffer{};
-
 		static inline status_bar_t<3> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
 			std::array<status_t, 3>{
@@ -123,13 +121,13 @@ namespace necrowarp {
 		static constexpr extent_t MinimapPixelSize{ 2, 2 };
 
 		template<map_type_e MapType> static inline minimap_t<MapType, MinimapPixelSize> minimap{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() * globals::cell_size<grid_type_e::UI> }, cardinal_e::Southeast },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w * globals::cell_size<grid_type_e::UI>.w, 1 }, cardinal_e::Northeast },
 			embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 			extent_t{ 1, 1 }
 		};
 
 		template<map_type_e MapType> static inline label_t tooltip_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() - offset_t{ globals::MapSize<MapType>.w / 4, 0 } }, cardinal_e::Southeast },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() }, cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{},
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -358,8 +356,12 @@ namespace necrowarp {
 				favor_hidden_label.text = runes_t{ " Favor " };
 			}
 
-			const bool has_entity{ entity_buffer<MapType>.contains(grid_cursor<MapType>.current_position) };
-			const bool has_object{ object_buffer<MapType>.contains(grid_cursor<MapType>.current_position) };
+			if (processing_turn) {
+				return;
+			}
+
+			const bool has_entity{ entity_registry<MapType>.contains(grid_cursor<MapType>.current_position) };
+			const bool has_object{ object_registry<MapType>.contains(grid_cursor<MapType>.current_position) };
 
 			const fluid_e fluid{ fluid_map<MapType>[grid_cursor<MapType>.current_position] };
 
@@ -369,7 +371,7 @@ namespace necrowarp {
 				tooltip_label<MapType>.text = runes_t{};
 
 				if (has_entity) {
-					tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(entity_buffer<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
+					tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(entity_registry<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
 				}
 
 				if (has_entity && has_object) {
@@ -377,7 +379,7 @@ namespace necrowarp {
 				}
 
 				if (has_object) {
-					tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(object_buffer<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
+					tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(object_registry<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
 				}
 
 				if ((has_entity || has_object) && fluid != fluid_e::None) {
@@ -389,13 +391,13 @@ namespace necrowarp {
 				}
 			}
 
-			if (entity_buffer<MapType>.template contains<player_t>(grid_cursor<MapType>.current_position)) {
+			if (entity_registry<MapType>.template contains<player_t>(grid_cursor<MapType>.current_position)) {
 				grid_cursor<MapType>.color = colors::Magenta;
-			} else if (entity_buffer<MapType>.template contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
+			} else if (entity_registry<MapType>.template contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
 				grid_cursor<MapType>.color = colors::Green;
-			} else if (entity_buffer<MapType>.template contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
+			} else if (entity_registry<MapType>.template contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
 				grid_cursor<MapType>.color = colors::Red;
-			} else if (object_buffer<MapType>.contains(grid_cursor<MapType>.current_position)) {
+			} else if (object_registry<MapType>.contains(grid_cursor<MapType>.current_position)) {
 				grid_cursor<MapType>.color = colors::Blue;
 			} else {
 				grid_cursor<MapType>.color = colors::metals::Gold;
@@ -434,14 +436,12 @@ namespace necrowarp {
 				favor_expanded_label.draw(renderer) :
 				favor_hidden_label.draw(renderer);
 
-			if (!draw_cursor && show_tooltip) {
-				tooltip_label<MapType>.draw(renderer);
-			}
-
 			if (!processing_turn) {
+				if (!draw_cursor && show_tooltip) {
+					tooltip_label<MapType>.draw(renderer);
+				}
+
 				minimap<MapType>.draw(renderer);
-			} else if (!buffers_locked) {
-				minimap<MapType>.draw(renderer, entity_buffer<MapType>, object_buffer<MapType>);
 			}
 		}
 	};

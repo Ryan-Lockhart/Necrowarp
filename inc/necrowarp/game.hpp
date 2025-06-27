@@ -271,9 +271,6 @@ namespace necrowarp {
 			entity_registry<MapType>.recalculate_goal_map();
 			object_registry<MapType>.recalculate_goal_map();
 
-			phase_state_t<phase_e::Playing>::entity_buffer<MapType> = entity_registry<MapType>;
-			phase_state_t<phase_e::Playing>::object_buffer<MapType> = object_registry<MapType>;
-
 			phase.transition(phase_e::Playing);
 
 			game_running = true;
@@ -424,13 +421,6 @@ namespace necrowarp {
 			entity_registry<MapType>.recalculate_goal_map();
 			object_registry<MapType>.recalculate_goal_map();
 
-			buffers_locked = true;
-
-			phase_state_t<phase_e::Playing>::entity_buffer<MapType> = entity_registry<MapType>;
-			phase_state_t<phase_e::Playing>::object_buffer<MapType> = object_registry<MapType>;
-
-			buffers_locked = false;
-
 			phase.transition(phase_e::Playing);
 
 			game_running = true;
@@ -525,8 +515,6 @@ namespace necrowarp {
 				return false;
 			}
 
-			const u8 spawn_chance{ static_cast<u8>(globals::spawn_dis(random_engine)) };
-
 			if constexpr (globals::OopsAllAdventurers) {
 				entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() });
 
@@ -574,6 +562,8 @@ namespace necrowarp {
 
 				return true;
 			}
+
+			const u8 spawn_chance{ static_cast<u8>(globals::spawn_dis(random_engine)) };
 
 			if (game_stats.wave_size >= globals::MassiveWaveSize) {
 				if (spawn_chance < 12) {
@@ -701,13 +691,6 @@ namespace necrowarp {
 			
 			entity_registry<MapType>.update();
 
-			buffers_locked = true;
-
-			phase_state_t<phase_e::Playing>::entity_buffer<MapType> = entity_registry<MapType>;
-			phase_state_t<phase_e::Playing>::object_buffer<MapType> = object_registry<MapType>;
-
-			buffers_locked = false;
-
 			player_acted = false;
 			processing_turn = false;
 		}
@@ -727,9 +710,7 @@ namespace necrowarp {
 		template<map_type_e MapType> static inline void update() noexcept;
 
 		template<map_type_e MapType> static inline void render() noexcept {
-			constexpr bool render_async{ IsReleaseBuild };
-
-			if (window.is_closing() || (processing_turn && render_async)) {
+			if (window.is_closing()) {
 				return;
 			}
 
@@ -757,9 +738,6 @@ namespace necrowarp {
 				if (!processing_turn) {
 					object_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
 					entity_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
-				} else if (!buffers_locked) {
-					phase_state_t<phase_e::Playing>::object_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
-					phase_state_t<phase_e::Playing>::entity_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
 				} else {
 					return;
 				}

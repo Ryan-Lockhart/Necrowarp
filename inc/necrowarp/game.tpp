@@ -34,13 +34,6 @@ namespace necrowarp {
 				entity_registry<map_type>.recalculate_goal_map();
 				object_registry<map_type>.recalculate_goal_map();
 
-				buffers_locked = true;
-
-				phase_state_t<phase_e::Playing>::entity_buffer<map_type> = entity_registry<map_type>;
-				phase_state_t<phase_e::Playing>::object_buffer<map_type> = object_registry<map_type>;
-
-				buffers_locked = false;
-
 				phase.transition(phase_e::Playing);
 
 				game_running = true;

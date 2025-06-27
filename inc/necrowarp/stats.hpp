@@ -146,6 +146,8 @@ namespace necrowarp {
 
 	enum struct steam_stat_e : u8 {
 		PlayerKills = 0,
+		MinionKills,
+
 		PlayerDeaths,
 
 		RandomWarps,
@@ -184,13 +186,13 @@ namespace necrowarp {
 		BattleMonksSlain,
 		BerserkersSlain,
 		PaladinsSlain,
-
-		MinionKills,
 	};
 
 	template<steam_stat_e Stat> struct to_stat_type;
 
 	template<> struct to_stat_type<steam_stat_e::PlayerKills> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::MinionKills> { using type = i32; };
+
 	template<> struct to_stat_type<steam_stat_e::PlayerDeaths> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::RandomWarps> { using type = i32; };
@@ -230,14 +232,14 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::BerserkersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::PaladinsSlain> { using type = i32; };
 
-	template<> struct to_stat_type<steam_stat_e::MinionKills> { using type = i32; };
-
 	template<steam_stat_e StatType> using to_stat_type_t = typename to_stat_type<StatType>::type;
 
 	static inline constexpr cstr to_api_str(steam_stat_e type) noexcept {
 		switch (type) {
 			case steam_stat_e::PlayerKills: {
 				return "player_kills";
+			} case steam_stat_e::MinionKills: {
+				return "minion_kills";
 			} case steam_stat_e::PlayerDeaths: {
 				return "player_deaths";
 			} case steam_stat_e::RandomWarps: {
@@ -296,8 +298,6 @@ namespace necrowarp {
 				return "berserkers_slain";
 			} case steam_stat_e::PaladinsSlain: {
 				return "paladins_slain";
-			} case steam_stat_e::MinionKills: {
-				return "minion_kills";
 			}
 		}
 	}
@@ -306,6 +306,8 @@ namespace necrowarp {
 		switch (type) {
 			case steam_stat_e::PlayerKills: {
 				return "Player Kills";
+			} case steam_stat_e::MinionKills: {
+				return "Minion Kills";
 			} case steam_stat_e::PlayerDeaths: {
 				return "Player Deaths";
 			} case steam_stat_e::RandomWarps: {
@@ -333,7 +335,7 @@ namespace necrowarp {
 			} case steam_stat_e::SkullsConsumed: {
 				return "Skulls Consumed";
 			} case steam_stat_e::FleshConsumed: {
-				return "Skulls Consumed";
+				return "Flesh Consumed";
 			} case steam_stat_e::MetalConsumed: {
 				return "Metal Consumed";
 			} case steam_stat_e::BloodConsumed: {
@@ -364,8 +366,6 @@ namespace necrowarp {
 				return "Berserkers Slain";
 			} case steam_stat_e::PaladinsSlain: {
 				return "Paladins Slain";
-			} case steam_stat_e::MinionKills: {
-				return "Minion Kills";
 			}
 		}
 	}

@@ -82,9 +82,8 @@ namespace necrowarp {
 	static inline mixer_s mixer{};
 	
 	static inline volatile std::atomic<bool> player_acted{ false };
-	static inline volatile std::atomic<bool> processing_turn{ false };
-	static inline volatile std::atomic<bool> buffers_locked{ false };
 
+	static inline volatile std::atomic<bool> processing_turn{ false };
 	static inline volatile std::atomic<bool> game_running{ false };
 
 	static inline volatile std::atomic<dimension_e> current_dimension{ dimension_e::Underworld };
