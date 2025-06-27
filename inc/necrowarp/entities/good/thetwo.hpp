@@ -5,6 +5,11 @@
 
 #include <necrowarp/entity_command.hpp>
 
+#include <necrowarp/commands/unary/metabolise.hpp>
+#include <necrowarp/commands/unary/shed.hpp>
+
+#include <necrowarp/commands/binary/devour.hpp>
+
 #include <necrowarp/commands/ternary/lunge.hpp>
 
 #include <necrowarp/game_state.hpp>
@@ -32,7 +37,7 @@ namespace necrowarp {
 		static constexpr entity_group_e value = entity_group_e::Thetwo;
 	};
 
-	template<> struct is_evil_entity<thetwo_t> {
+	template<> struct is_good_entity<thetwo_t> {
 		static constexpr bool value = true;
 	};
 
@@ -52,36 +57,137 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_cleaver<thetwo_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_devourable<thetwo_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<thetwo_t, metabolise_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<thetwo_t, shed_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<thetwo_t, devour_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity_command_valid<thetwo_t, lunge_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<thetwo_t>{ glyphs::Bloodhound };
+	template<> inline constexpr glyph_t entity_glyphs<thetwo_t>{ glyphs::MatureThetwo };
+
+	enum struct bulk_e : u8 {
+		Neonatal,
+		Young,
+		Mature,
+		Gross,
+		Titanic
+	};
+
+	static constexpr bulk_e grow(bulk_e bulk) noexcept {
+		switch (bulk) {
+			case bulk_e::Neonatal: {
+				return bulk_e::Young;
+			} case bulk_e::Young: {
+				return bulk_e::Mature;
+			} case bulk_e::Mature: {
+				return bulk_e::Gross;
+			} case bulk_e::Gross: {
+				return bulk_e::Titanic;
+			} case bulk_e::Titanic: {
+				return bulk_e::Titanic;
+			}
+		}
+	}
+
+	constexpr cstr to_string(bulk_e bulk) noexcept {
+		switch (bulk) {
+			case bulk_e::Neonatal: {
+				return "neonatal";
+			} case bulk_e::Young: {
+				return "young";
+			} case bulk_e::Mature: {
+				return "mature";
+			} case bulk_e::Gross: {
+				return "gross";
+			} case bulk_e::Titanic: {
+				return "titanic";
+			}
+		}
+	}
+
+	constexpr runes_t to_colored_string(bulk_e bulk) noexcept {
+		const cstr string{ to_string(bulk) };
+
+		switch (bulk) {
+			case bulk_e::Neonatal: {
+				return runes_t{ string, colors::White };
+			} case bulk_e::Young: {
+				return runes_t{ string, colors::White };
+			} case bulk_e::Mature: {
+				return runes_t{ string, colors::White };
+			} case bulk_e::Gross: {
+				return runes_t{ string, colors::White };
+			} case bulk_e::Titanic: {
+				return runes_t{ string, colors::White };
+			}
+		}
+	}
 
 	struct thetwo_t {
 		offset_t position;
 
-		static constexpr i8 MaximumHealth{ 16 };
-		static constexpr i8 MaximumDamage{ 2 };
+		static constexpr i8 MaximumHealth{ 64 };
+		static constexpr i8 MinimumHealth{ 4 };
+
+		static_assert(MaximumHealth >> 4 == MinimumHealth, "minimum health should be precisely four powers below maximum health!");
+
+		static constexpr i8 MaximumProtein{ 32 };
+		static constexpr i8 MinimumProtein{ 2 };
+
+		static_assert(MaximumProtein >> 4 == MinimumProtein, "minimum protein should be precisely four powers below maximum protein!");
+
+		static constexpr i8 MinimumDamage{ 1 };
+		static constexpr i8 MaximumDamage{ 8 };
 
 		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,
+		 // entity_e::Rake,
 			entity_e::FleshGolem,
 			entity_e::Bloodhound,
-			entity_e::Cultist,
+		 // entity_e::Hemogheist,
 			entity_e::Skeleton,
 			entity_e::Bonespur,
-			entity_e::AnimatedSuit,
+			entity_e::Cultist,
 			entity_e::Wraith,
+			entity_e::AnimatedSuit,
 			entity_e::DeathKnight,
 		};
 
+		static constexpr std::array<object_e, 1> ObjectPriorities{ object_e::Flesh };
+
 		static constexpr i8 DeathBoon{ 2 };
+
+		static constexpr i8 MoltingTurns{ 8 };
+		static constexpr i8 MinimumMoltAmount{ 2 };
 		
 	private:
 		i8 health;
+		i8 protein;
+
+		bulk_e bulk;
+
+		bool molting;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
+		inline void set_protein(i8 value) noexcept { protein = clamp<i8>(value, 0, max_protein()); }
 
 	public:
 		inline thetwo_t(offset_t position) noexcept : position{ position }, health{ MaximumHealth } {}
@@ -90,27 +196,131 @@ namespace necrowarp {
 
 		inline bool has_health() const noexcept { return health > 0; }
 
-		constexpr i8 max_health() const noexcept { return MaximumHealth; }
+		constexpr i8 max_health() const noexcept {
+			switch (bulk) {
+				case bulk_e::Neonatal: {
+					return MaximumHealth >> 4;
+				} case bulk_e::Young: {
+					return MaximumHealth >> 3;
+				} case bulk_e::Mature: {
+					return MaximumHealth >> 2;
+				} case bulk_e::Gross: {
+					return MaximumHealth >> 1;
+				} case bulk_e::Titanic: {
+					return MaximumHealth;
+				}
+			}
+		}
+		
+		inline i8 get_protein() const noexcept { return protein; }
+
+		inline bool has_protein() const noexcept { return protein > 0; }
+
+		constexpr i8 max_protein() const noexcept {
+			switch (bulk) {
+				case bulk_e::Neonatal: {
+					return MaximumProtein >> 4;
+				} case bulk_e::Young: {
+					return MaximumProtein >> 3;
+				} case bulk_e::Mature: {
+					return MaximumProtein >> 2;
+				} case bulk_e::Gross: {
+					return MaximumProtein >> 1;
+				} case bulk_e::Titanic: {
+					return MaximumProtein;
+				}
+			}
+		}
+
+		inline bool is_molting() const noexcept { return molting; }
+
+		inline bool can_molt() const noexcept { return !is_molting() && protein >= max_protein() && bulk != bulk_e::Titanic; }
+
+		inline i8 molt_amount() const noexcept { return max<i8>(max_protein() / MoltingTurns, MinimumMoltAmount); }
+
+		inline void molt() noexcept {
+			if (!molting) {
+				if (can_molt()) {
+					molting = true;
+				} else {
+					return;
+				}
+			}
+
+			set_protein(protein - molt_amount());
+
+			if (!has_protein()) {
+				molting = false;
+
+				bulk = grow(bulk);
+
+				set_health(max_health());
+			}
+		}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
-		inline i8 get_damage() const noexcept { return MaximumDamage; }
+		inline i8 get_damage() const noexcept {
+			switch (bulk) {
+				case bulk_e::Neonatal: {
+					return MinimumDamage;
+				} case bulk_e::Young: {
+					return MinimumDamage + 1;
+				} case bulk_e::Mature: {
+					return MaximumDamage / 2;
+				} case bulk_e::Gross: {
+					return MaximumDamage - 2;
+				} case bulk_e::Titanic: {
+					return MaximumDamage;
+				}
+			}
+		}
 
-		inline i8 get_damage(entity_e target) const noexcept { return target != entity_e::DeathKnight ? MaximumDamage : 0; }
+		inline i8 get_damage(entity_e target) const noexcept { return get_damage(); }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
+		inline void receive_damage(i8 damage_amount) noexcept {
+			if (protein >= damage_amount) {
+				set_protein(protein - damage_amount);
+
+				return;
+			} else if (has_protein()) {
+				damage_amount -= protein;
+
+				set_protein(0);
+			}
+
+			set_health(health - damage_amount);
+		}
+
+		inline u8 get_droppings() const noexcept { return static_cast<u8>(bulk) + 1; }
 
 		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
 		template<map_type_e MapType> inline void die() noexcept;
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<thetwo_t>, position); }
+		inline glyph_t current_glyph() const noexcept {
+			switch (bulk) {
+				case bulk_e::Neonatal: {
+					return glyphs::NeonatalThetwo;
+				} case bulk_e::Young: {
+					return glyphs::YoungThetwo;
+				} case bulk_e::Mature: {
+					return glyphs::MatureThetwo;
+				} case bulk_e::Gross: {
+					return glyphs::GrossThetwo;
+				} case bulk_e::Titanic: {
+					return glyphs::TitanicThetwo;
+				}
+			}
+		}
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<thetwo_t>, position, offset); }
+		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<thetwo_t>, position + camera.get_offset()); }
+		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<thetwo_t>, position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
+
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Thetwo; }
 

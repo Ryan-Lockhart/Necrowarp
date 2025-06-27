@@ -58,6 +58,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_devourable<ranger_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct fluid_type<ranger_t> {
 		static constexpr fluid_e type = fluid_e::Blood;
 	};

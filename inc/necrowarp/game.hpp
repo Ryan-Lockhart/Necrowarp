@@ -539,6 +539,12 @@ namespace necrowarp {
 				return true;
 			}
 
+			if constexpr (globals::OopsAllThetwo) {
+				entity_registry<MapType>.template add<true>(thetwo_t{ spawn_pos.value() });
+
+				return true;
+			}
+
 			if constexpr (globals::OopsAllRangers) {
 				entity_registry<MapType>.template add<true>(ranger_t{ spawn_pos.value() });
 
@@ -564,7 +570,7 @@ namespace necrowarp {
 			}
 
 			if constexpr (globals::OopsAllPaladins) {
-				entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() });
+				entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value(), random_engine });
 
 				return true;
 			}

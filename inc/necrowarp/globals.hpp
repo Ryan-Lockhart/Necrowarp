@@ -2,6 +2,8 @@
 
 #include <bleak.hpp>
 
+#include <necrowarp/constants.hpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -362,6 +364,7 @@ namespace necrowarp {
 
 		constexpr bool OopsAllAdventurers{ false };
 		constexpr bool OopsAllMercenaries{ false };
+		constexpr bool OopsAllThetwo{ false };
 		constexpr bool OopsAllRangers{ false };
 		constexpr bool OopsAllSkulkers{ false };
 		constexpr bool OopsAllBattleMonks{ false };

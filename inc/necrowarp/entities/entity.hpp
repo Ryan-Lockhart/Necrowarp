@@ -468,6 +468,14 @@ namespace necrowarp {
 
 	template<typename T> constexpr fluid_e fluid_type_v = fluid_type<T>::type;
 
+	template<typename T> struct is_devourable {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_devourable_v = is_devourable<T>::value;
+
+	template<typename T> concept DevourableEntity = NonNullEntity<T> && is_devourable<T>::value;
+
 	template<typename T> struct is_concussable {
 		static constexpr bool value = true;
 	};

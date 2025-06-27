@@ -14,6 +14,8 @@ namespace necrowarp {
 	struct random_warp_t;
 	struct necromantic_ascendance_t;
 	struct eviscerate_t;
+	struct metabolise_t;
+	struct shed_t;
 	struct nock_t;
 	struct meditate_t;
 
@@ -22,6 +24,7 @@ namespace necrowarp {
 	struct plunge_t;
 	struct consume_t;
 	struct clash_t;
+	struct devour_t;
 	struct loose_t;
 	struct retrieve_t;
 	struct batter_t;
@@ -41,6 +44,8 @@ namespace necrowarp {
 		random_warp_t, \
 		necromantic_ascendance_t, \
 		eviscerate_t, \
+		metabolise_t, \
+		shed_t, \
 		nock_t, \
 		meditate_t
 
@@ -50,6 +55,7 @@ namespace necrowarp {
 		plunge_t, \
 		consume_t, \
 		clash_t, \
+		devour_t, \
 		loose_t, \
 		retreive_t, \
 		batter_t, \
@@ -95,6 +101,15 @@ namespace necrowarp {
 	#define ALL_WRAITH_COMMANDS \
 		eviscerate_t
 	
+	#define ALL_FLESH_GOLEM_COMMANDS \
+		metabolise_t, \
+		devour_t
+	
+	#define ALL_THETWO_COMMANDS \
+		metabolise_t, \
+		shed_t, \
+		devour_t
+	
 	#define ALL_RANGER_COMMANDS \
 		nock_t, \
 		retrieve_t, \
@@ -108,6 +123,8 @@ namespace necrowarp {
 		ALL_BASIC_COMMANDS, \
 		ALL_BLOODHOUND_COMMANDS, \
 		ALL_WRAITH_COMMANDS, \
+		ALL_FLESH_GOLEM_COMMANDS, \
+		ALL_THETWO_COMMANDS, \
 		ALL_RANGER_COMMANDS, \
 		ALL_BATTLE_MONK_COMMANDS
 	
@@ -123,12 +140,15 @@ namespace necrowarp {
 		Eviscerate,
 		Nock,
 		Meditate,
+		Metabolise,
+		Shed,
 
 		Move,
 		Descend,
 		Plunge,
 		Consume,
 		Clash,
+		Devour,
 		Retrieve,
 		Loose,
 		Batter,
@@ -174,6 +194,10 @@ namespace necrowarp {
 				return "nock";
 			} case command_e::Meditate: {
 				return "meditate";
+			} case command_e::Metabolise: {
+				return "metabolise";
+			} case command_e::Shed: {
+				return "shed";
 			} case command_e::Move: {
 				return "move";
 			} case command_e::Descend: {
@@ -184,6 +208,8 @@ namespace necrowarp {
 				return "consume";
 			} case command_e::Clash: {
 				return "clash";
+			} case command_e::Devour: {
+				return "devour";
 			} case command_e::Retrieve: {
 				return "retrieve";
 			} case command_e::Loose: {

@@ -90,24 +90,85 @@ namespace necrowarp {
 	static inline volatile std::atomic<dimension_e> current_dimension{ dimension_e::Underworld };
 
 	template<map_type_e MapType> inline bool spill_fluid(offset_t position, fluid_e fluid) noexcept {
-		if (!game_map<MapType>.template within<zone_region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open) {
+		if (fluid == fluid_e::None || !game_map<MapType>.template within<zone_region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open) {
 			return false;
 		}
 
 		if (fluid_map<MapType>[position] != fluid) {
 			fluid_map<MapType>[position] += fluid;
+			fluid %= static_cast<fluid_e>(fluid_map<MapType>[position]);
 
-			return true;
+			if (fluid == fluid_e::None) {
+				return true;
+			}
 		}
 
-		std::queue<creeper_t<offset_t::product_t>> frontier{};
+		std::priority_queue<creeper_t<f32>, std::vector<creeper_t<f32>>, creeper_t<f32>::less> frontier{};
 		std::unordered_set<offset_t, offset_t::std_hasher> visited{};
 
 		frontier.emplace(position, 0);
 		visited.insert(position);
 
 		while (!frontier.empty()) {
-			const creeper_t<offset_t::product_t> current{ frontier.front() };
+			if (fluid == fluid_e::None) {
+				return true;
+			}
+
+			const creeper_t<f32> current{ frontier.top() };
+			frontier.pop();
+
+			visited.insert(current.position);
+
+			if (fluid_map<MapType>[current.position] != fluid) {
+				fluid_map<MapType>[current.position] += fluid;
+				fluid %= static_cast<fluid_e>(fluid_map<MapType>[current.position]);
+
+				if (fluid == fluid_e::None) {
+					return true;
+				}
+			}
+
+			for (cauto creeper : neighbourhood_creepers<distance_function_e::Octile, f32>) {
+				const offset_t offset_position{ current.position + creeper.position };
+
+				if (!visited.insert(offset_position).second || !game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
+					continue;
+				}
+
+				frontier.emplace(offset_position, f32{ current.distance + creeper.distance });					
+			}
+		}
+
+		return false;
+	}
+
+	template<map_type_e MapType> inline bool spill_fluid(offset_t position, fluid_e fluid, usize amount) noexcept {
+		if (fluid == fluid_e::None || !game_map<MapType>.template within<zone_region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open || amount <= 0) {
+			return false;
+		}
+
+		if (fluid_map<MapType>[position] != fluid) {
+			fluid_map<MapType>[position] += fluid;
+
+			if (amount <= 1) {
+				return true;
+			} else {
+				--amount;
+			}
+		}
+
+		std::priority_queue<creeper_t<f32>, std::vector<creeper_t<f32>>, creeper_t<f32>::less> frontier{};
+		std::unordered_set<offset_t, offset_t::std_hasher> visited{};
+
+		frontier.emplace(position, 0);
+		visited.insert(position);
+
+		while (!frontier.empty()) {
+			if (fluid == fluid_e::None) {
+				return true;
+			}
+
+			const creeper_t<f32> current{ frontier.top() };
 			frontier.pop();
 
 			visited.insert(current.position);
@@ -115,17 +176,21 @@ namespace necrowarp {
 			if (fluid_map<MapType>[current.position] != fluid) {
 				fluid_map<MapType>[current.position] += fluid;
 
-				return true;
+				if (amount <= 1) {
+					return true;
+				} else {
+					--amount;
+				}
 			}
 
-			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
-				const offset_t offset_position{ current.position + offset };
+			for (cauto creeper : neighbourhood_creepers<distance_function_e::Octile, f32>) {
+				const offset_t offset_position{ current.position + creeper.position };
 
 				if (!visited.insert(offset_position).second || !game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
 					continue;
 				}
 
-				frontier.emplace(offset_position, offset_t::product_t{ current.distance + 1 });					
+				frontier.emplace(offset_position, f32{ current.distance + creeper.distance });					
 			}
 		}
 

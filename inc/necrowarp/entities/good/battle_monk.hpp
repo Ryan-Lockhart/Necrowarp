@@ -61,6 +61,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_devourable<battle_monk_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity_command_valid<battle_monk_t, meditate_t> {
 		static constexpr bool value = true;
 	};

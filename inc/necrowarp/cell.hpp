@@ -28,6 +28,10 @@ namespace necrowarp {
 
 	constexpr ref<fluid_e> operator-=(ref<fluid_e> lhs, fluid_e rhs) noexcept { return lhs = lhs - rhs, lhs; }
 
+	constexpr fluid_e operator%(fluid_e lhs, fluid_e rhs) noexcept { return static_cast<fluid_e>(static_cast<u8>(lhs) ^ static_cast<u8>(rhs)); }
+
+	constexpr ref<fluid_e> operator%=(ref<fluid_e> lhs, fluid_e rhs) noexcept { return lhs = lhs % rhs, lhs; }
+
 	constexpr cstr to_string(fluid_e fluid) noexcept {
 		switch (fluid) {
 			case fluid_e::None: {

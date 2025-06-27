@@ -24,6 +24,8 @@ namespace necrowarp {
 
 	template<NonNullEntity EntityType> inline void player_t::receive_death_boon() noexcept { set_energy(energy + EntityType::DeathBoon); }
 
+	template<NonNullEntity EntityType> inline void player_t::receive_death_boon(u8 multiplier) noexcept { set_energy(energy + EntityType::DeathBoon * multiplier); }
+
 	template<map_type_e MapType> inline command_e player_t::clash_or_consume(offset_t position) const noexcept {
 		const entity_group_e entity_group{ entity_registry<MapType>.at(position) };
 

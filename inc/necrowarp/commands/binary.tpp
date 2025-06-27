@@ -6,6 +6,7 @@
 #include <necrowarp/commands/binary/plunge.tpp>
 #include <necrowarp/commands/binary/consume.tpp>
 #include <necrowarp/commands/binary/clash.tpp>
+#include <necrowarp/commands/binary/devour.tpp>
 #include <necrowarp/commands/binary/retrieve.tpp>
 #include <necrowarp/commands/binary/loose.tpp>
 #include <necrowarp/commands/binary/batter.tpp>

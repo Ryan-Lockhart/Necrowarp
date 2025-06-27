@@ -56,6 +56,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_devourable<paladin_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<paladin_t>{ glyphs::Paladin };
 
 	enum struct zeal_e : u8 {
@@ -143,7 +147,7 @@ namespace necrowarp {
 		static constexpr i8 MaximumDamageReceived{ 5 };
 
 		static constexpr i8 DeathBoon{ 3 };
-		
+
 	private:
 		static inline std::uniform_int_distribution<u16> zeal_dis{ static_cast<u16>(zeal_e::Downtrodden), static_cast<u16>(zeal_e::Ascendant) };
 
@@ -151,9 +155,8 @@ namespace necrowarp {
 
 		static constexpr i8 determine_health(zeal_e zeal) noexcept {
 			switch (zeal) {
-				case zeal_e::Downtrodden: {
-					return MinimumHealth;
-				} case zeal_e::Vengeant: {
+				case zeal_e::Downtrodden:
+				case zeal_e::Vengeant: {
 					return MinimumHealth;
 				} case zeal_e::Fallen: {
 					return MiddlingHealth - ((MiddlingHealth - MinimumHealth) / 2);
@@ -161,9 +164,8 @@ namespace necrowarp {
 					return MiddlingHealth;
 				} case zeal_e::Righteous: {
 					return MiddlingHealth + ((MaximumHealth - MiddlingHealth) / 2);
-				} case zeal_e::Zealous: {
-					return MaximumHealth;
-				} case zeal_e::Ascendant: {
+				} case zeal_e::Zealous:
+				  case zeal_e::Ascendant: {
 					return MaximumHealth;
 				}
 			}
@@ -196,13 +198,28 @@ namespace necrowarp {
 
 		inline bool has_health() const noexcept { return health > 0; }
 
-		constexpr i8 max_health() const noexcept { return MaximumHealth; }
+		constexpr i8 max_health() const noexcept {
+			switch (zeal) {
+				case zeal_e::Downtrodden:
+				case zeal_e::Vengeant: {
+					return MinimumHealth;
+				} case zeal_e::Fallen: {
+					return MiddlingHealth - ((MiddlingHealth - MinimumHealth) / 2);
+				} case zeal_e::Alacritous: {
+					return MiddlingHealth;
+				} case zeal_e::Righteous: {
+					return MiddlingHealth + ((MaximumHealth - MiddlingHealth) / 2);
+				} case zeal_e::Zealous:
+				  case zeal_e::Ascendant: {
+					return MaximumHealth;
+				}
+			}
+		}
 
 		inline i8 get_minimum_damage_received() const noexcept {
 			switch (zeal) {
-				case zeal_e::Ascendant: {
-					return MinimumDamageReceived;
-				} case zeal_e::Zealous: {
+				case zeal_e::Ascendant:
+				case zeal_e::Zealous: {
 					return MinimumDamageReceived;
 				} case zeal_e::Righteous: {
 					return MiddlingDamageReceived - ((MiddlingDamageReceived - MinimumDamageReceived) / 2);
@@ -211,8 +228,7 @@ namespace necrowarp {
 				} case zeal_e::Fallen: {
 					return MiddlingDamageReceived + ((MaximumDamageReceived - MiddlingDamageReceived) / 2);
 				} case zeal_e::Vengeant: {
-					return MaximumDamageReceived;
-				} case zeal_e::Downtrodden: {
+				  case zeal_e::Downtrodden:
 					return MaximumDamageReceived;
 				}
 			}
@@ -240,9 +256,25 @@ namespace necrowarp {
 
 		template<CombatantEntity Attacker> inline void receive_damage(i8 damage_amount) noexcept { set_health(health - filter_damage<Attacker>(damage_amount)); }
 
-		constexpr i8 get_damage() const noexcept { return MaximumDamage; }
+		inline i8 get_damage() const noexcept {
+			switch (zeal) {
+				case zeal_e::Ascendant:
+				case zeal_e::Zealous: {
+					return MinimumDamage;
+				} case zeal_e::Righteous: {
+					return MiddlingDamage - ((MiddlingDamage - MinimumDamage) / 2);
+				} case zeal_e::Alacritous: {
+					return MiddlingDamage;
+				} case zeal_e::Fallen: {
+					return MiddlingDamage + ((MaximumDamage - MiddlingDamage) / 2);
+				} case zeal_e::Vengeant:
+				  case zeal_e::Downtrodden: {
+					return MaximumDamage;
+				}
+			}
+		}
 
-		constexpr i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+		inline i8 get_damage(entity_e target) const noexcept { return get_damage(); }
 
 		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 

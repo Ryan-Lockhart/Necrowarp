@@ -60,6 +60,10 @@ namespace necrowarp {
 		static constexpr fluid_e type = fluid_e::Blood;
 	};
 
+	template<> struct is_devourable<skulker_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<skulker_t>{ glyphs::Skulker };
 
 	enum struct concealment_e : u8 {

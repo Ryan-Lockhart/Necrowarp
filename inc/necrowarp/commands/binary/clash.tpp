@@ -55,7 +55,7 @@ namespace necrowarp {
 					if constexpr (is_bleeder<VictimType>::value) {
 						constexpr fluid_e fluid{ fluid_type<VictimType>::type };
 
-						fluid_map<MapType>[victim.position] += fluid;
+						spill_fluid<MapType>(victim.position, fluid);
 
 						if constexpr (is_berker<InitiatorType>::value) {
 							initiator.enspatter(fluid);
@@ -71,7 +71,7 @@ namespace necrowarp {
 					if constexpr (is_bleeder<VictimType>::value) {
 						constexpr fluid_e fluid{ fluid_type<VictimType>::type };
 
-						fluid_map<MapType>[victim.position] += fluid;
+						spill_fluid<MapType>(victim.position, fluid);
 
 						if constexpr (is_berker<InitiatorType>::value) {
 							initiator.enspatter(fluid);
@@ -133,7 +133,7 @@ namespace necrowarp {
 					if constexpr (is_bleeder<InitiatorType>::value) {
 						constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
 
-						fluid_map<MapType>[initiator.position] += fluid;
+						spill_fluid<MapType>(initiator.position, fluid);
 
 						if constexpr (is_berker<VictimType>::value) {
 							victim.enspatter(fluid);
@@ -149,7 +149,7 @@ namespace necrowarp {
 					if constexpr (is_bleeder<InitiatorType>::value) {
 						constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
 
-						fluid_map<MapType>[initiator.position] += fluid;
+						spill_fluid<MapType>(initiator.position, fluid);
 
 						if constexpr (is_berker<VictimType>::value) {
 							victim.enspatter(fluid);
@@ -210,7 +210,7 @@ namespace necrowarp {
 				if constexpr (is_bleeder<InitiatorType>::value) {
 					constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
 
-					fluid_map<MapType>[initiator.position] += fluid;
+					spill_fluid<MapType>(initiator.position, fluid);
 
 					if constexpr (is_berker<InitiatorType>::value) {
 						initiator.enspatter(fluid);

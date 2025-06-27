@@ -101,6 +101,30 @@ namespace necrowarp {
 			}
 		}
 
+		inline void add(entity_e slain, i8 multiplier) noexcept {
+			switch (slain) {
+				case entity_e::Adventurer: {
+					add(10 * multiplier);
+					break;
+				} case entity_e::Ranger:
+				  case entity_e::Skulker: {
+					add(25 * multiplier);
+					break;
+				} case entity_e::Mercenary:
+				  case entity_e::Thetwo:
+				  case entity_e::BattleMonk:
+				  case entity_e::Berserker: {
+					add(50 * multiplier);
+					break;
+				} case entity_e::Paladin: {
+					add(100 * multiplier);
+					break;
+				} default: {
+					break;
+				}
+			}
+		}
+
 		inline void reset() noexcept { score = 0.0f; }
 	} static inline scorekeeper;
 } // namespace necrowarp

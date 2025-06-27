@@ -75,6 +75,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_devourable<player_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity_command_valid<player_t, random_warp_t> {
 		static constexpr bool value = true;
 	};
@@ -385,6 +389,8 @@ namespace necrowarp {
 		template<NonNullEntity EntityType> inline void receive_damage() noexcept;
 
 		template<NonNullEntity EntityType> inline void receive_death_boon() noexcept;
+
+		template<NonNullEntity EntityType> inline void receive_death_boon(u8 multiplier) noexcept;
 
 		template<map_type_e MapType> inline command_e clash_or_consume(offset_t position) const noexcept;
 

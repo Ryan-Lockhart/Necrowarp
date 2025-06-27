@@ -54,7 +54,7 @@ namespace necrowarp {
 						if constexpr (is_bleeder<entity_type>::value) {
 							constexpr fluid_e fluid{ fluid_type<entity_type>::type };
 
-							fluid_map<MapType>[maybe_target->position] += fluid;
+							spill_fluid<MapType>(maybe_target->position, fluid);
 						}
 
 						return;

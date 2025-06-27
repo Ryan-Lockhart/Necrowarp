@@ -54,6 +54,8 @@ namespace necrowarp {
 
 		template<NonNullObject ObjectType> inline bool spill(rval<ObjectType> object) noexcept;
 
+		template<NonNullObject ObjectType> inline bool spill(rval<ObjectType> object, usize amount) noexcept;
+
 		template<NonNullObject ObjectType> inline bool remove(offset_t position) noexcept;
 
 		template<NonNullObject ObjectType> inline void clear() noexcept;

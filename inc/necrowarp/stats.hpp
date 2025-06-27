@@ -14,7 +14,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	static inline std::mt19937 random_engine{};
+	constexpr usize default_seed{ 1337 };
+
+	constexpr bool use_fixed_seed{ false };
+
+	static inline std::mt19937_64 random_engine{ use_fixed_seed ? default_seed : std::random_device{}() };
 
 	struct api_state_s {
 		static constexpr u32 app_id{ 3631430 };

@@ -43,15 +43,17 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void thetwo_t::die() noexcept {
-		object_registry<MapType>.spill(skull_t{ position });
-		object_registry<MapType>.spill(flesh_t{ position });
+		const u8 droppings{ get_droppings() };
 
-		spill_fluid<MapType>(position, fluid_type<thetwo_t>::type);
+		object_registry<MapType>.spill(skull_t{ position }, droppings);
+		object_registry<MapType>.spill(flesh_t{ position }, droppings);
 
-		player.receive_death_boon<thetwo_t>();
+		spill_fluid<MapType>(position, fluid_type<thetwo_t>::type, droppings);
+
+		player.receive_death_boon<thetwo_t>(droppings);
 
 		++steam_stats::stats<steam_stat_e::ThetwoSlain, i32>;
 
-		scorekeeper.add(entity_e::Thetwo);
+		scorekeeper.add(entity_e::Thetwo, droppings);
 	}
 } // namespace necrowarp

@@ -52,6 +52,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_devourable<mercenary_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<mercenary_t>{ glyphs::Mercenary };
 
 	struct mercenary_t {
