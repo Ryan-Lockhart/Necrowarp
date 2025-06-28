@@ -17,7 +17,7 @@ namespace necrowarp {
 	using namespace bleak;
 
 #if defined(BLEAK_RELEASE)
-	static inline subsystem_s subsystem{ api_state.app_id };
+	static inline subsystem_s subsystem{};
 #elif defined(BLEAK_DEBUG)
 	static inline subsystem_s subsystem{};
 #endif

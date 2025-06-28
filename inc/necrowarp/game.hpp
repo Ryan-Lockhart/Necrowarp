@@ -715,7 +715,6 @@ namespace necrowarp {
 
 		template<map_type_e MapType> static inline void render() noexcept {
 			if (window.is_closing()) {
-			if (window.is_closing()) {
 				return;
 			}
 

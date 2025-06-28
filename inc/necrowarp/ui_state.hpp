@@ -68,8 +68,6 @@ namespace necrowarp {
 			draw_cursor = any_hovered<MapType>() || !(((globals::map_bounds<MapType>() + extent_t{ 1, 1 }) * globals::cell_size<grid_type_e::Game>) + globals::grid_origin<grid_type_e::Game>()).within(ui_cursor.get_position());
 
 			ui_cursor.update();
-			
-			grid_cursor<MapType>.update(camera<MapType>);
 
 			magic_enum::enum_switch([&](auto val) -> void {
 				constexpr phase_e cval{ val };
@@ -82,6 +80,8 @@ namespace necrowarp {
 					}				
 				}
 			}, phase.current_phase);
+
+			grid_cursor<MapType>.update(camera<MapType>);
 
 			grid_cursor<MapType>.color.set_alpha(sine_wave.current_value());
 			warp_cursor<MapType>.color.set_alpha(sine_wave.current_value());

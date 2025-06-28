@@ -114,7 +114,7 @@ namespace necrowarp {
 			} case discount_e::Repulse: {
 				return 16;
 			} case discount_e::Annihilate: {
-				return 12;
+				return 13;
 			} case discount_e::CalciticInvocation: {
 				return 4;
 			} case discount_e::SpectralInvocation: {

@@ -5,7 +5,7 @@
 namespace necrowarp {
 	template<> struct phase_state_t<phase_e::NewGame> {
 		static inline label_t header_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h / 4 }, cardinal_e::Central },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h / 5 }, cardinal_e::Central },
 			embedded_label_t{
 				runes_t{ "Please select your desired patron...", colors::White },
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },

@@ -40,19 +40,19 @@ namespace necrowarp {
 					const color_t pixel_color{
 						[&]() -> color_t {
 							if (entity_registry<MapType>.dependent contains<player_t>(pos)) {
-								return colors::Magenta;
+								return colors::light::Magenta;
 							} else if (entity_registry<MapType>.dependent contains<ALL_EVIL_NPCS>(pos)) {
-								return colors::Green;
+								return colors::light::Green;
 							} else if (entity_registry<MapType>.dependent contains<ALL_GOOD_NPCS>(pos)) {
-								return colors::Red;
+								return colors::light::Red;
 							} else if (object_registry<MapType>.contains(pos)) {
-								return colors::Blue;
+								return colors::light::Blue;
 							} else if (game_map<MapType>[pos].solid) {
 								return colors::Charcoal;
 							} else if (!fluid_map<MapType>[pos].contains(fluid_e::None)) {
 								return fluid_color(static_cast<fluid_e>(fluid_map<MapType>[pos]));
 							} else {
-								return colors::Marble;
+								return colors::dark::Marble;
 							}
 						}()
 					};

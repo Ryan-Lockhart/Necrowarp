@@ -1,6 +1,5 @@
 #pragma once
 
-#include "necrowarp/game_state.hpp"
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
@@ -439,16 +438,15 @@ namespace necrowarp {
 				favor_expanded_label.draw(renderer) :
 				favor_hidden_label.draw(renderer);
 
-			if (!processing_turn) {
-				if (!draw_cursor && show_tooltip) {
-					tooltip_label<MapType>.draw(renderer);
-				}
+			if (!draw_cursor && show_tooltip) {
+				tooltip_label<MapType>.draw(renderer);
+			}
 
 			registry_access.lock();
 
 			minimap<MapType>.draw(renderer);
 
 			registry_access.unlock();
-		}
+		};
 	};
 } // namespace necrowarp
