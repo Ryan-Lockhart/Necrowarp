@@ -227,4 +227,6 @@ namespace necrowarp {
 			};
 		};
 	};
+
+	static_assert(sizeof(ranger_t) <= NPCSizeCap, "ranger entity size must not exceed npc size cap!");
 } // namespace necrowarp

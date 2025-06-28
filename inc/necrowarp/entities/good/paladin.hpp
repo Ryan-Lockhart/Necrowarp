@@ -338,4 +338,6 @@ namespace necrowarp {
 			};
 		};
 	};
+
+	static_assert(sizeof(paladin_t) <= NPCSizeCap, "paladin entity size must not exceed npc size cap!");
 } // namespace necrowarp

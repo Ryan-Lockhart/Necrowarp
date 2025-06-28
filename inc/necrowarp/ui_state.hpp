@@ -44,7 +44,7 @@ namespace necrowarp {
 
 			if constexpr (cval != phase_e::None) {
 				if constexpr (cval == phase_e::Playing) {
-					return phase_state_t<cval>::template any_hovered<MapType>();
+					return phase_state_t<cval>::dependent any_hovered<MapType>();
 				} else {
 					return phase_state_t<cval>::any_hovered();
 				}				
@@ -76,12 +76,15 @@ namespace necrowarp {
 
 				if constexpr (cval != phase_e::None) {
 					if constexpr (cval == phase_e::Playing) {
-						phase_state_t<cval>::template update<MapType>(button_e::Left);
+						phase_state_t<cval>::dependent update<MapType>(button_e::Left);
 					} else {
 						phase_state_t<cval>::update(button_e::Left);
 					}				
 				}
 			}, phase.current_phase);
+
+			grid_cursor<MapType>.color.set_alpha(sine_wave.current_value());
+			warp_cursor<MapType>.color.set_alpha(sine_wave.current_value());
 		}
 
 		template<map_type_e MapType> inline void render() const noexcept {
@@ -104,7 +107,7 @@ namespace necrowarp {
 
 				if constexpr (cval != phase_e::None) {
 					if constexpr (cval == phase_e::Playing) {
-						phase_state_t<cval>::template draw<MapType>(renderer);
+						phase_state_t<cval>::dependent draw<MapType>(renderer);
 					} else {
 						phase_state_t<cval>::draw(renderer);
 					}

@@ -12,7 +12,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calcitic_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::CalciticInvocation) || object_registry<MapType>.template empty<skull_t>())) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::CalciticInvocation) || object_registry<MapType>.dependent empty<skull_t>())) {
 			player_turn_invalidated = true;
 
 			return;
@@ -27,35 +27,35 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
-			const bool has_skull{ object_registry<MapType>.template contains<skull_t>(position) };
+			const bool has_skull{ object_registry<MapType>.dependent contains<skull_t>(position) };
 
 			if (!has_skull && player.bypass_invocations_enabled()) {
 				++accumulated_skulls;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.template add<true>(skeleton_t{ position });
+					entity_registry<MapType>.dependent add<true>(skeleton_t{ position });
 				}
 			}
 
-			const bool has_ladder{ object_registry<MapType>.template contains<ladder_t>(position) };
+			const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-			if (!game_map<MapType>.template within<zone_region_e::Interior>(position) || (!has_skull && (eligible_ladder != nullptr || !has_ladder))) {
+			if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || (!has_skull && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
 			if (has_skull) {
-				const decay_e state{ object_registry<MapType>.template at<skull_t>(position)->state };
+				const decay_e state{ object_registry<MapType>.dependent at<skull_t>(position)->state };
 
-				object_registry<MapType>.template remove<skull_t>(position);
+				object_registry<MapType>.dependent remove<skull_t>(position);
 				++accumulated_skulls;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.template add<true>(skeleton_t{ position, state });
+					entity_registry<MapType>.dependent add<true>(skeleton_t{ position, state });
 				}
 			}
 
 			if (eligible_ladder == nullptr && has_ladder) {
-				eligible_ladder = object_registry<MapType>.template at<ladder_t>(position);
+				eligible_ladder = object_registry<MapType>.dependent at<ladder_t>(position);
 
 				switch (eligible_ladder->shackle) {
 					case shackle_e::Unshackled: {
@@ -73,19 +73,19 @@ namespace necrowarp {
 			}
 		}
 
-		if (object_registry<MapType>.template contains<skull_t>(target_position)) {
+		if (object_registry<MapType>.dependent contains<skull_t>(target_position)) {
 			const offset_t pos{ target_position };
 
-			const decay_e state{ object_registry<MapType>.template at<skull_t>(pos)->state };
+			const decay_e state{ object_registry<MapType>.dependent at<skull_t>(pos)->state };
 
-			object_registry<MapType>.template remove<skull_t>(pos);
+			object_registry<MapType>.dependent remove<skull_t>(pos);
 			++accumulated_skulls;
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(accumulated_skulls);
 				} else {
-					entity_registry<MapType>.template add<true>(skeleton_t{ pos, state });
+					entity_registry<MapType>.dependent add<true>(skeleton_t{ pos, state });
 				}
 			}
 		} else if (player.bypass_invocations_enabled()) {
@@ -95,7 +95,7 @@ namespace necrowarp {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(accumulated_skulls);
 				} else {
-					entity_registry<MapType>.template add<true>(skeleton_t{ target_position });
+					entity_registry<MapType>.dependent add<true>(skeleton_t{ target_position });
 				}
 			}
 		}
@@ -106,14 +106,14 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 				
-				const bool has_ladder{ object_registry<MapType>.template contains<ladder_t>(position) };
+				const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-				if (!game_map<MapType>.template within<zone_region_e::Interior>(position) || (eligible_ladder != nullptr || !has_ladder)) {
+				if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || (eligible_ladder != nullptr || !has_ladder)) {
 					continue;
 				}
 
 				if (eligible_ladder == nullptr && has_ladder) {
-					eligible_ladder = object_registry<MapType>.template at<ladder_t>(position);
+					eligible_ladder = object_registry<MapType>.dependent at<ladder_t>(position);
 
 					switch (eligible_ladder->shackle) {
 						case shackle_e::Unshackled: {
@@ -170,7 +170,7 @@ namespace necrowarp {
 			return;
 		}
 
-		entity_registry<MapType>.template add<true>(bonespur_t{ source_position, accumulated_skulls });
+		entity_registry<MapType>.dependent add<true>(bonespur_t{ source_position, accumulated_skulls });
 
 		if (accumulated_skulls == globals::MaximumCatalyst) {
 			// summon bonespur with max health achievment placeholder : 28 STAB WOUNDS (SELF-INFLICTED)

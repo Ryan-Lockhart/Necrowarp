@@ -12,7 +12,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, galvanic_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::GalvanicInvocation) || object_registry<MapType>.template empty<metal_t>())) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::GalvanicInvocation) || object_registry<MapType>.dependent empty<metal_t>())) {
 			player_turn_invalidated = true;
 
 			return;
@@ -28,38 +28,38 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
-			const bool has_metal{ object_registry<MapType>.template contains<metal_t>(position) };
+			const bool has_metal{ object_registry<MapType>.dependent contains<metal_t>(position) };
 
 			if (!has_metal && player.bypass_invocations_enabled()) {
 				++metal_consumed;
 				aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.template add<true>(animated_suit_t{ position, galvanisation_e::Writhing });
+					entity_registry<MapType>.dependent add<true>(animated_suit_t{ position, galvanisation_e::Writhing });
 				}
 			}
 
-			const bool has_ladder{ object_registry<MapType>.template contains<ladder_t>(position) };
+			const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-			if (!game_map<MapType>.template within<zone_region_e::Interior>(position) || (!has_metal && (eligible_ladder != nullptr || !has_ladder))) {
+			if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || (!has_metal && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
 			if (has_metal) {
-				const galvanisation_e state{ object_registry<MapType>.template at<metal_t>(position)->state };
+				const galvanisation_e state{ object_registry<MapType>.dependent at<metal_t>(position)->state };
 
-				object_registry<MapType>.template remove<metal_t>(position);
+				object_registry<MapType>.dependent remove<metal_t>(position);
 
 				++metal_consumed;
 				aggregate_quality += static_cast<u8>(state) + 1;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.template add<true>(animated_suit_t{ position, triflip(random_engine) ? galvanise(state) : state });
+					entity_registry<MapType>.dependent add<true>(animated_suit_t{ position, triflip(random_engine) ? galvanise(state) : state });
 				}
 			}
 
 			if (eligible_ladder == nullptr && has_ladder) {
-				eligible_ladder = object_registry<MapType>.template at<ladder_t>(position);
+				eligible_ladder = object_registry<MapType>.dependent at<ladder_t>(position);
 
 				switch (eligible_ladder->shackle) {
 					case shackle_e::Unshackled: {
@@ -77,10 +77,10 @@ namespace necrowarp {
 			}
 		}
 
-		if (object_registry<MapType>.template contains<metal_t>(target_position)) {
-			const galvanisation_e state{ object_registry<MapType>.template at<metal_t>(target_position)->state };
+		if (object_registry<MapType>.dependent contains<metal_t>(target_position)) {
+			const galvanisation_e state{ object_registry<MapType>.dependent at<metal_t>(target_position)->state };
 
-			object_registry<MapType>.template remove<metal_t>(target_position);
+			object_registry<MapType>.dependent remove<metal_t>(target_position);
 
 			++metal_consumed;
 			aggregate_quality += static_cast<u8>(state) + 1;
@@ -89,7 +89,7 @@ namespace necrowarp {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(metal_consumed);
 				} else {
-					entity_registry<MapType>.template add<true>(animated_suit_t{ target_position, triflip(random_engine) ? galvanise(state) : state });
+					entity_registry<MapType>.dependent add<true>(animated_suit_t{ target_position, triflip(random_engine) ? galvanise(state) : state });
 				}
 			}
 		} else if (player.bypass_invocations_enabled()) {
@@ -100,7 +100,7 @@ namespace necrowarp {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(metal_consumed);
 				} else {
-					entity_registry<MapType>.template add<true>(animated_suit_t{ target_position, galvanisation_e::Writhing });
+					entity_registry<MapType>.dependent add<true>(animated_suit_t{ target_position, galvanisation_e::Writhing });
 				}
 			}
 		}
@@ -111,14 +111,14 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 
-				const bool has_ladder{ object_registry<MapType>.template contains<ladder_t>(position) };
+				const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-				if (!game_map<MapType>.template within<zone_region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
+				if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
 					continue;
 				}
 
 				if (eligible_ladder == nullptr && has_ladder) {
-					eligible_ladder = object_registry<MapType>.template at<ladder_t>(position);
+					eligible_ladder = object_registry<MapType>.dependent at<ladder_t>(position);
 
 					switch (eligible_ladder->shackle) {
 						case shackle_e::Unshackled: {
@@ -184,7 +184,7 @@ namespace necrowarp {
 			)
 		)};
 
-		entity_registry<MapType>.template add<true>(death_knight_t{ target_position, metal_consumed, triflip(random_engine) ? galvanise(dk_quality) : dk_quality });
+		entity_registry<MapType>.dependent add<true>(death_knight_t{ target_position, metal_consumed, triflip(random_engine) ? galvanise(dk_quality) : dk_quality });
 
 		if (metal_consumed == globals::MaximumCatalyst) {
 			// summon first death knight achievment placeholder : A Pale Gaze

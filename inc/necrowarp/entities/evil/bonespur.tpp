@@ -7,7 +7,7 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline command_pack_t bonespur_t::think() const noexcept {
-		cauto descent_pos{ evil_goal_map<MapType>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+		cauto descent_pos{ evil_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
 
 		if (!descent_pos.has_value()) {
 			return command_pack_t{ command_e::None };

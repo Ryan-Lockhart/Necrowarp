@@ -19,11 +19,11 @@ namespace necrowarp {
 			if constexpr (is_material<cval>::value) {
 				constexpr map_type_e map_type{ determine_map<cval>() };
 
-				game_map<map_type>.template reset<zone_region_e::All>();
-				fluid_map<map_type>.template reset<zone_region_e::All>();
+				game_map<map_type>.dependent reset<zone_region_e::All>();
+				fluid_map<map_type>.dependent reset<zone_region_e::All>();
 
-				entity_registry<map_type>.template reset<ALL_NON_PLAYER>();
-				entity_registry<map_type>.template reset_goal_map<player_t>();
+				entity_registry<map_type>.dependent reset<ALL_NON_PLAYER>();
+				entity_registry<map_type>.dependent reset_goal_map<player_t>();
 
 				entity_registry<map_type>.reset_alignment_goal_maps();
 
@@ -33,13 +33,6 @@ namespace necrowarp {
 
 				entity_registry<map_type>.recalculate_goal_map();
 				object_registry<map_type>.recalculate_goal_map();
-
-				buffers_locked = true;
-
-				phase_state_t<phase_e::Playing>::entity_buffer<map_type> = entity_registry<map_type>;
-				phase_state_t<phase_e::Playing>::object_buffer<map_type> = object_registry<map_type>;
-
-				buffers_locked = false;
 
 				phase.transition(phase_e::Playing);
 

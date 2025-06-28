@@ -39,11 +39,11 @@ namespace necrowarp {
 
 					const color_t pixel_color{
 						[&]() -> color_t {
-							if (entity_registry<MapType>.template contains<player_t>(pos)) {
+							if (entity_registry<MapType>.dependent contains<player_t>(pos)) {
 								return colors::Magenta;
-							} else if (entity_registry<MapType>.template contains<ALL_EVIL_NPCS>(pos)) {
+							} else if (entity_registry<MapType>.dependent contains<ALL_EVIL_NPCS>(pos)) {
 								return colors::Green;
-							} else if (entity_registry<MapType>.template contains<ALL_GOOD_NPCS>(pos)) {
+							} else if (entity_registry<MapType>.dependent contains<ALL_GOOD_NPCS>(pos)) {
 								return colors::Red;
 							} else if (object_registry<MapType>.contains(pos)) {
 								return colors::Blue;
@@ -78,11 +78,11 @@ namespace necrowarp {
 
 					const color_t pixel_color{
 						[&]() -> color_t {
-							if (entities.template contains<player_t>(pos)) {
+							if (entities.dependent contains<player_t>(pos)) {
 								return colors::Magenta;
-							} else if (entities.template contains<ALL_EVIL_NPCS>(pos)) {
+							} else if (entities.dependent contains<ALL_EVIL_NPCS>(pos)) {
 								return colors::Green;
-							} else if (entities.template contains<ALL_GOOD_NPCS>(pos)) {
+							} else if (entities.dependent contains<ALL_GOOD_NPCS>(pos)) {
 								return colors::Red;
 							} else if (objects.contains(pos)) {
 								return colors::Blue;

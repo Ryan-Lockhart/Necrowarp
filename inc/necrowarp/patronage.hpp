@@ -84,21 +84,23 @@ namespace necrowarp {
 	}
 
 	enum struct discount_e : u8 {
-		RandomWarp,
-		TargetWarp,
-	
-	 // Repulse,    (planned; circular area of effect combat command)
-	 // Annihilate, (planned; linear area of effect combat command)
+		RandomWarp,				// warp to a random, preferrably safe, position within the interior of the map; 
+		TargetWarp,				// warp to a specific position within the interior of the map
 
-		CalciticInvocation, // domain of bones; patrons are Kalypdrot, Rathghul, Ionna; minions are skeletons and bonespurs
-		SpectralInvocation, // domain of ichor; patrons are Akurakhaithan, Rathghul, Saeiligarkeuss; minions are cultists and wraithes
-		SanguineInvocation, // domain of blood; patrons are Viedskavn, Merirfin, Neolithia; minions are bloodhounds and hemogheists
-		GalvanicInvocation, // domain of metal; patrons are Thuljanor, Praethornyn, Exar; minions are animated suits of armor and death knights
-	 // RavenousInvocation, // domain of flesh; patrons are Tselgwedixxikog, Sketzuum; minions are rakes and flesh golems
-	 // WretchedInvocation, // domain of filth; patrons are Ionna, Kalypdrot; minions are draugr and dreadwyrms
+		Calcify,				// single target utility command; convert an open tile with bones into a temporary wall
+	 	Repulse,				// circular area of effect combat command; bequeathed to devotees of the Moslager
+	 	Annihilate,				// linear area of effect combat command; bequeathed to devotees of Merirfin
 
-	 // MaliceIncarnate, (planned; discard body temporarily and enter wraith-world)
-		NecromanticAscendance
+		CalciticInvocation,		// domain of bones; patrons are Kalypdrot, Rathghul, Ionna; minions are skeletons and bonespurs
+		SpectralInvocation,		// domain of ichor; patrons are Akurakhaithan, Rathghul, Saeiligarkeuss; minions are cultists and wraithes
+		SanguineInvocation,		// domain of blood; patrons are Viedskavn, Merirfin, Neolithia; minions are bloodhounds and hemogheists
+		GalvanicInvocation,		// domain of metal; patrons are Thuljanor, Praethornyn, Exar; minions are animated suits of armor and death knights
+		RavenousInvocation,		// domain of flesh; patrons are Tselgwedixxikog, Sketzuum; minions are rakes and flesh golems
+	 	WretchedInvocation,		// domain of filth; patrons are Ionna, Kalypdrot; minions are draugr and dreadwyrms
+
+		MaliceIncarnate,		// discard body temporarily and enter wraith-world becoming untargetable and undetectable; bequeathed to devotees of Rathghul
+		NecromanticAscendance,	// expend massive amount of energy for invulnerability and empowered invocations; bequeathed to devotees of Saeiligarkeuss
+		CalamitousRetaliation, 	// kill all entities on the map, regardless of allegiance; bequeathed to devotees of Neolithia
 	};
 
 	constexpr usize padding_size(discount_e discount) noexcept {
@@ -106,6 +108,12 @@ namespace necrowarp {
 			case discount_e::RandomWarp: {
 				return 12;
 			} case discount_e::TargetWarp: {
+				return 12;
+			} case discount_e::Calcify: {
+				return 16;
+			} case discount_e::Repulse: {
+				return 16;
+			} case discount_e::Annihilate: {
 				return 12;
 			} case discount_e::CalciticInvocation: {
 				return 4;
@@ -115,7 +123,15 @@ namespace necrowarp {
 				return 4;
 			} case discount_e::GalvanicInvocation: {
 				return 4;
+			} case discount_e::RavenousInvocation: {
+				return 4;
+			} case discount_e::WretchedInvocation: {
+				return 4;
+			} case discount_e::MaliceIncarnate: {
+				return 7;
 			} case discount_e::NecromanticAscendance: {
+				return 1;
+			} case discount_e::CalamitousRetaliation: {
 				return 1;
 			}
 		}
@@ -127,6 +143,12 @@ namespace necrowarp {
 				return "Random Warp";
 			} case discount_e::TargetWarp: {
 				return "Target Warp";
+			} case discount_e::Calcify: {
+				return "Calcify";
+			} case discount_e::Repulse: {
+				return "Repulse";
+			} case discount_e::Annihilate: {
+				return "Annihilate";
 			} case discount_e::CalciticInvocation: {
 				return "Calcitic Invocation";
 			} case discount_e::SpectralInvocation: {
@@ -135,8 +157,16 @@ namespace necrowarp {
 				return "Sanguine Invocation";
 			} case discount_e::GalvanicInvocation: {
 				return "Galvanic Invocation";
+			} case discount_e::RavenousInvocation: {
+				return "Ravenous Invocation";
+			} case discount_e::WretchedInvocation: {
+				return "Wretched Invocation";
+			} case discount_e::MaliceIncarnate: {
+				return "Malice Incarnate";
 			} case discount_e::NecromanticAscendance: {
 				return "Necromantic Ascendance";
+			} case discount_e::CalamitousRetaliation: {
+				return "Calamitous Retaliation";
 			}
 		}
 	}
@@ -209,16 +239,24 @@ namespace necrowarp {
 
 	struct patron_t {
 		disposition_e disposition{ disposition_e::Apathetic };
-		
+
 		const discount_t random_warp{};
 		const discount_t target_warp{};
+
+		const discount_t calcify{};
+		const discount_t repulse{};
+		const discount_t annihilate{};
 
 		const discount_t calcitic_invocation{};
 		const discount_t spectral_invocation{};
 		const discount_t sanguine_invocation{};
 		const discount_t galvanic_invocation{};
+		const discount_t ravenous_invocation{};
+		const discount_t wretched_invocation{};
 
+		const discount_t malice_incarnate{};
 		const discount_t necromantic_ascendance{};
+		const discount_t calamitous_retaliation{};
 
 		template<discount_e Discount> constexpr discount_t get_discount() const noexcept {
 			switch (Discount) {
@@ -226,6 +264,12 @@ namespace necrowarp {
 					return random_warp;
 				} case discount_e::TargetWarp: {
 					return target_warp;
+				} case discount_e::Calcify: {
+					return calcify;
+				} case discount_e::Repulse: {
+					return repulse;
+				} case discount_e::Annihilate: {
+					return annihilate;
 				} case discount_e::CalciticInvocation: {
 					return calcitic_invocation;
 				} case discount_e::SpectralInvocation: {
@@ -234,8 +278,16 @@ namespace necrowarp {
 					return sanguine_invocation;
 				} case discount_e::GalvanicInvocation: {
 					return galvanic_invocation;
+				} case discount_e::RavenousInvocation: {
+					return ravenous_invocation;
+				} case discount_e::WretchedInvocation: {
+					return wretched_invocation;
+				} case discount_e::MaliceIncarnate: {
+					return malice_incarnate;
 				} case discount_e::NecromanticAscendance: {
 					return necromantic_ascendance;
+				} case discount_e::CalamitousRetaliation: {
+					return calamitous_retaliation;
 				}
 			}
 		}
@@ -244,53 +296,93 @@ namespace necrowarp {
 	template<patron_e Patron> static inline patron_t patrons;
 
 	template<> inline patron_t patrons<patron_e::None>{
-		disposition_e::Apathetic,
-		{ 0, 1, 2 },
-		{ 0, 2, 4 }
+		.disposition = disposition_e::Apathetic,
+		.random_warp = discount_t{ 0, 1, 2 },
+		.target_warp = discount_t{ 0, 2, 4 },
+		.calcify = discount_t{ 0, 0, 0 },
+		.repulse = discount_t{ 0, 0, 0 },
+		.annihilate = discount_t{ 0, 0, 0 },
+		.calcitic_invocation = discount_t{ 0, 0, 0 },
+		.spectral_invocation = discount_t{ 0, 0, 0 },
+		.sanguine_invocation = discount_t{ 0, 0, 0 },
+		.galvanic_invocation = discount_t{ 0, 0, 0 },
+		.ravenous_invocation = discount_t{ 0, 0, 0 },
+		.wretched_invocation = discount_t{ 0, 0, 0 },
+		.malice_incarnate = discount_t{ 0, 0, 0 },
+		.necromantic_ascendance = discount_t{ 0, 0, 0 },
+		.calamitous_retaliation = discount_t{ 0, 0, 0 },
 	};
 
 	template<> inline patron_t patrons<patron_e::Rathghul>{
-		disposition_e::Apathetic,
-		{ 0, 0, 1 },
-		{ 0, 0, 2 },
-		{ 0, 4, 6 },
-		{ -6, -2, 2 },
-		{ -4, 0, 4 },
-		{ -4, 0, 4 },
-		{ -8, 0, 4 },
+		.disposition = disposition_e::Apathetic,
+		.random_warp = discount_t{ 0, 0, 1 },
+		.target_warp = discount_t{ 0, 0, 2 },
+		.calcify = discount_t{ 0, 0, 0 },
+		.repulse = discount_t{ 0, 0, 0 },
+		.annihilate = discount_t{ 0, 0, 0 },
+		.calcitic_invocation = discount_t{ 0, 4, 6 },
+		.spectral_invocation = discount_t{ -6, -2, 2 },
+		.sanguine_invocation = discount_t{ -4, 0, 4 },
+		.galvanic_invocation = discount_t{ -4, 0, 4 },
+		.ravenous_invocation = discount_t{ 0, 0, 0 },
+		.wretched_invocation = discount_t{ 0, 0, 0 },
+		.malice_incarnate = discount_t{ 0, 0, 0 },
+		.necromantic_ascendance = discount_t{ -8, 0, 4 },
+		.calamitous_retaliation = discount_t{ 0, 0, 0 },
 	};
 
 	template<> inline patron_t patrons<patron_e::Akurakhaithan>{
-		disposition_e::Apathetic,
-		{ 0, 0, 1 },
-		{ 0, 0, 2 },
-		{ -4, 0, 4 },
-		{ 0, 4, 6 },
-		{ -6, -2, 2 },
-		{ -4, 0, 4 },
-		{ -4, 0, 8 },
+		.disposition = disposition_e::Apathetic,
+		.random_warp = discount_t{ 0, 0, 1 },
+		.target_warp = discount_t{ 0, 0, 2 },
+		.calcify = discount_t{ 0, 0, 0 },
+		.repulse = discount_t{ 0, 0, 0 },
+		.annihilate = discount_t{ 0, 0, 0 },
+		.calcitic_invocation = discount_t{ -4, 0, 4 },
+		.spectral_invocation = discount_t{ 0, 4, 6 },
+		.sanguine_invocation = discount_t{ -6, -2, 2 },
+		.galvanic_invocation = discount_t{ -4, 0, 4 },
+		.ravenous_invocation = discount_t{ 0, 0, 0 },
+		.wretched_invocation = discount_t{ 0, 0, 0 },
+		.malice_incarnate = discount_t{ 0, 0, 0 },
+		.necromantic_ascendance = discount_t{ -4, 0, 8 },
+		.calamitous_retaliation = discount_t{ 0, 0, 0 },
 	};
 
 	template<> inline patron_t patrons<patron_e::Merirfin>{
-		disposition_e::Apathetic,
-		{ 0, 0, 1 },
-		{ 0, 0, 2 },
-		{ -4, 0, 4 },
-		{ -6, -2, 2 },
-		{ 0, 4, 6 },
-		{ -4, 0, 4 },
-		{ -6, 0, 6 },
+		.disposition = disposition_e::Apathetic,
+		.random_warp = discount_t{ 0, 0, 1 },
+		.target_warp = discount_t{ 0, 0, 2 },
+		.calcify = discount_t{ 0, 0, 0 },
+		.repulse = discount_t{ 0, 0, 0 },
+		.annihilate = discount_t{ 0, 0, 0 },
+		.calcitic_invocation = discount_t{ -4, 0, 4 },
+		.spectral_invocation = discount_t{ -6, -2, 2 },
+		.sanguine_invocation = discount_t{ 0, 4, 6 },
+		.galvanic_invocation = discount_t{ -4, 0, 4 },
+		.ravenous_invocation = discount_t{ 0, 0, 0 },
+		.wretched_invocation = discount_t{ 0, 0, 0 },
+		.malice_incarnate = discount_t{ 0, 0, 0 },
+		.necromantic_ascendance = discount_t{ -6, 0, 6 },
+		.calamitous_retaliation = discount_t{ 0, 0, 0 },
 	};
 
 	template<> inline patron_t patrons<patron_e::Saeiligarkeuss>{
-		disposition_e::Apathetic,
-		{ -1, 1, 2 },
-		{ -2, 2, 4 },
-		{ -8, 0, 4 },
-		{ -8, 0, 4 },
-		{ -8, 0, 4 },
-		{ -6, 0, 6 },
-		{ 0, 8, 16 },
+		.disposition = disposition_e::Apathetic,
+		.random_warp = discount_t{ -1, 1, 2 },
+		.target_warp = discount_t{ -2, 2, 4 },
+		.calcify = discount_t{ 0, 0, 0 },
+		.repulse = discount_t{ 0, 0, 0 },
+		.annihilate = discount_t{ 0, 0, 0 },
+		.calcitic_invocation = discount_t{ -8, 0, 4 },
+		.spectral_invocation = discount_t{ -8, 0, 4 },
+		.sanguine_invocation = discount_t{ -8, 0, 4 },
+		.galvanic_invocation = discount_t{ -6, 0, 6 },
+		.ravenous_invocation = discount_t{ 0, 0, 0 },
+		.wretched_invocation = discount_t{ 0, 0, 0 },
+		.malice_incarnate = discount_t{ 0, 0, 0 },
+		.necromantic_ascendance = discount_t{ 0, 8, 16 },
+		.calamitous_retaliation = discount_t{ 0, 0, 0 },
 	};
 
 	constexpr discount_type_e get_discount_type(i8 value) {
@@ -303,7 +395,7 @@ namespace necrowarp {
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr discount_e discount_cval{ val };
 			
-			cauto discount_info{ patrons<Patron>.template get_discount<discount_cval>() };
+			cauto discount_info{ patrons<Patron>.dependent get_discount<discount_cval>() };
 
 			colored_string.concatenate(to_colored_string(discount_info.negative, get_discount_type(discount_info.negative)));
 

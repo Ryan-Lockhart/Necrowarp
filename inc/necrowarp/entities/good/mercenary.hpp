@@ -168,4 +168,6 @@ namespace necrowarp {
 			};
 		};
 	};
+
+	static_assert(sizeof(mercenary_t) <= NPCSizeCap, "mercenary entity size must not exceed npc size cap!");
 } // namespace necrowarp

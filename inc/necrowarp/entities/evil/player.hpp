@@ -27,101 +27,45 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct is_entity<player_t> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_VALUE(is_entity, player_t, true);
 
-	template<> struct to_entity_enum<player_t> {
-		static constexpr entity_e value = entity_e::Player;
-	};
+	TYPE_TRAIT_USING(to_entity_type, entity_e::Player, player_t);
+	TYPE_TRAIT_VALUE(to_entity_enum, player_t, entity_e::Player);
+	
+	TYPE_TRAIT_COMPARATOR(is_entity_type, player_t, entity_e::Player, true);
+	
+	TYPE_TRAIT_VALUE(to_entity_group, entity_e::Player, entity_group_e::Player);
 
-	template<> struct is_entity_type<player_t, entity_e::Player> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_VALUE(is_evil_entity, player_t, true);
 
-	template<> struct to_entity_type<entity_e::Player> {
-		using type = player_t;
-	};
+	TYPE_TRAIT_VALUE(is_non_player_entity, player_t, false);
 
-	template<> struct to_entity_group<entity_e::Player> {
-		static constexpr entity_group_e value = entity_group_e::Player;
-	};
+	TYPE_TRAIT_VALUE(is_player, player_t, true);
 
-	template<> struct is_evil_entity<player_t> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_VALUE(is_combatant, player_t, true);
 
-	template<> struct is_non_player_entity<player_t> {
-		static constexpr bool value = false;
-	};
+	TYPE_TRAIT_VALUE(is_concussable, player_t, false);
 
-	template<> struct is_player<player_t> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_VALUE(is_cleaver, player_t, true);
 
-	template<> struct is_combatant<player_t> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_VALUE(is_vigilant, player_t, true);
 
-	template<> struct is_concussable<player_t> {
-		static constexpr bool value = false;
-	};
+	TYPE_TRAIT_VALUE(is_devourable, player_t, true);
 
-	template<> struct is_cleaver<player_t> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, consume_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, descend_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, plunge_t, true);
 
-	template<> struct is_vigilant<player_t> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, random_warp_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, target_warp_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, consume_warp_t, true);
 
-	template<> struct is_devourable<player_t> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, calcitic_invocation_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, spectral_invocation_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, sanguine_invocation_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, galvanic_invocation_t, true);
 
-	template<> struct is_entity_command_valid<player_t, random_warp_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, necromantic_ascendance_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, consume_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, descend_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, plunge_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, target_warp_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, consume_warp_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, calcitic_invocation_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, spectral_invocation_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, sanguine_invocation_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<player_t, galvanic_invocation_t> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, necromantic_ascendance_t, true);
 
 	template<> inline constexpr glyph_t entity_glyphs<player_t>{ glyphs::UnarmoredPlayer };
 
@@ -236,29 +180,17 @@ namespace necrowarp {
 		inline i8 get_divinity() const noexcept { return divinity; }
 		
 		inline i8 get_discount(discount_e type) const noexcept {
-			return magic_enum::enum_switch([&, type](auto val) -> i8 {
-				constexpr patron_e cval{ val };
+			return magic_enum::enum_switch([&, type](auto patron_val) -> i8 {
+				constexpr patron_e patron_cval{ patron_val };
 
-				cref<patron_t> current_patron{ patrons<cval> };
+				cref<patron_t> current_patron{ patrons<patron_cval> };
 				const disposition_e disposition{ current_patron.disposition };
 
-				switch (type) {
-					case discount_e::RandomWarp: {
-						return current_patron.random_warp.current(disposition);
-					} case discount_e::TargetWarp: {
-						return current_patron.target_warp.current(disposition);
-					} case discount_e::CalciticInvocation: {
-						return current_patron.calcitic_invocation.current(disposition);
-					} case discount_e::SpectralInvocation: {
-						return current_patron.spectral_invocation.current(disposition);
-					} case discount_e::SanguineInvocation: {
-						return current_patron.sanguine_invocation.current(disposition);
-					} case discount_e::GalvanicInvocation: {
-						return current_patron.galvanic_invocation.current(disposition);
-					} case discount_e::NecromanticAscendance: {
-						return current_patron.necromantic_ascendance.current(disposition);
-					}
-				}
+				return magic_enum::enum_switch([&](auto type_val) -> i8 {
+					constexpr discount_e type_cval{ type_val };
+
+					return current_patron.get_discount<type_cval>().current(disposition);
+				}, type);
 			}, patron);
 		}
 

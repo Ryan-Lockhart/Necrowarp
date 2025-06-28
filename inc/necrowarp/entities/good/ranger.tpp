@@ -14,14 +14,14 @@ namespace necrowarp {
 		const bool in_range{ ranger_t::in_range(current_distance) };
 
 		if (can_loose() && in_range) {
-			const std::optional<offset_t> maybe_position{ entity_registry<MapType>.template nearest<distance_function_e::Chebyshev, ALL_EVIL>(position) };
+			const std::optional<offset_t> maybe_position{ entity_registry<MapType>.dependent nearest<distance_function_e::Chebyshev, ALL_EVIL>(position) };
 
 			if (!maybe_position.has_value()) {
 				return command_pack_t{ command_e::None };
 			}
 
 			if (game_map<MapType>.linear_blockage(position, maybe_position.value(), cell_e::Solid, ranger_t::MaximumRange)) {
-				cauto approach_pos{ good_goal_map<MapType>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+				cauto approach_pos{ good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
 
 				if (!approach_pos.has_value()) {
 					return command_pack_t{ command_e::None };
@@ -39,36 +39,36 @@ namespace necrowarp {
 			return command_pack_t{ command_e::Loose, position, maybe_position.value() };
 		} else if (can_nock() && (in_range || current_distance > ranger_t::MaximumRange)) {
 			return command_pack_t{ command_e::Nock, position };
-		} else if (!can_loose() && !can_nock() && !object_registry<MapType>.template empty<arrow_t>()) {
+		} else if (!can_loose() && !can_nock() && !object_registry<MapType>.dependent empty<arrow_t>()) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t current_position{ position + offset };
 
-				if (!object_registry<MapType>.template contains<arrow_t>(current_position)) {
+				if (!object_registry<MapType>.dependent contains<arrow_t>(current_position)) {
 					continue;
 				}
 
 				return command_pack_t{ command_e::Retrieve, position, current_position };
 			}
 
-			cauto descent_pos{ object_goal_map<MapType, arrow_t>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+			cauto descent_pos{ object_goal_map<MapType, arrow_t>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!descent_pos.has_value()) {
 				return command_pack_t{ command_e::None };
 			}
 
 			return command_pack_t{ command_e::Move, position, descent_pos.value() };
-		} else if (entity_registry<MapType>.template nearby<distance_function_e::Chebyshev, ALL_EVIL>(position) || (!can_nock() && !can_loose() && object_registry<MapType>.template empty<arrow_t>())) {
+		} else if (entity_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, ALL_EVIL>(position) || (!can_nock() && !can_loose() && object_registry<MapType>.dependent empty<arrow_t>())) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t current_position{ position + offset };
 
-				if (entity_registry<MapType>.template empty<ALL_EVIL>(current_position)) {
+				if (entity_registry<MapType>.dependent empty<ALL_EVIL>(current_position)) {
 					continue;
 				}
 
 				return command_pack_t{ command_e::Clash, position, current_position };
 			}
 
-			cauto descent_pos{ good_goal_map<MapType>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+			cauto descent_pos{ good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!descent_pos.has_value()) {
 				return command_pack_t{ command_e::None };
@@ -78,18 +78,18 @@ namespace necrowarp {
 		}
 
 		if (current_distance > OptimalRange) {
-			if (get_ammunition() < ranger_t::QuiverCapacity / 2 && !object_registry<MapType>.template empty<arrow_t>()) {
+			if (get_ammunition() < ranger_t::QuiverCapacity / 2 && !object_registry<MapType>.dependent empty<arrow_t>()) {
 				for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 					const offset_t current_position{ position + offset };
 
-					if (!object_registry<MapType>.template contains<arrow_t>(current_position)) {
+					if (!object_registry<MapType>.dependent contains<arrow_t>(current_position)) {
 						continue;
 					}
 
 					return command_pack_t{ command_e::Retrieve, position, current_position };
 				}
 
-				cauto descent_pos{ object_goal_map<MapType, arrow_t>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+				cauto descent_pos{ object_goal_map<MapType, arrow_t>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
 
 				if (!descent_pos.has_value()) {
 					return command_pack_t{ command_e::None };
@@ -98,7 +98,7 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Move, position, descent_pos.value() };
 			}
 
-			cauto approach_pos{ good_goal_map<MapType>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+			cauto approach_pos{ good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!approach_pos.has_value()) {
 				return command_pack_t{ command_e::None };
@@ -106,7 +106,7 @@ namespace necrowarp {
 
 			return command_pack_t{ command_e::Move, position, approach_pos.value() };
 		} else if (current_distance < OptimalRange) {
-			cauto retreat_pos{ good_goal_map<MapType>.template ascend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+			cauto retreat_pos{ good_goal_map<MapType>.dependent ascend<zone_region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!retreat_pos.has_value()) {
 				return command_pack_t{ command_e::None };

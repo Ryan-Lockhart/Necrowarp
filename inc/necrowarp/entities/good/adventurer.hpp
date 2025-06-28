@@ -141,4 +141,6 @@ namespace necrowarp {
 			};
 		};
 	};
+
+	static_assert(sizeof(adventurer_t) <= NPCSizeCap, "adventurer entity size must not exceed npc size cap!");
 } // namespace necrowarp

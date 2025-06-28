@@ -81,7 +81,7 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<thetwo_t>{ glyphs::MatureThetwo };
+	template<> inline constexpr glyph_t entity_glyphs<thetwo_t>{ glyphs::NeonatalThetwo };
 
 	enum struct bulk_e : u8 {
 		Neonatal,
@@ -175,22 +175,52 @@ namespace necrowarp {
 
 		static constexpr i8 DeathBoon{ 2 };
 
-		static constexpr i8 MoltingTurns{ 8 };
-		static constexpr i8 MinimumMoltAmount{ 2 };
+		static constexpr i8 SheddingTurns{ 8 };
+		static constexpr i8 MinimumShedAmount{ 2 };
 		
 	private:
-		i8 health;
-		i8 protein;
+		static constexpr i8 determine_health(bulk_e bulk) noexcept {
+			switch (bulk) {
+				case bulk_e::Neonatal: {
+					return MaximumHealth >> 4;
+				} case bulk_e::Young: {
+					return MaximumHealth >> 3;
+				} case bulk_e::Mature: {
+					return MaximumHealth >> 2;
+				} case bulk_e::Gross: {
+					return MaximumHealth >> 1;
+				} case bulk_e::Titanic: {
+					return MaximumHealth;
+				}
+			}
+		}
+
+		static inline std::uniform_int_distribution<u16> bulk_dis{ static_cast<u16>(bulk_e::Neonatal), static_cast<u16>(bulk_e::Titanic) };
+
+		template<RandomEngine Generator> static inline bulk_e random_bulk(ref<Generator> generator) noexcept { return static_cast<bulk_e>(bulk_dis(generator)); }
 
 		bulk_e bulk;
 
-		bool molting;
+		i8 health;
+		i8 protein;
+
+		bool shedding;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 		inline void set_protein(i8 value) noexcept { protein = clamp<i8>(value, 0, max_protein()); }
 
 	public:
-		inline thetwo_t(offset_t position) noexcept : position{ position }, health{ MaximumHealth } {}
+		inline thetwo_t(offset_t position) noexcept : position{ position }, bulk{ bulk_e::Neonatal }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
+
+		inline thetwo_t(offset_t position, bulk_e bulk) noexcept : position{ position }, bulk{ bulk }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
+
+		template<RandomEngine Generator> inline thetwo_t(offset_t position, ref<Generator> engine) noexcept :
+			position{ position },
+			bulk{ random_bulk(engine) },
+			health{ determine_health(bulk) },
+			protein{ 0 },
+			shedding{ false }
+		{}
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -232,25 +262,25 @@ namespace necrowarp {
 			}
 		}
 
-		inline bool is_molting() const noexcept { return molting; }
+		inline bool is_shedding() const noexcept { return shedding; }
 
-		inline bool can_molt() const noexcept { return !is_molting() && protein >= max_protein() && bulk != bulk_e::Titanic; }
+		inline bool can_shed() const noexcept { return !is_shedding() && protein >= max_protein() && bulk != bulk_e::Titanic; }
 
-		inline i8 molt_amount() const noexcept { return max<i8>(max_protein() / MoltingTurns, MinimumMoltAmount); }
+		inline i8 shed_amount() const noexcept { return max<i8>(max_protein() / SheddingTurns, MinimumShedAmount); }
 
-		inline void molt() noexcept {
-			if (!molting) {
-				if (can_molt()) {
-					molting = true;
+		inline void shed() noexcept {
+			if (!shedding) {
+				if (can_shed()) {
+					shedding = true;
 				} else {
 					return;
 				}
 			}
 
-			set_protein(protein - molt_amount());
+			set_protein(protein - shed_amount());
 
 			if (!has_protein()) {
-				molting = false;
+				shedding = false;
 
 				bulk = grow(bulk);
 
@@ -258,7 +288,7 @@ namespace necrowarp {
 			}
 		}
 
-		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+		inline bool can_survive(i8 damage_amount) const noexcept { return shedding ? health > damage_amount : health + protein > damage_amount; }
 
 		inline i8 get_damage() const noexcept {
 			switch (bulk) {
@@ -279,14 +309,16 @@ namespace necrowarp {
 		inline i8 get_damage(entity_e target) const noexcept { return get_damage(); }
 
 		inline void receive_damage(i8 damage_amount) noexcept {
-			if (protein >= damage_amount) {
-				set_protein(protein - damage_amount);
+			if (!shedding) {
+				if (protein >= damage_amount) {
+					set_protein(protein - damage_amount);
 
-				return;
-			} else if (has_protein()) {
-				damage_amount -= protein;
+					return;
+				} else if (has_protein()) {
+					damage_amount -= protein;
 
-				set_protein(0);
+					set_protein(0);
+				}
 			}
 
 			set_health(health - damage_amount);
@@ -346,4 +378,6 @@ namespace necrowarp {
 			};
 		};
 	};
+
+	static_assert(sizeof(thetwo_t) <= NPCSizeCap, "thetwo entity size must not exceed npc size cap!");
 } // namespace necrowarp

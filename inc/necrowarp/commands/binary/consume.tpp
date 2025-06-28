@@ -19,13 +19,13 @@ namespace necrowarp {
 		
 		switch (entity_target) {
 			case entity_e::Skeleton: {
-				const i8 armor_boon = entity_registry<MapType>.template at<skeleton_t>(target_position)->armor_boon();
+				const i8 armor_boon = entity_registry<MapType>.dependent at<skeleton_t>(target_position)->armor_boon();
 
-				entity_registry<MapType>.template remove<skeleton_t>(target_position);
+				entity_registry<MapType>.dependent remove<skeleton_t>(target_position);
 
 				++steam_stats::stats<steam_stat_e::SkeletonsConsumed, i32>;
 
-				entity_registry<MapType>.template update<EntityType>(source_position, target_position);
+				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 				
 				player.bolster_armor(armor_boon + player.max_armor() / 8);
 
@@ -33,13 +33,13 @@ namespace necrowarp {
 				
 				return;
 			} case entity_e::Bonespur: {
-				const i8 armor_boon = entity_registry<MapType>.template at<bonespur_t>(target_position)->armor_boon();
+				const i8 armor_boon = entity_registry<MapType>.dependent at<bonespur_t>(target_position)->armor_boon();
 
-				entity_registry<MapType>.template remove<bonespur_t>(target_position);
+				entity_registry<MapType>.dependent remove<bonespur_t>(target_position);
 
 				++steam_stats::stats<steam_stat_e::BonespursConsumed, i32>;
 
-				entity_registry<MapType>.template update<EntityType>(source_position, target_position);
+				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 				
 				player.bolster_armor(armor_boon + player.max_armor() / 4);
 
@@ -57,9 +57,9 @@ namespace necrowarp {
 		
 		switch (object_target) {
 			case object_e::Skull: {
-				const decay_e state{ object_registry<MapType>.template at<skull_t>(target_position)->state };
+				const decay_e state{ object_registry<MapType>.dependent at<skull_t>(target_position)->state };
 
-				object_registry<MapType>.template remove<skull_t>(target_position);
+				object_registry<MapType>.dependent remove<skull_t>(target_position);
 				entity_registry<MapType>.add(skeleton_t{ target_position, state });
 
 				++steam_stats::stats<steam_stat_e::SkullsConsumed, i32>;

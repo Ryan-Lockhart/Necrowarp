@@ -9,13 +9,13 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline command_pack_t battle_monk_t::think() const noexcept {
-		if (!entity_registry<MapType>.template nearby<distance_function_e::Chebyshev, ALL_EVIL>(position) && !object_registry<MapType>.template contains<ladder_t>(position) && !is_zen()) {
+		if (!entity_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, ALL_EVIL>(position) && !object_registry<MapType>.dependent contains<ladder_t>(position) && !is_zen()) {
 			return command_pack_t{ command_e::Meditate, position };
-		} else if (entity_registry<MapType>.template nearby<distance_function_e::Chebyshev, ALL_EVIL>(position)){
+		} else if (entity_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, ALL_EVIL>(position)){
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t current_position{ position + offset };
 
-				if (entity_registry<MapType>.template empty<ALL_EVIL>(current_position)) {
+				if (entity_registry<MapType>.dependent empty<ALL_EVIL>(current_position)) {
 					continue;
 				}
 
@@ -23,7 +23,7 @@ namespace necrowarp {
 			}
 		}		
 
-		cauto descent_pos{ good_goal_map<MapType>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+		cauto descent_pos{ good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
 
 		if (!descent_pos.has_value()) {
 			return command_pack_t{ command_e::None };

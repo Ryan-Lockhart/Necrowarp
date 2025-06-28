@@ -315,4 +315,6 @@ namespace necrowarp {
 			};
 		};
 	};
+
+	static_assert(sizeof(berserker_t) <= NPCSizeCap, "berserker entity size must not exceed npc size cap!");
 } // namespace necrowarp

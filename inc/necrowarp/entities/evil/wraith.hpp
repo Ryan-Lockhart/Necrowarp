@@ -155,4 +155,6 @@ namespace necrowarp {
 			};
 		};
 	};
+
+	static_assert(sizeof(wraith_t) <= NPCSizeCap, "wraith entity size must not exceed npc size cap!");
 } // namespace necrowarp
