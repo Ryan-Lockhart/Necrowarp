@@ -255,4 +255,6 @@ namespace necrowarp {
 			};
 		};
 	};
+
+	static_assert(sizeof(skulker_t) <= NPCSizeCap, "skulker entity size must not exceed npc size cap!");
 } // namespace necrowarp

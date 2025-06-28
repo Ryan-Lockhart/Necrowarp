@@ -80,16 +80,19 @@ namespace necrowarp {
 	static inline wave_t sine_wave{ 1.0, 0.5, 1.0 };
 
 	static inline mixer_s mixer{};
+
+	static inline priority_mutex registry_access{};
 	
 	static inline volatile std::atomic<bool> player_acted{ false };
 
 	static inline volatile std::atomic<bool> processing_turn{ false };
+
 	static inline volatile std::atomic<bool> game_running{ false };
 
 	static inline volatile std::atomic<dimension_e> current_dimension{ dimension_e::Underworld };
 
 	template<map_type_e MapType> inline bool spill_fluid(offset_t position, fluid_e fluid) noexcept {
-		if (fluid == fluid_e::None || !game_map<MapType>.template within<zone_region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open) {
+		if (fluid == fluid_e::None || !game_map<MapType>.dependent within<zone_region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open) {
 			return false;
 		}
 
@@ -130,7 +133,7 @@ namespace necrowarp {
 			for (cauto creeper : neighbourhood_creepers<distance_function_e::Octile, f32>) {
 				const offset_t offset_position{ current.position + creeper.position };
 
-				if (!visited.insert(offset_position).second || !game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
+				if (!visited.insert(offset_position).second || !game_map<MapType>.dependent within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
 					continue;
 				}
 
@@ -142,7 +145,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline bool spill_fluid(offset_t position, fluid_e fluid, usize amount) noexcept {
-		if (fluid == fluid_e::None || !game_map<MapType>.template within<zone_region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open || amount <= 0) {
+		if (fluid == fluid_e::None || !game_map<MapType>.dependent within<zone_region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open || amount <= 0) {
 			return false;
 		}
 
@@ -185,7 +188,7 @@ namespace necrowarp {
 			for (cauto creeper : neighbourhood_creepers<distance_function_e::Octile, f32>) {
 				const offset_t offset_position{ current.position + creeper.position };
 
-				if (!visited.insert(offset_position).second || !game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
+				if (!visited.insert(offset_position).second || !game_map<MapType>.dependent within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
 					continue;
 				}
 

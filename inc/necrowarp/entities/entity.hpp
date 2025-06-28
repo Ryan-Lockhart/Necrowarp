@@ -221,6 +221,8 @@ namespace necrowarp {
 
 	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Berserker) + 1 };
 
+	constexpr usize NPCSizeCap{ 16 };
+
 	using entity_group_t = u32;
 
 	enum struct entity_group_e : entity_group_t {

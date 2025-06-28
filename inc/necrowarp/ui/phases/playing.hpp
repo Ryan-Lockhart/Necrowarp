@@ -356,9 +356,7 @@ namespace necrowarp {
 				favor_hidden_label.text = runes_t{ " Favor " };
 			}
 
-			if (processing_turn) {
-				return;
-			}
+			registry_access.lock();
 
 			const bool has_entity{ entity_registry<MapType>.contains(grid_cursor<MapType>.current_position) };
 			const bool has_object{ object_registry<MapType>.contains(grid_cursor<MapType>.current_position) };
@@ -391,20 +389,25 @@ namespace necrowarp {
 				}
 			}
 
-			if (entity_registry<MapType>.template contains<player_t>(grid_cursor<MapType>.current_position)) {
-				grid_cursor<MapType>.color = colors::Magenta;
-			} else if (entity_registry<MapType>.template contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
-				grid_cursor<MapType>.color = colors::Green;
-			} else if (entity_registry<MapType>.template contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
-				grid_cursor<MapType>.color = colors::Red;
-			} else if (object_registry<MapType>.contains(grid_cursor<MapType>.current_position)) {
+			if (has_entity) {
+				if (entity_registry<MapType>.dependent contains<player_t>(grid_cursor<MapType>.current_position)) {
+					grid_cursor<MapType>.color = colors::Magenta;
+				} else if (entity_registry<MapType>.dependent contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
+					grid_cursor<MapType>.color = colors::Green;
+				} else if (entity_registry<MapType>.dependent contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
+					grid_cursor<MapType>.color = colors::Red;
+				} else {
+					grid_cursor<MapType>.color = colors::metals::Gold;
+				}
+			} else if (has_object) {
 				grid_cursor<MapType>.color = colors::Blue;
+			} else if (fluid != fluid_e::None) {
+				grid_cursor<MapType>.color = fluid_color(fluid);
 			} else {
 				grid_cursor<MapType>.color = colors::metals::Gold;
 			}
 
-			grid_cursor<MapType>.color.set_alpha(sine_wave.current_value());
-			warp_cursor<MapType>.color.set_alpha(sine_wave.current_value());
+			registry_access.unlock();
 		}
 
 		template<map_type_e MapType> static inline void draw(ref<renderer_t> renderer) noexcept {
@@ -441,8 +444,11 @@ namespace necrowarp {
 					tooltip_label<MapType>.draw(renderer);
 				}
 
-				minimap<MapType>.draw(renderer);
-			}
+			registry_access.lock();
+
+			minimap<MapType>.draw(renderer);
+
+			registry_access.unlock();
 		}
 	};
 } // namespace necrowarp

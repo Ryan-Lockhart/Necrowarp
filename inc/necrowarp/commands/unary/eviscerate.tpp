@@ -63,7 +63,7 @@ namespace necrowarp {
 	}
 
 	template<CombatantEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, eviscerate_t>::process() const noexcept {
-		ptr<EntityType> initiator_ptr{ entity_registry<MapType>.template at<EntityType>(source_position) };
+		ptr<EntityType> initiator_ptr{ entity_registry<MapType>.dependent at<EntityType>(source_position) };
 
 		if (initiator_ptr == nullptr) {
 			return;
@@ -93,7 +93,7 @@ namespace necrowarp {
 
 				if constexpr (!is_evil_entity<victim_type>::value) {
 					if constexpr (!is_null_entity<victim_type>::value && !std::is_same<EntityType, victim_type>::value) {
-						ptr<victim_type> victim_ptr{ entity_registry<MapType>.template at<victim_type>(position) };
+						ptr<victim_type> victim_ptr{ entity_registry<MapType>.dependent at<victim_type>(position) };
 
 						if (victim_ptr == nullptr) {
 							return;
@@ -104,10 +104,10 @@ namespace necrowarp {
 						const bool target_killed{ brutalize<MapType>(initiator, victim, remaining_damage) };
 
 						if (target_killed) {
-							victim.template die<MapType>();
+							victim.dependent die<MapType>();
 
 							if constexpr (is_npc_entity<victim_type>::value) {
-								entity_registry<MapType>.template remove<victim_type>(victim.position);
+								entity_registry<MapType>.dependent remove<victim_type>(victim.position);
 							}
 
 							switch (to_entity_enum<EntityType>::value) {

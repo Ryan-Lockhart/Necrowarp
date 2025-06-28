@@ -19,10 +19,10 @@ namespace necrowarp {
 			player.pay_cost(discount_e::RandomWarp);
 		}
 		
-		cauto random_safe_position{ evil_goal_map<MapType>.template find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, 8) };
+		cauto random_safe_position{ evil_goal_map<MapType>.dependent find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, 8) };
 
 		if (!random_safe_position.has_value()) {
-			cauto random_unsafe_position{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
+			cauto random_unsafe_position{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
 
 			if (!random_unsafe_position.has_value()) {
 				if (!free) {
@@ -38,7 +38,7 @@ namespace necrowarp {
 				player.receive_unsafe_warp_boon();
 			}
 
-			entity_registry<MapType>.template update<player_t>(position, random_unsafe_position.value());
+			entity_registry<MapType>.dependent update<player_t>(position, random_unsafe_position.value());
 
 			++steam_stats::stats<steam_stat_e::RandomWarps, i32>;
 
@@ -50,7 +50,7 @@ namespace necrowarp {
 			return true;
 		}
 
-		entity_registry<MapType>.template update<player_t>(position, random_safe_position.value());
+		entity_registry<MapType>.dependent update<player_t>(position, random_safe_position.value());
 
 		++steam_stats::stats<steam_stat_e::RandomWarps, i32>;
 

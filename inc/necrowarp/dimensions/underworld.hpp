@@ -18,15 +18,15 @@ namespace necrowarp {
 		constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 
 		game_map<map_type>
-			.template set<zone_region_e::Border>(closed_state)
-			.template generate<zone_region_e::Interior>(
+			.dependent set<zone_region_e::Border>(closed_state)
+			.dependent generate<zone_region_e::Interior>(
 				random_engine,
 				globals::map_config.fill_percent,
 				globals::map_config.automata_iterations,
 				globals::map_config.automata_threshold,
 				cell_applicator
 			)
-			.template collapse<zone_region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
+			.dependent collapse<zone_region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
 
 		std::vector<area_t> areas{ area_t::partition(game_map<map_type>, cell_e::Open) };
 
@@ -48,7 +48,7 @@ namespace necrowarp {
 			}
 		}
 
-		cauto player_pos{ game_map<map_type>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
+		cauto player_pos{ game_map<map_type>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 		if (!player_pos.has_value()) {
 			error_log.add("could not find open position for player!");
@@ -64,7 +64,7 @@ namespace necrowarp {
 		ranger_goal_map<map_type>.add(player.position);
 		skulker_goal_map<map_type>.add(player.position);
 
-		cauto portal_pos{ game_map<map_type>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
+		cauto portal_pos{ game_map<map_type>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 		if (!portal_pos.has_value()) {
 			error_log.add("could not find open position for return portal!");
@@ -73,21 +73,21 @@ namespace necrowarp {
 
 		object_registry<map_type>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
 
-		object_registry<map_type>.template spawn<ladder_t>(
+		object_registry<map_type>.dependent spawn<ladder_t>(
 			static_cast<usize>(globals::map_config.number_of_up_ladders),
 			static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
 			verticality_e::Up
 		);
 
-		object_registry<map_type>.template spawn<ladder_t>(
+		object_registry<map_type>.dependent spawn<ladder_t>(
 			static_cast<usize>(globals::map_config.number_of_down_ladders),
 			static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
 			verticality_e::Down, random_engine
 		);
 
-		object_registry<map_type>.template spawn<skull_t>(
+		object_registry<map_type>.dependent spawn<skull_t>(
 			static_cast<usize>(globals::map_config.starting_skulls),
 			static_cast<u32>(globals::map_config.minimum_skull_distance),
 

@@ -23,7 +23,7 @@ namespace necrowarp {
 	}
 
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, loose_t>::process() const noexcept {
-		ptr<ranger_t> maybe_ranger{ entity_registry<MapType>.template at<ranger_t>(source_position) };
+		ptr<ranger_t> maybe_ranger{ entity_registry<MapType>.dependent at<ranger_t>(source_position) };
 
 		if (maybe_ranger == nullptr || !maybe_ranger->in_range(target_position) || !maybe_ranger->can_loose()) {
 			return;
@@ -37,7 +37,7 @@ namespace necrowarp {
 			if constexpr (cval != entity_e::None) {
 				using entity_type = to_entity_type<cval>::type;
 
-				ptr<entity_type> maybe_target{ entity_registry<MapType>.template at<entity_type>(target_position) };
+				ptr<entity_type> maybe_target{ entity_registry<MapType>.dependent at<entity_type>(target_position) };
 
 				if (maybe_target == nullptr) {
 					return;
@@ -64,7 +64,7 @@ namespace necrowarp {
 				maybe_target->template die<MapType>();
 
 				if constexpr (is_npc_entity<entity_type>::value) {
-					entity_registry<MapType>.template remove<entity_type>(target_position);
+					entity_registry<MapType>.dependent remove<entity_type>(target_position);
 				}
 			}
 		}, target);

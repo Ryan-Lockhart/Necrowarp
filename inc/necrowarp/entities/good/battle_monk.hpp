@@ -258,4 +258,6 @@ namespace necrowarp {
 			};
 		};
 	};
+
+	static_assert(sizeof(battle_monk_t) <= NPCSizeCap, "battle_monk entity size must not exceed npc size cap!");
 } // namespace necrowarp

@@ -31,11 +31,11 @@ namespace necrowarp {
 	}
 
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, plunge_t>::process() const noexcept {
-		if (!game_map<MapType>.template within<zone_region_e::Interior>(target_position) || !object_registry<MapType>.template contains<portal_t>(target_position)) {
+		if (!game_map<MapType>.dependent within<zone_region_e::Interior>(target_position) || !object_registry<MapType>.dependent contains<portal_t>(target_position)) {
 			return;
 		}
 
-		cptr<portal_t> portal{ object_registry<MapType>.template at<portal_t>(target_position) };
+		cptr<portal_t> portal{ object_registry<MapType>.dependent at<portal_t>(target_position) };
 
 		if (portal == nullptr || portal->stability == current_dimension) {
 			return;

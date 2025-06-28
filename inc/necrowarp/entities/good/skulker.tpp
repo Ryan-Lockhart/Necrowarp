@@ -14,7 +14,7 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
-			if (entity_registry<MapType>.template empty<ALL_EVIL>(current_position)) {
+			if (entity_registry<MapType>.dependent empty<ALL_EVIL>(current_position)) {
 				continue;
 			}
 
@@ -24,9 +24,9 @@ namespace necrowarp {
 		cauto descent_pos{
 			[&]() -> std::optional<offset_t> {
 				if (concealment == concealment_e::Imperceptible) {
-					return entity_goal_map<MapType, player_t>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>);
+					return entity_goal_map<MapType, player_t>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>);
 				} else {
-					return good_goal_map<MapType>.template descend<zone_region_e::Interior>(position, entity_registry<MapType>);
+					return good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>);
 				}
 			}()
 		};

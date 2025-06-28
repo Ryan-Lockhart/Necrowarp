@@ -99,7 +99,7 @@ namespace necrowarp {
 			using object_type = to_object_type<cval>::type;
 
 			if constexpr (globals::has_unique_descriptor<object_type>::value) {
-				cauto object_ptr{ object_registry<MapType>.template at<object_type>(position) };
+				cauto object_ptr{ object_registry<MapType>.dependent at<object_type>(position) };
 
 				if (object_ptr != nullptr) {
 					runes.concatenate(object_ptr->to_colored_string());

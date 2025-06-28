@@ -227,6 +227,10 @@ namespace necrowarp {
 		};
 	};
 
+	static constexpr bool operator==(fluid_e fluid, fluid_cell_t cell) noexcept { return cell.contains(fluid); }
+
+	static constexpr bool operator!=(fluid_e fluid, fluid_cell_t cell) noexcept { return !cell.contains(fluid); }
+
 	enum struct cell_e : u8 {
 		Open,
 		Solid,
@@ -442,7 +446,7 @@ namespace necrowarp {
 
 		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr void recalculate_index(cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, cell_e trait) noexcept {
-			index = zone.template calculate_index<solver_e::Melded>(position, trait);
+			index = zone.dependent calculate_index<solver_e::Melded>(position, trait);
 		}
 
 		inline glyph_t floor_glyph() const noexcept { return glyph_t{ characters::Floor, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }

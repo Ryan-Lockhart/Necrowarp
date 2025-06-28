@@ -121,7 +121,7 @@ namespace necrowarp {
 			if (direction != offset_t::Zero) {
 				const offset_t target_position{ player.position + direction };
 
-				if (!game_map<MapType>.template within<zone_region_e::Interior>(target_position) || game_map<MapType>[target_position].solid) {
+				if (!game_map<MapType>.dependent within<zone_region_e::Interior>(target_position) || game_map<MapType>[target_position].solid) {
 					return false;
 				}
 
@@ -180,8 +180,8 @@ namespace necrowarp {
 			game_stats.cheats.free_costs = true;
 			game_stats.cheats.bypass_invocations = true;
 
-			game_map<MapType>.template reset<zone_region_e::All>();
-			fluid_map<MapType>.template reset<zone_region_e::All>();
+			game_map<MapType>.dependent reset<zone_region_e::All>();
+			fluid_map<MapType>.dependent reset<zone_region_e::All>();
 
 			entity_registry<MapType>.reset();
 			object_registry<MapType>.reset();
@@ -192,15 +192,15 @@ namespace necrowarp {
 			constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 
 			game_map<MapType>
-				.template set<zone_region_e::Border>(closed_state)
-				.template generate<zone_region_e::Interior>(
+				.dependent set<zone_region_e::Border>(closed_state)
+				.dependent generate<zone_region_e::Interior>(
 					random_engine,
 					globals::map_config.fill_percent,
 					globals::map_config.automata_iterations,
 					globals::map_config.automata_threshold,
 					cell_applicator
 				)
-				.template collapse<zone_region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
+				.dependent collapse<zone_region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
 
 			std::vector<area_t> areas{ area_t::partition(game_map<MapType>, cell_e::Open) };
 
@@ -222,7 +222,7 @@ namespace necrowarp {
 				}
 			}
 
-			cauto player_pos{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
+			cauto player_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 			if (!player_pos.has_value()) {
 				error_log.add("could not find open position for player!");
@@ -238,7 +238,7 @@ namespace necrowarp {
 			ranger_goal_map<MapType>.add(player.position);
 			skulker_goal_map<MapType>.add(player.position);
 
-			cauto portal_pos{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
+			cauto portal_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 			if (!portal_pos.has_value()) {
 				error_log.add("could not find open position for return portal!");
@@ -247,21 +247,21 @@ namespace necrowarp {
 
 			object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
 
-			object_registry<MapType>.template spawn<ladder_t>(
+			object_registry<MapType>.dependent spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_up_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
 				verticality_e::Up
 			);
 
-			object_registry<MapType>.template spawn<ladder_t>(
+			object_registry<MapType>.dependent spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_down_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
 				verticality_e::Down, random_engine
 			);
 
-			object_registry<MapType>.template spawn<skull_t>(
+			object_registry<MapType>.dependent spawn<skull_t>(
 				static_cast<usize>(globals::map_config.starting_skulls),
 				static_cast<u32>(globals::map_config.minimum_skull_distance),
 
@@ -304,11 +304,11 @@ namespace necrowarp {
 				ladder_positions.push_back(ladder.position);
 			}
 
-			game_map<MapType>.template reset<zone_region_e::All>();
-			fluid_map<MapType>.template reset<zone_region_e::All>();
+			game_map<MapType>.dependent reset<zone_region_e::All>();
+			fluid_map<MapType>.dependent reset<zone_region_e::All>();
 
-			entity_registry<MapType>.template reset<ALL_NON_PLAYER>();
-			entity_registry<MapType>.template reset_goal_map<player_t>();
+			entity_registry<MapType>.dependent reset<ALL_NON_PLAYER>();
+			entity_registry<MapType>.dependent reset_goal_map<player_t>();
 
 			entity_registry<MapType>.reset_alignment_goal_maps();
 
@@ -320,8 +320,8 @@ namespace necrowarp {
 			constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 			
 			game_map<MapType>
-				.template set<zone_region_e::Border>(closed_state)
-				.template generate<zone_region_e::Interior>(
+				.dependent set<zone_region_e::Border>(closed_state)
+				.dependent generate<zone_region_e::Interior>(
 					random_engine,
 					globals::map_config.fill_percent,
 					globals::map_config.automata_iterations,
@@ -329,7 +329,7 @@ namespace necrowarp {
 					cell_applicator,
 					ladder_positions
 				)
-				.template collapse<zone_region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
+				.dependent collapse<zone_region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
 
 			std::vector<area_t> areas{ area_t::partition(game_map<MapType>, cell_e::Open) };
 
@@ -352,7 +352,7 @@ namespace necrowarp {
 			}
 
 			if (game_map<MapType>[player.position].solid) {
-				cauto player_pos{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
+				cauto player_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 				if (!player_pos.has_value()) {
 					error_log.add("could not find open position for player!");
@@ -373,7 +373,7 @@ namespace necrowarp {
 			ranger_goal_map<MapType>.add(player.position);
 			skulker_goal_map<MapType>.add(player.position);
 
-			cauto portal_pos{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
+			cauto portal_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 			if (!portal_pos.has_value()) {
 				error_log.add("could not find open position for return portal!");
@@ -396,7 +396,7 @@ namespace necrowarp {
 			}
 
 			if (num_up_ladders_needed > 0) {
-				object_registry<MapType>.template spawn<ladder_t>(
+				object_registry<MapType>.dependent spawn<ladder_t>(
 					static_cast<usize>(num_up_ladders_needed),
 					static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
@@ -404,14 +404,14 @@ namespace necrowarp {
 				);
 			}
 
-			object_registry<MapType>.template spawn<ladder_t>(
+			object_registry<MapType>.dependent spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_down_ladders),
 				static_cast<u32>(globals::map_config.minimum_ladder_distance),
 
 				verticality_e::Down, random_engine
 			);
 
-			object_registry<MapType>.template spawn<skull_t>(
+			object_registry<MapType>.dependent spawn<skull_t>(
 				static_cast<usize>(globals::map_config.starting_skulls),
 				static_cast<u32>(globals::map_config.minimum_skull_distance),
 
@@ -498,7 +498,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> static inline std::optional<offset_t> find_spawn_position() noexcept {
 			for (cref<ladder_t> ladder : object_storage<ladder_t>) {
-				if (entity_registry<MapType>.template contains<ALL_GOOD_NPCS>(ladder.position) || ladder.is_down_ladder() || ladder.has_shackle()) {
+				if (entity_registry<MapType>.dependent contains<ALL_GOOD_NPCS>(ladder.position) || ladder.is_down_ladder() || ladder.has_shackle()) {
 					continue;
 				}
 
@@ -516,49 +516,49 @@ namespace necrowarp {
 			}
 
 			if constexpr (globals::OopsAllAdventurers) {
-				entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() });
+				entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() });
 
 				return true;
 			}
 
 			if constexpr (globals::OopsAllMercenaries) {
-				entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() });
+				entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() });
 
 				return true;
 			}
 
 			if constexpr (globals::OopsAllThetwo) {
-				entity_registry<MapType>.template add<true>(thetwo_t{ spawn_pos.value() });
+				entity_registry<MapType>.dependent add<true>(thetwo_t{ spawn_pos.value() });
 
 				return true;
 			}
 
 			if constexpr (globals::OopsAllRangers) {
-				entity_registry<MapType>.template add<true>(ranger_t{ spawn_pos.value() });
+				entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() });
 
 				return true;
 			}
 
 			if constexpr (globals::OopsAllSkulkers) {
-				entity_registry<MapType>.template add<true>(skulker_t{ spawn_pos.value() });
+				entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() });
 
 				return true;
 			}
 
 			if constexpr (globals::OopsAllBattleMonks) {
-				entity_registry<MapType>.template add<true>(battle_monk_t{ spawn_pos.value() });
+				entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() });
 
 				return true;
 			}
 
 			if constexpr (globals::OopsAllBerserkers) {
-				entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() });
+				entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() });
 
 				return true;
 			}
 
 			if constexpr (globals::OopsAllPaladins) {
-				entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value(), random_engine });
+				entity_registry<MapType>.dependent add<true>(paladin_t{ spawn_pos.value(), random_engine });
 
 				return true;
 			}
@@ -567,89 +567,89 @@ namespace necrowarp {
 
 			if (game_stats.wave_size >= globals::MassiveWaveSize) {
 				if (spawn_chance < 12) {
-					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 12%
+					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 12%
 				} else if (spawn_chance < 60) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 48%
+					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 48%
 				} else if (spawn_chance < 72) {
-					entity_registry<MapType>.template add<true>(ranger_t{ spawn_pos.value() }); // 12%
+					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 12%
 				} else if (spawn_chance < 84) {
-					entity_registry<MapType>.template add<true>(skulker_t{ spawn_pos.value() }); // 12%
+					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 12%
 				} else if (spawn_chance < 90) {
-					entity_registry<MapType>.template add<true>(battle_monk_t{ spawn_pos.value() }); // 6%
+					entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() }); // 6%
 				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 6%
+					entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() }); // 6%
 				} else {
-					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(paladin_t{ spawn_pos.value() }); // 4%
 				}
 			} else if (game_stats.wave_size >= globals::HugeWaveSize) {
 				if (spawn_chance < 36) {
-					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 36%
+					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 36%
 				} else if (spawn_chance < 72) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 36%
+					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 36%
 				} else if (spawn_chance < 80) {
-					entity_registry<MapType>.template add<true>(ranger_t{ spawn_pos.value() }); // 8%
+					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 8%
 				} else if (spawn_chance < 88) {
-					entity_registry<MapType>.template add<true>(skulker_t{ spawn_pos.value() }); // 8%
+					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 8%
 				} else if (spawn_chance < 92) {
-					entity_registry<MapType>.template add<true>(battle_monk_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() }); // 4%
 				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() }); // 4%
 				} else {
-					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(paladin_t{ spawn_pos.value() }); // 4%
 				}
 			} else if (game_stats.wave_size >= globals::LargeWaveSize) {
 				if (spawn_chance < 50) {
-					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 50%
+					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 50%
 				} else if (spawn_chance < 74) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 24%
+					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 24%
 				} else if (spawn_chance < 82) {
-					entity_registry<MapType>.template add<true>(ranger_t{ spawn_pos.value() }); // 8%
+					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 8%
 				} else if (spawn_chance < 90) {
-					entity_registry<MapType>.template add<true>(skulker_t{ spawn_pos.value() }); // 8%
+					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 8%
 				} else if (spawn_chance < 94) {
-					entity_registry<MapType>.template add<true>(battle_monk_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() }); // 4%
 				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() }); // 4%
 				} else {
-					entity_registry<MapType>.template add<true>(paladin_t{ spawn_pos.value() }); // 2%
+					entity_registry<MapType>.dependent add<true>(paladin_t{ spawn_pos.value() }); // 2%
 				}
 			} else if (game_stats.wave_size >= globals::MediumWaveSize) {
 				if (spawn_chance < 76) {
-					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 76%
+					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 76%
 				} else if (spawn_chance < 88) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 12%
+					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 12%
 				} else if (spawn_chance < 92) {
-					entity_registry<MapType>.template add<true>(ranger_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 4%
 				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.template add<true>(skulker_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 4%
 				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.template add<true>(battle_monk_t{ spawn_pos.value() }); // 2%
+					entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() }); // 2%
 				} else {
-					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 2%
+					entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() }); // 2%
 				}
 			} else if (game_stats.wave_size >= globals::SmallWaveSize) {
 				if (spawn_chance < 88) {
-					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 88%
+					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 88%
 				} else if (spawn_chance < 94) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 6%
+					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 6%
 				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.template add<true>(ranger_t{ spawn_pos.value() }); // 2%
+					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 2%
 				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.template add<true>(skulker_t{ spawn_pos.value() }); // 2%
+					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 2%
 				} else if (spawn_chance < 99) {
-					entity_registry<MapType>.template add<true>(battle_monk_t{ spawn_pos.value() }); // 1%
+					entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() }); // 1%
 				} else {
-					entity_registry<MapType>.template add<true>(berserker_t{ spawn_pos.value() }); // 1%
+					entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() }); // 1%
 				}
 			} else {
 				if (spawn_chance < 96) {
-					entity_registry<MapType>.template add<true>(adventurer_t{ spawn_pos.value() }); // 96%
+					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 96%
 				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.template add<true>(mercenary_t{ spawn_pos.value() }); // 2%
+					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 2%
 				} else if (spawn_chance < 99) {
-					entity_registry<MapType>.template add<true>(ranger_t{ spawn_pos.value() }); // 1%
+					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 1%
 				} else {
-					entity_registry<MapType>.template add<true>(skulker_t{ spawn_pos.value() }); // 1%
+					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 1%
 				}
 			}
 
@@ -657,9 +657,11 @@ namespace necrowarp {
 		}
 
 		template<map_type_e MapType> static inline void process_turn() noexcept {
-			if (window.is_closing() || !player_acted || descent_flag) {
+			if (window.is_closing() || !game_running || !player_acted || descent_flag || plunge_flag) {
 				return;
 			}
+
+			registry_access.lock<true>();
 
 			processing_turn = true;
 
@@ -669,7 +671,7 @@ namespace necrowarp {
 				globals::MaximumWaveSize
 			);
 
-			if (entity_registry<MapType>.template empty<ALL_GOOD_NPCS>() && !game_stats.has_spawns()) {
+			if (entity_registry<MapType>.dependent empty<ALL_GOOD_NPCS>() && !game_stats.has_spawns()) {
 				game_stats.spawns_remaining = game_stats.wave_size;
 			}
 
@@ -691,6 +693,8 @@ namespace necrowarp {
 			
 			entity_registry<MapType>.update();
 
+			registry_access.unlock();
+
 			player_acted = false;
 			processing_turn = false;
 		}
@@ -710,6 +714,7 @@ namespace necrowarp {
 		template<map_type_e MapType> static inline void update() noexcept;
 
 		template<map_type_e MapType> static inline void render() noexcept {
+			if (window.is_closing()) {
 			if (window.is_closing()) {
 				return;
 			}
@@ -735,13 +740,12 @@ namespace necrowarp {
 				game_map<MapType>.draw(game_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 				fluid_map<MapType>.draw(game_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 
-				if (!processing_turn) {
-					object_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
-					entity_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
-				} else {
-					return;
-				}
+				registry_access.lock();
 
+				object_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+				entity_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+
+				registry_access.unlock();
 			}
 
 			ui_registry.render<MapType>();
@@ -752,7 +756,7 @@ namespace necrowarp {
 		template<map_type_e MapType> static inline void unload() noexcept {
 			terminate_process_turn();
 
-			game_map<MapType>.template reset<zone_region_e::All>();
+			game_map<MapType>.dependent reset<zone_region_e::All>();
 			
 			entity_registry<MapType>.reset();
 			object_registry<MapType>.reset();
@@ -790,6 +794,7 @@ namespace necrowarp {
 			error_log.flush_to_console(std::cerr);
 
 			shutdown();
+
 			exit(EXIT_FAILURE);
 		}
 	};

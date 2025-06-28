@@ -114,7 +114,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spill(rval<ObjectType> object) noexcept {
-		if (!game_map<MapType>.template within<zone_region_e::Interior>(object.position) || game_map<MapType>[object.position] != cell_e::Open) {
+		if (!game_map<MapType>.dependent within<zone_region_e::Interior>(object.position) || game_map<MapType>[object.position] != cell_e::Open) {
 			return false;
 		}
 
@@ -154,7 +154,7 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t offset_position{ current.position + offset };
 
-				if (!visited.insert(offset_position).second || !game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
+				if (!visited.insert(offset_position).second || !game_map<MapType>.dependent within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
 					continue;
 				}
 
@@ -166,7 +166,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spill(rval<ObjectType> object, usize amount) noexcept {
-		if (!game_map<MapType>.template within<zone_region_e::Interior>(object.position) || game_map<MapType>[object.position] != cell_e::Open || amount <= 0) {
+		if (!game_map<MapType>.dependent within<zone_region_e::Interior>(object.position) || game_map<MapType>[object.position] != cell_e::Open || amount <= 0) {
 			return false;
 		}
 
@@ -214,7 +214,7 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t offset_position{ current.position + offset };
 
-				if (!visited.insert(offset_position).second || !game_map<MapType>.template within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
+				if (!visited.insert(offset_position).second || !game_map<MapType>.dependent within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
 					continue;
 				}
 
@@ -275,7 +275,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
+			cauto maybe_position{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -289,7 +289,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType>::spawn(usize count, Args... args) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map<MapType>.template find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
+			cauto maybe_position{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -302,10 +302,10 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance) noexcept {
-		object_goal_map<MapType, ObjectType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+		object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ object_goal_map<MapType, ObjectType>.template find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
+			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -313,17 +313,17 @@ namespace necrowarp {
 
 			add(ObjectType{ maybe_position.value() });
 
-			object_goal_map<MapType, ObjectType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+			object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 		}
 
 		return true;
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
-		object_goal_map<MapType, ObjectType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+		object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 		
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ object_goal_map<MapType, ObjectType>.template find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
+			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
@@ -331,14 +331,14 @@ namespace necrowarp {
 
 			add(ObjectType{ maybe_position.value(), args... });
 
-			object_goal_map<MapType, ObjectType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+			object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 		}
 
 		return true;
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::update(offset_t current, offset_t target) noexcept {
-		if (empty(current) || !game_map<MapType>.template within<zone_region_e::Interior>(current) || contains(target) || !game_map<MapType>.template within<zone_region_e::Interior>(target)) {
+		if (empty(current) || !game_map<MapType>.dependent within<zone_region_e::Interior>(current) || contains(target) || !game_map<MapType>.dependent within<zone_region_e::Interior>(target)) {
 			return false;
 		}
 		
@@ -378,7 +378,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void object_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_OBJECTS>(); }
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
-		object_goal_map<MapType, ObjectType>.template recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+		object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 	}
 
 	template<map_type_e MapType>

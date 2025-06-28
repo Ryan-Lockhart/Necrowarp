@@ -99,7 +99,7 @@ namespace necrowarp {
 			using entity_type = to_entity_type<cval>::type;
 
 			if constexpr (globals::has_unique_descriptor<entity_type>::value) {
-				cauto entity_ptr{ entity_registry<MapType>.template at<entity_type>(position) };
+				cauto entity_ptr{ entity_registry<MapType>.dependent at<entity_type>(position) };
 
 				if (entity_ptr != nullptr) {
 					runes.concatenate(entity_ptr->to_colored_string());
