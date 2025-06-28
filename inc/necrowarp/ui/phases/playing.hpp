@@ -324,11 +324,11 @@ namespace necrowarp {
 				const patron_e current_patron{ player.patron };
 				const disposition_e current_disposition{ get_patron_disposition(current_patron) };
 
-				favor_expanded_label.text = runes_t{ "Patron: ", colors::White };
+				favor_expanded_label.text = runes_t{ std::format("Patron:{}", std::string(padding_size(current_patron), ' ')), colors::White };
 
 				favor_expanded_label.text.concatenate(necrowarp::to_colored_string(current_patron));
 
-				favor_expanded_label.text.concatenate(runes_t{ "\n\nDisposition: ", colors::White });
+				favor_expanded_label.text.concatenate(runes_t{ std::format("\n\nDisposition:{}", std::string(padding_size(current_disposition), ' ')), colors::White });
 
 				favor_expanded_label.text.concatenate(necrowarp::to_colored_string(current_disposition));
 
@@ -341,7 +341,7 @@ namespace necrowarp {
 
 					favor_expanded_label.text.concatenate(to_colored_string(cval, value, type));
 
-					if constexpr (cval == discount_e::TargetWarp || cval == discount_e::SanguineInvocation || cval == discount_e::NecromanticAscendance) {
+					if constexpr (cval == discount_e::TargetWarp || cval == discount_e::Annihilate || cval == discount_e::GalvanicInvocation || cval == discount_e::CalamitousRetaliation) {
 						favor_expanded_label.text.concatenate(runes_t{ "\n\n\n" });
 					} else {
 						favor_expanded_label.text.concatenate(runes_t{ "\n\n" });

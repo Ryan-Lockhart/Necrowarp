@@ -17,6 +17,8 @@ namespace necrowarp {
 			constexpr dimension_e cval{ val };
 
 			if constexpr (is_material<cval>::value) {
+				registry_access.lock();
+
 				constexpr map_type_e map_type{ determine_map<cval>() };
 
 				game_map<map_type>.dependent reset<zone_region_e::All>();
@@ -35,6 +37,8 @@ namespace necrowarp {
 				object_registry<map_type>.recalculate_goal_map();
 
 				phase.transition(phase_e::Playing);
+
+				registry_access.unlock();
 
 				game_running = true;
 				process_turn_async<map_type>();

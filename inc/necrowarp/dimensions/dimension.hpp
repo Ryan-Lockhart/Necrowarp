@@ -67,11 +67,11 @@ namespace necrowarp {
 			} case dimension_e::Underworld: {
 				return "The Underworld is a massive expanse of caverns and natural tunnels that trickle throughout the subsurface of Mokrae";
 			} case dimension_e::Voitykras: {
-				return "Voitykras is the remnants of the First Plane and sovereign territory of the extramortal revenant; the Moslager";
+				return "Voitykras are the remnants of the First Plane and sovereign territory of the extramortal revenant; the Moslager";
 			} case dimension_e::Sudokras: {
 				return "Sudokras is the divine realm of Akurakhaithan and his banished subjects";
 			} case dimension_e::Tribulation: {
-				return "Tribulation! You are being tested by your patron; do not fail them now";
+				return "Tribulation! You are being tested by your patron; do not fail them now...";
 			} case dimension_e::Yyndikras: {
 				return "Yyndikras is the divine realm of the eponymous Yyantranu, one of the Trydaiastokhai and ascendant vanguard of the Third Plane";
 			} case dimension_e::Overworld: {

@@ -17,6 +17,22 @@ namespace necrowarp {
 		Saeiligarkeuss
 	};
 
+	constexpr usize padding_size(patron_e patron) noexcept {
+		switch (patron) {
+			case patron_e::None: {
+				return 15;
+			} case patron_e::Rathghul: {
+				return 11;
+			} case patron_e::Akurakhaithan: {
+				return 6;
+			} case patron_e::Merirfin: {
+				return 11;
+			} case patron_e::Saeiligarkeuss: {
+				return 5;
+			}
+		}
+	}
+
 	constexpr cstr to_string(patron_e patron) noexcept {
 		switch (patron) {
 			case patron_e::None: {
@@ -56,6 +72,18 @@ namespace necrowarp {
 		Apathetic,
 		Cooperative,
 	};
+
+	constexpr usize padding_size(disposition_e disposition) noexcept {
+		switch (disposition) {
+			case disposition_e::Sadistic: {
+				return 6;
+			} case disposition_e::Apathetic: {
+				return 5;
+			} case disposition_e::Cooperative: {
+				return 3;
+			}
+		}
+	}
 
 	constexpr cstr to_string(disposition_e disposition) noexcept {
 		switch (disposition) {

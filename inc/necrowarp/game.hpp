@@ -79,6 +79,8 @@ namespace necrowarp {
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::RandomWarp)) {
 				player.command = command_pack_t{ command_e::RandomWarp, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::TargetWarp)) {
+				registry_access.lock();
+
 				player.command = command_pack_t{
 					!entity_registry<MapType>.empty(grid_cursor<MapType>.get_position()) || (!ignore_objects && !object_registry<MapType>.empty(grid_cursor<MapType>.get_position())) ?
 						command_e::ConsumeWarp :
@@ -86,6 +88,8 @@ namespace necrowarp {
 					player.position,
 					grid_cursor<MapType>.get_position()
 				};
+
+				registry_access.unlock();
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::CalciticInvocation)) {
 				player.command = command_pack_t{ command_e::CalciticInvocation, player.position, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::SpectralInvocation)) {
@@ -125,7 +129,11 @@ namespace necrowarp {
 					return false;
 				}
 
+				registry_access.lock();
+
 				const command_e command_type{ !entity_registry<MapType>.empty(target_position) || (!ignore_objects && !object_registry<MapType>.empty(target_position)) ? player.clash_or_consume<MapType>(target_position) : command_e::Move };
+
+				registry_access.unlock();
 
 				player.command = command_pack_t{ command_type, player.position, target_position };
 
@@ -166,6 +174,8 @@ namespace necrowarp {
 		}
 
 		template<map_type_e MapType> static inline void load() noexcept {
+			registry_access.lock();
+
 			game_stats.reset();
 
 			scorekeeper.reset();
@@ -245,7 +255,9 @@ namespace necrowarp {
 				terminate_prematurely();
 			}
 
-			object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+			if constexpr (globals::SpawnTutorialPortal) {
+				object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+			}
 
 			object_registry<MapType>.dependent spawn<ladder_t>(
 				static_cast<usize>(globals::map_config.number_of_up_ladders),
@@ -273,12 +285,16 @@ namespace necrowarp {
 
 			phase.transition(phase_e::Playing);
 
+			registry_access.unlock();
+
 			game_running = true;
 			process_turn_async<MapType>();
 		}
 
 		template<map_type_e MapType> static inline void descend() noexcept {
 			terminate_process_turn();
+
+			registry_access.lock();
 
 			randomize_patrons();
 #if !defined(STEAMLESS)
@@ -380,7 +396,9 @@ namespace necrowarp {
 				terminate_prematurely();
 			}
 
-			object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+			if constexpr (globals::SpawnTutorialPortal) {
+				object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+			}
 
 			i16 num_up_ladders_needed{ globals::map_config.number_of_up_ladders };
 
@@ -422,6 +440,8 @@ namespace necrowarp {
 			object_registry<MapType>.recalculate_goal_map();
 
 			phase.transition(phase_e::Playing);
+
+			registry_access.unlock();
 
 			game_running = true;
 			process_turn_async<MapType>();

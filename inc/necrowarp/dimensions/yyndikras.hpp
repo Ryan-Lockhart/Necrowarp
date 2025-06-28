@@ -67,6 +67,8 @@ namespace necrowarp {
 			terminate_prematurely();
 		}
 
-		object_registry<map_type>.add(portal_t{ portal_pos.value(), stability_e::Collapsing });
+		if constexpr (globals::SpawnTutorialPortal) {
+			object_registry<map_type>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+		}
 	}
 } // namespace necrowarp

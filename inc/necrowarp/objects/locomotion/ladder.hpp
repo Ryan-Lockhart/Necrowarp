@@ -200,6 +200,7 @@ namespace necrowarp {
 			}
 			
 			shackle = random_shackle(random_engine);
+			idle_animation.index = get_index(shackle);
 
 			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
 
@@ -212,6 +213,7 @@ namespace necrowarp {
 			}
 			
 			shackle = type;
+			idle_animation.index = get_index(shackle);
 
 			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
 
@@ -224,6 +226,7 @@ namespace necrowarp {
 			}
 
 			shackle = shackle_e::Unshackled;
+			idle_animation.index = get_index(shackle);
 
 			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled, i32>;
 

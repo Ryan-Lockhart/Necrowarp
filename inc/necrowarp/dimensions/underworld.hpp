@@ -71,7 +71,9 @@ namespace necrowarp {
 			terminate_prematurely();
 		}
 
-		object_registry<map_type>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+		if constexpr (globals::SpawnTutorialPortal) {
+			object_registry<map_type>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+		}
 
 		object_registry<map_type>.dependent spawn<ladder_t>(
 			static_cast<usize>(globals::map_config.number_of_up_ladders),

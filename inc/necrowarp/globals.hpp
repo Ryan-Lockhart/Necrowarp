@@ -20,7 +20,7 @@ namespace necrowarp {
 
 	namespace globals {
 		constexpr cstr GameName{ "Necrowarp" };
-		constexpr cstr GameVersion{ "0.0.1" };
+		constexpr cstr GameVersion{ "0.1.1" };
 		constexpr cstr GameAuthor{ "Ryan Lockhart" };
 
 		const std::string GameTitle{ std::format("{} v{} by {}", GameName, GameVersion, GameAuthor) };
@@ -352,7 +352,9 @@ namespace necrowarp {
 
 		constexpr i16 FloorsPerReinforcement{ 8 };
 
-		constexpr bool CheatsAllowed{ true };
+		constexpr bool CheatsAllowed{ false };
+
+		constexpr bool SpawnTutorialPortal{ false };
 
 		constexpr f32 FluidPoolMinimumVolume{ 4.5f };
 		constexpr f32 FluidPoolMaximumVolume{ 5.7f };
