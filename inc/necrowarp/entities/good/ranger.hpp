@@ -50,6 +50,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_clumsy<ranger_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_elusive<ranger_t> {
 		static constexpr bool value = true;
 	};
@@ -82,7 +86,8 @@ namespace necrowarp {
 
 	struct ranger_t {
 	  private:
-		static inline std::bernoulli_distribution dodge_dis{ 0.4 };
+		static inline std::bernoulli_distribution dodge_dis{ 0.333 };
+		static inline std::bernoulli_distribution fumble_dis{ 0.333 };
 
 		i8 ammunition;
 		bool nocked;
@@ -95,18 +100,18 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr i8 QuiverCapacity{ 8 };
+		static constexpr i8 QuiverCapacity{ 6 };
 
-		static constexpr i8 MinimumRange{ 4 };
-		static constexpr i8 OptimalRange{ 6 };
-		static constexpr i8 MaximumRange{ 8 };
+		static constexpr i8 MinimumRange{ 2 };
+		static constexpr i8 OptimalRange{ 4 };
+		static constexpr i8 MaximumRange{ 6 };
 
 		static inline bool in_range(offset_t origin, offset_t target) noexcept {
-			return between<offset_t::product_t>(offset_t::distance<distance_function_e::Chebyshev>(origin, target), ranger_t::MinimumRange, ranger_t::MaximumRange);
+			return between<f32>(offset_t::distance<distance_function_e::Octile>(origin, target), ranger_t::MinimumRange, ranger_t::MaximumRange);
 		}
 
-		static inline bool in_range(offset_t::product_t distance) noexcept {
-			return between<offset_t::product_t>(distance, ranger_t::MinimumRange, ranger_t::MaximumRange);
+		static inline bool in_range(f32 distance) noexcept {
+			return between<f32>(distance, ranger_t::MinimumRange, ranger_t::MaximumRange);
 		}
 
 		inline bool in_range(offset_t target) const noexcept { return in_range(position, target); }
@@ -159,13 +164,15 @@ namespace necrowarp {
 
 		inline bool can_loose() const noexcept { return nocked; }
 		
-		template<map_type_e MapType> inline void loose(offset_t position) noexcept;
+		template<map_type_e MapType> inline bool loose(offset_t position) noexcept;
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
 		static constexpr bool HasStaticDodge{ true };
 
 		template<RandomEngine Generator> static inline bool dodge(ref<Generator> generator) noexcept { return dodge_dis(generator); }
+
+		template<RandomEngine Generator> static inline bool fumble(ref<Generator> generator) noexcept { return fumble_dis(generator); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

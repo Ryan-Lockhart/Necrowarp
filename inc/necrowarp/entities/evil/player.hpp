@@ -140,6 +140,10 @@ namespace necrowarp {
 		static constexpr i8 UnsafeWarpBoon{ 1 };
 
 	  private:
+		static inline std::bernoulli_distribution intervention_dis{ 0.01 };
+
+		static inline sound_t intervention_sound{ "res/sfx/clips/divine_intervention.flac" };
+
 		i8 energy;
 		i8 armor;
 		i8 divinity;
@@ -169,7 +173,7 @@ namespace necrowarp {
 		}
 
 	  public:
-		inline player_t() noexcept : command{}, position{}, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+		inline player_t() noexcept : command{}, position{}, patron{}, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
 
 		inline player_t(offset_t position) noexcept : command{}, position{ position }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
 
@@ -213,7 +217,9 @@ namespace necrowarp {
 		inline bool bypass_invocations_enabled() const noexcept { return game_stats.cheats.is_enabled() && game_stats.cheats.bypass_invocations; }
 
 		inline i8 max_energy() const noexcept {
-			const i8 calculated_max{ clamp<i8>(MinimumEnergy + game_stats.minion_kills / globals::KillsPerEnergySlot, MinimumEnergy, MaximumEnergy) };
+			const i8 calculated_max{
+				clamp<i8>(MinimumEnergy + game_stats.minion_kills / globals::KillsPerEnergySlot, MinimumEnergy, MaximumEnergy)
+			};
 
 			if (!game_stats.cheats.is_enabled() || !game_stats.cheats.energy.is_enabled()) {
 				return calculated_max;
@@ -223,7 +229,9 @@ namespace necrowarp {
 		}
 
 		inline i8 max_armor() const noexcept {
-			const i8 calculated_max{ clamp<i8>(MinimumArmor + game_stats.player_kills / globals::KillsPerArmorSlot, MinimumArmor, MaximumArmor) };
+			const i8 calculated_max{
+				clamp<i8>(MinimumArmor + game_stats.player_kills / globals::KillsPerArmorSlot, MinimumArmor, MaximumArmor)
+			};
 
 			if (!game_stats.cheats.is_enabled() || !game_stats.cheats.armor.is_enabled()) {
 				return calculated_max;
@@ -327,6 +335,8 @@ namespace necrowarp {
 		template<map_type_e MapType> inline command_e clash_or_consume(offset_t position) const noexcept;
 
 		template<map_type_e MapType> inline void die() noexcept;
+
+		template<RandomEngine Generator> static inline bool intervention(ref<Generator> engine) noexcept { return intervention_dis(engine); }
 
 		inline void reinvigorate(i8 value) noexcept { set_energy(energy + value); }
 

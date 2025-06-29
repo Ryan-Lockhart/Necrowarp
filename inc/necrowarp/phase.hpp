@@ -15,8 +15,13 @@ namespace necrowarp {
 		
 		constexpr phase_t(phase_e phase) noexcept : previous_phase{ phase_e::None }, current_phase{ phase }{}
 
-		constexpr void transition(phase_e phase) noexcept {
-			previous_phase = current_phase;
+		template<bool Sever = false> constexpr void transition(phase_e phase) noexcept {
+			if constexpr (Sever) {
+				previous_phase = phase;
+			} else {
+				previous_phase = current_phase;
+			}
+
 			current_phase = phase;
 		}
 

@@ -78,13 +78,13 @@ namespace necrowarp {
 	static inline sparse_t<sparseling_t<bool>> newborns{};
 	static inline sparse_t<sparseling_t<bool>> stunned{};
 
-	template<map_type_e MapType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> good_goal_map{};
-	template<map_type_e MapType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> evil_goal_map{};
+	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> good_goal_map{};
+	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> evil_goal_map{};
 
-	template<map_type_e MapType> static inline field_t<offset_t::product_t, distance_function_e::Chebyshev, globals::MapSize<MapType>, globals::BorderSize<MapType>> ranger_goal_map{};
-	template<map_type_e MapType> static inline field_t<offset_t::product_t, distance_function_e::Chebyshev, globals::MapSize<MapType>, globals::BorderSize<MapType>> skulker_goal_map{};
+	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> ranger_goal_map{};
+	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> skulker_goal_map{};
 
-	template<map_type_e MapType, NonNullEntity EntityType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> entity_goal_map{};
+	template<map_type_e MapType, NonNullEntity EntityType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> entity_goal_map{};
 
 	static inline volatile std::atomic<bool> descent_flag{ false };
 
@@ -95,6 +95,8 @@ namespace necrowarp {
 	static inline volatile std::atomic<bool> player_turn_invalidated{ false };
 
 	static inline volatile std::atomic<bool> freshly_divine{ false };
+
+	static inline volatile std::atomic<bool> divine_intervention_invoked{ false };
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return entity_storage<EntityType>.contains(position); }
 

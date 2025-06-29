@@ -10,16 +10,21 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline void ranger_t::loose(offset_t position) noexcept {
+	template<map_type_e MapType> inline bool ranger_t::loose(offset_t position) noexcept {
 		if (!can_loose()) {
-			return;
-		}
-
-		if (!arrow_t::snap(random_engine)) {
-			object_registry<MapType>.spill(arrow_t{ position });
+			return false;
 		}
 
 		nocked = false;
+
+		const bool missed{ ranger_t::fumble(random_engine) };
+		const bool snapped{ missed && arrow_t::snap(random_engine) };
+
+		if (!snapped) {
+			object_registry<MapType>.spill(arrow_t{ position });
+		}
+
+		return missed;
 	}
 
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, loose_t>::process() const noexcept {
@@ -43,7 +48,9 @@ namespace necrowarp {
 					return;
 				}
 
-				maybe_ranger->loose<MapType>(target_position);
+				if (!maybe_ranger->loose<MapType>(target_position)) {
+					return;
+				}
 
 				const i8 damage{ maybe_ranger->get_damage(cval) };
 

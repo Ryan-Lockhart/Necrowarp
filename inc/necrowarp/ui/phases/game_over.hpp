@@ -84,7 +84,7 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			if (retry_button.is_active()) {
 				phase.transition(phase_e::Loading);
 			} else if (quit_button.is_active()) {
-				phase.transition(phase_e::Exiting);
+				phase.transition<true>(phase_e::MainMenu);
 			}
 
 			game_over_label.text = runes_t{ "You were slain! Game over...", colors::White };

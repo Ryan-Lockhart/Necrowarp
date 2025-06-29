@@ -20,6 +20,7 @@
 #include <necrowarp/globals.hpp>
 #include <necrowarp/scorekeeper.hpp>
 #include <necrowarp/animation.hpp>
+#include <necrowarp/patronage.tpp>
 
 #include <magic_enum/magic_enum_all.hpp>
 
@@ -79,8 +80,6 @@ namespace necrowarp {
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::RandomWarp)) {
 				player.command = command_pack_t{ command_e::RandomWarp, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::TargetWarp)) {
-				registry_access.lock();
-
 				player.command = command_pack_t{
 					!entity_registry<MapType>.empty(grid_cursor<MapType>.get_position()) || (!ignore_objects && !object_registry<MapType>.empty(grid_cursor<MapType>.get_position())) ?
 						command_e::ConsumeWarp :
@@ -88,8 +87,6 @@ namespace necrowarp {
 					player.position,
 					grid_cursor<MapType>.get_position()
 				};
-
-				registry_access.unlock();
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::CalciticInvocation)) {
 				player.command = command_pack_t{ command_e::CalciticInvocation, player.position, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::SpectralInvocation)) {
@@ -129,11 +126,7 @@ namespace necrowarp {
 					return false;
 				}
 
-				registry_access.lock();
-
 				const command_e command_type{ !entity_registry<MapType>.empty(target_position) || (!ignore_objects && !object_registry<MapType>.empty(target_position)) ? player.clash_or_consume<MapType>(target_position) : command_e::Move };
-
-				registry_access.unlock();
 
 				player.command = command_pack_t{ command_type, player.position, target_position };
 
@@ -174,15 +167,17 @@ namespace necrowarp {
 		}
 
 		template<map_type_e MapType> static inline void load() noexcept {
-			registry_access.lock();
+			game_map<MapType>.dependent reset<zone_region_e::All>();
+			fluid_map<MapType>.dependent reset<zone_region_e::All>();
 
-			game_stats.reset();
-
-			scorekeeper.reset();
+			entity_registry<MapType>.reset();
+			object_registry<MapType>.reset();
 
 			reset_patrons();
 
 			player.patron = desired_patron;
+
+			game_stats.reset();
 
 			game_stats.cheats.activate();
 
@@ -190,11 +185,7 @@ namespace necrowarp {
 			game_stats.cheats.free_costs = true;
 			game_stats.cheats.bypass_invocations = true;
 
-			game_map<MapType>.dependent reset<zone_region_e::All>();
-			fluid_map<MapType>.dependent reset<zone_region_e::All>();
-
-			entity_registry<MapType>.reset();
-			object_registry<MapType>.reset();
+			scorekeeper.reset();
 
 			constexpr map_cell_t open_state{ cell_e::Open, cell_e::Transperant, cell_e::Seen, cell_e::Explored };
 			constexpr map_cell_t closed_state{ cell_e::Solid, cell_e::Opaque, cell_e::Seen, cell_e::Explored };
@@ -285,16 +276,12 @@ namespace necrowarp {
 
 			phase.transition(phase_e::Playing);
 
-			registry_access.unlock();
-
 			game_running = true;
 			process_turn_async<MapType>();
 		}
 
 		template<map_type_e MapType> static inline void descend() noexcept {
 			terminate_process_turn();
-
-			registry_access.lock();
 
 			randomize_patrons();
 #if !defined(STEAMLESS)
@@ -441,8 +428,6 @@ namespace necrowarp {
 
 			phase.transition(phase_e::Playing);
 
-			registry_access.unlock();
-
 			game_running = true;
 			process_turn_async<MapType>();
 		}
@@ -585,7 +570,7 @@ namespace necrowarp {
 
 			const u8 spawn_chance{ static_cast<u8>(globals::spawn_dis(random_engine)) };
 
-			if (game_stats.wave_size >= globals::MassiveWaveSize) {
+			if (game_stats.wave_size <= globals::MassiveWaveSize && game_stats.wave_size > globals::HugeWaveSize) {
 				if (spawn_chance < 12) {
 					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 12%
 				} else if (spawn_chance < 60) {
@@ -601,7 +586,7 @@ namespace necrowarp {
 				} else {
 					entity_registry<MapType>.dependent add<true>(paladin_t{ spawn_pos.value() }); // 4%
 				}
-			} else if (game_stats.wave_size >= globals::HugeWaveSize) {
+			} else if (game_stats.wave_size <= globals::HugeWaveSize && game_stats.wave_size > globals::LargeWaveSize) {
 				if (spawn_chance < 36) {
 					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 36%
 				} else if (spawn_chance < 72) {
@@ -617,51 +602,47 @@ namespace necrowarp {
 				} else {
 					entity_registry<MapType>.dependent add<true>(paladin_t{ spawn_pos.value() }); // 4%
 				}
-			} else if (game_stats.wave_size >= globals::LargeWaveSize) {
+			} else if (game_stats.wave_size <= globals::LargeWaveSize && game_stats.wave_size > globals::MediumWaveSize) {
 				if (spawn_chance < 50) {
 					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 50%
 				} else if (spawn_chance < 74) {
 					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 24%
-				} else if (spawn_chance < 82) {
-					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 8%
-				} else if (spawn_chance < 90) {
-					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 8%
+				} else if (spawn_chance < 84) {
+					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 10%
 				} else if (spawn_chance < 94) {
-					entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 10%
+				} else if (spawn_chance < 96) {
+					entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() }); // 2%
 				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() }); // 4%
+					entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() }); // 2%
 				} else {
 					entity_registry<MapType>.dependent add<true>(paladin_t{ spawn_pos.value() }); // 2%
 				}
-			} else if (game_stats.wave_size >= globals::MediumWaveSize) {
-				if (spawn_chance < 76) {
-					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 76%
-				} else if (spawn_chance < 88) {
-					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 12%
-				} else if (spawn_chance < 92) {
-					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 4%
-				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 4%
-				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() }); // 2%
-				} else {
-					entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() }); // 2%
-				}
-			} else if (game_stats.wave_size >= globals::SmallWaveSize) {
-				if (spawn_chance < 88) {
-					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 88%
+			} else if (game_stats.wave_size <= globals::MediumWaveSize && game_stats.wave_size > globals::SmallWaveSize) {
+				if (spawn_chance < 80) {
+					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 80%
+				} else if (spawn_chance < 90) {
+					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 10%
 				} else if (spawn_chance < 94) {
-					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 6%
-				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 2%
+					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 4%
 				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 2%
+					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 4%
 				} else if (spawn_chance < 99) {
 					entity_registry<MapType>.dependent add<true>(battle_monk_t{ spawn_pos.value() }); // 1%
 				} else {
 					entity_registry<MapType>.dependent add<true>(berserker_t{ spawn_pos.value() }); // 1%
 				}
-			} else {
+			} else if (game_stats.wave_size <= globals::SmallWaveSize && game_stats.wave_size > globals::TinyWaveSize) {
+				if (spawn_chance < 90) {
+					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 90%
+				} else if (spawn_chance < 96) {
+					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 6%
+				} else if (spawn_chance < 98) {
+					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 2%
+				} else {
+					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 2%
+				}
+			} else if (game_stats.wave_size <= globals::TinyWaveSize && game_stats.wave_size > globals::MinisculeWaveSize) {
 				if (spawn_chance < 96) {
 					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 96%
 				} else if (spawn_chance < 98) {
@@ -670,6 +651,12 @@ namespace necrowarp {
 					entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() }); // 1%
 				} else {
 					entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() }); // 1%
+				}
+			} else {
+				if (spawn_chance < 96) {
+					entity_registry<MapType>.dependent add<true>(adventurer_t{ spawn_pos.value() }); // 99%
+				} else {
+					entity_registry<MapType>.dependent add<true>(mercenary_t{ spawn_pos.value() }); // 1%
 				}
 			}
 
@@ -715,8 +702,16 @@ namespace necrowarp {
 
 			registry_access.unlock();
 
-			player_acted = false;
 			processing_turn = false;
+
+			phase_state_t<phase_e::Playing>::buffer_access.lock<true>();
+
+			phase_state_t<phase_e::Playing>::entity_buffer<MapType> = entity_registry<MapType>;
+			phase_state_t<phase_e::Playing>::object_buffer<MapType> = object_registry<MapType>;
+
+			phase_state_t<phase_e::Playing>::buffer_access.unlock();
+			
+			player_acted = false;
 		}
 
 		static inline void terminate_process_turn() noexcept {
@@ -759,12 +754,17 @@ namespace necrowarp {
 				game_map<MapType>.draw(game_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 				fluid_map<MapType>.draw(game_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::Game>());
 
-				registry_access.lock();
+				if (registry_access.try_lock()) {
+					object_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					entity_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
 
-				object_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
-				entity_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					registry_access.unlock();
+				} else if (phase_state_t<phase_e::Playing>::buffer_access.try_lock()) {
+					phase_state_t<phase_e::Playing>::object_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					phase_state_t<phase_e::Playing>::entity_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
 
-				registry_access.unlock();
+					phase_state_t<phase_e::Playing>::buffer_access.unlock();
+				}
 			}
 
 			ui_registry.render<MapType>();

@@ -35,6 +35,11 @@ namespace necrowarp {
 	};
 
 	template<> struct phase_state_t<phase_e::Playing> {
+		static inline priority_mutex buffer_access{};
+
+		template<map_type_e MapType> static inline entity_registry_t<MapType> entity_buffer{};
+		template<map_type_e MapType> static inline object_registry_t<MapType> object_buffer{};
+
 		static inline status_bar_t<3> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
 			std::array<status_t, 3>{
@@ -355,58 +360,62 @@ namespace necrowarp {
 				favor_hidden_label.text = runes_t{ " Favor " };
 			}
 
-			registry_access.lock();
+			if (registry_access.try_lock()) {
+				const bool has_entity{ entity_registry<MapType>.contains(grid_cursor<MapType>.current_position) };
+				const bool has_object{ object_registry<MapType>.contains(grid_cursor<MapType>.current_position) };
 
-			const bool has_entity{ entity_registry<MapType>.contains(grid_cursor<MapType>.current_position) };
-			const bool has_object{ object_registry<MapType>.contains(grid_cursor<MapType>.current_position) };
+				const fluid_e fluid{ fluid_map<MapType>[grid_cursor<MapType>.current_position] };
 
-			const fluid_e fluid{ fluid_map<MapType>[grid_cursor<MapType>.current_position] };
+				show_tooltip = has_entity || has_object || fluid != fluid_e::None;
 
-			show_tooltip = has_entity || has_object || fluid != fluid_e::None;
+				if (show_tooltip) {
+					tooltip_label<MapType>.text = runes_t{};
 
-			if (show_tooltip) {
-				tooltip_label<MapType>.text = runes_t{};
+					if (has_entity) {
+						tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(entity_registry<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
+					}
+
+					if (has_entity && has_object) {
+						tooltip_label<MapType>.text.concatenate({ " | " });
+					}
+
+					if (has_object) {
+						tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(object_registry<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
+					}
+
+					if ((has_entity || has_object) && fluid != fluid_e::None) {
+						tooltip_label<MapType>.text.concatenate({ " | " });
+					}
+					
+					if (fluid != fluid_e::None) {
+						tooltip_label<MapType>.text.concatenate(to_colored_string(fluid));
+					}
+				}
 
 				if (has_entity) {
-					tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(entity_registry<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
-				}
-
-				if (has_entity && has_object) {
-					tooltip_label<MapType>.text.concatenate({ " | " });
-				}
-
-				if (has_object) {
-					tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(object_registry<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
-				}
-
-				if ((has_entity || has_object) && fluid != fluid_e::None) {
-					tooltip_label<MapType>.text.concatenate({ " | " });
-				}
-				
-				if (fluid != fluid_e::None) {
-					tooltip_label<MapType>.text.concatenate(to_colored_string(fluid));
-				}
-			}
-
-			if (has_entity) {
-				if (entity_registry<MapType>.dependent contains<player_t>(grid_cursor<MapType>.current_position)) {
-					grid_cursor<MapType>.color = colors::Magenta;
-				} else if (entity_registry<MapType>.dependent contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
-					grid_cursor<MapType>.color = colors::Green;
-				} else if (entity_registry<MapType>.dependent contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
-					grid_cursor<MapType>.color = colors::Red;
+					if (entity_registry<MapType>.dependent contains<player_t>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Magenta;
+					} else if (entity_registry<MapType>.dependent contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Green;
+					} else if (entity_registry<MapType>.dependent contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Red;
+					} else {
+						grid_cursor<MapType>.color = colors::metals::Gold;
+					}
+				} else if (has_object) {
+					grid_cursor<MapType>.color = colors::Blue;
+				} else if (fluid != fluid_e::None) {
+					grid_cursor<MapType>.color = fluid_color(fluid);
 				} else {
 					grid_cursor<MapType>.color = colors::metals::Gold;
 				}
-			} else if (has_object) {
-				grid_cursor<MapType>.color = colors::Blue;
-			} else if (fluid != fluid_e::None) {
-				grid_cursor<MapType>.color = fluid_color(fluid);
-			} else {
-				grid_cursor<MapType>.color = colors::metals::Gold;
-			}
 
-			registry_access.unlock();
+				registry_access.unlock();
+			} else if (buffer_access.try_lock()) {
+
+
+				buffer_access.unlock();
+			}
 		}
 
 		template<map_type_e MapType> static inline void draw(ref<renderer_t> renderer) noexcept {
@@ -442,11 +451,15 @@ namespace necrowarp {
 				tooltip_label<MapType>.draw(renderer);
 			}
 
-			registry_access.lock();
+			if (registry_access.try_lock()) {
+				minimap<MapType>.draw(renderer, entity_registry<MapType>, object_registry<MapType>);
 
-			minimap<MapType>.draw(renderer);
+				registry_access.unlock();
+			} else if (buffer_access.try_lock()) {
+				minimap<MapType>.draw(renderer, entity_buffer<MapType>, object_buffer<MapType>);
 
-			registry_access.unlock();
+				buffer_access.unlock();
+			}
 		};
 	};
 } // namespace necrowarp

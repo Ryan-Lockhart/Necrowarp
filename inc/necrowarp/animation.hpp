@@ -26,12 +26,8 @@ namespace necrowarp {
 
 			timer.record();
 
-			registry_access.lock();
-
 			entity_registry<MapType>.advance();
 			object_registry<MapType>.advance();
-
-			registry_access.unlock();
 		}
 	} static inline animation_controller;
 } //namespace necrowarp

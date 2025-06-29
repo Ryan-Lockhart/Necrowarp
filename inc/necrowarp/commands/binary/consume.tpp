@@ -68,7 +68,7 @@ namespace necrowarp {
 					player.receive_skull_boon();
 				}
 
-				random_warp_t::execute<MapType>(source_position);
+				random_warp_t::execute<MapType>(source_position, true);
 				
 				return;
 			} default: {

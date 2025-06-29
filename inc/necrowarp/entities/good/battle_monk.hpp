@@ -136,9 +136,9 @@ namespace necrowarp {
 	  private:
 		template<tranquility_e Tranquility> static inline i8 dodge_threshold;
 
-		template<> inline i8 dodge_threshold<tranquility_e::Distraught>{ 30 };
-		template<> inline i8 dodge_threshold<tranquility_e::Focused>{ 60 };
-		template<> inline i8 dodge_threshold<tranquility_e::Zen>{ 90 };
+		template<> inline i8 dodge_threshold<tranquility_e::Distraught>{ 10 };
+		template<> inline i8 dodge_threshold<tranquility_e::Focused>{ 40 };
+		template<> inline i8 dodge_threshold<tranquility_e::Zen>{ 70 };
 
 		static inline std::uniform_int_distribution<i16> dodge_dis{ 0, 100 };
 

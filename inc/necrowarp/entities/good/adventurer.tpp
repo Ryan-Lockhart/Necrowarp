@@ -39,5 +39,7 @@ namespace necrowarp {
 		++steam_stats::stats<steam_stat_e::AdventurersSlain, i32>;
 
 		scorekeeper.add(entity_e::Adventurer);
+
+		death_sounds<adventurer_t>.delay(random_epoch_interval(random_engine), random_engine);
 	}
 } // namespace necrowarp

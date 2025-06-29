@@ -289,31 +289,31 @@ namespace necrowarp {
 		};
 		
 		constexpr map_config_t CavernPreset{
-			0.45,
-			512,
-			4,
-			8,
-			135.0,
-			8,
-			4,
-			16,
-			8,
-			16,
-			16
+			.fill_percent = 0.45,
+			.automata_iterations = 512,
+			.automata_threshold = 4,
+			.view_distance = 8,
+			.view_span = 135.0,
+			.number_of_up_ladders = 8,
+			.number_of_down_ladders = 4,
+			.minimum_ladder_distance = 16,
+			.starting_wave = 8,
+			.starting_skulls = 16,
+			.minimum_skull_distance = 16
 		};
 		
 		constexpr map_config_t TunnelsPreset{
-			0.55,
-			512,
-			4,
-			8,
-			135.0,
-			4,
-			2,
-			8,
-			4,
-			8,
-			8
+			.fill_percent = 0.55,
+			.automata_iterations = 512,
+			.automata_threshold = 4,
+			.view_distance = 8,
+			.view_span = 135.0,
+			.number_of_up_ladders = 4,
+			.number_of_down_ladders = 2,
+			.minimum_ladder_distance = 8,
+			.starting_wave = 4,
+			.starting_skulls = 8,
+			.minimum_skull_distance = 8
 		};
 
 		static inline map_config_t map_config{ CavernPreset };
@@ -329,14 +329,16 @@ namespace necrowarp {
 
 		static inline std::uniform_int_distribution<u16> spawn_dis{ SpawnDistributionLow, SpawnDistributionHigh };
 
-		constexpr i16 SmallWaveSize{ 8 };
-		constexpr i16 MediumWaveSize{ 16 };
-		constexpr i16 LargeWaveSize{ 32 };
-		constexpr i16 HugeWaveSize{ 64 };
-		constexpr i16 MassiveWaveSize{ 128 };
+		constexpr i16 MinisculeWaveSize{ 4 };
+		constexpr i16 TinyWaveSize{ 8 };
+		constexpr i16 SmallWaveSize{ 16 };
+		constexpr i16 MediumWaveSize{ 32 };
+		constexpr i16 LargeWaveSize{ 64 };
+		constexpr i16 HugeWaveSize{ 128 };
+		constexpr i16 MassiveWaveSize{ 256 };
 
 		constexpr i16 MinimumWaveSize{ 4 };
-		constexpr i16 MaximumWaveSize{ 128 };
+		constexpr i16 MaximumWaveSize{ 256 };
 
 		constexpr f32 MinimumWaveSizeMultiplier{ 0.5f };
 		constexpr f32 MaximumWaveSizeMultiplier{ 2.0f };

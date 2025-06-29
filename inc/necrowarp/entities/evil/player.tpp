@@ -69,6 +69,14 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void player_t::die() noexcept {
+		if (player_t::intervention(random_engine)) {
+			divine_intervention_invoked = true;
+
+			intervention_sound.delay(random_epoch_interval(random_engine));
+
+			return;
+		}
+
 		phase.transition(phase_e::GameOver);
 
 		++steam_stats::stats<steam_stat_e::PlayerDeaths, i32>;

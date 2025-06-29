@@ -17,7 +17,7 @@ namespace necrowarp {
 	using namespace bleak;
 
 #if defined(BLEAK_RELEASE)
-	static inline subsystem_s subsystem{};
+	static inline subsystem_s subsystem{ api_state_s::app_id };
 #elif defined(BLEAK_DEBUG)
 	static inline subsystem_s subsystem{};
 #endif
@@ -71,6 +71,10 @@ namespace necrowarp {
 
 	static constexpr usize epoch_interval{ 250ULL };
 	static inline bleak::timer_t epoch_timer{ epoch_interval };
+
+	static inline std::uniform_int_distribution<usize> epoch_interval_dis{ static_cast<usize>(epoch_interval * 0.10), static_cast<usize>(epoch_interval * 0.90) };
+
+	template<RandomEngine Generator> static inline usize random_epoch_interval(ref<Generator> engine) noexcept { return epoch_interval_dis(engine); }
 	
 #if !defined(STEAMLESS)
 	static constexpr usize stat_store_interval{ 30000ULL };
