@@ -136,8 +136,9 @@ namespace necrowarp {
 		template<> constexpr i8 Cost<discount_e::NecromanticAscendance>{ 16 };
 
 		static constexpr i8 SkullBoon{ 1 };
-		static constexpr i8 FailedWarpBoon{ 2 };
+
 		static constexpr i8 UnsafeWarpBoon{ 1 };
+		static constexpr i8 FailedWarpBoon{ 2 };
 
 	  private:
 		static inline std::bernoulli_distribution intervention_dis{ 0.01 };
@@ -276,6 +277,27 @@ namespace necrowarp {
 
 				return Cost<cval> - get_discount(val);
 			}, type);
+		}
+
+		constexpr bool can_consume(entity_e entity) const noexcept {
+			switch (entity) {
+				case entity_e::Skeleton:
+				case entity_e::Bonespur: {
+					return true;
+				} default: {
+					return false;
+				}
+			}
+		}
+
+		constexpr bool can_consume(object_e object) const noexcept {
+			switch (object) {
+				case object_e::Skull: {
+					return true;
+				} default: {
+					return false;
+				}
+			}
 		}
 
 		inline bool can_perform(discount_e type) const noexcept {

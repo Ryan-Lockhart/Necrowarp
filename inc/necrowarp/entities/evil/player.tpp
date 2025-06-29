@@ -27,9 +27,15 @@ namespace necrowarp {
 	template<NonNullEntity EntityType> inline void player_t::receive_death_boon(u8 multiplier) noexcept { set_energy(energy + EntityType::DeathBoon * multiplier); }
 
 	template<map_type_e MapType> inline command_e player_t::clash_or_consume(offset_t position) const noexcept {
-		const entity_group_e entity_group{ entity_registry<MapType>.at(position) };
+		const entity_group_e entities{ entity_registry<MapType>.at(position) };		
+		const object_group_e objects{ object_registry<MapType>.at(position) };
 
-		const entity_e entity_target { determine_target<player_t>(entity_group) };
+		const entity_e entity_target { determine_target<player_t>(entities) };
+		const object_e object_target { determine_target<player_t>(objects) };
+
+		if (entity_target == entity_e::None && object_target == object_e::None) {
+			return command_e::Move;
+		}
 		
 		switch (entity_target) {
 			case entity_e::Adventurer:
@@ -40,21 +46,20 @@ namespace necrowarp {
 			case entity_e::Paladin:
 			case entity_e::Berserker: {
 				return command_e::Clash;
-			} case entity_e::Skeleton: {
+			} case entity_e::Skeleton:
+			  case entity_e::Bonespur: {
 				return command_e::Consume;
 			} default: {
 				break;
 			}
 		}
-		
-		const object_group_e object_group{ object_registry<MapType>.at(position) };
 
-		const object_e object_target { determine_target<player_t>(object_group) };
+		if (entity_target != entity_e::None) {
+			return command_e::None;
+		}
 		
 		switch (object_target) {
-			case object_e::Skull:
-			case object_e::Flesh:
-			case object_e::Metal: {
+			case object_e::Skull: {
 				return command_e::Consume;
 			} case object_e::Ladder: {
 				return command_e::Descend;
@@ -65,7 +70,7 @@ namespace necrowarp {
 			}
 		}
 
-		return command_e::None;
+		return command_e::Move;
 	}
 
 	template<map_type_e MapType> inline void player_t::die() noexcept {

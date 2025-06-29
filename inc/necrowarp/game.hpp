@@ -80,12 +80,20 @@ namespace necrowarp {
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::RandomWarp)) {
 				player.command = command_pack_t{ command_e::RandomWarp, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::TargetWarp)) {
+				const offset_t target_position{ grid_cursor<MapType>.get_position() };
+
+				const entity_group_e entities{ entity_registry<MapType>.at(target_position) };
+				const object_group_e objects{ object_registry<MapType>.at(target_position) };
+
+				const entity_e target_entity{ determine_target<player_t>(entities) };
+				const object_e target_object{ determine_target<player_t>(objects) };
+
 				player.command = command_pack_t{
-					!entity_registry<MapType>.empty(grid_cursor<MapType>.get_position()) || (!ignore_objects && !object_registry<MapType>.empty(grid_cursor<MapType>.get_position())) ?
+					player.can_consume(target_entity) || player.can_consume(target_object) ?
 						command_e::ConsumeWarp :
 						command_e::TargetWarp,
 					player.position,
-					grid_cursor<MapType>.get_position()
+					target_position
 				};
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::CalciticInvocation)) {
 				player.command = command_pack_t{ command_e::CalciticInvocation, player.position, player.position };

@@ -20,7 +20,7 @@ namespace necrowarp {
 
 	namespace globals {
 		constexpr cstr GameName{ "Necrowarp" };
-		constexpr cstr GameVersion{ "0.1.1" };
+		constexpr cstr GameVersion{ "0.1.2rc-1" };
 		constexpr cstr GameAuthor{ "Ryan Lockhart" };
 
 		const std::string GameTitle{ std::format("{} v{} by {}", GameName, GameVersion, GameAuthor) };
@@ -325,7 +325,7 @@ namespace necrowarp {
 		constexpr f32 MaximumDepthMultiplier{ 10.0f };
 
 		constexpr u16 SpawnDistributionLow{ 0 };
-		constexpr u16 SpawnDistributionHigh{ 99 };
+		constexpr u16 SpawnDistributionHigh{ 100 };
 
 		static inline std::uniform_int_distribution<u16> spawn_dis{ SpawnDistributionLow, SpawnDistributionHigh };
 
@@ -341,7 +341,7 @@ namespace necrowarp {
 		constexpr i16 MaximumWaveSize{ 256 };
 
 		constexpr f32 MinimumWaveSizeMultiplier{ 0.5f };
-		constexpr f32 MaximumWaveSizeMultiplier{ 2.0f };
+		constexpr f32 MaximumWaveSizeMultiplier{ 4.0f };
 
 		constexpr i16 KillsPerPopulation{ 8 };
 
@@ -361,10 +361,10 @@ namespace necrowarp {
 		constexpr f32 FluidPoolMinimumVolume{ 4.5f };
 		constexpr f32 FluidPoolMaximumVolume{ 5.7f };
 
+		static inline std::uniform_real_distribution<f32> fluid_pool_dis{ FluidPoolMinimumVolume, FluidPoolMaximumVolume };
+
 		constexpr i8 MinimumCatalyst{ 4 };
 		constexpr i8 MaximumCatalyst{ 9 };
-
-		static inline std::uniform_real_distribution<f32> fluid_pool_dis{ FluidPoolMinimumVolume, FluidPoolMaximumVolume };
 
 		constexpr bool OopsAllAdventurers{ false };
 		constexpr bool OopsAllMercenaries{ false };
