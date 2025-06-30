@@ -174,9 +174,37 @@ namespace necrowarp {
 		}
 
 	  public:
-		inline player_t() noexcept : command{}, position{}, patron{}, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+		inline player_t(offset_t position) noexcept : command{}, position{ position }, patron{}, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
 
-		inline player_t(offset_t position) noexcept : command{}, position{ position }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+		inline player_t(offset_t position, patron_e patron) noexcept : command{}, position{ position }, patron{ patron }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+
+		inline player_t(cref<player_t> other) noexcept = delete;
+
+		inline player_t(rval<player_t> other) noexcept :
+			command{ std::move(other.command) },
+			position{ std::move(other.position) },
+			patron{ std::move(other.patron) },
+			energy{ std::move(other.energy) },
+			armor{ std::move(other.armor) },
+			divinity{ std::move(other.divinity) }
+		{}
+
+		inline ref<player_t> operator=(cref<player_t> other) noexcept = delete;
+
+		inline ref<player_t> operator=(rval<player_t> other) noexcept {
+			if (this == &other) {
+				return *this;
+			}
+
+			command = std::move(other.command);
+			position = std::move(other.position);
+			patron = std::move(other.patron);
+			energy = std::move(other.energy);
+			armor = std::move(other.armor);
+			divinity = std::move(other.divinity);
+
+			return *this;
+		}
 
 		inline i8 get_energy() const noexcept { return energy; }
 
@@ -377,6 +405,28 @@ namespace necrowarp {
 		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Player; }
+
+		struct hasher {
+			struct offset {
+				using is_transparent = void;
+
+				static constexpr usize operator()(cref<player_t> player) noexcept { return offset_t::std_hasher::operator()(player.position); }
+
+				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
+			};
+		};
+
+		struct comparator {
+			struct offset {
+				using is_transparent = void;
+
+				static constexpr bool operator()(cref<player_t> lhs, cref<player_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
+
+				static constexpr bool operator()(cref<player_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
+
+				static constexpr bool operator()(offset_t lhs, cref<player_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
+			};
+		};
 	};
 
 	static inline patron_e desired_patron{ patron_e::None };

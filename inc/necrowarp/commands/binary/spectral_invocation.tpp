@@ -11,13 +11,19 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, spectral_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map<MapType>.dependent contains<zone_region_e::Interior>(fluid_e::Ichor))) {
+		if (!player_exists()) {
+			error_log.add("the player was lost to the abyss!");
+
+			return;
+		}
+
+		if (!player->bypass_invocations_enabled() && (!player->can_perform(discount_e::SpectralInvocation) || !fluid_map<MapType>.dependent contains<zone_region_e::Interior>(fluid_e::Ichor))) {
 			player_turn_invalidated = true;
 
 			return;
 		}
 
-		const bool is_exalted{ player.has_ascended() };
+		const bool is_exalted{ player->has_ascended() };
 
 		i8 pools_consumed{ 0 };
 
@@ -28,7 +34,7 @@ namespace necrowarp {
 
 			const bool has_ichor{ fluid_map<MapType>[position].contains(fluid_e::Ichor) };
 
-			if (!has_ichor && player.bypass_invocations_enabled()) {
+			if (!has_ichor && player->bypass_invocations_enabled()) {
 				++pools_consumed;
 
 				if (!is_exalted) {
@@ -78,18 +84,18 @@ namespace necrowarp {
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
-					player.reinvigorate(pools_consumed);
+					player->reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(cultist_t{ pos });
 				}
 			}
-		} else if (player.bypass_invocations_enabled()) {
+		} else if (player->bypass_invocations_enabled()) {
 			const offset_t pos{ target_position };
 			++pools_consumed;
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
-					player.reinvigorate(pools_consumed);
+					player->reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(cultist_t{ pos });
 				}
@@ -148,9 +154,9 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::SpectralInvocations, i32>;
 
-		player.pay_cost(discount_e::SpectralInvocation);
+		player->pay_cost(discount_e::SpectralInvocation);
 
-		if (!player.has_ascended()) {
+		if (!player->has_ascended()) {
 			if (pools_consumed == globals::MaximumCatalyst) {
 				// summon max amount of cultists achievment placeholder : ?
 			} else if (pools_consumed > 1) {
@@ -161,7 +167,7 @@ namespace necrowarp {
 		}
 
 		if (!random_warp_t::execute<MapType>(source_position, true)) {
-			player.reinvigorate(pools_consumed);
+			player->reinvigorate(pools_consumed);
 
 			return;
 		}

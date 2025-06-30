@@ -82,7 +82,9 @@ namespace necrowarp {
 		}
 	}
 
-	template<dimension_e Dimension> requires is_material<Dimension>::value static constexpr map_type_e determine_map() noexcept {
+	template<dimension_e Dimension>
+		requires is_material<Dimension>::value
+	static constexpr map_type_e determine_map() noexcept {
 		switch (Dimension) {
 			case dimension_e::Underworld:
 			case dimension_e::Overworld:

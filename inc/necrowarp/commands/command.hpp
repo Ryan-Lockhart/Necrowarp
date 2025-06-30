@@ -169,15 +169,15 @@ namespace necrowarp {
 		std::optional<offset_t> intermediate_position;
 		std::optional<offset_t> target_position;
 
-		constexpr command_pack_t() : type{ command_e::None }, source_position{}, intermediate_position{}, target_position{} {}
+		constexpr command_pack_t() : type{ command_e::None }, source_position{ std::nullopt }, intermediate_position{ std::nullopt }, target_position{ std::nullopt } {}
 
-		constexpr command_pack_t(command_e command) : type{ command }, source_position{}, intermediate_position{}, target_position{} {}
+		constexpr command_pack_t(command_e command) : type{ command }, source_position{ std::nullopt }, intermediate_position{ std::nullopt }, target_position{ std::nullopt } {}
 
-		constexpr command_pack_t(command_e command, offset_t source) : type{ command }, source_position{ source }, intermediate_position{}, target_position{} {}
+		constexpr command_pack_t(command_e command, offset_t source) : type{ command }, source_position{ source }, intermediate_position{ std::nullopt }, target_position{ std::nullopt } {}
 
-		constexpr command_pack_t(command_e command, offset_t source, offset_t target) : type{ command },  source_position{ source }, intermediate_position{}, target_position{ target } {}
+		constexpr command_pack_t(command_e command, offset_t source, offset_t target) : type{ command }, source_position{ source }, intermediate_position{ std::nullopt }, target_position{ target } {}
 
-		constexpr command_pack_t(command_e command, offset_t source, offset_t intermediate, offset_t target) : type{ command },  source_position{ source }, intermediate_position{ intermediate }, target_position{ target } {}
+		constexpr command_pack_t(command_e command, offset_t source, offset_t intermediate, offset_t target) : type{ command }, source_position{ source }, intermediate_position{ intermediate }, target_position{ target } {}
 	};
 
 	static constexpr cstr to_string(command_e command) noexcept {

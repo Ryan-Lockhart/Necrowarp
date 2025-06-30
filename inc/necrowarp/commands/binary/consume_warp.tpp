@@ -13,11 +13,17 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, consume_warp_t>::process() const noexcept {
+		if (!player_exists()) {
+			error_log.add("the player was lost to the abyss!");
+
+			return;
+		}
+
 		const entity_group_e entity_group{ entity_registry<MapType>.at(target_position) };
 
 		const entity_e entity_target{ determine_target<EntityType>(entity_group) };
 
-		if (entity_target != entity_e::None && !player.can_perform(discount_e::TargetWarp)) {
+		if (entity_target != entity_e::None && !player->can_perform(discount_e::TargetWarp)) {
 			player_turn_invalidated = true;
 
 			return;
@@ -35,8 +41,8 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-				player.pay_cost(discount_e::TargetWarp);
-				player.bolster_armor(armor_boon + player.max_armor() / 8);
+				player->pay_cost(discount_e::TargetWarp);
+				player->bolster_armor(armor_boon + player->max_armor() / 8);
 
 				draw_warp_cursor = false;
 
@@ -50,8 +56,8 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-				player.pay_cost(discount_e::TargetWarp);
-				player.bolster_armor(armor_boon + player.max_armor() / 4);
+				player->pay_cost(discount_e::TargetWarp);
+				player->bolster_armor(armor_boon + player->max_armor() / 4);
 
 				draw_warp_cursor = false;
 
@@ -71,7 +77,7 @@ namespace necrowarp {
 
 				const i8 boon{ state == decay_e::Fresh ? player_t::SkullBoon : i8{ 0 } };
 
-				if (!player.can_perform(discount_e::TargetWarp, boon)) {
+				if (!player->can_perform(discount_e::TargetWarp, boon)) {
 					player_turn_invalidated = true;
 
 					return;
@@ -82,7 +88,7 @@ namespace necrowarp {
 
 				++steam_stats::stats<steam_stat_e::SkullsConsumed, i32>;
 
-				player.pay_cost(discount_e::TargetWarp, boon);
+				player->pay_cost(discount_e::TargetWarp, boon);
 
 				random_warp_t::execute<MapType>(source_position, true);
 

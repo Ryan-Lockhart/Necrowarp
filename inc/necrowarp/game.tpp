@@ -22,14 +22,18 @@ namespace necrowarp {
 				game_map<map_type>.dependent reset<zone_region_e::All>();
 				fluid_map<map_type>.dependent reset<zone_region_e::All>();
 
-				entity_registry<map_type>.dependent reset<ALL_NON_PLAYER>();
-				entity_registry<map_type>.dependent reset_goal_map<player_t>();
+				if (!player_exists()) {
+					error_log.add("the player was lost to the abyss!");
 
-				entity_registry<map_type>.reset_alignment_goal_maps();
+					terminate_prematurely();
+				}
 
+				rval<player_t> vagrant_player{ entity_registry<map_type>.dependent extract<player_t>(player->position) };
+
+				entity_registry<map_type>.reset();
 				object_registry<map_type>.reset();
 
-				plunge<cval>();
+				plunge<cval>(std::move(vagrant_player));
 
 				entity_registry<map_type>.recalculate_goal_map();
 				object_registry<map_type>.recalculate_goal_map();

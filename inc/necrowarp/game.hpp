@@ -69,16 +69,20 @@ namespace necrowarp {
 		}
 
 		template<map_type_e MapType> static inline bool character_input() noexcept {
-			player.command = command_pack_t{};
+			if (!player_exists()) {
+				return false;
+			}
+
+			player->command = command_pack_t{};
 
 			const bool ignore_objects{ keyboard_s::is_key<input_e::Pressed>(bindings::IgnoreObjects) };
 
 			if (keyboard_s::any_keys<input_e::Pressed>(bindings::Wait)) {
-				player.command = command_pack_t{ command_e::None };
+				player->command = command_pack_t{ command_e::None };
 
 				return true;
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::RandomWarp)) {
-				player.command = command_pack_t{ command_e::RandomWarp, player.position };
+				player->command = command_pack_t{ command_e::RandomWarp, player->position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::TargetWarp)) {
 				const offset_t target_position{ grid_cursor<MapType>.get_position() };
 
@@ -88,26 +92,26 @@ namespace necrowarp {
 				const entity_e target_entity{ determine_target<player_t>(entities) };
 				const object_e target_object{ determine_target<player_t>(objects) };
 
-				player.command = command_pack_t{
-					player.can_consume(target_entity) || player.can_consume(target_object) ?
+				player->command = command_pack_t{
+					player->can_consume(target_entity) || player->can_consume(target_object) ?
 						command_e::ConsumeWarp :
 						command_e::TargetWarp,
-					player.position,
+					player->position,
 					target_position
 				};
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::CalciticInvocation)) {
-				player.command = command_pack_t{ command_e::CalciticInvocation, player.position, player.position };
+				player->command = command_pack_t{ command_e::CalciticInvocation, player->position, player->position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::SpectralInvocation)) {
-				player.command = command_pack_t{ command_e::SpectralInvocation, player.position, player.position };
+				player->command = command_pack_t{ command_e::SpectralInvocation, player->position, player->position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::SanguineInvocation)) {
-				player.command = command_pack_t{ command_e::SanguineInvocation, player.position, player.position };
+				player->command = command_pack_t{ command_e::SanguineInvocation, player->position, player->position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::GalvanicInvocation)) {
-				player.command = command_pack_t{ command_e::GalvanicInvocation, player.position, player.position };
+				player->command = command_pack_t{ command_e::GalvanicInvocation, player->position, player->position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::NecromanticAscendance)) {
-				player.command = command_pack_t{ command_e::NecromanticAscendance, player.position };
+				player->command = command_pack_t{ command_e::NecromanticAscendance, player->position };
 			}
 
-			if (player.command.type != command_e::None) {
+			if (player->command.type != command_e::None) {
 				return true;
 			}
 
@@ -128,15 +132,15 @@ namespace necrowarp {
 			}();
 
 			if (direction != offset_t::Zero) {
-				const offset_t target_position{ player.position + direction };
+				const offset_t target_position{ player->position + direction };
 
 				if (!game_map<MapType>.dependent within<zone_region_e::Interior>(target_position) || game_map<MapType>[target_position].solid) {
 					return false;
 				}
 
-				const command_e command_type{ !entity_registry<MapType>.empty(target_position) || (!ignore_objects && !object_registry<MapType>.empty(target_position)) ? player.clash_or_consume<MapType>(target_position) : command_e::Move };
+				const command_e command_type{ !entity_registry<MapType>.empty(target_position) || (!ignore_objects && !object_registry<MapType>.empty(target_position)) ? player->clash_or_consume<MapType>(target_position) : command_e::Move };
 
-				player.command = command_pack_t{ command_type, player.position, target_position };
+				player->command = command_pack_t{ command_type, player->position, target_position };
 
 				draw_warp_cursor = false;
 
@@ -182,8 +186,6 @@ namespace necrowarp {
 			object_registry<MapType>.reset();
 
 			reset_patrons();
-
-			player.patron = desired_patron;
 
 			game_stats.reset();
 
@@ -238,14 +240,7 @@ namespace necrowarp {
 				terminate_prematurely();
 			}
 
-			player.position = player_pos.value();
-
-			entity_goal_map<MapType, player_t>.add(player.position);
-
-			good_goal_map<MapType>.add(player.position);
-
-			ranger_goal_map<MapType>.add(player.position);
-			skulker_goal_map<MapType>.add(player.position);
+			entity_registry<MapType>.add(player_t{ player_pos.value(), desired_patron });
 
 			cauto portal_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
@@ -315,6 +310,14 @@ namespace necrowarp {
 				ladder_positions.push_back(ladder.position);
 			}
 
+			if (!player_exists()) {
+				error_log.add("the player was lost to the abyss!");
+
+				terminate_prematurely();
+			}
+
+			rval<player_t> vagrant_player{ entity_registry<MapType>.dependent extract<player_t>(player->position) };
+
 			game_map<MapType>.dependent reset<zone_region_e::All>();
 			fluid_map<MapType>.dependent reset<zone_region_e::All>();
 
@@ -362,27 +365,22 @@ namespace necrowarp {
 				}
 			}
 
-			if (game_map<MapType>[player.position].solid) {
+			if (game_map<MapType>[vagrant_player.position].solid) {
 				cauto player_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 				if (!player_pos.has_value()) {
 					error_log.add("could not find open position for player!");
+
 					terminate_prematurely();
 				}
 
 #if !defined(STEAMLESS)
-				steam_stats_s::stats<steam_stat_e::MetersMoved, f32> += offset_t::distance<f32>(player.position, player_pos.value());
+				steam_stats_s::stats<steam_stat_e::MetersMoved, f32> += offset_t::distance<f32>(vagrant_player.position, player_pos.value());
 #endif
-
-				player.position = player_pos.value();
+					vagrant_player.position = player_pos.value();
 			}
-
-			entity_goal_map<MapType, player_t>.add(player.position);
-
-			good_goal_map<MapType>.add(player.position);
-
-			ranger_goal_map<MapType>.add(player.position);
-			skulker_goal_map<MapType>.add(player.position);
+			
+			entity_registry<MapType>.add(std::move(vagrant_player));
 
 			cauto portal_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
@@ -440,7 +438,7 @@ namespace necrowarp {
 			process_turn_async<MapType>();
 		}
 
-		template<dimension_e Dimension> requires is_material<Dimension>::value static inline void plunge() noexcept;
+		template<dimension_e Dimension> requires is_material<Dimension>::value static inline void plunge(rval<player_t> vagrant) noexcept;
 
 		template<map_type_e MapType> static inline void plunge() noexcept;
 

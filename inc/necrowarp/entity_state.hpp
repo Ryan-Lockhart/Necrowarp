@@ -13,10 +13,9 @@ namespace necrowarp {
 	template<map_type_e MapType, NonNullEntity... Entities> struct entity_registry_t {
 	  private:
 		multi_sparse_t<Entities...> data{};
-		multi_sparse_t<Entities...> buffer{};
 
 	  public:
-		inline entity_registry_t() noexcept : data{}, buffer{} {}
+		inline entity_registry_t() noexcept : data{} {}
 
 		inline entity_group_e at(offset_t position) const noexcept;
 
@@ -69,6 +68,8 @@ namespace necrowarp {
 		inline std::optional<offset_t> nearest(offset_t position) const noexcept;
 
 		template<bool Force = false, NonNullEntity EntityType> inline bool add(rval<EntityType> entity) noexcept;
+
+		template<NonNullEntity EntityType> inline rval<EntityType> extract(offset_t position) noexcept;
 
 		template<NonNullEntity EntityType> inline bool remove(offset_t position) noexcept;
 

@@ -13,6 +13,12 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, consume_t>::process() const noexcept {
+		if (!player_exists()) {
+			error_log.add("the player was lost to the abyss!");
+
+			return;
+		}
+
 		const entity_group_e entity_group{ entity_registry<MapType>.at(target_position) };
 
 		const entity_e entity_target{ determine_target<EntityType>(entity_group) };
@@ -27,7 +33,7 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 				
-				player.bolster_armor(armor_boon + player.max_armor() / 8);
+				player->bolster_armor(armor_boon + player->max_armor() / 8);
 
 				draw_warp_cursor = false;
 				
@@ -41,7 +47,7 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 				
-				player.bolster_armor(armor_boon + player.max_armor() / 4);
+				player->bolster_armor(armor_boon + player->max_armor() / 4);
 
 				draw_warp_cursor = false;
 				
@@ -65,7 +71,7 @@ namespace necrowarp {
 				++steam_stats::stats<steam_stat_e::SkullsConsumed, i32>;
 
 				if (state == decay_e::Fresh) {
-					player.receive_skull_boon();
+					player->receive_skull_boon();
 				}
 
 				random_warp_t::execute<MapType>(source_position, true);

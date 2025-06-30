@@ -130,7 +130,9 @@ namespace necrowarp {
 
 		spill_fluid<MapType>(position, fluid_type<ranger_t>::type);
 
-		player.receive_death_boon<ranger_t>();
+		if (player_exists()) {
+			player->receive_death_boon<ranger_t>();
+		}
 
 		++steam_stats::stats<steam_stat_e::RangersSlain, i32>;
 
