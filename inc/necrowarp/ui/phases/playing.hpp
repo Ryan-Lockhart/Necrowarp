@@ -37,8 +37,8 @@ namespace necrowarp {
 	template<> struct phase_state_t<phase_e::Playing> {
 		static inline priority_mutex buffer_access{};
 
-		template<map_type_e MapType> static inline entity_registry_t<MapType, ALL_ENTITIES> entity_buffer{};
-		template<map_type_e MapType> static inline object_registry_t<MapType, ALL_OBJECTS> object_buffer{};
+		template<map_type_e MapType> static inline entity_registry_t<MapType> entity_buffer{};
+		template<map_type_e MapType> static inline object_registry_t<MapType> object_buffer{};
 
 		static inline status_bar_t<3> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
@@ -188,16 +188,14 @@ namespace necrowarp {
 				return;
 			}
 
-			if (player_exists()) {
-				player_statuses[0].current_value = player->get_energy();
-				player_statuses[0].max_value = player->max_energy();
+			player_statuses[0].current_value = player.get_energy();
+			player_statuses[0].max_value = player.max_energy();
 
-				player_statuses[1].current_value = player->get_armor();
-				player_statuses[1].max_value = player->max_armor();
+			player_statuses[1].current_value = player.get_armor();
+			player_statuses[1].max_value = player.max_armor();
 
-				player_statuses[2].current_value = player->get_divinity();
-				player_statuses[2].max_value = player->max_divinity();
-			}
+			player_statuses[2].current_value = player.get_divinity();
+			player_statuses[2].max_value = player.max_divinity();
 
 			const i8 kills_energy{ game_stats.kills_until_next_energy_slot() };
 			const i8 kills_armor{ game_stats.kills_until_next_armor_slot() };
@@ -209,19 +207,17 @@ namespace necrowarp {
 				advancement_label.position = player_statuses.position + extent_t{ player_statuses.external_size().w, 0 };
 				advancement_label.alignment = player_statuses.alignment;
 
-				if (player_exists()) {
-					advancement_label.text = runes_t{
-						std::format(
-							"[{}/{}]{}\n\n"
-							"[{}/{}]{}\n\n"
-							"[{}/{}]{}",
+				advancement_label.text = runes_t{
+					std::format(
+						"[{}/{}]{}\n\n"
+						"[{}/{}]{}\n\n"
+						"[{}/{}]{}",
 
-							player->get_energy(), player->max_energy(), player->max_energy() >= player_t::MaximumEnergy ? "" : std::format(" (+1 energy slot in {} kill{})", kills_energy == 0 ? globals::KillsPerEnergySlot : kills_energy, kills_energy == 1 ? "" : "s"),
-							player->get_armor(), player->max_armor(), player->max_armor() >= player_t::MaximumArmor ? "" : std::format(" (+1 armor slot in {} kill{})", kills_armor == 0 ? globals::KillsPerArmorSlot : kills_armor, kills_armor == 1 ? "" : "s"),
-							player->get_divinity(), player->max_divinity(), player->max_divinity() >= player_t::MaximumDivinity ? "" : std::format(" (+1 divinity turn in {} kill{})", kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s")
-						)
-					};
-				}
+						player.get_energy(), player.max_energy(), player.max_energy() >= player_t::MaximumEnergy ? "" : std::format(" (+1 energy slot in {} kill{})", kills_energy == 0 ? globals::KillsPerEnergySlot : kills_energy, kills_energy == 1 ? "" : "s"),
+						player.get_armor(), player.max_armor(), player.max_armor() >= player_t::MaximumArmor ? "" : std::format(" (+1 armor slot in {} kill{})", kills_armor == 0 ? globals::KillsPerArmorSlot : kills_armor, kills_armor == 1 ? "" : "s"),
+						player.get_divinity(), player.max_divinity(), player.max_divinity() >= player_t::MaximumDivinity ? "" : std::format(" (+1 divinity turn in {} kill{})", kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s")
+					)
+				};
 			}
 
 			show_command = any_icon_hovered();
@@ -229,78 +225,76 @@ namespace necrowarp {
 			if (show_command) {
 				const offset_t mouse_pos{ mouse_s::get_position() };
 
-				if (player_exists()) {
-					if (mouse_s::is_inside(random_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-						command_label.text = runes_t{ to_string(command_e::RandomWarp) };
-						command_label.text
-							.concatenate(runes_t{ " ["})
-							.concatenate(runes_t{ std::format("{}", player->get_energy()), player->can_perform(discount_e::RandomWarp) ? colors::Green : colors::Red })
-							.concatenate(runes_t{ "/" })
-							.concatenate(runes_t{ std::format("{}", player->get_cost(discount_e::RandomWarp)) })
-							.concatenate(runes_t{ "]" });
-						
-						command_label.position = (random_warp_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-					} else if (mouse_s::is_inside(target_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-						command_label.text = runes_t{ to_string(command_e::TargetWarp) };
-						command_label.text
-							.concatenate(runes_t{ " ["})
-							.concatenate(runes_t{ std::format("{}", player->get_energy()), player->can_perform(discount_e::TargetWarp) ? colors::Green : colors::Red })
-							.concatenate(runes_t{ "/" })
-							.concatenate(runes_t{ std::format("{}", player->get_cost(discount_e::TargetWarp)) })
-							.concatenate(runes_t{ "]" });
-						
-							command_label.position = (target_warp_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-					} else if (mouse_s::is_inside(calcitic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-						command_label.text = runes_t{ to_string(command_e::CalciticInvocation) };
-						command_label.text
-							.concatenate(runes_t{ " ["})
-							.concatenate(runes_t{ std::format("{}", player->get_energy()), player->can_perform(discount_e::CalciticInvocation) ? colors::Green : colors::Red })
-							.concatenate(runes_t{ "/" })
-							.concatenate(runes_t{ std::format("{}", player->get_cost(discount_e::CalciticInvocation)) })
-							.concatenate(runes_t{ "]" });
-						
-							command_label.position = (calcitic_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-					} else if (mouse_s::is_inside(spectral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-						command_label.text = runes_t{ to_string(command_e::SpectralInvocation) };
-						command_label.text
-							.concatenate(runes_t{ " ["})
-							.concatenate(runes_t{ std::format("{}", player->get_energy()), player->can_perform(discount_e::SpectralInvocation) ? colors::Green : colors::Red })
-							.concatenate(runes_t{ "/" })
-							.concatenate(runes_t{ std::format("{}", player->get_cost(discount_e::SpectralInvocation)) })
-							.concatenate(runes_t{ "]" });
-						
-							command_label.position = (spectral_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-					} else if (mouse_s::is_inside(sanguine_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-						command_label.text = runes_t{ to_string(command_e::SanguineInvocation) };
-						command_label.text
-							.concatenate(runes_t{ " ["})
-							.concatenate(runes_t{ std::format("{}", player->get_energy()), player->can_perform(discount_e::SanguineInvocation) ? colors::Green : colors::Red })
-							.concatenate(runes_t{ "/" })
-							.concatenate(runes_t{ std::format("{}", player->get_cost(discount_e::SanguineInvocation)) })
-							.concatenate(runes_t{ "]" });
-						
-							command_label.position = (sanguine_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-					} else if (mouse_s::is_inside(galvanic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-						command_label.text = runes_t{ to_string(command_e::GalvanicInvocation) };
-						command_label.text
-							.concatenate(runes_t{ " ["})
-							.concatenate(runes_t{ std::format("{}", player->get_energy()), player->can_perform(discount_e::GalvanicInvocation) ? colors::Green : colors::Red })
-							.concatenate(runes_t{ "/" })
-							.concatenate(runes_t{ std::format("{}", player->get_cost(discount_e::GalvanicInvocation)) })
-							.concatenate(runes_t{ "]" });
-						
-							command_label.position = (galvanic_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-					} else if (mouse_s::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-						command_label.text = runes_t{ to_string(command_e::NecromanticAscendance) };
-						command_label.text
-							.concatenate(runes_t{ " ["})
-							.concatenate(runes_t{ std::format("{}", player->get_energy()), player->can_perform(discount_e::NecromanticAscendance) ? colors::Green : colors::Red })
-							.concatenate(runes_t{ "/" })
-							.concatenate(runes_t{ std::format("{}", player->get_cost(discount_e::NecromanticAscendance)) })
-							.concatenate(runes_t{ "]" });
-						
-							command_label.position = (necromantic_ascendance_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-					}
+				if (mouse_s::is_inside(random_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+					command_label.text = runes_t{ to_string(command_e::RandomWarp) };
+					command_label.text
+						.concatenate(runes_t{ " ["})
+						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::RandomWarp) ? colors::Green : colors::Red })
+						.concatenate(runes_t{ "/" })
+						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::RandomWarp)) })
+						.concatenate(runes_t{ "]" });
+					
+					command_label.position = (random_warp_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+				} else if (mouse_s::is_inside(target_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+					command_label.text = runes_t{ to_string(command_e::TargetWarp) };
+					command_label.text
+						.concatenate(runes_t{ " ["})
+						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::TargetWarp) ? colors::Green : colors::Red })
+						.concatenate(runes_t{ "/" })
+						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::TargetWarp)) })
+						.concatenate(runes_t{ "]" });
+					
+						command_label.position = (target_warp_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+				} else if (mouse_s::is_inside(calcitic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+					command_label.text = runes_t{ to_string(command_e::CalciticInvocation) };
+					command_label.text
+						.concatenate(runes_t{ " ["})
+						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::CalciticInvocation) ? colors::Green : colors::Red })
+						.concatenate(runes_t{ "/" })
+						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::CalciticInvocation)) })
+						.concatenate(runes_t{ "]" });
+					
+						command_label.position = (calcitic_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+				} else if (mouse_s::is_inside(spectral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+					command_label.text = runes_t{ to_string(command_e::SpectralInvocation) };
+					command_label.text
+						.concatenate(runes_t{ " ["})
+						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::SpectralInvocation) ? colors::Green : colors::Red })
+						.concatenate(runes_t{ "/" })
+						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::SpectralInvocation)) })
+						.concatenate(runes_t{ "]" });
+					
+						command_label.position = (spectral_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+				} else if (mouse_s::is_inside(sanguine_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+					command_label.text = runes_t{ to_string(command_e::SanguineInvocation) };
+					command_label.text
+						.concatenate(runes_t{ " ["})
+						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::SanguineInvocation) ? colors::Green : colors::Red })
+						.concatenate(runes_t{ "/" })
+						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::SanguineInvocation)) })
+						.concatenate(runes_t{ "]" });
+					
+						command_label.position = (sanguine_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+				} else if (mouse_s::is_inside(galvanic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+					command_label.text = runes_t{ to_string(command_e::GalvanicInvocation) };
+					command_label.text
+						.concatenate(runes_t{ " ["})
+						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::GalvanicInvocation) ? colors::Green : colors::Red })
+						.concatenate(runes_t{ "/" })
+						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::GalvanicInvocation)) })
+						.concatenate(runes_t{ "]" });
+					
+						command_label.position = (galvanic_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+				} else if (mouse_s::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+					command_label.text = runes_t{ to_string(command_e::NecromanticAscendance) };
+					command_label.text
+						.concatenate(runes_t{ " ["})
+						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::NecromanticAscendance) ? colors::Green : colors::Red })
+						.concatenate(runes_t{ "/" })
+						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::NecromanticAscendance)) })
+						.concatenate(runes_t{ "]" });
+					
+						command_label.position = (necromantic_ascendance_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
 				}
 
 				command_label.position.y = mouse_pos.y / globals::cell_size<grid_type_e::UI>.h;
@@ -331,8 +325,8 @@ namespace necrowarp {
 
 			show_favor = show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered();
 
-			if (player_exists() && show_favor) {
-				const patron_e current_patron{ player->patron };
+			if (show_favor) {
+				const patron_e current_patron{ player.patron };
 				const disposition_e current_disposition{ get_patron_disposition(current_patron) };
 
 				favor_expanded_label.text = runes_t{ std::format("Patron:{}", std::string(padding_size(current_patron), ' ')), colors::White };
@@ -347,8 +341,8 @@ namespace necrowarp {
 
 				magic_enum::enum_for_each<discount_e>([&](auto val) -> void {
 					constexpr discount_e cval{ val };
-					const i8 value{ player->get_discount(cval) };
-					const discount_type_e type{ player->get_discount_type(value) };
+					const i8 value{ player.get_discount(cval) };
+					const discount_type_e type{ player.get_discount_type(value) };
 
 					favor_expanded_label.text.concatenate(to_colored_string(cval, value, type));
 
@@ -431,15 +425,15 @@ namespace necrowarp {
 				advancement_label.draw(renderer);
 			}
 
-			icon_atlas.draw(glyph_t{ icons::RandomWarp.index, player_exists() && player->can_perform(discount_e::RandomWarp) ? colors::White : colors::dark::Grey }, random_warp_icon_position());
-			icon_atlas.draw(glyph_t{ icons::TargetWarp.index, player_exists() && player->can_perform(discount_e::TargetWarp) ? colors::White : colors::dark::Grey }, target_warp_icon_position());
+			icon_atlas.draw(glyph_t{ icons::RandomWarp.index, player.can_perform(discount_e::RandomWarp) ? colors::White : colors::dark::Grey }, random_warp_icon_position());
+			icon_atlas.draw(glyph_t{ icons::TargetWarp.index, player.can_perform(discount_e::TargetWarp) ? colors::White : colors::dark::Grey }, target_warp_icon_position());
 
-			icon_atlas.draw(glyph_t{ icons::CalciticInvocation.index, player_exists() && player->can_perform(discount_e::CalciticInvocation) ? colors::White : colors::dark::Grey }, calcitic_invocation_icon_position());
-			icon_atlas.draw(glyph_t{ icons::SpectralInvocation.index, player_exists() && player->can_perform(discount_e::SpectralInvocation) ? colors::White : colors::dark::Grey }, spectral_invocation_icon_position());
-			icon_atlas.draw(glyph_t{ icons::SanguineInvocation.index, player_exists() && player->can_perform(discount_e::SanguineInvocation) ? colors::White : colors::dark::Grey }, sanguine_invocation_icon_position());
-			icon_atlas.draw(glyph_t{ icons::GalvanicInvocation.index, player_exists() && player->can_perform(discount_e::GalvanicInvocation) ? colors::White : colors::dark::Grey }, galvanic_invocation_icon_position());
+			icon_atlas.draw(glyph_t{ icons::CalciticInvocation.index, player.can_perform(discount_e::CalciticInvocation) ? colors::White : colors::dark::Grey }, calcitic_invocation_icon_position());
+			icon_atlas.draw(glyph_t{ icons::SpectralInvocation.index, player.can_perform(discount_e::SpectralInvocation) ? colors::White : colors::dark::Grey }, spectral_invocation_icon_position());
+			icon_atlas.draw(glyph_t{ icons::SanguineInvocation.index, player.can_perform(discount_e::SanguineInvocation) ? colors::White : colors::dark::Grey }, sanguine_invocation_icon_position());
+			icon_atlas.draw(glyph_t{ icons::GalvanicInvocation.index, player.can_perform(discount_e::GalvanicInvocation) ? colors::White : colors::dark::Grey }, galvanic_invocation_icon_position());
 
-			icon_atlas.draw(glyph_t{ icons::NecromanticAscendance.index, player_exists() && player->can_perform(discount_e::NecromanticAscendance) ? colors::White : colors::dark::Grey }, necromantic_ascendance_icon_position());
+			icon_atlas.draw(glyph_t{ icons::NecromanticAscendance.index, player.can_perform(discount_e::NecromanticAscendance) ? colors::White : colors::dark::Grey }, necromantic_ascendance_icon_position());
 
 			if (show_command) {
 				command_label.draw(renderer);

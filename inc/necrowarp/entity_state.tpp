@@ -21,9 +21,7 @@ namespace necrowarp {
 	extern bool draw_cursor;
 	extern bool draw_warp_cursor;
 
-	static inline ptr<player_t> player{};
-
-	static inline bool player_exists() noexcept { return player != nullptr; }
+	static inline player_t player{};
 
 	template<patron_e Patron> constexpr runes_t to_colored_string() noexcept {
 		runes_t colored_string{};
@@ -55,15 +53,15 @@ namespace necrowarp {
 
 		if (force_width || force_height) {
 			moved = camera<MapType>.center_on(
-				force_width, force_width || !player_exists() ? globals::MapCenter<MapType>.x : player->position.x,
-				force_height, force_height || !player_exists() ? globals::MapCenter<MapType>.y : player->position.y
+				force_width, force_width ? globals::MapCenter<MapType>.x : player.position.x,
+				force_height, force_height ? globals::MapCenter<MapType>.y : player.position.y
 			);
 
 			return moved;
 		}
 
-		if (camera_locked && player_exists()) {
-			moved = camera<MapType>.center_on(player->position);
+		if (camera_locked) {
+			moved = camera<MapType>.center_on(player.position);
 
 			return moved;
 		}
@@ -71,7 +69,9 @@ namespace necrowarp {
 		return false;
 	}
 
-	template<map_type_e MapType> static inline entity_registry_t<MapType, ALL_ENTITIES> entity_registry{};
+	template<map_type_e MapType> static inline entity_registry_t<MapType> entity_registry{};
+
+	template<NonPlayerEntity EntityType> static inline sparse_t<EntityType> entity_storage{};
 
 	template<NonPlayerEntity EntityType, NonNullCommand CommandType> static inline std::queue<entity_command_t<EntityType, CommandType>> entity_commands{};
 
@@ -98,18 +98,22 @@ namespace necrowarp {
 
 	static inline volatile std::atomic<bool> divine_intervention_invoked{ false };
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline bool entity_registry_t<MapType, Entities...>::contains(offset_t position) const noexcept { return data.dependent contains<EntityType>(position); }
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return entity_storage<EntityType>.contains(position); }
 
-	template<map_type_e MapType, NonNullEntity... Entities>
+	template<map_type_e MapType> template<PlayerEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return player.position == position; }
+
+	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline bool entity_registry_t<MapType, Entities...>::contains(offset_t position) const noexcept {
+	inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept {
 		return (contains<EntityTypes>(position) || ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline bool entity_registry_t<MapType, Entities...>::contains(offset_t position) const noexcept { return contains<Entities...>(position); }
+	template<map_type_e MapType> template<NullEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return !contains<ALL_ENTITIES>(position); }
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<distance_function_e Distance, NonNullEntity EntityType> inline bool entity_registry_t<MapType, Entities...>::nearby(offset_t position) const noexcept {
+	template<map_type_e MapType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return contains<ALL_ENTITIES>(position); }
+
+	template<map_type_e MapType> template<distance_function_e Distance, NonNullEntity EntityType> inline bool entity_registry_t<MapType>::nearby(offset_t position) const noexcept {
 		for (cauto offset : neighbourhood_offsets<Distance>) {
 			cauto current_pos{ position + offset };
 
@@ -121,14 +125,14 @@ namespace necrowarp {
 		return false;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
+	template<map_type_e MapType>
 	template<distance_function_e Distance, NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline bool entity_registry_t<MapType, Entities...>::nearby(offset_t position) const noexcept {
+	inline bool entity_registry_t<MapType>::nearby(offset_t position) const noexcept {
 		return (nearby<Distance, EntityTypes>(position) || ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<distance_function_e Distance, NonNullEntity EntityType> inline std::optional<offset_t> entity_registry_t<MapType, Entities...>::nearest(offset_t position) const noexcept {
+	template<map_type_e MapType> template<distance_function_e Distance, NonNullEntity EntityType> inline std::optional<offset_t> entity_registry_t<MapType>::nearest(offset_t position) const noexcept {
 		if (empty<EntityType>()) {
 			return std::nullopt;
 		}
@@ -171,10 +175,10 @@ namespace necrowarp {
 		return std::nullopt;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
+	template<map_type_e MapType>
 	template<distance_function_e Distance, NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline std::optional<offset_t> entity_registry_t<MapType, Entities...>::nearest(offset_t position) const noexcept {
+	inline std::optional<offset_t> entity_registry_t<MapType>::nearest(offset_t position) const noexcept {
 		if (empty<EntityTypes...>()) {
 			return std::nullopt;
 		}
@@ -217,7 +221,7 @@ namespace necrowarp {
 		return std::nullopt;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline entity_group_e entity_registry_t<MapType, Entities...>::at(offset_t position) const noexcept {
+	template<map_type_e MapType> inline entity_group_e entity_registry_t<MapType>::at(offset_t position) const noexcept {
 		entity_group_e entities{ entity_group_e::None };
 
 		magic_enum::enum_for_each<entity_e>([&](auto val) -> void {
@@ -233,60 +237,76 @@ namespace necrowarp {
 		return entities;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline cptr<EntityType> entity_registry_t<MapType, Entities...>::at(offset_t position) const noexcept {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline cptr<EntityType> entity_registry_t<MapType>::at(offset_t position) const noexcept {
 		if (!contains<EntityType>(position)) {
 			return nullptr;
 		}
 
-		return data.dependent at<EntityType>(position);
+		return entity_storage<EntityType>[position];
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline ptr<EntityType> entity_registry_t<MapType, Entities...>::at(offset_t position) noexcept {
+	template<map_type_e MapType> template<PlayerEntity EntityType> inline cptr<EntityType> entity_registry_t<MapType>::at(offset_t position) const noexcept {
+		if (player.position != position) {
+			return nullptr;
+		}
+
+		return &player;
+	}
+
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline ptr<EntityType> entity_registry_t<MapType>::at(offset_t position) noexcept {
 		if (!contains<EntityType>(position)) {
 			return nullptr;
 		}
 
-		return data.dependent at<EntityType>(position);
+		return entity_storage<EntityType>[position];
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline usize entity_registry_t<MapType, Entities...>::count() const noexcept {
-		return data.dependent size<EntityType>();
+	template<map_type_e MapType> template<PlayerEntity EntityType> inline ptr<EntityType> entity_registry_t<MapType>::at(offset_t position) noexcept {
+		if (player.position != position) {
+			return nullptr;
+		}
+
+		return &player;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
-	template<NonNullEntity... EntityTypes>
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline usize entity_registry_t<MapType>::count() const noexcept {
+		return entity_storage<EntityType>.size();
+	}
+
+	template<map_type_e MapType>
+	template<Entity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline usize entity_registry_t<MapType, Entities...>::count() const noexcept {
+	inline usize entity_registry_t<MapType>::count() const noexcept {
 		return (count<EntityTypes>() + ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline usize entity_registry_t<MapType, Entities...>::count() const noexcept { return count<ALL_ENTITIES>(); }
+	template<map_type_e MapType> inline usize entity_registry_t<MapType>::count() const noexcept { return count<ALL_ENTITIES>(); }
 	
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline bool entity_registry_t<MapType, Entities...>::empty() const noexcept {
-		return data.dependent size<EntityType>();
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::empty() const noexcept {
+		return entity_storage<EntityType>.empty();
 	}
 	
-	template<map_type_e MapType, NonNullEntity... Entities>
-	template<NonNullEntity... EntityTypes>
+	template<map_type_e MapType>
+	template<Entity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline bool entity_registry_t<MapType, Entities...>::empty() const noexcept {
+	inline bool entity_registry_t<MapType>::empty() const noexcept {
 		return (empty<EntityTypes>() && ...);
 	}
 	
-	template<map_type_e MapType, NonNullEntity... Entities>
-	template<NonNullEntity... EntityTypes>
+	template<map_type_e MapType>
+	template<Entity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline bool entity_registry_t<MapType, Entities...>::empty(offset_t position) const noexcept {
+	inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept {
 		return (empty<EntityTypes>(position) && ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline bool entity_registry_t<MapType, Entities...>::empty(offset_t position) const noexcept {
-		return !data.dependent contains<EntityType>(position);
-	}
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept { return !entity_storage<EntityType>.contains(position); }
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline bool entity_registry_t<MapType, Entities...>::empty(offset_t position) const noexcept { return empty<ALL_ENTITIES>(position); }
+	template<map_type_e MapType> template<PlayerEntity EntityType> inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept { return player.position != position; }
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<bool Force, NonNullEntity EntityType> inline bool entity_registry_t<MapType, Entities...>::add(rval<EntityType> entity) noexcept {
+	template<map_type_e MapType> inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept { return empty<ALL_ENTITIES>(position); }
+
+	template<map_type_e MapType> template<bool Force, NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::add(rval<EntityType> entity) noexcept {
 		if constexpr (!Force) {
 			if (contains(entity.position)) {
 				return false;
@@ -294,13 +314,9 @@ namespace necrowarp {
 		}
 		
 		const offset_t position{ entity.position };
-		const bool inserted{ data.dependent add<EntityType>(std::move(entity)) };
+		const bool inserted{ entity_storage<EntityType>.add(std::move(entity)) };
 
 		if (inserted) {
-			if constexpr (is_player<EntityType>::value) {
-				player = data.dependent at<EntityType>(position);
-			}
-
 			if constexpr (is_evil_entity<EntityType>::value) {
 				good_goal_map<MapType>.add(position);
 				ranger_goal_map<MapType>.add(position);
@@ -320,40 +336,13 @@ namespace necrowarp {
 		return inserted;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline rval<EntityType> entity_registry_t<MapType, Entities...>::extract(offset_t position) noexcept {
-		rval<EntityType> vagrant_entity{ data.dependent extract<EntityType>(position) };
-
-		if constexpr (is_player<EntityType>::value) {
-			player = nullptr;
-		}
-		
-		if constexpr (is_evil_entity<EntityType>::value) {
-			good_goal_map<MapType>.remove(position);
-			ranger_goal_map<MapType>.remove(position);
-		} else if constexpr (is_good_entity<EntityType>::value) {
-			evil_goal_map<MapType>.remove(position);
-		}
-
-		if constexpr (is_vigilant<EntityType>::value) {
-			skulker_goal_map<MapType>.remove(position);
-		}
-
-		entity_goal_map<MapType, EntityType>.remove(position);
-
-		return std::move(vagrant_entity);
-	}
-
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline bool entity_registry_t<MapType, Entities...>::remove(offset_t position) noexcept {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::remove(offset_t position) noexcept {
 		if (empty(position)) {
 			return false;
 		}
 		
-		if (!data.remove(position)) {
+		if (!entity_storage<EntityType>.remove(position)) {
 			return false;
-		}
-
-		if constexpr (is_player<EntityType>::value) {
-			player = nullptr;
 		}
 		
 		if constexpr (is_evil_entity<EntityType>::value) {
@@ -372,43 +361,43 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline void entity_registry_t<MapType, Entities...>::clear() noexcept {
-		data.dependent clear<EntityType>();
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::clear() noexcept {
+		entity_storage<EntityType>.clear();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
-	template<NonNullEntity... EntityTypes>
+	template<map_type_e MapType>
+	template<NonPlayerEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::clear() noexcept {
+	inline void entity_registry_t<MapType>::clear() noexcept {
 		(clear<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::clear() noexcept {
-		clear<ALL_ENTITIES>();
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::clear() noexcept {
+		clear<ALL_NON_PLAYER>();
+
+		player = player_t{};
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline void entity_registry_t<MapType, Entities...>::reset() noexcept {
-		clear<EntityType>();
-
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::reset() noexcept {
+		entity_storage<EntityType>.clear();
 		reset_goal_map<EntityType>();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
-	template<NonNullEntity... EntityTypes>
+	template<map_type_e MapType>
+	template<NonPlayerEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::reset() noexcept {
+	inline void entity_registry_t<MapType>::reset() noexcept {
 		(clear<EntityTypes>(), ...);
-
 		(reset_goal_map<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::reset() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset() noexcept {
 		clear();
 
 		reset_goal_map();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline bool entity_registry_t<MapType, Entities...>::spawn(usize count) noexcept {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::spawn(usize count) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
 
@@ -422,7 +411,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType, typename... Args> inline bool entity_registry_t<MapType, Entities...>::spawn(usize count, Args... args) noexcept {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType, typename... Args> inline bool entity_registry_t<MapType>::spawn(usize count, Args... args) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
 
@@ -436,7 +425,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline bool entity_registry_t<MapType, Entities...>::spawn(usize count, u32 minimum_distance) noexcept {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::spawn(usize count, u32 minimum_distance) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ entity_goal_map<MapType, EntityType>.dependent find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, minimum_distance) };
 
@@ -452,7 +441,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType, typename... Args> inline bool entity_registry_t<MapType, Entities...>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType, typename... Args> inline bool entity_registry_t<MapType>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
 		entity_goal_map<MapType, EntityType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
 		
 		for (usize i{ 0 }; i < count; ++i) {
@@ -470,17 +459,13 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline bool entity_registry_t<MapType, Entities...>::update(offset_t current, offset_t target) noexcept {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::update(offset_t current, offset_t target) noexcept {
 		if (empty(current) || !game_map<MapType>.dependent within<zone_region_e::Interior>(current) || contains(target) || !game_map<MapType>.dependent within<zone_region_e::Interior>(target)) {
 			return false;
 		}
 		
-		if (!data.move(current, target)) {
+		if (!entity_storage<EntityType>.move(current, target)) {
 			return false;
-		}
-
-		if constexpr (is_player<EntityType>::value) {
-			player = at<EntityType>(target);
 		}
 
 		if constexpr (is_evil_entity<EntityType>::value) {
@@ -496,10 +481,6 @@ namespace necrowarp {
 
 		entity_goal_map<MapType, EntityType>.update(current, target);
 
-		if (newborns.contains(current)) {
-			newborns.move(current, target);
-		}
-
 		if (stunned.contains(current)) {
 			stunned.move(current, target);
 		}
@@ -507,27 +488,111 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline void entity_registry_t<MapType, Entities...>::update() noexcept {
+	template<map_type_e MapType> template<PlayerEntity EntityType> inline bool entity_registry_t<MapType>::update(offset_t current, offset_t target) noexcept {
+		if (empty(current) || !game_map<MapType>.dependent within<zone_region_e::Interior>(current) || contains(target) || !game_map<MapType>.dependent within<zone_region_e::Interior>(target)) {
+			return false;
+		}
+
+		player.position = target;
+
+		if constexpr (is_evil_entity<EntityType>::value) {
+			good_goal_map<MapType>.update(current, target);
+			ranger_goal_map<MapType>.update(current, target);
+		} else if constexpr (is_good_entity<EntityType>::value) {
+			evil_goal_map<MapType>.update(current, target);
+		}
+
+		if constexpr (is_vigilant<EntityType>::value) {
+			skulker_goal_map<MapType>.update(current, target);
+		}
+
+		entity_goal_map<MapType, EntityType>.update(current, target);
+
+		return true;
+	}
+
+	template<map_type_e MapType> template<PlayerEntity EntityType> inline void entity_registry_t<MapType>::update() noexcept {
+		const command_pack_t pack{ player.command };
+
+		magic_enum::enum_switch([&](auto val) -> void {
+			constexpr command_e cval{ val };
+
+			using command_type = to_command_type<cval>::type;			
+
+			if constexpr (is_null_command<command_type>::value) {
+				return;
+			} else {
+				if constexpr (is_entity_command_valid<EntityType, command_type>::value) {
+					if constexpr (is_unary_command<command_type>::value) {
+						if (!pack.source_position.has_value()) {
+							player_turn_invalidated = true;
+							return;
+						}
+
+						const entity_command_t<EntityType, command_type> command{ pack.source_position.value() };
+						
+						if (!is_command_valid<EntityType, command_type>(command)) {
+							player_turn_invalidated = true;
+							return;
+						}
+						
+						command.dependent process<MapType>();
+					} else if constexpr (is_binary_command<command_type>::value) {
+						if (!pack.source_position.has_value() || !pack.target_position.has_value()) {
+							player_turn_invalidated = true;
+							return;
+						}
+
+						const entity_command_t<EntityType, command_type> command{ pack.source_position.value(), pack.target_position.value() };
+						
+						if (!is_command_valid<EntityType, command_type>(command)) {
+							player_turn_invalidated = true;
+							return;
+						}
+						
+						command.dependent process<MapType>();
+					} else if constexpr (is_ternary_command<command_type>::value) {
+						if (!pack.source_position.has_value() || !pack.intermediate_position.has_value() || !pack.target_position.has_value()) {
+							player_turn_invalidated = true;
+							return;
+						}
+
+						const entity_command_t<EntityType, command_type> command{
+							pack.source_position.value(),
+							pack.intermediate_position.value(),
+							pack.target_position.value()
+						};
+						
+						if (!is_command_valid<EntityType, command_type>(command)) {
+							player_turn_invalidated = true;
+							return;
+						}
+						
+						command.dependent process<MapType>();
+					} else {
+						return;
+					}
+				} else {
+					player_turn_invalidated = true;
+					return;
+				}
+			}
+		}, pack.type);
+	}
+
+	template<map_type_e MapType> template<NPCEntity EntityType> inline void entity_registry_t<MapType>::update() noexcept {
 		if constexpr (is_sneaky<EntityType>::value) {
 			recalculate_skulker_goal_map();
 		}
 
-		for (cptr<EntityType> iter{ data.dependent cbegin<EntityType>() }; iter != data.dependent cend<EntityType>(); ++iter) {
-			if (iter == nullptr) {
-				continue;
-			}
-
-			cref<EntityType> entity{ *iter };
-
+		for (crauto entity : entity_storage<EntityType>) {
 			if (newborns.contains(entity.position)) {
 				newborns.remove(entity.position);
-
 				continue;
 			}
 
 			if (stunned.contains(entity.position)) {
 				stunned.remove(entity.position);
-
 				continue;
 			}
 
@@ -544,50 +609,30 @@ namespace necrowarp {
 					if constexpr (is_entity_command_valid<EntityType, command_type>::value) {
 						if constexpr (is_unary_command<command_type>::value) {
 							if (!pack.source_position.has_value()) {
-								if constexpr (is_player<EntityType>::value) {
-									player_turn_invalidated = true;
-								}
-
 								return;
 							}
 
 							const entity_command_t<EntityType, command_type> command{ pack.source_position.value() };
 							
 							if (!is_command_valid<EntityType, command_type>(command)) {
-								if constexpr (is_player<EntityType>::value) {
-									player_turn_invalidated = true;
-								}
-
 								return;
 							}
 
 							entity_commands<EntityType, command_type>.push(command);
 						} else if constexpr (is_binary_command<command_type>::value) {
 							if (!pack.source_position.has_value() || !pack.target_position.has_value()) {
-								if constexpr (is_player<EntityType>::value) {
-									player_turn_invalidated = true;
-								}
-
 								return;
 							}
 
 							const entity_command_t<EntityType, command_type> command{ pack.source_position.value(), pack.target_position.value() };
 							
 							if (!is_command_valid<EntityType, command_type>(command)) {
-								if constexpr (is_player<EntityType>::value) {
-									player_turn_invalidated = true;
-								}
-
 								return;
 							}
 
 							entity_commands<EntityType, command_type>.push(command);
 						} else if constexpr (is_ternary_command<command_type>::value) {
 							if (!pack.source_position.has_value() || !pack.intermediate_position.has_value() || !pack.target_position.has_value()) {
-								if constexpr (is_player<EntityType>::value) {
-									player_turn_invalidated = true;
-								}
-
 								return;
 							}
 
@@ -598,19 +643,11 @@ namespace necrowarp {
 							};
 							
 							if (!is_command_valid<EntityType, command_type>(command)) {
-								if constexpr (is_player<EntityType>::value) {
-									player_turn_invalidated = true;
-								}
-
 								return;
 							}
 
 							entity_commands<EntityType, command_type>.push(command);
 						} else {
-							if constexpr (is_player<EntityType>::value) {
-								player_turn_invalidated = true;
-							}
-
 							return;
 						}
 					}
@@ -621,28 +658,24 @@ namespace necrowarp {
 		process_commands<EntityType>();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
-	template<NonNullEntity... EntityTypes>
+	template<map_type_e MapType>
+	template<NPCEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::update() noexcept {
+	inline void entity_registry_t<MapType>::update() noexcept {
 		(update<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::update() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::update() noexcept {
 		update<player_t>();
 
-		if (!player_exists()) {
-			return;
-		}
-
-		if (!player_exists() || player_turn_invalidated) {
+		if (player_turn_invalidated) {
 			player_turn_invalidated = false;
 
 			return;
 		}
 
-		if (!freshly_divine && player->has_ascended()) {
-			player->erode_divinity();
+		if (!freshly_divine && player.has_ascended()) {
+			player.erode_divinity();
 		}
 
 		freshly_divine = false;
@@ -663,49 +696,33 @@ namespace necrowarp {
 		steam_stats::store();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType, Entities...>::advance() noexcept {
-		for (ptr<EntityType> iter{ data.dependent begin<EntityType>() }; iter != data.dependent end<EntityType>(); ++iter) {
-			if (iter == nullptr) {
-				continue;
-			}
-
-			ref<EntityType> entity{ *iter };
-
-			entity.idle_animation.advance();
-		}
+	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::advance() noexcept {
+		for (crauto entity : entity_storage<EntityType>) { entity.idle_animation.advance(); }
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> 
+	template<map_type_e MapType> 
 	template<AnimatedEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::advance() noexcept {
+	inline void entity_registry_t<MapType>::advance() noexcept {
 		(advance<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::advance() noexcept { advance<ALL_ANIMATED_ENTITIES>(); }
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::advance() noexcept { advance<ALL_ANIMATED_ENTITIES>(); }
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType, Entities...>::retreat() noexcept {
-		for (ptr<EntityType> iter{ data.dependent begin<EntityType>() }; iter != data.dependent end<EntityType>(); ++iter) {
-			if (iter == nullptr) {
-				continue;
-			}
-
-			ref<EntityType> entity{ *iter };
-
-			entity.idle_animation.retreat();
-		}
+	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::retreat() noexcept {
+		for (crauto entity : entity_storage<EntityType>) { entity.idle_animation.retreat(); }
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> 
+	template<map_type_e MapType> 
 	template<AnimatedEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::retreat() noexcept {
+	inline void entity_registry_t<MapType>::retreat() noexcept {
 		(retreat<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::retreat() noexcept { retreat<ALL_ANIMATED_ENTITIES>(); }
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_ENTITIES>(); }
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NPCEntity EntityType, NonNullCommand CommandType> inline void entity_registry_t<MapType, Entities...>::process_commands() noexcept {
+	template<map_type_e MapType> template<NPCEntity EntityType, NonNullCommand CommandType> inline void entity_registry_t<MapType>::process_commands() noexcept {
 		if constexpr (is_entity_command_valid<EntityType, CommandType>::value) {
 			while (!entity_commands<EntityType, CommandType>.empty()) {
 				cauto command{ entity_commands<EntityType, CommandType>.front() };
@@ -717,106 +734,106 @@ namespace necrowarp {
 		}
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
+	template<map_type_e MapType>
 	template<NPCEntity EntityType, NonNullCommand... CommandTypes>
 		requires is_plurary<CommandTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::process_commands() noexcept {
+	inline void entity_registry_t<MapType>::process_commands() noexcept {
 		(process_commands<EntityType, CommandTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NPCEntity EntityType> inline void entity_registry_t<MapType, Entities...>::process_commands() noexcept {
+	template<map_type_e MapType> template<NPCEntity EntityType> inline void entity_registry_t<MapType>::process_commands() noexcept {
 		process_commands<EntityType, ALL_NPC_COMMANDS>();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline void entity_registry_t<MapType, Entities...>::recalculate_goal_map() noexcept {
+	template<map_type_e MapType> template<NonNullEntity EntityType> inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
 		entity_goal_map<MapType, EntityType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
+	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::recalculate_goal_map() noexcept {
+	inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
 		(recalculate_goal_map<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::recalculate_good_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_good_goal_map() noexcept {
 		good_goal_map<MapType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::recalculate_evil_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_evil_goal_map() noexcept {
 		evil_goal_map<MapType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::recalculate_alignment_goal_maps() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_alignment_goal_maps() noexcept {
 		recalculate_good_goal_map();
 		recalculate_evil_goal_map();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::recalculate_ranger_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_ranger_goal_map() noexcept {
 		ranger_goal_map<MapType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::recalculate_skulker_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_skulker_goal_map() noexcept {
 		skulker_goal_map<MapType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::recalculate_specialist_goal_maps() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_specialist_goal_maps() noexcept {
 		recalculate_ranger_goal_map();
 		recalculate_skulker_goal_map();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::recalculate_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
 		recalculate_goal_map<ALL_ENTITIES>();
 
 		recalculate_alignment_goal_maps();
 		recalculate_specialist_goal_maps();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline void entity_registry_t<MapType, Entities...>::reset_goal_map() noexcept {
+	template<map_type_e MapType> template<NonNullEntity EntityType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
 		entity_goal_map<MapType, EntityType>.reset();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
+	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::reset_goal_map() noexcept {
+	inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
 		(reset_goal_map<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::reset_good_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_good_goal_map() noexcept {
 		good_goal_map<MapType>.reset();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::reset_evil_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_evil_goal_map() noexcept {
 		evil_goal_map<MapType>.reset();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::reset_alignment_goal_maps() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_alignment_goal_maps() noexcept {
 		reset_good_goal_map();
 		reset_evil_goal_map();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::reset_ranger_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_ranger_goal_map() noexcept {
 		ranger_goal_map<MapType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::reset_skulker_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_skulker_goal_map() noexcept {
 		skulker_goal_map<MapType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::reset_specialist_goal_maps() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_specialist_goal_maps() noexcept {
 		recalculate_ranger_goal_map();
 		recalculate_skulker_goal_map();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::reset_goal_map() noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
 		reset_goal_map<ALL_ENTITIES>();
 
 		reset_alignment_goal_maps();
 		reset_specialist_goal_maps();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType, Command CommandType> inline bool entity_registry_t<MapType, Entities...>::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
+	template<map_type_e MapType> template<NonNullEntity EntityType, Command CommandType> inline bool entity_registry_t<MapType>::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
 		static constexpr entity_e entity_enum{ to_entity_enum<EntityType>::value };
 		static constexpr command_e command_enum{ to_command_enum<CommandType>::value };
 
@@ -977,28 +994,16 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline void entity_registry_t<MapType, Entities...>::draw() const noexcept {
-		for (cptr<EntityType> iter{ data.dependent cbegin<EntityType>() }; iter != data.dependent cend<EntityType>(); ++iter) {
-			if (iter == nullptr) {
-				continue;
-			}
-
-			cref<EntityType> entity{ *iter };
-
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw() const noexcept {
+		for (crauto entity : entity_storage<EntityType>) {
 			entity.draw();
 		}
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline void entity_registry_t<MapType, Entities...>::draw(cref<camera_t> camera) const noexcept {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (cptr<EntityType> iter{ data.dependent cbegin<EntityType>() }; iter != data.dependent cend<EntityType>(); ++iter) {
-			if (iter == nullptr) {
-				continue;
-			}
-
-			cref<EntityType> entity{ *iter };
-
+		for (crauto entity : entity_storage<EntityType>) {
 			if (!viewport.within(entity.position)) {
 				continue;
 			}
@@ -1007,16 +1012,10 @@ namespace necrowarp {
 		}
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> template<NonNullEntity EntityType> inline void entity_registry_t<MapType, Entities...>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (cptr<EntityType> iter{ data.dependent cbegin<EntityType>() }; iter != data.dependent cend<EntityType>(); ++iter) {
-			if (iter == nullptr) {
-				continue;
-			}
-
-			cref<EntityType> entity{ *iter };
-
+		for (crauto entity : entity_storage<EntityType>) {
 			if (!viewport.within(entity.position)) {
 				continue;
 			}
@@ -1025,43 +1024,43 @@ namespace necrowarp {
 		}
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
+	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::draw() const noexcept {
+	inline void entity_registry_t<MapType>::draw() const noexcept {
 		(draw<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
+	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::draw(cref<camera_t> camera) const noexcept {
+	inline void entity_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		(draw<EntityTypes>(camera), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities>
+	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType, Entities...>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+	inline void entity_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		(draw<EntityTypes>(camera, offset), ...);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::draw() const noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::draw() const noexcept {
 		draw<ALL_NON_PLAYER>();
 
-		draw<player_t>();
+		player.draw();
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::draw(cref<camera_t> camera) const noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		draw<ALL_NON_PLAYER>(camera);
 
-		draw<player_t>(camera);
+		player.draw(camera);
 	}
 
-	template<map_type_e MapType, NonNullEntity... Entities> inline void entity_registry_t<MapType, Entities...>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		draw<ALL_NON_PLAYER>(camera, offset);
 
-		draw<player_t>(camera, offset);
+		player.draw(camera, offset);
 	}
 } // namespace necrowarp
 

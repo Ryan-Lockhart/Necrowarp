@@ -7,13 +7,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<map_type_e MapType, NonNullObject... Objects> struct object_registry_t {
-	  private:
-		multi_sparse_t<Objects...> data{};
-
-	  public:
-		inline object_registry_t() noexcept : data{} {}
-
+	template<map_type_e MapType> struct object_registry_t {
 		inline object_group_e at(offset_t position) const noexcept;
 
 		template<NonNullObject ObjectType> inline cptr<ObjectType> at(offset_t position) const noexcept;
@@ -22,7 +16,9 @@ namespace necrowarp {
 
 		template<NonNullObject ObjectType> inline usize count() const noexcept;
 
-		template<NonNullObject... ObjectTypes>
+		template<NullObject ObjectType> inline usize count() const noexcept;
+
+		template<Object... ObjectTypes>
 			requires is_plurary<ObjectTypes...>::value
 		inline usize count() const noexcept;
 
@@ -34,11 +30,11 @@ namespace necrowarp {
 
 		inline bool empty(offset_t position) const noexcept;
 
-		template<NonNullObject... ObjectTypes>
+		template<Object... ObjectTypes>
 			requires is_plurary<ObjectTypes...>::value
 		inline bool empty() const noexcept;
 
-		template<NonNullObject... ObjectTypes>
+		template<Object... ObjectTypes>
 			requires is_plurary<ObjectTypes...>::value
 		inline bool empty(offset_t position) const noexcept;
 
@@ -59,8 +55,6 @@ namespace necrowarp {
 		template<NonNullObject ObjectType> inline bool spill(rval<ObjectType> object) noexcept;
 
 		template<NonNullObject ObjectType> inline bool spill(rval<ObjectType> object, usize amount) noexcept;
-
-		template<NonNullObject ObjectType> inline rval<ObjectType> extract(offset_t position) noexcept;
 
 		template<NonNullObject ObjectType> inline bool remove(offset_t position) noexcept;
 

@@ -9,28 +9,27 @@
 namespace necrowarp {	
 	using namespace bleak;
 
-	template<map_type_e MapType> static inline object_registry_t<MapType, ALL_OBJECTS> object_registry{};
+	template<map_type_e MapType> static inline object_registry_t<MapType> object_registry{};
+
+	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_storage{};
+	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_buffer{};
 
 	template<map_type_e MapType, NonNullObject ObjectType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> object_goal_map{};
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::contains(offset_t position) const noexcept {
-		return data.dependent contains<ObjectType>(position);
-	}
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::contains(offset_t position) const noexcept { return object_storage<ObjectType>.contains(position); }
 
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<NonNullObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline bool object_registry_t<MapType, Objects...>::contains(offset_t position) const noexcept {
+	inline bool object_registry_t<MapType>::contains(offset_t position) const noexcept {
 		return (contains<ObjectTypes>(position) || ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::contains(offset_t position) const noexcept {
-		return !contains<ALL_OBJECTS>(position);
-	}
+	template<map_type_e MapType> template<NullObject ObjectType> inline bool object_registry_t<MapType>::contains(offset_t position) const noexcept { return !contains<ALL_OBJECTS>(position); }
 
-	template<map_type_e MapType, NonNullObject... Objects> inline bool object_registry_t<MapType, Objects...>::contains(offset_t position) const noexcept { return contains<ALL_OBJECTS>(position); }
+	template<map_type_e MapType> inline bool object_registry_t<MapType>::contains(offset_t position) const noexcept { return contains<ALL_OBJECTS>(position); }
 
-	template<map_type_e MapType, NonNullObject... Objects> inline object_group_e object_registry_t<MapType, Objects...>::at(offset_t position) const noexcept {
+	template<map_type_e MapType> inline object_group_e object_registry_t<MapType>::at(offset_t position) const noexcept {
 		object_group_e objects{ object_group_e::None };
 
 		magic_enum::enum_for_each<object_e>([&](auto val) -> void {
@@ -46,7 +45,7 @@ namespace necrowarp {
 		return objects;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline cptr<ObjectType> object_registry_t<MapType, Objects...>::at(offset_t position) const noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline cptr<ObjectType> object_registry_t<MapType>::at(offset_t position) const noexcept {
 		if (!contains<ObjectType>(position)) {
 			return nullptr;
 		}
@@ -54,7 +53,7 @@ namespace necrowarp {
 		return object_storage<ObjectType>[position];
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline ptr<ObjectType> object_registry_t<MapType, Objects...>::at(offset_t position) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline ptr<ObjectType> object_registry_t<MapType>::at(offset_t position) noexcept {
 		if (!contains<ObjectType>(position)) {
 			return nullptr;
 		}
@@ -62,43 +61,43 @@ namespace necrowarp {
 		return object_storage<ObjectType>[position];
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectTypes> inline usize object_registry_t<MapType, Objects...>::count() const noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectTypes> inline usize object_registry_t<MapType>::count() const noexcept {
 		return object_storage<ObjectTypes>.size();
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<Object... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline usize object_registry_t<MapType, Objects...>::count() const noexcept {
+	inline usize object_registry_t<MapType>::count() const noexcept {
 		return (count<ObjectTypes>() + ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects>
-	inline usize object_registry_t<MapType, Objects...>::count() const noexcept { return count<ALL_OBJECTS>(); }
+	template<map_type_e MapType>
+	inline usize object_registry_t<MapType>::count() const noexcept { return count<ALL_OBJECTS>(); }
 	
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::empty() const noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::empty() const noexcept {
 		return object_storage<ObjectType>.empty();
 	}
 	
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<Object... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline bool object_registry_t<MapType, Objects...>::empty() const noexcept {
+	inline bool object_registry_t<MapType>::empty() const noexcept {
 		return (empty<ObjectTypes>() && ...);
 	}
 	
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<Object... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline bool object_registry_t<MapType, Objects...>::empty(offset_t position) const noexcept {
+	inline bool object_registry_t<MapType>::empty(offset_t position) const noexcept {
 		return (empty<ObjectTypes>(position) && ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::empty(offset_t position) const noexcept { return !object_storage<ObjectType>.contains(position); }
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::empty(offset_t position) const noexcept { return !object_storage<ObjectType>.contains(position); }
 
-	template<map_type_e MapType, NonNullObject... Objects> inline bool object_registry_t<MapType, Objects...>::empty(offset_t position) const noexcept { return empty<ALL_OBJECTS>(position); }
+	template<map_type_e MapType> inline bool object_registry_t<MapType>::empty(offset_t position) const noexcept { return empty<ALL_OBJECTS>(position); }
 
-	template<map_type_e MapType, NonNullObject... Objects> template<bool Force, NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::add(rval<ObjectType> object) noexcept {
+	template<map_type_e MapType> template<bool Force, NonNullObject ObjectType> inline bool object_registry_t<MapType>::add(rval<ObjectType> object) noexcept {
 		if constexpr (!Force) {
 			if (contains(object.position)) {
 				return false;
@@ -115,7 +114,7 @@ namespace necrowarp {
 		return inserted;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::spill(rval<ObjectType> object) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spill(rval<ObjectType> object) noexcept {
 		if (!game_map<MapType>.dependent within<zone_region_e::Interior>(object.position) || game_map<MapType>[object.position] != cell_e::Open) {
 			return false;
 		}
@@ -167,7 +166,7 @@ namespace necrowarp {
 		return false;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::spill(rval<ObjectType> object, usize amount) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spill(rval<ObjectType> object, usize amount) noexcept {
 		if (!game_map<MapType>.dependent within<zone_region_e::Interior>(object.position) || game_map<MapType>[object.position] != cell_e::Open || amount <= 0) {
 			return false;
 		}
@@ -227,7 +226,7 @@ namespace necrowarp {
 		return false;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::remove(offset_t position) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::remove(offset_t position) noexcept {
 		if (empty(position)) {
 			return false;
 		}
@@ -241,41 +240,41 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline void object_registry_t<MapType, Objects...>::clear() noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::clear() noexcept {
 		object_storage<ObjectType>.clear();
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<NonNullObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType, Objects...>::clear() noexcept {
+	inline void object_registry_t<MapType>::clear() noexcept {
 		(clear<ObjectTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> inline void object_registry_t<MapType, Objects...>::clear() noexcept {
+	template<map_type_e MapType> inline void object_registry_t<MapType>::clear() noexcept {
 		clear<ALL_OBJECTS>();
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline void object_registry_t<MapType, Objects...>::reset() noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::reset() noexcept {
 		object_storage<ObjectType>.clear();
 		reset_goal_map<ObjectType>();
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<NonNullObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType, Objects...>::reset() noexcept {
+	inline void object_registry_t<MapType>::reset() noexcept {
 		(clear<ObjectTypes>(), ...);
 		(reset_goal_map<ObjectTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> inline void object_registry_t<MapType, Objects...>::reset() noexcept {
+	template<map_type_e MapType> inline void object_registry_t<MapType>::reset() noexcept {
 		clear();
 
 		reset_goal_map();
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::spawn(usize count) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
 
@@ -289,7 +288,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType, Objects...>::spawn(usize count, Args... args) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType>::spawn(usize count, Args... args) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
 
@@ -303,7 +302,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::spawn(usize count, u32 minimum_distance) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance) noexcept {
 		object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 
 		for (usize i{ 0 }; i < count; ++i) {
@@ -321,7 +320,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType, Objects...>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
 		object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 		
 		for (usize i{ 0 }; i < count; ++i) {
@@ -339,7 +338,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline bool object_registry_t<MapType, Objects...>::update(offset_t current, offset_t target) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::update(offset_t current, offset_t target) noexcept {
 		if (empty(current) || !game_map<MapType>.dependent within<zone_region_e::Interior>(current) || contains(target) || !game_map<MapType>.dependent within<zone_region_e::Interior>(target)) {
 			return false;
 		}
@@ -353,69 +352,69 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<AnimatedObject ObjectType> inline void object_registry_t<MapType, Objects...>::advance() noexcept {
+	template<map_type_e MapType> template<AnimatedObject ObjectType> inline void object_registry_t<MapType>::advance() noexcept {
 		for (crauto object : object_storage<ObjectType>) { object.idle_animation.advance(); }
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> 
+	template<map_type_e MapType> 
 	template<AnimatedObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType, Objects...>::advance() noexcept {
+	inline void object_registry_t<MapType>::advance() noexcept {
 		(advance<ObjectTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> inline void object_registry_t<MapType, Objects...>::advance() noexcept { advance<ALL_ANIMATED_OBJECTS>(); }
+	template<map_type_e MapType> inline void object_registry_t<MapType>::advance() noexcept { advance<ALL_ANIMATED_OBJECTS>(); }
 
-	template<map_type_e MapType, NonNullObject... Objects> template<AnimatedObject ObjectType> inline void object_registry_t<MapType, Objects...>::retreat() noexcept {
+	template<map_type_e MapType> template<AnimatedObject ObjectType> inline void object_registry_t<MapType>::retreat() noexcept {
 		for (crauto object : object_storage<ObjectType>) { object.idle_animation.retreat(); }
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> 
+	template<map_type_e MapType> 
 	template<AnimatedObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType, Objects...>::retreat() noexcept {
+	inline void object_registry_t<MapType>::retreat() noexcept {
 		(retreat<ObjectTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> inline void object_registry_t<MapType, Objects...>::retreat() noexcept { retreat<ALL_ANIMATED_OBJECTS>(); }
+	template<map_type_e MapType> inline void object_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_OBJECTS>(); }
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline void object_registry_t<MapType, Objects...>::recalculate_goal_map() noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
 		object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<NonNullObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType, Objects...>::recalculate_goal_map() noexcept {
+	inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
 		(recalculate_goal_map<ObjectTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> inline void object_registry_t<MapType, Objects...>::recalculate_goal_map() noexcept {
+	template<map_type_e MapType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
 		recalculate_goal_map<ALL_OBJECTS>();
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline void object_registry_t<MapType, Objects...>::reset_goal_map() noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::reset_goal_map() noexcept {
 		object_goal_map<MapType, ObjectType>.reset();
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<NonNullObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType, Objects...>::reset_goal_map() noexcept {
+	inline void object_registry_t<MapType>::reset_goal_map() noexcept {
 		(reset_goal_map<ObjectTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> inline void object_registry_t<MapType, Objects...>::reset_goal_map() noexcept {
+	template<map_type_e MapType> inline void object_registry_t<MapType>::reset_goal_map() noexcept {
 		reset_goal_map<ALL_OBJECTS>();
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline void object_registry_t<MapType, Objects...>::draw() const noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw() const noexcept {
 		for (crauto object : object_storage<ObjectType>) {
 			object.draw();
 		}
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline void object_registry_t<MapType, Objects...>::draw(cref<camera_t> camera) const noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
 		for (crauto object : object_storage<ObjectType>) {
@@ -427,7 +426,7 @@ namespace necrowarp {
 		}
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> template<NonNullObject ObjectType> inline void object_registry_t<MapType, Objects...>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
 		for (crauto object : object_storage<ObjectType>) {
@@ -439,36 +438,36 @@ namespace necrowarp {
 		}
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<NonNullObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType, Objects...>::draw() const noexcept {
+	inline void object_registry_t<MapType>::draw() const noexcept {
 		(draw<ObjectTypes>(), ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<NonNullObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType, Objects...>::draw(cref<camera_t> camera) const noexcept {
+	inline void object_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		(draw<ObjectTypes>(camera), ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects>
+	template<map_type_e MapType>
 	template<NonNullObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType, Objects...>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+	inline void object_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		(draw<ObjectTypes>(camera, offset), ...);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> inline void object_registry_t<MapType, Objects...>::draw() const noexcept {
+	template<map_type_e MapType> inline void object_registry_t<MapType>::draw() const noexcept {
 		draw<ALL_OBJECTS>();
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> inline void object_registry_t<MapType, Objects...>::draw(cref<camera_t> camera) const noexcept {
+	template<map_type_e MapType> inline void object_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		draw<ALL_OBJECTS>(camera);
 	}
 
-	template<map_type_e MapType, NonNullObject... Objects> inline void object_registry_t<MapType, Objects...>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
+	template<map_type_e MapType> inline void object_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		draw<ALL_OBJECTS>(camera, offset);
 	}
 } // namespace necrowarp

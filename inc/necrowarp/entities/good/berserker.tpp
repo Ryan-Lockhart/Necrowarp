@@ -34,6 +34,8 @@ namespace necrowarp {
 
 		spill_fluid<MapType>(position, fluid_type<berserker_t>::type);
 
+		player.receive_death_boon<berserker_t>();
+
 		++steam_stats::stats<steam_stat_e::BerserkersSlain, i32>;
 
 		scorekeeper.add(entity_e::Berserker);

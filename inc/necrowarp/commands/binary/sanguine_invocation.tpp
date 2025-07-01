@@ -11,19 +11,13 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, sanguine_invocation_t>::process() const noexcept {
-		if (!player_exists()) {
-			error_log.add("the player was lost to the abyss!");
-
-			return;
-		}
-
-		if (!player->bypass_invocations_enabled() && (!player->can_perform(discount_e::SanguineInvocation) || !fluid_map<MapType>.dependent contains<zone_region_e::Interior>(fluid_e::Blood))) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SanguineInvocation) || !fluid_map<MapType>.dependent contains<zone_region_e::Interior>(fluid_e::Blood))) {
 			player_turn_invalidated = true;
 
 			return;
 		}
 
-		const bool is_exalted{ player->has_ascended() };
+		const bool is_exalted{ player.has_ascended() };
 
 		i8 pools_consumed{ 0 };
 
@@ -34,7 +28,7 @@ namespace necrowarp {
 
 			const bool no_blood{ fluid_map<MapType>[position] != fluid_e::Blood };
 
-			if (no_blood && player->bypass_invocations_enabled()) {
+			if (no_blood && player.bypass_invocations_enabled()) {
 				++pools_consumed;
 
 				if (!is_exalted) {
@@ -83,17 +77,17 @@ namespace necrowarp {
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
-					player->reinvigorate(pools_consumed);
+					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(bloodhound_t{ target_position });
 				}
 			}
-		} else if (player->bypass_invocations_enabled()) {
+		} else if (player.bypass_invocations_enabled()) {
 			++pools_consumed;
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
-					player->reinvigorate(pools_consumed);
+					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(bloodhound_t{ target_position });
 				}
@@ -152,9 +146,9 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::SanguineInvocations, i32>;
 
-		player->pay_cost(discount_e::SanguineInvocation);
+		player.pay_cost(discount_e::SanguineInvocation);
 
-		if (!player->has_ascended()) {
+		if (!player.has_ascended()) {
 			if (pools_consumed == globals::MaximumCatalyst) {
 				// summon max amount of bloodhounds achievment placeholder : The Harrying
 			} else if (pools_consumed > 1) {
@@ -165,7 +159,7 @@ namespace necrowarp {
 		}
 
 		if (!random_warp_t::execute<MapType>(source_position, true)) {
-			player->reinvigorate(pools_consumed);
+			player.reinvigorate(pools_consumed);
 
 			return;
 		}

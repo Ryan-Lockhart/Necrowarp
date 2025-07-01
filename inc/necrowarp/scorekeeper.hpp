@@ -27,13 +27,7 @@ namespace necrowarp {
 		}
 
 		inline f32 current_disposition_multiplier() const noexcept {
-			if (!player_exists()) {
-				error_log.add("the player was lost to the abyss!");
-
-				return 1.0f;
-			}
-
-			const patron_e current_patron{ player->patron };
+			const patron_e current_patron{ player.patron };
 
 			if (current_patron == patron_e::None) {
 				return 2.0f;

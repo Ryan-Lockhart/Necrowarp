@@ -12,19 +12,13 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calcitic_invocation_t>::process() const noexcept {
-		if (!player_exists()) {
-			error_log.add("the player was lost to the abyss!");
-
-			return;
-		}
-
-		if (!player->bypass_invocations_enabled() && (!player->can_perform(discount_e::CalciticInvocation) || object_registry<MapType>.dependent empty<skull_t>())) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::CalciticInvocation) || object_registry<MapType>.dependent empty<skull_t>())) {
 			player_turn_invalidated = true;
 
 			return;
 		}
 
-		const bool is_exalted{ player->has_ascended() };
+		const bool is_exalted{ player.has_ascended() };
 
 		i8 accumulated_skulls{ 0 };
 
@@ -35,7 +29,7 @@ namespace necrowarp {
 
 			const bool has_skull{ object_registry<MapType>.dependent contains<skull_t>(position) };
 
-			if (!has_skull && player->bypass_invocations_enabled()) {
+			if (!has_skull && player.bypass_invocations_enabled()) {
 				++accumulated_skulls;
 
 				if (!is_exalted) {
@@ -89,17 +83,17 @@ namespace necrowarp {
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
-					player->bolster_armor(accumulated_skulls);
+					player.bolster_armor(accumulated_skulls);
 				} else {
 					entity_registry<MapType>.dependent add<true>(skeleton_t{ pos, state });
 				}
 			}
-		} else if (player->bypass_invocations_enabled()) {
+		} else if (player.bypass_invocations_enabled()) {
 			++accumulated_skulls;
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
-					player->bolster_armor(accumulated_skulls);
+					player.bolster_armor(accumulated_skulls);
 				} else {
 					entity_registry<MapType>.dependent add<true>(skeleton_t{ target_position });
 				}
@@ -158,9 +152,9 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::CalciticInvocations, i32>;
 
-		player->pay_cost(discount_e::CalciticInvocation);
+		player.pay_cost(discount_e::CalciticInvocation);
 
-		if (!player->has_ascended()) {
+		if (!player.has_ascended()) {
 			if (accumulated_skulls == globals::MaximumCatalyst) {
 				// summon max amount of skeletons achievment placeholder : Next Stop: the Bone Zone
 			} else if (accumulated_skulls > 1) {
@@ -171,7 +165,7 @@ namespace necrowarp {
 		}
 
 		if (!random_warp_t::execute<MapType>(source_position, true)) {
-			player->bolster_armor(accumulated_skulls);
+			player.bolster_armor(accumulated_skulls);
 
 			return;
 		}

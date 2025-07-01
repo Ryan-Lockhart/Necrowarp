@@ -5,5 +5,5 @@
 #include <necrowarp/game.hpp>
 
 namespace necrowarp {
-	template<> inline void game_s::plunge<dimension_e::Sudokras>(rval<player_t> vagrant) noexcept {}
+	template<> inline void game_s::plunge<dimension_e::Sudokras>() noexcept {}
 } // namespace necrowarp

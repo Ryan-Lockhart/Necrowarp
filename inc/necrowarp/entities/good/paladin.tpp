@@ -35,6 +35,8 @@ namespace necrowarp {
 
 		spill_fluid<MapType>(position, fluid_type<paladin_t>::type);
 
+		player.receive_death_boon<paladin_t>();
+
 		++steam_stats::stats<steam_stat_e::PaladinsSlain, i32>;
 
 		scorekeeper.add(entity_e::Paladin);

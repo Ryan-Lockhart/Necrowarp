@@ -50,9 +50,7 @@ namespace necrowarp {
 
 		spill_fluid<MapType>(position, fluid_type<thetwo_t>::type, droppings);
 
-		if (player_exists()) {
-			player->receive_death_boon<thetwo_t>(droppings);
-		}
+		player.receive_death_boon<thetwo_t>(droppings);
 
 		++steam_stats::stats<steam_stat_e::ThetwoSlain, i32>;
 

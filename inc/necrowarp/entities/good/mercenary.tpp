@@ -35,6 +35,8 @@ namespace necrowarp {
 
 		spill_fluid<MapType>(position, fluid_type<mercenary_t>::type);
 
+		player.receive_death_boon<mercenary_t>();
+
 		++steam_stats::stats<steam_stat_e::MercenariesSlain, i32>;
 
 		scorekeeper.add(entity_e::Mercenary);

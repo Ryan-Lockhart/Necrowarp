@@ -12,19 +12,13 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, galvanic_invocation_t>::process() const noexcept {
-		if (!player_exists()) {
-			error_log.add("the player was lost to the abyss!");
-
-			return;
-		}
-
-		if (!player->bypass_invocations_enabled() && (!player->can_perform(discount_e::GalvanicInvocation) || object_registry<MapType>.dependent empty<metal_t>())) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::GalvanicInvocation) || object_registry<MapType>.dependent empty<metal_t>())) {
 			player_turn_invalidated = true;
 
 			return;
 		}
 
-		const bool is_exalted{ player->has_ascended() };
+		const bool is_exalted{ player.has_ascended() };
 
 		i8 metal_consumed{ 0 };
 		f32 aggregate_quality{ 0.0f };
@@ -36,7 +30,7 @@ namespace necrowarp {
 
 			const bool has_metal{ object_registry<MapType>.dependent contains<metal_t>(position) };
 
-			if (!has_metal && player->bypass_invocations_enabled()) {
+			if (!has_metal && player.bypass_invocations_enabled()) {
 				++metal_consumed;
 				aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
 
@@ -93,18 +87,18 @@ namespace necrowarp {
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
-					player->bolster_armor(metal_consumed);
+					player.bolster_armor(metal_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(animated_suit_t{ target_position, triflip(random_engine) ? galvanise(state) : state });
 				}
 			}
-		} else if (player->bypass_invocations_enabled()) {
+		} else if (player.bypass_invocations_enabled()) {
 			++metal_consumed;
 			aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
-					player->bolster_armor(metal_consumed);
+					player.bolster_armor(metal_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(animated_suit_t{ target_position, galvanisation_e::Writhing });
 				}
@@ -163,9 +157,9 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::GalvanicInvocations, i32>;
 
-		player->pay_cost(discount_e::GalvanicInvocation);
+		player.pay_cost(discount_e::GalvanicInvocation);
 
-		if (!player->has_ascended()) {
+		if (!player.has_ascended()) {
 			if (metal_consumed == globals::MaximumCatalyst) {
 				// summon max amount of animated suits of armor achievment placeholder : Chosen of the Void
 			} else if (metal_consumed > 1) {
@@ -176,7 +170,7 @@ namespace necrowarp {
 		}
 
 		if (!random_warp_t::execute<MapType>(source_position, true)) {
-			player->bolster_armor(metal_consumed * 2);
+			player.bolster_armor(metal_consumed * 2);
 
 			return;
 		}

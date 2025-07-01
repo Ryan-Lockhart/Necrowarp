@@ -44,9 +44,7 @@ namespace necrowarp {
 
 		spill_fluid<MapType>(position, fluid_type<skulker_t>::type);
 
-		if (player_exists()) {
-			player->receive_death_boon<skulker_t>();
-		}
+		player.receive_death_boon<skulker_t>();
 
 		++steam_stats::stats<steam_stat_e::SkulkersSlain, i32>;
 

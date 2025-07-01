@@ -174,6 +174,10 @@ namespace necrowarp {
 		}
 
 	  public:
+	  	inline player_t() noexcept : command{}, position{}, patron{}, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+
+	  	inline player_t(patron_e patron) noexcept : command{}, position{}, patron{ patron }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+
 		inline player_t(offset_t position) noexcept : command{}, position{ position }, patron{}, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
 
 		inline player_t(offset_t position, patron_e patron) noexcept : command{}, position{ position }, patron{ patron }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}

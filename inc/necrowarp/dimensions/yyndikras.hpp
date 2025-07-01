@@ -5,7 +5,7 @@
 #include <necrowarp/game.hpp>
 
 namespace necrowarp {
-	template<> inline void game_s::plunge<dimension_e::Yyndikras>(rval<player_t> vagrant) noexcept {
+	template<> inline void game_s::plunge<dimension_e::Yyndikras>() noexcept {
 		constexpr map_type_e map_type = map_type_e::Pocket;
 
 		constexpr map_cell_t open_state{ cell_e::Open, cell_e::Transperant, cell_e::Seen, cell_e::Explored };
@@ -51,9 +51,14 @@ namespace necrowarp {
 			terminate_prematurely();
 		}
 
-		vagrant.position = player_pos.value();
+		player.position = player_pos.value();
 
-		entity_registry<map_type>.add(std::move(vagrant));
+		entity_goal_map<map_type, player_t>.add(player.position);
+
+		good_goal_map<map_type>.add(player.position);
+
+		ranger_goal_map<map_type>.add(player.position);
+		skulker_goal_map<map_type>.add(player.position);
 
 		cauto portal_pos{ game_map<map_type>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 

@@ -34,9 +34,7 @@ namespace necrowarp {
 
 		spill_fluid<MapType>(position, fluid_type<adventurer_t>::type);
 
-		if (player_exists()) {
-			player->receive_death_boon<adventurer_t>();
-		}		
+		player.receive_death_boon<adventurer_t>();
 
 		++steam_stats::stats<steam_stat_e::AdventurersSlain, i32>;
 
