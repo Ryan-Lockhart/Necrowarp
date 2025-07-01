@@ -57,7 +57,7 @@ namespace necrowarp {
 		clash_t, \
 		devour_t, \
 		loose_t, \
-		retreive_t, \
+		retrieve_t, \
 		batter_t, \
 		target_warp_t, \
 		consume_warp_t, \

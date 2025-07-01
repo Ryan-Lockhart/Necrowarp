@@ -384,6 +384,8 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline command_e clash_or_consume(offset_t position) const noexcept;
 
+		inline bool can_receive_divine_intervention() const noexcept;
+
 		template<map_type_e MapType> inline void die() noexcept;
 
 		template<RandomEngine Generator> static inline bool intervention(ref<Generator> engine) noexcept { return intervention_dis(engine); }

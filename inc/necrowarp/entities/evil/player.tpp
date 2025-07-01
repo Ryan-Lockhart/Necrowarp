@@ -73,8 +73,12 @@ namespace necrowarp {
 		return command_e::Move;
 	}
 
+	inline bool player_t::can_receive_divine_intervention() const noexcept {
+		return get_patron_disposition(patron) != disposition_e::Sadistic && !divine_intervention_invoked;
+	}
+
 	template<map_type_e MapType> inline void player_t::die() noexcept {
-		if (player_t::intervention(random_engine)) {
+		if (can_receive_divine_intervention() && player_t::intervention(random_engine)) {
 			divine_intervention_invoked = true;
 
 			intervention_sound.delay(random_epoch_interval(random_engine));
