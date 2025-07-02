@@ -141,7 +141,8 @@ namespace necrowarp {
 		static constexpr i8 FailedWarpBoon{ 2 };
 
 	  private:
-		static inline std::bernoulli_distribution intervention_dis{ 0.01 };
+		static inline std::bernoulli_distribution apathetic_intervention_dis{ 0.01 };
+		static inline std::bernoulli_distribution cooperative_intervention_dis{ 0.10 };
 
 		static inline sound_t intervention_sound{ "res/sfx/clips/divine_intervention.flac" };
 
@@ -392,7 +393,17 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline void die() noexcept;
 
-		template<RandomEngine Generator> static inline bool intervention(ref<Generator> engine) noexcept { return intervention_dis(engine); }
+		template<RandomEngine Generator> static inline bool intervention(disposition_e disposition, ref<Generator> engine) noexcept {
+			switch (disposition) {
+				case disposition_e::Cooperative: {
+					return cooperative_intervention_dis(engine);
+				} case disposition_e::Apathetic: {
+					return apathetic_intervention_dis(engine);
+				} case disposition_e::Sadistic: {
+					return false;
+				}
+			}
+		}
 
 		inline void reinvigorate(i8 value) noexcept { set_energy(energy + value); }
 

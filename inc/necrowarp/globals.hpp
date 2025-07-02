@@ -270,53 +270,34 @@ namespace necrowarp {
 		template<> inline offset_t::scalar_t camera_speed<map_type_e::Standard>{ 4 };
 		template<> inline offset_t::scalar_t camera_speed<map_type_e::Pocket>{ 2 };
 
+		constexpr u32 ViewDistance{ 8 };
+		constexpr f64 ViewSpawn{ 135.0 };
+
 		struct map_config_t {
 			f64 fill_percent;
 			u32 automata_iterations;
 			u32 automata_threshold;
-
-			u32 view_distance;
-			f64 view_span;
-
-			i16 number_of_up_ladders;
-			i16 number_of_down_ladders;
-			i16 minimum_ladder_distance;
-
-			i16 starting_wave;
-
-			i16 starting_skulls;
-			i16 minimum_skull_distance;
 		};
 		
-		constexpr map_config_t CavernPreset{
+		constexpr const map_config_t CavernPreset{
 			.fill_percent = 0.45,
 			.automata_iterations = 512,
 			.automata_threshold = 4,
-			.view_distance = 8,
-			.view_span = 135.0,
-			.number_of_up_ladders = 8,
-			.number_of_down_ladders = 4,
-			.minimum_ladder_distance = 16,
-			.starting_wave = 8,
-			.starting_skulls = 16,
-			.minimum_skull_distance = 16
 		};
 		
-		constexpr map_config_t TunnelsPreset{
+		constexpr const map_config_t TunnelsPreset{
 			.fill_percent = 0.55,
 			.automata_iterations = 512,
 			.automata_threshold = 4,
-			.view_distance = 8,
-			.view_span = 135.0,
-			.number_of_up_ladders = 4,
-			.number_of_down_ladders = 2,
-			.minimum_ladder_distance = 8,
-			.starting_wave = 4,
-			.starting_skulls = 8,
-			.minimum_skull_distance = 8
 		};
 
 		static inline map_config_t map_config{ CavernPreset };
+
+		static inline std::bernoulli_distribution map_config_dis{ 0.66 };
+
+		template<RandomEngine Generator> static inline void randomize_map_config(ref<Generator> engine) noexcept {
+			map_config = map_config_dis(engine) ? CavernPreset : TunnelsPreset;
+		}
 
 		constexpr i16 MinimumDepth{ 0 };
 		constexpr i16 MaximumDepth{ 999 };
@@ -339,6 +320,17 @@ namespace necrowarp {
 
 		constexpr i16 MinimumWaveSize{ 4 };
 		constexpr i16 MaximumWaveSize{ 256 };
+
+		constexpr i16 StartingWaveSize{ 8 };
+
+		constexpr i16 StartingSkulls{ 16 };
+
+		constexpr i16 MinimumSkullDistance{ 16 };
+
+		constexpr i16 StartingUpLadders{ 8 };
+		constexpr i16 StartingDownLadders{ 4 };
+
+		constexpr i16 MinimumLadderDistance{ 16 };
 
 		constexpr f32 MinimumWaveSizeMultiplier{ 0.5f };
 		constexpr f32 MaximumWaveSizeMultiplier{ 4.0f };
@@ -372,7 +364,7 @@ namespace necrowarp {
 		constexpr bool OopsAllRangers{ false };
 		constexpr bool OopsAllSkulkers{ false };
 		constexpr bool OopsAllBattleMonks{ false };
-		constexpr bool OopsAllBerserkers{ false };
+		constexpr bool OopsAllBerserkers{ true };
 		constexpr bool OopsAllPaladins{ false };
 
 		template<typename T> struct has_unique_descriptor {

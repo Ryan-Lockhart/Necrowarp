@@ -100,29 +100,30 @@ namespace necrowarp {
 
 		switch (disposition) {
 			case disposition_e::Sadistic: {
-				return runes_t{ string, colors::Red};
+				return runes_t{ string, colors::Red} ;
 			} case disposition_e::Apathetic: {
-				return runes_t{ string, colors::Yellow};
+				return runes_t{ string, colors::Yellow };
 			} case disposition_e::Cooperative: {
-				return runes_t{ string, colors::Green};
+				return runes_t{ string, colors::Green };
 			}
 		}
 	}
 
 	enum struct discount_e : u8 {
-		RandomWarp,				// warp to a random, preferrably safe, position within the interior of the map; 
+		RandomWarp,				// warp to a random, preferrably safe, position within the interior of the map; if not free and out of energy can still be used dangerously
 		TargetWarp,				// warp to a specific position within the interior of the map
 
 		Calcify,				// single target utility command; convert an open tile with bones into a temporary wall
 	 	Repulse,				// circular area of effect combat command; bequeathed to devotees of the Moslager
 	 	Annihilate,				// linear area of effect combat command; bequeathed to devotees of Merirfin
 
-		CalciticInvocation,		// domain of bones; patrons are Kalypdrot, Rathghul, Ionna; minions are skeletons and bonespurs
-		SpectralInvocation,		// domain of ichor; patrons are Akurakhaithan, Rathghul, Saeiligarkeuss; minions are cultists and wraithes
-		SanguineInvocation,		// domain of blood; patrons are Viedskavn, Merirfin, Neolithia; minions are bloodhounds and hemogheists
-		GalvanicInvocation,		// domain of metal; patrons are Thuljanor, Praethornyn, Exar; minions are animated suits of armor and death knights
-		RavenousInvocation,		// domain of flesh; patrons are Tselgwedixxikog, Sketzuum; minions are rakes and flesh golems
-	 	WretchedInvocation,		// domain of filth; patrons are Ionna, Kalypdrot; minions are draugr and dreadwyrms
+		CalciticInvocation,		// domain of bones; patrons are Kalypdrot, Rathghul, and Ionna; minions are skeletons and bonespurs
+		SpectralInvocation,		// domain of ichor; patrons are Akurakhaithan, Rathghul, and Saeiligarkeuss; minions are cultists and wraithes
+		SanguineInvocation,		// domain of blood; patrons are Viedskavn, Merirfin, and Neolithia; minions are bloodhounds and hemogheists
+		GalvanicInvocation,		// domain of metal; patrons are Thuljanor, Praethornyn, and Exar; minions are animated suits of armor and death knights
+		RavenousInvocation,		// domain of flesh; patrons are Tselgwedixxikog, Sketzuum, and Praethornyn; minions are abominations and flesh golems
+	 	WretchedInvocation,		// domain of filth; patrons are Ionna, Kalypdrot, and Rathghul; minions are draugr and dreadwurms
+	 // AbyssalInvocation,		// domain of cerebra; patrons are Saeiligarkeuss, the Moslager, and Akurakhaithan; minions are hamr, furtive horrors, chromalesia, and isosceline
 
 		MaliceIncarnate,		// discard body temporarily and enter wraith-world becoming untargetable and undetectable; bequeathed to devotees of Rathghul
 		NecromanticAscendance,	// expend massive amount of energy for invulnerability and empowered invocations; bequeathed to devotees of Saeiligarkeuss

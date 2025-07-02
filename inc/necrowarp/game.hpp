@@ -200,6 +200,8 @@ namespace necrowarp {
 
 			constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 
+			globals::randomize_map_config(random_engine);
+
 			game_map<MapType>
 				.dependent set<zone_region_e::Border>(closed_state)
 				.dependent generate<zone_region_e::Interior>(
@@ -259,22 +261,22 @@ namespace necrowarp {
 			}
 
 			object_registry<MapType>.dependent spawn<ladder_t>(
-				static_cast<usize>(globals::map_config.number_of_up_ladders),
-				static_cast<u32>(globals::map_config.minimum_ladder_distance),
+				static_cast<usize>(globals::StartingUpLadders),
+				static_cast<u32>(globals::MinimumLadderDistance),
 
 				verticality_e::Up
 			);
 
 			object_registry<MapType>.dependent spawn<ladder_t>(
-				static_cast<usize>(globals::map_config.number_of_down_ladders),
-				static_cast<u32>(globals::map_config.minimum_ladder_distance),
+				static_cast<usize>(globals::StartingDownLadders),
+				static_cast<u32>(globals::MinimumLadderDistance),
 
 				verticality_e::Down, random_engine
 			);
 
 			object_registry<MapType>.dependent spawn<skull_t>(
-				static_cast<usize>(globals::map_config.starting_skulls),
-				static_cast<u32>(globals::map_config.minimum_skull_distance),
+				static_cast<usize>(globals::StartingSkulls),
+				static_cast<u32>(globals::MinimumSkullDistance),
 
 				decay_e::Animate
 			);
@@ -329,6 +331,8 @@ namespace necrowarp {
 			constexpr map_cell_t closed_state{ cell_e::Solid, cell_e::Opaque, cell_e::Seen, cell_e::Explored };
 
 			constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
+
+			globals::randomize_map_config(random_engine);
 			
 			game_map<MapType>
 				.dependent set<zone_region_e::Border>(closed_state)
@@ -395,7 +399,7 @@ namespace necrowarp {
 				object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
 			}
 
-			i16 num_up_ladders_needed{ globals::map_config.number_of_up_ladders };
+			i16 num_up_ladders_needed{ globals::StartingUpLadders };
 
 			while (!ladder_positions.empty()) {
 				cauto position{ ladder_positions.back() };
@@ -411,22 +415,22 @@ namespace necrowarp {
 			if (num_up_ladders_needed > 0) {
 				object_registry<MapType>.dependent spawn<ladder_t>(
 					static_cast<usize>(num_up_ladders_needed),
-					static_cast<u32>(globals::map_config.minimum_ladder_distance),
+					static_cast<u32>(globals::MinimumLadderDistance),
 
 					verticality_e::Up
 				);
 			}
 
 			object_registry<MapType>.dependent spawn<ladder_t>(
-				static_cast<usize>(globals::map_config.number_of_down_ladders),
-				static_cast<u32>(globals::map_config.minimum_ladder_distance),
+				static_cast<usize>(globals::StartingDownLadders),
+				static_cast<u32>(globals::MinimumLadderDistance),
 
 				verticality_e::Down, random_engine
 			);
 
 			object_registry<MapType>.dependent spawn<skull_t>(
-				static_cast<usize>(globals::map_config.starting_skulls),
-				static_cast<u32>(globals::map_config.minimum_skull_distance),
+				static_cast<usize>(globals::StartingSkulls),
+				static_cast<u32>(globals::MinimumSkullDistance),
 
 				decay_e::Animate
 			);
@@ -681,7 +685,7 @@ namespace necrowarp {
 			processing_turn = true;
 
 			game_stats.wave_size = clamp(
-				static_cast<i16>(globals::map_config.starting_wave + game_stats.total_kills() / globals::KillsPerPopulation),
+				static_cast<i16>(globals::StartingWaveSize + game_stats.total_kills() / globals::KillsPerPopulation),
 				globals::MinimumWaveSize,
 				globals::MaximumWaveSize
 			);

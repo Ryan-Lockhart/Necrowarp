@@ -56,7 +56,9 @@ namespace necrowarp {
 		Arrow,
 	};
 
-	static constexpr cstr to_string(object_e type) noexcept {
+	template<plurality_e Plurality = plurality_e::Singular> static constexpr cstr to_string(object_e type) noexcept;
+
+	template<> constexpr cstr to_string<plurality_e::Singular>(object_e type) noexcept {
 		switch (type) {
 			case object_e::None: {
 				return "none";
@@ -76,8 +78,28 @@ namespace necrowarp {
 		}
 	}
 
-	static constexpr runes_t to_colored_string(object_e type) noexcept {
-		const cstr string{ to_string(type) };
+	template<> constexpr cstr to_string<plurality_e::Multiple>(object_e type) noexcept {
+		switch (type) {
+			case object_e::None: {
+				return "none";
+			} case object_e::Skull: {
+				return "skulls";
+			} case object_e::Flesh: {
+				return "flesh";
+			} case object_e::Metal: {
+				return "metal";
+			} case object_e::Ladder: {
+				return "ladders";
+			} case object_e::Portal: {
+				return "portals";
+			} case object_e::Arrow: {
+				return "arrows";
+			}
+		}
+	}
+
+	template<plurality_e Plurality = plurality_e::Singular> static constexpr runes_t to_colored_string(object_e type) noexcept {
+		const cstr string{ to_string<Plurality>(type) };
 
 		switch (type) {
 			case object_e::None: {

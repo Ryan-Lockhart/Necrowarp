@@ -21,6 +21,16 @@ namespace necrowarp {
 		const bool snapped{ missed && arrow_t::snap(random_engine) };
 
 		if (!snapped) {
+			if (object_registry<MapType>.dependent contains<arrow_t>(position)) {
+				ptr<arrow_t> maybe_arrow{ object_registry<MapType>.dependent at<arrow_t>(position) };
+
+				if (maybe_arrow != nullptr && !maybe_arrow->is_full()) {
+					++(*maybe_arrow);
+
+					return missed;
+				}
+			}
+
 			object_registry<MapType>.spill(arrow_t{ position });
 		}
 

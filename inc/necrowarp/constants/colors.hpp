@@ -43,6 +43,9 @@ namespace necrowarp {
 				static constexpr color_t Spectral{ u8{  72 }, u8{ 100 }, u8{  83 } };
 				static constexpr color_t Sanguine{ u8{ 157 }, u8{  34 }, u8{  53 } };
 				static constexpr color_t Galvanic{ u8{  42 }, u8{  74 }, u8{ 110 } };
+				static constexpr color_t Ravenous{ u8{  72 }, u8{ 100 }, u8{  83 } };
+				static constexpr color_t Wretched{ u8{ 157 }, u8{  34 }, u8{  53 } };
+				static constexpr color_t Abyssal{ u8{  42 }, u8{  74 }, u8{ 110 } };
 			} // namespace shackles
 		} // namespace metals
 	} // namespace colors

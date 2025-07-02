@@ -17,6 +17,8 @@ namespace necrowarp {
 
 		constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 
+		globals::randomize_map_config(random_engine);
+
 		game_map<map_type>
 			.dependent set<zone_region_e::Border>(closed_state)
 			.dependent generate<zone_region_e::Interior>(
@@ -76,22 +78,22 @@ namespace necrowarp {
 		}
 
 		object_registry<map_type>.dependent spawn<ladder_t>(
-			static_cast<usize>(globals::map_config.number_of_up_ladders),
-			static_cast<u32>(globals::map_config.minimum_ladder_distance),
+			static_cast<usize>(globals::StartingUpLadders),
+			static_cast<u32>(globals::MinimumLadderDistance),
 
 			verticality_e::Up
 		);
 
 		object_registry<map_type>.dependent spawn<ladder_t>(
-			static_cast<usize>(globals::map_config.number_of_down_ladders),
-			static_cast<u32>(globals::map_config.minimum_ladder_distance),
+			static_cast<usize>(globals::StartingDownLadders),
+			static_cast<u32>(globals::MinimumLadderDistance),
 
 			verticality_e::Down, random_engine
 		);
 
 		object_registry<map_type>.dependent spawn<skull_t>(
-			static_cast<usize>(globals::map_config.starting_skulls),
-			static_cast<u32>(globals::map_config.minimum_skull_distance),
+			static_cast<usize>(globals::StartingSkulls),
+			static_cast<u32>(globals::MinimumSkullDistance),
 
 			decay_e::Animate
 		);

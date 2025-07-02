@@ -11,6 +11,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	enum struct plurality_e : u8 {
+		Singular,
+		Multiple
+	};
+
 	enum struct fluid_e : u8 {
 		None = 0,
 

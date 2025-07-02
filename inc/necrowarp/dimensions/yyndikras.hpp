@@ -13,6 +13,8 @@ namespace necrowarp {
 
 		constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 
+		globals::randomize_map_config(random_engine);
+
 		game_map<map_type>
 			.dependent set<zone_region_e::Border>(closed_state)
 			.dependent generate<zone_region_e::Interior>(

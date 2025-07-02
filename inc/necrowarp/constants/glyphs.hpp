@@ -53,6 +53,7 @@ namespace necrowarp {
 		constexpr const glyph_t Ranger{ characters::Ranger, colors::White };
 		constexpr const glyph_t Skulker{ characters::Skulker, colors::White };
 		constexpr const glyph_t BattleMonk{ characters::BattleMonk, colors::White };
+		constexpr const glyph_t MistLady{ characters::MistLady, colors::White };
 
 		constexpr const glyph_t Berserker{ characters::Berserker, colors::White };
 		constexpr const glyph_t BloodyBerserker{ characters::BloodyBerserker, colors::White };
@@ -61,13 +62,14 @@ namespace necrowarp {
 
 		constexpr const glyph_t Paladin{ characters::Paladin, colors::White };
 
-		constexpr const glyph_t Arrow{ characters::Arrow, colors::White };
-
 		constexpr const glyph_t FreshSkull{ characters::FreshSkull, colors::White };
 		constexpr const glyph_t AnimateSkull{ characters::AnimateSkull, colors::White };
 		constexpr const glyph_t RottedSkull{ characters::RottedSkull, colors::White };
 
 		constexpr const glyph_t Flesh{ characters::Flesh, colors::White };
+
+		constexpr const glyph_t HealthyCerebrum{ characters::HealthyCerebrum, colors::White };
+		constexpr const glyph_t StrickenCerebrum{ characters::StrickenCerebrum, colors::White };
 
 		constexpr const glyph_t UpLadder{ characters::UpLadder, colors::White };
 		constexpr const glyph_t DownLadder{ characters::DownLadder, colors::White };

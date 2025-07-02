@@ -62,7 +62,10 @@ namespace necrowarp {
 		Calcitic,
 		Spectral,
 		Sanguine,
-		Galvanic
+		Galvanic,
+		Ravenous,
+		Wretched,
+		Abyssal
 	};
 
 	constexpr cstr to_string(shackle_e type) noexcept {
@@ -72,11 +75,17 @@ namespace necrowarp {
 			} case shackle_e::Calcitic: {
 				return "spooky shackle";
 			} case shackle_e::Spectral: {
-				return "eldritch shackle";
+				return "haunted shackle";
 			} case shackle_e::Sanguine: {
 				return "bloody shackle";
 			} case shackle_e::Galvanic: {
 				return "glimmering shackle";
+			} case shackle_e::Ravenous: {
+				return "wriggling shackle";
+			} case shackle_e::Wretched: {
+				return "festering shackle";
+			} case shackle_e::Abyssal: {
+				return "eldritch shackle";
 			}
 		}
 	}
@@ -95,6 +104,12 @@ namespace necrowarp {
 				return runes_t{ string, colors::metals::shackles::Sanguine };
 			} case shackle_e::Galvanic: {
 				return runes_t{ string, colors::metals::shackles::Galvanic };
+			} case shackle_e::Ravenous: {
+				return runes_t{ string, colors::metals::shackles::Ravenous };
+			} case shackle_e::Wretched: {
+				return runes_t{ string, colors::metals::shackles::Wretched };
+			} case shackle_e::Abyssal: {
+				return runes_t{ string, colors::metals::shackles::Abyssal };
 			}
 		}
 	}
@@ -120,6 +135,12 @@ namespace necrowarp {
 					return indices::SanguineShackle;
 				} case shackle_e::Galvanic: {
 					return indices::GalvanicShackle;
+				} case shackle_e::Ravenous: {
+					return indices::RavenousShackle;
+				} case shackle_e::Wretched: {
+					return indices::WretchedShackle;
+				} case shackle_e::Abyssal: {
+					return indices::AbyssalShackle;
 				} case shackle_e::Unshackled: {
 					return 0;
 				}				

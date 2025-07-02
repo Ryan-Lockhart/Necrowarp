@@ -19,10 +19,16 @@ namespace necrowarp {
 		
 		ptr<arrow_t> maybe_arrow{ object_registry<MapType>.dependent at<arrow_t>(target_position) };
 
-		if (maybe_arrow == nullptr || !object_registry<MapType>.dependent remove<arrow_t>(target_position)) {
+		if (maybe_arrow == nullptr) {
 			return;
 		}
 
-		maybe_ranger->retrieve();
+		const i8 capacity{ maybe_ranger->get_capacity() };
+		const i8 disparity{ maybe_arrow->stack_size() - capacity };
+
+		if (maybe_arrow->has_singular() && !object_registry<MapType>.dependent remove<arrow_t>(target_position)) {
+			maybe_ranger->retrieve();
+		} else if (m)
+
 	}
 } // namespace necrowarp

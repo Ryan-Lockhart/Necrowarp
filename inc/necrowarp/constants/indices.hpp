@@ -21,16 +21,21 @@ namespace necrowarp::indices {
 	constexpr const u8 WrigglingMetal{ 0x0A };
 	constexpr const u8 WrithingMetal{ 0x0B };
 
-	constexpr const u8 CalciticShackle{ 0x0C };
-	constexpr const u8 SpectralShackle{ 0x0D };
-	constexpr const u8 SanguineShackle{ 0x0E };
-	constexpr const u8 GalvanicShackle{ 0x0F };
+	constexpr const u8 Arrow{ 0x0C };
 
-	constexpr const u8 CalmPortal{ 0x10 };
-	constexpr const u8 VocalPortal{ 0x11 };
-	constexpr const u8 TurbulentPortal{ 0x12 };
-	constexpr const u8 InsightfulPortal{ 0x13 };
-	constexpr const u8 CollapsingPortal{ 0x14 };
-	constexpr const u8 YawningPortal{ 0x15 };
-	constexpr const u8 EchoingPortal{ 0x16 };
+	constexpr const u8 CalciticShackle{ 0x0D };
+	constexpr const u8 SpectralShackle{ 0x0E };
+	constexpr const u8 SanguineShackle{ 0x0F };
+	constexpr const u8 GalvanicShackle{ 0x10 };
+	constexpr const u8 RavenousShackle{ 0x11 };
+	constexpr const u8 WretchedShackle{ 0x12 };
+	constexpr const u8 AbyssalShackle{ 0x13 };
+
+	constexpr const u8 CalmPortal{ 0x14 };
+	constexpr const u8 VocalPortal{ 0x15 };
+	constexpr const u8 TurbulentPortal{ 0x16 };
+	constexpr const u8 InsightfulPortal{ 0x17 };
+	constexpr const u8 CollapsingPortal{ 0x18 };
+	constexpr const u8 YawningPortal{ 0x19 };
+	constexpr const u8 EchoingPortal{ 0x1A };
 } // namespace necrowarp::indices

@@ -100,7 +100,7 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr i8 QuiverCapacity{ 6 };
+		static constexpr i8 QuiverCapacity{ 8 };
 
 		static constexpr i8 MinimumRange{ 2 };
 		static constexpr i8 OptimalRange{ 4 };
@@ -140,6 +140,8 @@ namespace necrowarp {
 
 		constexpr i8 max_ammunition() const noexcept { return QuiverCapacity; }
 
+		inline i8 get_capacity() const noexcept { return QuiverCapacity - ammunition; }
+
 		inline bool can_nock() const noexcept { return !nocked && has_ammunition(); }
 		
 		inline void nock() noexcept {
@@ -160,6 +162,16 @@ namespace necrowarp {
 			}
 
 			set_ammunition(ammunition + 1);
+		}
+
+		inline bool can_retrieve(i8 amount) const noexcept { return amount <= get_capacity(); }
+
+		inline void retrieve(i8 amount) noexcept {
+			if (!can_retrieve(amount)) {
+				return;
+			}
+
+			set_ammunition(ammunition + amount);
 		}
 
 		inline bool can_loose() const noexcept { return nocked; }
