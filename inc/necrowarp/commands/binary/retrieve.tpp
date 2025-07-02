@@ -24,11 +24,17 @@ namespace necrowarp {
 		}
 
 		const i8 capacity{ maybe_ranger->get_capacity() };
-		const i8 disparity{ maybe_arrow->stack_size() - capacity };
 
 		if (maybe_arrow->has_singular() && !object_registry<MapType>.dependent remove<arrow_t>(target_position)) {
 			maybe_ranger->retrieve();
-		} else if (m)
+		} else if (maybe_arrow->has_multiple()) {
+			if (capacity >= maybe_arrow->stack_size()) {
+				object_registry<MapType>.dependent remove<arrow_t>(target_position);
+			} else {
+				(*maybe_arrow) -= capacity;
+			}
 
+			maybe_ranger->retrieve(capacity);
+		}
 	}
 } // namespace necrowarp

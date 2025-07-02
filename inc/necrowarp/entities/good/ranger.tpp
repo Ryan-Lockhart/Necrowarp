@@ -119,12 +119,30 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void ranger_t::die() noexcept {
-		object_registry<MapType>.spill(skull_t{ position });
+		object_registry<MapType>.spill(bones_t{ position });
 		object_registry<MapType>.spill(flesh_t{ position });
 
 		if (has_ammunition()) {
-			for (usize i{ 0 }; i < get_ammunition(); ++i) {
-				object_registry<MapType>.spill(arrow_t{ position });
+			i8 dropped_ammunition{ get_ammunition() };
+
+			if (object_registry<MapType>.dependent contains<arrow_t>(position)) {
+				ptr<arrow_t> maybe_arrow{ object_registry<MapType>.dependent at<arrow_t>(position) };
+
+				if (maybe_arrow != nullptr) {
+					const i8 stack_capacity{ static_cast<i8>(arrow_t::MaximumArrows - maybe_arrow->stack_size()) };
+
+					if (dropped_ammunition <= stack_capacity) {
+						(*maybe_arrow) += dropped_ammunition;
+						dropped_ammunition = 0;
+					} else {
+						(*maybe_arrow) += stack_capacity;
+						dropped_ammunition -= stack_capacity;
+					}
+				}
+			}
+
+			if (dropped_ammunition > 0) {
+				object_registry<MapType>.spill(arrow_t{ position, dropped_ammunition });
 			}
 		}
 

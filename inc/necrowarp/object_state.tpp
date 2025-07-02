@@ -11,12 +11,26 @@ namespace necrowarp {
 
 	template<map_type_e MapType> static inline object_registry_t<MapType> object_registry{};
 
-	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_storage{};
-	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_buffer{};
+	template<map_type_e MapType> static inline object_buffer_t<MapType> object_buffer{};
+
+	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_registry_storage{};
+
+	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_buffer_storage{};
 
 	template<map_type_e MapType, NonNullObject ObjectType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> object_goal_map{};
 
-	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::contains(offset_t position) const noexcept { return object_storage<ObjectType>.contains(position); }
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::store() const noexcept {
+		object_buffer_storage<ObjectType> = object_registry_storage<ObjectType>;
+	}
+
+	template<map_type_e MapType>
+	template<NonNullObject... ObjectTypes>
+		requires is_plurary<ObjectTypes...>::value
+	inline void object_registry_t<MapType>::store() const noexcept {
+		(store<ObjectTypes>(), ...);
+	}
+
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::contains(offset_t position) const noexcept { return object_registry_storage<ObjectType>.contains(position); }
 
 	template<map_type_e MapType>
 	template<NonNullObject... ObjectTypes>
@@ -50,7 +64,7 @@ namespace necrowarp {
 			return nullptr;
 		}
 
-		return object_storage<ObjectType>[position];
+		return object_registry_storage<ObjectType>[position];
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline ptr<ObjectType> object_registry_t<MapType>::at(offset_t position) noexcept {
@@ -58,11 +72,11 @@ namespace necrowarp {
 			return nullptr;
 		}
 
-		return object_storage<ObjectType>[position];
+		return object_registry_storage<ObjectType>[position];
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectTypes> inline usize object_registry_t<MapType>::count() const noexcept {
-		return object_storage<ObjectTypes>.size();
+		return object_registry_storage<ObjectTypes>.size();
 	}
 
 	template<map_type_e MapType>
@@ -76,7 +90,7 @@ namespace necrowarp {
 	inline usize object_registry_t<MapType>::count() const noexcept { return count<ALL_OBJECTS>(); }
 	
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::empty() const noexcept {
-		return object_storage<ObjectType>.empty();
+		return object_registry_storage<ObjectType>.empty();
 	}
 	
 	template<map_type_e MapType>
@@ -93,7 +107,7 @@ namespace necrowarp {
 		return (empty<ObjectTypes>(position) && ...);
 	}
 
-	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::empty(offset_t position) const noexcept { return !object_storage<ObjectType>.contains(position); }
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::empty(offset_t position) const noexcept { return !object_registry_storage<ObjectType>.contains(position); }
 
 	template<map_type_e MapType> inline bool object_registry_t<MapType>::empty(offset_t position) const noexcept { return empty<ALL_OBJECTS>(position); }
 
@@ -105,7 +119,7 @@ namespace necrowarp {
 		}
 		
 		const offset_t position{ object.position };
-		const bool inserted{ object_storage<ObjectType>.add(std::move(object)) };
+		const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
 
 		if (inserted) {
 			object_goal_map<MapType, ObjectType>.add(position);
@@ -120,7 +134,7 @@ namespace necrowarp {
 		}
 
 		if (!contains<ObjectType>(object.position)) {
-			const bool inserted{ object_storage<ObjectType>.add(std::move(object)) };
+			const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
 
 			if (inserted) {
 				object_goal_map<MapType, ObjectType>.add(object.position);
@@ -143,7 +157,7 @@ namespace necrowarp {
 
 			if (!contains<ObjectType>(current.position)) {
 				object.position = current.position;
-				const bool inserted{ object_storage<ObjectType>.add(std::move(object)) };
+				const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
 
 				if (inserted) {
 					object_goal_map<MapType, ObjectType>.add(current.position);
@@ -172,7 +186,7 @@ namespace necrowarp {
 		}
 
 		if (!contains<ObjectType>(object.position)) {
-			const bool inserted{ object_storage<ObjectType>.add(std::move(object)) };
+			const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
 
 			if (inserted) {
 				object_goal_map<MapType, ObjectType>.add(object.position);
@@ -199,7 +213,7 @@ namespace necrowarp {
 
 			if (!contains<ObjectType>(current.position)) {
 				object.position = current.position;
-				const bool inserted{ object_storage<ObjectType>.add(std::move(object)) };
+				const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
 
 				if (inserted) {
 					object_goal_map<MapType, ObjectType>.add(current.position);
@@ -231,7 +245,7 @@ namespace necrowarp {
 			return false;
 		}
 		
-		if (!object_storage<ObjectType>.remove(position)) {
+		if (!object_registry_storage<ObjectType>.remove(position)) {
 			return false;
 		}
 
@@ -241,7 +255,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::clear() noexcept {
-		object_storage<ObjectType>.clear();
+		object_registry_storage<ObjectType>.clear();
 	}
 
 	template<map_type_e MapType>
@@ -256,7 +270,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::reset() noexcept {
-		object_storage<ObjectType>.clear();
+		object_registry_storage<ObjectType>.clear();
 		reset_goal_map<ObjectType>();
 	}
 
@@ -343,7 +357,7 @@ namespace necrowarp {
 			return false;
 		}
 		
-		if (!object_storage<ObjectType>.move(current, target)) {
+		if (!object_registry_storage<ObjectType>.move(current, target)) {
 			return false;
 		}
 
@@ -353,7 +367,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<AnimatedObject ObjectType> inline void object_registry_t<MapType>::advance() noexcept {
-		for (crauto object : object_storage<ObjectType>) { object.idle_animation.advance(); }
+		for (crauto object : object_registry_storage<ObjectType>) { object.idle_animation.advance(); }
 	}
 
 	template<map_type_e MapType> 
@@ -366,7 +380,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void object_registry_t<MapType>::advance() noexcept { advance<ALL_ANIMATED_OBJECTS>(); }
 
 	template<map_type_e MapType> template<AnimatedObject ObjectType> inline void object_registry_t<MapType>::retreat() noexcept {
-		for (crauto object : object_storage<ObjectType>) { object.idle_animation.retreat(); }
+		for (crauto object : object_registry_storage<ObjectType>) { object.idle_animation.retreat(); }
 	}
 
 	template<map_type_e MapType> 
@@ -409,7 +423,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw() const noexcept {
-		for (crauto object : object_storage<ObjectType>) {
+		for (crauto object : object_registry_storage<ObjectType>) {
 			object.draw();
 		}
 	}
@@ -417,7 +431,7 @@ namespace necrowarp {
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto object : object_storage<ObjectType>) {
+		for (crauto object : object_registry_storage<ObjectType>) {
 			if (!viewport.within(object.position)) {
 				continue;
 			}
@@ -429,7 +443,7 @@ namespace necrowarp {
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto object : object_storage<ObjectType>) {
+		for (crauto object : object_registry_storage<ObjectType>) {
 			if (!viewport.within(object.position)) {
 				continue;
 			}
@@ -471,5 +485,7 @@ namespace necrowarp {
 		draw<ALL_OBJECTS>(camera, offset);
 	}
 } // namespace necrowarp
+
+#include <necrowarp/object_buffer.tpp>
 
 #include <necrowarp/objects.tpp>

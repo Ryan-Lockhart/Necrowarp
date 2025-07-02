@@ -12,7 +12,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calcitic_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::CalciticInvocation) || object_registry<MapType>.dependent empty<skull_t>())) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::CalciticInvocation) || object_registry<MapType>.dependent empty<bones_t>())) {
 			player_turn_invalidated = true;
 
 			return;
@@ -27,7 +27,7 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
-			const bool has_skull{ object_registry<MapType>.dependent contains<skull_t>(position) };
+			const bool has_skull{ object_registry<MapType>.dependent contains<bones_t>(position) };
 
 			if (!has_skull && player.bypass_invocations_enabled()) {
 				++accumulated_skulls;
@@ -44,9 +44,9 @@ namespace necrowarp {
 			}
 
 			if (has_skull) {
-				const decay_e state{ object_registry<MapType>.dependent at<skull_t>(position)->state };
+				const decay_e state{ object_registry<MapType>.dependent at<bones_t>(position)->state };
 
-				object_registry<MapType>.dependent remove<skull_t>(position);
+				object_registry<MapType>.dependent remove<bones_t>(position);
 				++accumulated_skulls;
 
 				if (!is_exalted) {
@@ -73,12 +73,12 @@ namespace necrowarp {
 			}
 		}
 
-		if (object_registry<MapType>.dependent contains<skull_t>(target_position)) {
+		if (object_registry<MapType>.dependent contains<bones_t>(target_position)) {
 			const offset_t pos{ target_position };
 
-			const decay_e state{ object_registry<MapType>.dependent at<skull_t>(pos)->state };
+			const decay_e state{ object_registry<MapType>.dependent at<bones_t>(pos)->state };
 
-			object_registry<MapType>.dependent remove<skull_t>(pos);
+			object_registry<MapType>.dependent remove<bones_t>(pos);
 			++accumulated_skulls;
 
 			if (!is_exalted) {

@@ -86,6 +86,8 @@ namespace necrowarp {
 	static inline mixer_s mixer{};
 
 	static inline priority_mutex registry_access{};
+
+	static inline priority_mutex buffer_access{};
 	
 	static inline volatile std::atomic<bool> player_acted{ false };
 

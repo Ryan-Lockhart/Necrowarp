@@ -27,7 +27,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void cultist_t::die() noexcept {
-		object_registry<MapType>.spill(skull_t{ position, decay_e::Rotted });
+		object_registry<MapType>.spill(bones_t{ position, decay_e::Rotted });
 
 		spill_fluid<MapType>(position, fluid_type<cultist_t>::type);
 	}

@@ -29,7 +29,7 @@ namespace necrowarp {
 
 		constexpr bool is_hovered(offset_t position) const noexcept { return mouse_s::is_inside(apply_padding(position), external_size()); }
 
-		constexpr void draw(ref<renderer_t> renderer, cref<entity_registry_t<MapType>> entities, cref<object_registry_t<MapType>> objects, offset_t position) const noexcept {
+		template<typename Entities, typename Objects> constexpr void draw(ref<renderer_t> renderer, cref<Entities> entities, cref<Objects> objects, offset_t position) const noexcept {
 			renderer.draw_composite_rect(rect_t{ apply_padding(position), external_size() }, box.background, box.border.color, box.border.thickness * globals::cell_size<grid_type_e::UI>.w);
 			
 			for (extent_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
@@ -78,7 +78,7 @@ namespace necrowarp {
 			return embedded_minimap_t<MapType, PixelSize>::is_hovered(anchor_t::get_offset(embedded_minimap_t<MapType, PixelSize>::external_size()));
 		}
 
-		constexpr void draw(ref<renderer_t> renderer, cref<entity_registry_t<MapType>> entities, cref<object_registry_t<MapType>> objects) const noexcept {
+		template<typename Entities, typename Objects> constexpr void draw(ref<renderer_t> renderer, cref<Entities> entities, cref<Objects> objects) const noexcept {
 			embedded_minimap_t<MapType, PixelSize>::draw(renderer, entities, objects, get_offset(embedded_minimap_t<MapType, PixelSize>::external_size()));
 		}
 	};

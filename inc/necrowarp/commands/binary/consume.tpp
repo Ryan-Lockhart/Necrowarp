@@ -56,10 +56,10 @@ namespace necrowarp {
 		const object_e object_target{ determine_target<EntityType>(object_group) };
 		
 		switch (object_target) {
-			case object_e::Skull: {
-				const decay_e state{ object_registry<MapType>.dependent at<skull_t>(target_position)->state };
+			case object_e::Bones: {
+				const decay_e state{ object_registry<MapType>.dependent at<bones_t>(target_position)->state };
 
-				object_registry<MapType>.dependent remove<skull_t>(target_position);
+				object_registry<MapType>.dependent remove<bones_t>(target_position);
 				entity_registry<MapType>.add(skeleton_t{ target_position, state });
 
 				++steam_stats::stats<steam_stat_e::SkullsConsumed, i32>;

@@ -29,7 +29,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void berserker_t::die() noexcept {
-		object_registry<MapType>.spill(skull_t{ position });
+		object_registry<MapType>.spill(bones_t{ position });
 		object_registry<MapType>.spill(flesh_t{ position });
 
 		spill_fluid<MapType>(position, fluid_type<berserker_t>::type);

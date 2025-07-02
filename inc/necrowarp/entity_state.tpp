@@ -13,6 +13,8 @@
 
 #include <bleak/sparse.hpp>
 
+#include <necrowarp/entity_buffer.hpp>
+
 namespace necrowarp {	
 	using namespace bleak;
 	
@@ -22,6 +24,8 @@ namespace necrowarp {
 	extern bool draw_warp_cursor;
 
 	static inline player_t player{};
+
+	static inline player_t player_buffer{};
 
 	template<patron_e Patron> constexpr runes_t to_colored_string() noexcept {
 		runes_t colored_string{};
@@ -51,17 +55,29 @@ namespace necrowarp {
 
 		bool moved{ false };
 
+		const std::optional<offset_t> player_position{
+			[&]() -> std::optional<offset_t> {
+				if (!registry_access.is_locked()) {
+					return player.position;
+				} else if (!buffer_access.is_locked()) {
+					return player_buffer.position;
+				} else {
+					return std::nullopt;
+				}
+			}()
+		};
+
 		if (force_width || force_height) {
 			moved = camera<MapType>.center_on(
-				force_width, force_width ? globals::MapCenter<MapType>.x : player.position.x,
-				force_height, force_height ? globals::MapCenter<MapType>.y : player.position.y
+				force_width, globals::MapCenter<MapType>.x,
+				force_height, globals::MapCenter<MapType>.y
 			);
 
 			return moved;
 		}
 
-		if (camera_locked) {
-			moved = camera<MapType>.center_on(player.position);
+		if (camera_locked && player_position.has_value()) {
+			moved = camera<MapType>.center_on(player_position.value());
 
 			return moved;
 		}
@@ -71,7 +87,11 @@ namespace necrowarp {
 
 	template<map_type_e MapType> static inline entity_registry_t<MapType> entity_registry{};
 
-	template<NonPlayerEntity EntityType> static inline sparse_t<EntityType> entity_storage{};
+	template<map_type_e MapType> static inline entity_buffer_t<MapType> entity_buffer{};
+
+	template<NonPlayerEntity EntityType> static inline sparse_t<EntityType> entity_registry_storage{};
+
+	template<NonPlayerEntity EntityType> static inline sparse_t<EntityType> entity_buffer_storage{};
 
 	template<NonPlayerEntity EntityType, NonNullCommand CommandType> static inline std::queue<entity_command_t<EntityType, CommandType>> entity_commands{};
 
@@ -98,7 +118,22 @@ namespace necrowarp {
 
 	static inline volatile std::atomic<bool> divine_intervention_invoked{ false };
 
-	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return entity_storage<EntityType>.contains(position); }
+	template<map_type_e MapType> template<PlayerEntity EntityType> inline void entity_registry_t<MapType>::store() const noexcept {
+		player_buffer = player;
+	}
+
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::store() const noexcept {
+		entity_buffer_storage<EntityType> = entity_registry_storage<EntityType>;
+	}
+
+	template<map_type_e MapType>
+	template<NonNullEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline void entity_registry_t<MapType>::store() const noexcept {
+		(store<EntityTypes>(), ...);
+	}
+
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return entity_registry_storage<EntityType>.contains(position); }
 
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return player.position == position; }
 
@@ -242,7 +277,7 @@ namespace necrowarp {
 			return nullptr;
 		}
 
-		return entity_storage<EntityType>[position];
+		return entity_registry_storage<EntityType>[position];
 	}
 
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline cptr<EntityType> entity_registry_t<MapType>::at(offset_t position) const noexcept {
@@ -258,7 +293,7 @@ namespace necrowarp {
 			return nullptr;
 		}
 
-		return entity_storage<EntityType>[position];
+		return entity_registry_storage<EntityType>[position];
 	}
 
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline ptr<EntityType> entity_registry_t<MapType>::at(offset_t position) noexcept {
@@ -270,7 +305,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline usize entity_registry_t<MapType>::count() const noexcept {
-		return entity_storage<EntityType>.size();
+		return entity_registry_storage<EntityType>.size();
 	}
 
 	template<map_type_e MapType>
@@ -283,7 +318,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline usize entity_registry_t<MapType>::count() const noexcept { return count<ALL_ENTITIES>(); }
 	
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::empty() const noexcept {
-		return entity_storage<EntityType>.empty();
+		return entity_registry_storage<EntityType>.empty();
 	}
 	
 	template<map_type_e MapType>
@@ -300,7 +335,7 @@ namespace necrowarp {
 		return (empty<EntityTypes>(position) && ...);
 	}
 
-	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept { return !entity_storage<EntityType>.contains(position); }
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept { return !entity_registry_storage<EntityType>.contains(position); }
 
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept { return player.position != position; }
 
@@ -314,7 +349,7 @@ namespace necrowarp {
 		}
 		
 		const offset_t position{ entity.position };
-		const bool inserted{ entity_storage<EntityType>.add(std::move(entity)) };
+		const bool inserted{ entity_registry_storage<EntityType>.add(std::move(entity)) };
 
 		if (inserted) {
 			if constexpr (is_evil_entity<EntityType>::value) {
@@ -341,7 +376,7 @@ namespace necrowarp {
 			return false;
 		}
 		
-		if (!entity_storage<EntityType>.remove(position)) {
+		if (!entity_registry_storage<EntityType>.remove(position)) {
 			return false;
 		}
 		
@@ -362,7 +397,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::clear() noexcept {
-		entity_storage<EntityType>.clear();
+		entity_registry_storage<EntityType>.clear();
 	}
 
 	template<map_type_e MapType>
@@ -379,7 +414,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::reset() noexcept {
-		entity_storage<EntityType>.clear();
+		entity_registry_storage<EntityType>.clear();
 		reset_goal_map<EntityType>();
 	}
 
@@ -464,7 +499,7 @@ namespace necrowarp {
 			return false;
 		}
 		
-		if (!entity_storage<EntityType>.move(current, target)) {
+		if (!entity_registry_storage<EntityType>.move(current, target)) {
 			return false;
 		}
 
@@ -585,7 +620,7 @@ namespace necrowarp {
 			recalculate_skulker_goal_map();
 		}
 
-		for (crauto entity : entity_storage<EntityType>) {
+		for (crauto entity : entity_registry_storage<EntityType>) {
 			if (newborns.contains(entity.position)) {
 				newborns.remove(entity.position);
 				continue;
@@ -697,7 +732,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::advance() noexcept {
-		for (crauto entity : entity_storage<EntityType>) { entity.idle_animation.advance(); }
+		for (crauto entity : entity_registry_storage<EntityType>) { entity.idle_animation.advance(); }
 	}
 
 	template<map_type_e MapType> 
@@ -710,7 +745,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::advance() noexcept { advance<ALL_ANIMATED_ENTITIES>(); }
 
 	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::retreat() noexcept {
-		for (crauto entity : entity_storage<EntityType>) { entity.idle_animation.retreat(); }
+		for (crauto entity : entity_registry_storage<EntityType>) { entity.idle_animation.retreat(); }
 	}
 
 	template<map_type_e MapType> 
@@ -995,7 +1030,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw() const noexcept {
-		for (crauto entity : entity_storage<EntityType>) {
+		for (crauto entity : entity_registry_storage<EntityType>) {
 			entity.draw();
 		}
 	}
@@ -1003,7 +1038,7 @@ namespace necrowarp {
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto entity : entity_storage<EntityType>) {
+		for (crauto entity : entity_registry_storage<EntityType>) {
 			if (!viewport.within(entity.position)) {
 				continue;
 			}
@@ -1015,7 +1050,7 @@ namespace necrowarp {
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto entity : entity_storage<EntityType>) {
+		for (crauto entity : entity_registry_storage<EntityType>) {
 			if (!viewport.within(entity.position)) {
 				continue;
 			}
@@ -1063,6 +1098,8 @@ namespace necrowarp {
 		player.draw(camera, offset);
 	}
 } // namespace necrowarp
+
+#include <necrowarp/entity_buffer.tpp>
 
 #include <necrowarp/entities.tpp>
 #include <necrowarp/commands.tpp>

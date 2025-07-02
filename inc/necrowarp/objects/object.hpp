@@ -12,7 +12,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	struct skull_t;
+	struct bones_t;
 	struct flesh_t;
 	struct metal_t;
 
@@ -22,7 +22,7 @@ namespace necrowarp {
 	struct arrow_t;
 
 	#define ALL_CATALYST_OBJECTS \
-		skull_t, \
+		bones_t, \
 		flesh_t, \
 		metal_t
 
@@ -46,7 +46,7 @@ namespace necrowarp {
 	enum struct object_e : u8 {
 		None = 0,
 
-		Skull,
+		Bones,
 		Flesh,
 		Metal,
 
@@ -62,8 +62,8 @@ namespace necrowarp {
 		switch (type) {
 			case object_e::None: {
 				return "none";
-			} case object_e::Skull: {
-				return "skull";
+			} case object_e::Bones: {
+				return "bone";
 			} case object_e::Flesh: {
 				return "flesh";
 			} case object_e::Metal: {
@@ -82,8 +82,8 @@ namespace necrowarp {
 		switch (type) {
 			case object_e::None: {
 				return "none";
-			} case object_e::Skull: {
-				return "skulls";
+			} case object_e::Bones: {
+				return "bones";
 			} case object_e::Flesh: {
 				return "flesh";
 			} case object_e::Metal: {
@@ -104,7 +104,7 @@ namespace necrowarp {
 		switch (type) {
 			case object_e::None: {
 				return runes_t{ string, colors::Grey };
-			} case object_e::Skull: {
+			} case object_e::Bones: {
 				return runes_t{ string, colors::White };
 			} case object_e::Flesh: {
 				return runes_t{ string, colors::Orange };
@@ -127,8 +127,8 @@ namespace necrowarp {
 	enum struct object_group_e : object_group_t {
 		None = 0,
 
-		Skull = 1 << 0,
-		Flesh = Skull << 1,
+		Bones = 1 << 0,
+		Flesh = Bones << 1,
 		Metal = Flesh << 1,
 
 		Ladder = Metal << 1,

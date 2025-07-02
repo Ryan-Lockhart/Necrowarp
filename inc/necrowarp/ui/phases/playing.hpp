@@ -35,11 +35,6 @@ namespace necrowarp {
 	};
 
 	template<> struct phase_state_t<phase_e::Playing> {
-		static inline priority_mutex buffer_access{};
-
-		template<map_type_e MapType> static inline entity_registry_t<MapType> entity_buffer{};
-		template<map_type_e MapType> static inline object_registry_t<MapType> object_buffer{};
-
 		static inline status_bar_t<3> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
 			std::array<status_t, 3>{

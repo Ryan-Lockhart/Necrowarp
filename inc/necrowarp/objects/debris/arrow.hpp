@@ -45,7 +45,7 @@ namespace necrowarp {
 
 		i8 count;
 
-		inline void set_count(i8 amount) noexcept { count = between<i8>(amount, MinimumArrows, MaximumArrows); }
+		inline void set_count(i8 amount) noexcept { count = clamp<i8>(amount, MinimumArrows, MaximumArrows); }
 
 	  public:
 		template<RandomEngine Generator> static inline bool snap(ref<Generator> generator) noexcept { return snap_dis(generator); }
@@ -111,7 +111,7 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline keyframe_t current_keyframe() const noexcept { return keyframe_t{ indices::Arrow, static_cast<u8>(count) }; }
+		inline keyframe_t current_keyframe() const noexcept { return keyframe_t{ indices::Arrow, static_cast<u8>(count - 1) }; }
 
 		inline void draw() const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
 

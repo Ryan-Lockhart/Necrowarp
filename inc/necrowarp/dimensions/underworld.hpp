@@ -91,7 +91,7 @@ namespace necrowarp {
 			verticality_e::Down, random_engine
 		);
 
-		object_registry<map_type>.dependent spawn<skull_t>(
+		object_registry<map_type>.dependent spawn<bones_t>(
 			static_cast<usize>(globals::StartingSkulls),
 			static_cast<u32>(globals::MinimumSkullDistance),
 

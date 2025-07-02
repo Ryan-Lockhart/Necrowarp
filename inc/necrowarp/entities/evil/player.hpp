@@ -118,7 +118,7 @@ namespace necrowarp {
 		static constexpr std::array<object_e, 5> ObjectPriorities{
 			object_e::Portal,
 			object_e::Ladder,
-			object_e::Skull,
+			object_e::Bones,
 			object_e::Metal,
 			object_e::Flesh,
 		};
@@ -183,7 +183,14 @@ namespace necrowarp {
 
 		inline player_t(offset_t position, patron_e patron) noexcept : command{}, position{ position }, patron{ patron }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
 
-		inline player_t(cref<player_t> other) noexcept = delete;
+		inline player_t(cref<player_t> other) noexcept :
+			command{ other.command },
+			position{ other.position },
+			patron{ other.patron },
+			energy{ other.energy },
+			armor{ other.armor },
+			divinity{ other.divinity }
+		{}
 
 		inline player_t(rval<player_t> other) noexcept :
 			command{ std::move(other.command) },
@@ -194,7 +201,22 @@ namespace necrowarp {
 			divinity{ std::move(other.divinity) }
 		{}
 
-		inline ref<player_t> operator=(cref<player_t> other) noexcept = delete;
+		inline ~player_t() noexcept {}
+
+		inline ref<player_t> operator=(cref<player_t> other) noexcept {
+			if (this == &other) {
+				return *this;
+			}
+
+			command = other.command;
+			position = other.position;
+			patron = other.patron;
+			energy = other.energy;
+			armor = other.armor;
+			divinity = other.divinity;
+
+			return *this;
+		}
 
 		inline ref<player_t> operator=(rval<player_t> other) noexcept {
 			if (this == &other) {
@@ -325,7 +347,7 @@ namespace necrowarp {
 
 		constexpr bool can_consume(object_e object) const noexcept {
 			switch (object) {
-				case object_e::Skull: {
+				case object_e::Bones: {
 					return true;
 				} default: {
 					return false;

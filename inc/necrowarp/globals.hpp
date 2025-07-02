@@ -222,8 +222,8 @@ namespace necrowarp {
 
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
 
-		static constexpr extent_t TilesetSize{ 16, 3 };
-		static constexpr extent_t AnimatedSize{ 16, 23 };
+		static constexpr extent_t TilesetSize{ 16, 4 };
+		static constexpr extent_t AnimatedSize{ 16, 27 };
 
 		static constexpr extent_t IconsetSize{ 2, 4 };
 
@@ -286,7 +286,7 @@ namespace necrowarp {
 		};
 		
 		constexpr const map_config_t TunnelsPreset{
-			.fill_percent = 0.55,
+			.fill_percent = 0.5,
 			.automata_iterations = 512,
 			.automata_threshold = 4,
 		};
@@ -364,7 +364,7 @@ namespace necrowarp {
 		constexpr bool OopsAllRangers{ false };
 		constexpr bool OopsAllSkulkers{ false };
 		constexpr bool OopsAllBattleMonks{ false };
-		constexpr bool OopsAllBerserkers{ true };
+		constexpr bool OopsAllBerserkers{ false };
 		constexpr bool OopsAllPaladins{ false };
 
 		template<typename T> struct has_unique_descriptor {

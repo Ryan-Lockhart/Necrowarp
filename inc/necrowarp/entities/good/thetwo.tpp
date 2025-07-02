@@ -45,7 +45,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void thetwo_t::die() noexcept {
 		const u8 droppings{ get_droppings() };
 
-		object_registry<MapType>.spill(skull_t{ position }, droppings);
+		object_registry<MapType>.spill(bones_t{ position }, droppings);
 		object_registry<MapType>.spill(flesh_t{ position }, droppings);
 
 		spill_fluid<MapType>(position, fluid_type<thetwo_t>::type, droppings);

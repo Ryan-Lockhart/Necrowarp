@@ -11,6 +11,14 @@ namespace necrowarp {
 	using namespace bleak;
 
 	template<map_type_e MapType> struct entity_registry_t {
+		template<PlayerEntity EntityType> inline void store() const noexcept;
+
+		template<NonPlayerEntity EntityType> inline void store() const noexcept;
+
+		template<NonNullEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline void store() const noexcept;
+
 		inline entity_group_e at(offset_t position) const noexcept;
 
 		template<NonPlayerEntity EntityType> inline cptr<EntityType> at(offset_t position) const noexcept;

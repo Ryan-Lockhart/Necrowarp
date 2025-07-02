@@ -274,7 +274,7 @@ namespace necrowarp {
 				verticality_e::Down, random_engine
 			);
 
-			object_registry<MapType>.dependent spawn<skull_t>(
+			object_registry<MapType>.dependent spawn<bones_t>(
 				static_cast<usize>(globals::StartingSkulls),
 				static_cast<u32>(globals::MinimumSkullDistance),
 
@@ -309,7 +309,7 @@ namespace necrowarp {
 #endif
 			ladder_positions.clear();
 
-			for (crauto ladder : object_storage<ladder_t>) {
+			for (crauto ladder : object_registry_storage<ladder_t>) {
 				if (ladder.is_up_ladder()) {
 					continue;
 				}
@@ -428,7 +428,7 @@ namespace necrowarp {
 				verticality_e::Down, random_engine
 			);
 
-			object_registry<MapType>.dependent spawn<skull_t>(
+			object_registry<MapType>.dependent spawn<bones_t>(
 				static_cast<usize>(globals::StartingSkulls),
 				static_cast<u32>(globals::MinimumSkullDistance),
 
@@ -514,7 +514,7 @@ namespace necrowarp {
 		}
 
 		template<map_type_e MapType> static inline std::optional<offset_t> find_spawn_position() noexcept {
-			for (cref<ladder_t> ladder : object_storage<ladder_t>) {
+			for (cref<ladder_t> ladder : object_registry_storage<ladder_t>) {
 				if (entity_registry<MapType>.dependent contains<ALL_GOOD_NPCS>(ladder.position) || ladder.is_down_ladder() || ladder.has_shackle()) {
 					continue;
 				}
@@ -680,6 +680,13 @@ namespace necrowarp {
 				return;
 			}
 
+			buffer_access.lock<true>();
+
+			entity_registry<MapType>.dependent store<ALL_ENTITIES>();
+			object_registry<MapType>.dependent store<ALL_OBJECTS>();
+
+			buffer_access.unlock();
+
 			registry_access.lock<true>();
 
 			processing_turn = true;
@@ -714,14 +721,9 @@ namespace necrowarp {
 
 			registry_access.unlock();
 
+			update_camera<MapType>();
+
 			processing_turn = false;
-
-			phase_state_t<phase_e::Playing>::buffer_access.lock<true>();
-
-			phase_state_t<phase_e::Playing>::entity_buffer<MapType> = entity_registry<MapType>;
-			phase_state_t<phase_e::Playing>::object_buffer<MapType> = object_registry<MapType>;
-
-			phase_state_t<phase_e::Playing>::buffer_access.unlock();
 			
 			player_acted = false;
 		}
@@ -771,11 +773,11 @@ namespace necrowarp {
 					entity_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
 
 					registry_access.unlock();
-				} else if (phase_state_t<phase_e::Playing>::buffer_access.try_lock()) {
-					phase_state_t<phase_e::Playing>::object_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
-					phase_state_t<phase_e::Playing>::entity_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+				} else if (buffer_access.try_lock()) {
+					object_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					entity_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
 
-					phase_state_t<phase_e::Playing>::buffer_access.unlock();
+					buffer_access.unlock();
 				}
 			}
 

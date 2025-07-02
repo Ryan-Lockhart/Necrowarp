@@ -59,7 +59,7 @@ namespace necrowarp {
 		}
 		
 		switch (object_target) {
-			case object_e::Skull: {
+			case object_e::Bones: {
 				return command_e::Consume;
 			} case object_e::Ladder: {
 				return command_e::Descend;

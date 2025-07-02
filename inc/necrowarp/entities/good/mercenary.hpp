@@ -61,10 +61,10 @@ namespace necrowarp {
 	struct mercenary_t {
 		offset_t position;
 
-		static constexpr i8 MaximumHealth{ 2 };
-		static constexpr i8 MaximumDamage{ 1 };
+		static constexpr i8 MaximumHealth{ 3 };
+		static constexpr i8 MaximumDamage{ 2 };
 
-		static constexpr i8 MaximumDamageReceived{ 1 };
+		static constexpr i8 MaximumDamageReceived{ 2 };
 
 		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,

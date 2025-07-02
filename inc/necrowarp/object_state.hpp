@@ -3,11 +3,18 @@
 #include <necrowarp/objects/object.hpp>
 
 #include <necrowarp/game_state.hpp>
+#include <necrowarp/object_buffer.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
 
 	template<map_type_e MapType> struct object_registry_t {
+		template<NonNullObject ObjectType> inline void store() const noexcept;
+
+		template<NonNullObject... ObjectTypes>
+			requires is_plurary<ObjectTypes...>::value
+		inline void store() const noexcept;
+
 		inline object_group_e at(offset_t position) const noexcept;
 
 		template<NonNullObject ObjectType> inline cptr<ObjectType> at(offset_t position) const noexcept;

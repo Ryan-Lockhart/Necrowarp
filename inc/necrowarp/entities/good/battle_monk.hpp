@@ -131,7 +131,7 @@ namespace necrowarp {
 			entity_e::DeathKnight,
 		};
 
-		static constexpr i8 DeathBoon{ 2 };
+		static constexpr i8 DeathBoon{ 3 };
 
 	  private:
 		template<tranquility_e Tranquility> static inline i8 dodge_threshold;

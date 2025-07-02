@@ -52,6 +52,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_cleaver<skulker_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_bleeder<skulker_t> {
 		static constexpr bool value = true;
 	};
@@ -121,17 +125,17 @@ namespace necrowarp {
 		inline bool is_visible() const noexcept { return concealment == concealment_e::Visible; }
 
 		static constexpr i8 MaximumHealth{ 1 };
-		static constexpr i8 MaximumDamage{ 1 };
+		static constexpr i8 MaximumDamage{ 3 };
 
-		static constexpr i8 MinimumRange{ 3 };
-		static constexpr i8 MaximumRange{ 7 };
+		static constexpr i8 VisisbleRange{ 2 };
+		static constexpr i8 ImperceptibleRange{ 8 };
 
 		static constexpr concealment_e determine_concealment(f32 distance) noexcept {
-			const isize rough_distance{ static_cast<isize>(std::round(distance)) };
+			const isize rough_distance{ static_cast<isize>(std::floor(distance)) };
 
-			if (rough_distance >= MaximumRange) {
+			if (rough_distance >= ImperceptibleRange) {
 				return concealment_e::Imperceptible;
-			} else if (rough_distance <= MinimumRange) {
+			} else if (rough_distance <= VisisbleRange) {
 				return concealment_e::Visible;
 			} else {
 				return concealment_e::Shrouded;
@@ -150,7 +154,7 @@ namespace necrowarp {
 			entity_e::DeathKnight,
 		};
 
-		static constexpr i8 DeathBoon{ 1 };
+		static constexpr i8 DeathBoon{ 2 };
 
 		inline skulker_t(offset_t position) noexcept : position{ position }, concealment{ concealment_e::Shrouded } {}
 
