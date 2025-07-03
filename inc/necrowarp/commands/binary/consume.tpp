@@ -62,7 +62,7 @@ namespace necrowarp {
 				object_registry<MapType>.dependent remove<bones_t>(target_position);
 				entity_registry<MapType>.add(skeleton_t{ target_position, state });
 
-				++steam_stats::stats<steam_stat_e::SkullsConsumed, i32>;
+				++steam_stats::stats<steam_stat_e::BonesConsumed, i32>;
 
 				if (state == decay_e::Fresh) {
 					player.receive_skull_boon();

@@ -12,6 +12,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_variants<bonespur_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<bonespur_t> {
 		static constexpr bool value = true;
 	};
@@ -44,7 +48,9 @@ namespace necrowarp {
 		static constexpr bool value = false;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<bonespur_t>{};
+	template<> struct is_spatterable<bonespur_t> {
+		static constexpr bool value = true;
+	};
 
 	struct bonespur_t {
 		offset_t position;
@@ -101,12 +107,15 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline void die() noexcept;
 
-		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::Bonespur), get_health(), max_health()); }
+		inline std::string to_string() const noexcept { return std::format("{} [{}/{}] ({})", necrowarp::to_string(entity_e::Bonespur), get_health(), max_health(), necrowarp::to_string(spatter)); }
 
 		inline runes_t to_colored_string() const noexcept {
 			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Bonespur) };
 
-			colored_string.concatenate(runes_t{ std::format(" [{}/{}]", get_health(), max_health()) });
+			colored_string
+				.concatenate(runes_t{ std::format(" [{}/{}] (", get_health(), max_health()) })
+				.concatenate(spatter != fluid_e::None ? necrowarp::to_colored_string(spatter) : runes_t{ "unstained", colors::light::Grey })
+				.concatenate(runes_t{ ")" });
 			
 			return colored_string;
 		}

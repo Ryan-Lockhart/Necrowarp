@@ -43,22 +43,23 @@ namespace necrowarp {
 		constexpr const glyph_t Adventurer{ characters::Adventurer, colors::White };
 		constexpr const glyph_t Mercenary{ characters::Mercenary, colors::White };
 
+		constexpr const glyph_t Ranger{ characters::Ranger, colors::White };
+		constexpr const glyph_t Skulker{ characters::Skulker, colors::White };
+		constexpr const glyph_t BattleMonk{ characters::BattleMonk, colors::White };
+		constexpr const glyph_t MistLady{ characters::MistLady, colors::White };
+		constexpr const glyph_t BannerBearer{ characters::BannerBearer, colors::White };
+
 		constexpr const glyph_t NeonatalThetwo{ characters::NeonatalThetwo, colors::White };
 		constexpr const glyph_t YoungThetwo{ characters::YoungThetwo, colors::White };
 		constexpr const glyph_t MatureThetwo{ characters::MatureThetwo, colors::White };
 		constexpr const glyph_t GrossThetwo{ characters::GrossThetwo, colors::White };
 		constexpr const glyph_t TitanicThetwo{ characters::TitanicThetwo, colors::White };
 
-		constexpr const glyph_t Ranger{ characters::Ranger, colors::White };
-		constexpr const glyph_t Skulker{ characters::Skulker, colors::White };
-		constexpr const glyph_t BattleMonk{ characters::BattleMonk, colors::White };
-		constexpr const glyph_t MistLady{ characters::MistLady, colors::White };
-
 		constexpr const glyph_t Paladin{ characters::Paladin, colors::White };
 
-		constexpr const glyph_t FreshSkull{ characters::FreshSkull, colors::White };
-		constexpr const glyph_t AnimateSkull{ characters::AnimateSkull, colors::White };
-		constexpr const glyph_t RottedSkull{ characters::RottedSkull, colors::White };
+		constexpr const glyph_t FreshBones{ characters::FreshBones, colors::White };
+		constexpr const glyph_t AnimateBones{ characters::AnimateBones, colors::White };
+		constexpr const glyph_t RottedBones{ characters::RottedBones, colors::White };
 
 		constexpr const glyph_t Flesh{ characters::Flesh, colors::White };
 
@@ -67,6 +68,9 @@ namespace necrowarp {
 
 		constexpr const glyph_t UpLadder{ characters::UpLadder, colors::White };
 		constexpr const glyph_t DownLadder{ characters::DownLadder, colors::White };
+
+		constexpr const glyph_t EmptyPedestal{ characters::EmptyPedestal, colors::White };
+		constexpr const glyph_t GrimoirePedestal{ characters::GrimoirePedestal, colors::White };
 
 		constexpr const glyph_t RightPatch{ characters::RightPatch, colors::White };
 		constexpr const glyph_t LeftPatch{ characters::LeftPatch, colors::White };

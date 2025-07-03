@@ -308,9 +308,7 @@ namespace necrowarp {
 
 	template<typename T, object_e ObjectType> constexpr bool is_object_type_v = is_object_type<T, ObjectType>::value;
 
-	template<Object ObjectType>
-		requires (!globals::has_animation<ObjectType>::value)
+	template<NonNullObject ObjectType>
+		requires (!globals::has_animation<ObjectType>::value && !globals::has_variants<ObjectType>::value)
 	inline constexpr glyph_t object_glyphs;
-
-	template<> inline constexpr glyph_t object_glyphs<std::nullptr_t>{ 0x40, colors::White };
 } // namespace necrowarp

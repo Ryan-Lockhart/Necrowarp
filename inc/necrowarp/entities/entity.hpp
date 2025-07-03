@@ -487,7 +487,7 @@ namespace necrowarp {
 	template<typename T> concept ConcussableEntity = NonNullEntity<T> && is_concussable<T>::value;
 
 	template<typename T> struct is_spatterable {
-		static constexpr bool value = true;
+		static constexpr bool value = false;
 	};
 
 	template<typename T> constexpr bool is_spatterable_v = is_spatterable<T>::value;
@@ -512,13 +512,13 @@ namespace necrowarp {
 
 	template<typename T, entity_e EntityType> constexpr bool is_entity_type_v = is_entity_type<T, EntityType>::value;
 
-	template<Entity EntityType> inline constexpr glyph_t entity_glyphs;
+	template<NonNullEntity EntityType>
+		requires (!globals::has_animation<EntityType>::value && !globals::has_variants<EntityType>::value)
+	inline constexpr glyph_t entity_glyphs;
 
 	template<NonNullEntity EntityType> static inline constexpr bool has_death_sound{ false };
 
 	template<NonNullEntity EntityType> static inline constexpr usize num_death_sounds{ 0 };
 
 	template<NonNullEntity EntityType> static inline clip_pool_t<num_death_sounds<EntityType>> death_sounds;
-
-	template<> inline constexpr glyph_t entity_glyphs<std::nullptr_t>{ 0x40, colors::White };
 } // namespace necrowarp

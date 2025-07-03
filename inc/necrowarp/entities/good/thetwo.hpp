@@ -16,6 +16,10 @@
 
 namespace necrowarp {
 	using namespace bleak;
+
+	template<> struct globals::has_variants<thetwo_t> {
+		static constexpr bool value = true;
+	};
 	
 	template<> struct is_entity<thetwo_t> {
 		static constexpr bool value = true;
@@ -80,8 +84,6 @@ namespace necrowarp {
 	template<> struct is_entity_command_valid<thetwo_t, lunge_t> {
 		static constexpr bool value = true;
 	};
-
-	template<> inline constexpr glyph_t entity_glyphs<thetwo_t>{ glyphs::NeonatalThetwo };
 
 	enum struct bulk_e : u8 {
 		Neonatal,

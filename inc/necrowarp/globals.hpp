@@ -223,7 +223,7 @@ namespace necrowarp {
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
 
 		static constexpr extent_t TilesetSize{ 16, 4 };
-		static constexpr extent_t AnimatedSize{ 16, 27 };
+		static constexpr extent_t AnimatedSize{ 16, 29 };
 
 		static constexpr extent_t IconsetSize{ 2, 4 };
 
@@ -321,11 +321,11 @@ namespace necrowarp {
 		constexpr i16 MinimumWaveSize{ 4 };
 		constexpr i16 MaximumWaveSize{ 256 };
 
-		constexpr i16 StartingWaveSize{ 8 };
+		constexpr i16 StartingWaveSize{ 4 };
 
-		constexpr i16 StartingSkulls{ 16 };
+		constexpr i16 StartingBones{ 16 };
 
-		constexpr i16 MinimumSkullDistance{ 16 };
+		constexpr i16 MinimumBoneDistance{ 16 };
 
 		constexpr i16 StartingUpLadders{ 8 };
 		constexpr i16 StartingDownLadders{ 4 };
@@ -378,5 +378,11 @@ namespace necrowarp {
 		};
 
 		template<typename T> constexpr bool has_animation_v = has_animation<T>::value;
+
+		template<typename T> struct has_variants {
+			static constexpr bool value = false;
+		};
+
+		template<typename T> constexpr bool has_variants_v = has_variants<T>::value;
 	} // namespace globals
 } // namespace necrowarp

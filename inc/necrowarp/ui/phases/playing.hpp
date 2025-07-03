@@ -341,7 +341,7 @@ namespace necrowarp {
 
 					favor_expanded_label.text.concatenate(to_colored_string(cval, value, type));
 
-					if constexpr (cval == discount_e::TargetWarp || cval == discount_e::Annihilate || cval == discount_e::GalvanicInvocation || cval == discount_e::CalamitousRetaliation) {
+					if constexpr (cval == discount_e::TargetWarp || cval == discount_e::Incorporealize || cval == discount_e::AbyssalInvocation || cval == discount_e::CalamitousRetaliation) {
 						favor_expanded_label.text.concatenate(runes_t{ "\n\n\n" });
 					} else {
 						favor_expanded_label.text.concatenate(runes_t{ "\n\n" });

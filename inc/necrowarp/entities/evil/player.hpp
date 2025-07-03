@@ -27,6 +27,10 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	template<> struct globals::has_variants<player_t> {
+		static constexpr bool value = true;
+	};
+
 	TYPE_TRAIT_VALUE(is_entity, player_t, true);
 
 	TYPE_TRAIT_USING(to_entity_type, entity_e::Player, player_t);
@@ -66,8 +70,6 @@ namespace necrowarp {
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, galvanic_invocation_t, true);
 
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, necromantic_ascendance_t, true);
-
-	template<> inline constexpr glyph_t entity_glyphs<player_t>{ glyphs::UnarmoredPlayer };
 
 	template<> inline constexpr glyph_t command_icons<command_e::RandomWarp>{ 0x00, colors::White };
 	template<> inline constexpr glyph_t command_icons<command_e::TargetWarp>{ 0x01, colors::White };
@@ -135,7 +137,7 @@ namespace necrowarp {
 
 		template<> constexpr i8 Cost<discount_e::NecromanticAscendance>{ 16 };
 
-		static constexpr i8 SkullBoon{ 1 };
+		static constexpr i8 BoneBoon{ 1 };
 
 		static constexpr i8 UnsafeWarpBoon{ 1 };
 		static constexpr i8 FailedWarpBoon{ 2 };
@@ -383,7 +385,7 @@ namespace necrowarp {
 			set_energy(energy - get_cost(type) + discount);
 		}
 
-		inline void receive_skull_boon() noexcept { set_energy(energy + SkullBoon); }
+		inline void receive_skull_boon() noexcept { set_energy(energy + BoneBoon); }
 
 		inline void receive_failed_warp_boon() noexcept { set_energy(energy + clamp<i8>(FailedWarpBoon, 0, get_cost(discount_e::RandomWarp))); }
 
@@ -433,7 +435,7 @@ namespace necrowarp {
 
 		inline void erode_divinity() noexcept { set_divinity(divinity - DivinityErosionRate); }
 
-		inline glyph_t current_glyph() const noexcept { return !has_armor() ? entity_glyphs<player_t> : glyphs::ArmoredPlayer; }
+		inline glyph_t current_glyph() const noexcept { return !has_armor() ? glyphs::UnarmoredPlayer : glyphs::ArmoredPlayer; }
 
 		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
 

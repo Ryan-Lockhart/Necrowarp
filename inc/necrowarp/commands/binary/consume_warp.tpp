@@ -69,7 +69,7 @@ namespace necrowarp {
 			case object_e::Bones: {
 				const decay_e state{ object_registry<MapType>.dependent at<bones_t>(target_position)->state };
 
-				const i8 boon{ state == decay_e::Fresh ? player_t::SkullBoon : i8{ 0 } };
+				const i8 boon{ state == decay_e::Fresh ? player_t::BoneBoon : i8{ 0 } };
 
 				if (!player.can_perform(discount_e::TargetWarp, boon)) {
 					player_turn_invalidated = true;
@@ -80,7 +80,7 @@ namespace necrowarp {
 				object_registry<MapType>.dependent remove<bones_t>(target_position);
 				entity_registry<MapType>.add(skeleton_t{ target_position, state });
 
-				++steam_stats::stats<steam_stat_e::SkullsConsumed, i32>;
+				++steam_stats::stats<steam_stat_e::BonesConsumed, i32>;
 
 				player.pay_cost(discount_e::TargetWarp, boon);
 

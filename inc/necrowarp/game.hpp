@@ -275,8 +275,8 @@ namespace necrowarp {
 			);
 
 			object_registry<MapType>.dependent spawn<bones_t>(
-				static_cast<usize>(globals::StartingSkulls),
-				static_cast<u32>(globals::MinimumSkullDistance),
+				static_cast<usize>(globals::StartingBones),
+				static_cast<u32>(globals::MinimumBoneDistance),
 
 				decay_e::Animate
 			);
@@ -429,8 +429,8 @@ namespace necrowarp {
 			);
 
 			object_registry<MapType>.dependent spawn<bones_t>(
-				static_cast<usize>(globals::StartingSkulls),
-				static_cast<u32>(globals::MinimumSkullDistance),
+				static_cast<usize>(globals::StartingBones),
+				static_cast<u32>(globals::MinimumBoneDistance),
 
 				decay_e::Animate
 			);

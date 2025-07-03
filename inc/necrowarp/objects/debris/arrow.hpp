@@ -11,6 +11,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_variants<arrow_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_object<arrow_t> {
 		static constexpr bool value = true;
 	};
@@ -30,8 +34,6 @@ namespace necrowarp {
 	template<> struct to_object_group<object_e::Arrow> {
 		static constexpr object_group_e value = object_group_e::Arrow;
 	};
-
-	template<> inline constexpr glyph_t object_glyphs<arrow_t>{};
 
 	struct arrow_t {
 	  public:

@@ -11,6 +11,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_variants<bones_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_object<bones_t> {
 		static constexpr bool value = true;
 	};
@@ -30,8 +34,6 @@ namespace necrowarp {
 	template<> struct to_object_group<object_e::Bones> {
 		static constexpr object_group_e value = object_group_e::Bones;
 	};
-
-	template<> inline constexpr glyph_t object_glyphs<bones_t>{ glyphs::FreshSkull };
 
 	struct bones_t {
 		offset_t position;
@@ -63,11 +65,11 @@ namespace necrowarp {
 		inline glyph_t current_glyph() const noexcept {
 			switch (state) {
 				case decay_e::Rotted: {
-					return glyphs::RottedSkull;
+					return glyphs::RottedBones;
 				} case decay_e::Animate: {
-					return glyphs::AnimateSkull;
+					return glyphs::AnimateBones;
 				} case decay_e::Fresh: {
-					return glyphs::FreshSkull;
+					return glyphs::FreshBones;
 				}
 			}
 		}

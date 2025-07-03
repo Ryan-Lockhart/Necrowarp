@@ -6,12 +6,12 @@ namespace necrowarp::indices {
 	using namespace bleak;
 	using namespace bleak::indices;
 
-	constexpr const u8 Bonespur{ 0x00 };
-
-	constexpr const u8 TwistedSuit{ 0x01 };
-	constexpr const u8 ShimmeringSuit{ 0x02 };
-	constexpr const u8 WrigglingSuit{ 0x03 };
-	constexpr const u8 WrithingSuit{ 0x04 };
+	constexpr const u8 TwistedSuit{ 0x00 };
+	constexpr const u8 ShimmeringSuit{ 0x01 };
+	constexpr const u8 WrigglingSuit{ 0x02 };
+	constexpr const u8 WrithingSuit{ 0x03 };
+	
+	constexpr const u8 Bonespur{ 0x04 };
 
 	constexpr const u8 TwistedKnight{ 0x05 };
 	constexpr const u8 ShimmeringKnight{ 0x06 };

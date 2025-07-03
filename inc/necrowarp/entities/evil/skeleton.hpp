@@ -12,6 +12,10 @@ namespace necrowarp {
 	template<> struct globals::has_unique_descriptor<skeleton_t> {
 		static constexpr bool value = true;
 	};
+
+	template<> struct globals::has_variants<skeleton_t> {
+		static constexpr bool value = true;
+	};
 	
 	template<> struct is_entity<skeleton_t> {
 		static constexpr bool value = true;
@@ -56,8 +60,6 @@ namespace necrowarp {
 	template<> struct fluid_type<skeleton_t> {
 		static constexpr fluid_e type = fluid_e::Ichor;
 	};
-
-	template<> inline constexpr glyph_t entity_glyphs<skeleton_t>{ glyphs::FreshSkeleton };
 
 	struct skeleton_t {
 	  private:

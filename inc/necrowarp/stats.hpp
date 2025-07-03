@@ -153,36 +153,52 @@ namespace necrowarp {
 		RandomWarps,
 		TargetWarps,
 
+		Calcifications,
+		Repulsions,
+		Annihilations,
+		Incorporealizations,
+
 		CalciticInvocations,
 		SpectralInvocations,
 		SanguineInvocations,
 		GalvanicInvocations,
+		RavenousInvocations,
+		WretchedInvocations,
+		AbyssalInvocations,
 
 		NecromanticAscensions,
+		CalamitousRetaliations,
 
 		MetersMoved,
 		MetersWarped,
 		LowestDepth,
 		PortalsTraversed,
 
-		SkullsConsumed,
+		BonesConsumed,
 		FleshConsumed,
 		MetalConsumed,
+		CerebraConsumed,
 
 		BloodConsumed,
 		IchorConsumed,
+		FilthConsumed,
+		EctoplasmConsumed,
 
 		SkeletonsConsumed,
 		BonespursConsumed,
+
+		GrimoiresCollected,
 
 		LaddersUnshackled,
 		LaddersShackled,
 
 		AdventurersSlain,
 		MercenariesSlain,
-		ThetwoSlain,
 		RangersSlain,
 		SkulkersSlain,
+		MistLadiesSlain,
+		BannerBearersSlain,
+		ThetwoSlain,
 		BattleMonksSlain,
 		BerserkersSlain,
 		PaladinsSlain,
@@ -198,36 +214,52 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::RandomWarps> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::TargetWarps> { using type = i32; };
 
+	template<> struct to_stat_type<steam_stat_e::Calcifications> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::Repulsions> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::Annihilations> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::Incorporealizations> { using type = i32; };
+
 	template<> struct to_stat_type<steam_stat_e::CalciticInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::SpectralInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::SanguineInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::GalvanicInvocations> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::RavenousInvocations> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::WretchedInvocations> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::AbyssalInvocations> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::NecromanticAscensions> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::CalamitousRetaliations> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::MetersMoved> { using type = f32; };
 	template<> struct to_stat_type<steam_stat_e::MetersWarped> { using type = f32; };
 	template<> struct to_stat_type<steam_stat_e::LowestDepth> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::PortalsTraversed> { using type = i32; };
 
-	template<> struct to_stat_type<steam_stat_e::SkullsConsumed> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::BonesConsumed> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::FleshConsumed> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::MetalConsumed> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::CerebraConsumed> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::BloodConsumed> { using type = f32; };
 	template<> struct to_stat_type<steam_stat_e::IchorConsumed> { using type = f32; };
+	template<> struct to_stat_type<steam_stat_e::FilthConsumed> { using type = f32; };
+	template<> struct to_stat_type<steam_stat_e::EctoplasmConsumed> { using type = f32; };
 
 	template<> struct to_stat_type<steam_stat_e::SkeletonsConsumed> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::BonespursConsumed> { using type = i32; };
+
+	template<> struct to_stat_type<steam_stat_e::GrimoiresCollected> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::LaddersUnshackled> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::LaddersShackled> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::AdventurersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::MercenariesSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::ThetwoSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::RangersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::SkulkersSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::MistLadiesSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::BannerBearersSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::ThetwoSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::BattleMonksSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::BerserkersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::PaladinsSlain> { using type = i32; };
@@ -246,6 +278,14 @@ namespace necrowarp {
 				return "random_warps";
 			} case steam_stat_e::TargetWarps: {
 				return "target_warps";
+			} case steam_stat_e::Calcifications: {
+				return "calcifications";
+			} case steam_stat_e::Repulsions: {
+				return "repulsions";
+			} case steam_stat_e::Annihilations: {
+				return "annihilations";
+			} case steam_stat_e::Incorporealizations: {
+				return "incorporealizations";
 			} case steam_stat_e::CalciticInvocations: {
 				return "calcitic_invocations";
 			} case steam_stat_e::SpectralInvocations: {
@@ -254,8 +294,16 @@ namespace necrowarp {
 				return "sanguine_invocations";
 			} case steam_stat_e::GalvanicInvocations: {
 				return "galvanic_invocations";
+			} case steam_stat_e::RavenousInvocations: {
+				return "ravenous_invocations";
+			} case steam_stat_e::WretchedInvocations: {
+				return "wretched_invocations";
+			} case steam_stat_e::AbyssalInvocations: {
+				return "abyssal_invocations";
 			} case steam_stat_e::NecromanticAscensions: {
 				return "necromantic_ascensions";
+			} case steam_stat_e::CalamitousRetaliations: {
+				return "calamitous_retaliations";
 			} case steam_stat_e::MetersMoved: {
 				return "meters_moved";
 			} case steam_stat_e::MetersWarped: {
@@ -264,20 +312,28 @@ namespace necrowarp {
 				return "lowest_depth";
 			} case steam_stat_e::PortalsTraversed: {
 				return "portals_traversed";
-			} case steam_stat_e::SkullsConsumed: {
-				return "skulls_consumed";
+			} case steam_stat_e::BonesConsumed: {
+				return "bones_consumed";
 			} case steam_stat_e::FleshConsumed: {
 				return "flesh_consumed";
 			} case steam_stat_e::MetalConsumed: {
 				return "metal_consumed";
+			} case steam_stat_e::CerebraConsumed: {
+				return "cerebra_consumed";
 			} case steam_stat_e::BloodConsumed: {
 				return "blood_consumed";
 			} case steam_stat_e::IchorConsumed: {
 				return "ichor_consumed";
+			} case steam_stat_e::FilthConsumed: {
+				return "flith_consumed";
+			} case steam_stat_e::EctoplasmConsumed: {
+				return "ectoplasm_consumed";
 			} case steam_stat_e::SkeletonsConsumed: {
 				return "skeletons_consumed";
 			} case steam_stat_e::BonespursConsumed: {
 				return "bonespurs_consumed";
+			} case steam_stat_e::GrimoiresCollected: {
+				return "grimoires_collected";
 			} case steam_stat_e::LaddersUnshackled: {
 				return "ladders_unshackled";
 			} case steam_stat_e::LaddersShackled: {
@@ -286,12 +342,16 @@ namespace necrowarp {
 				return "adventurers_slain";
 			} case steam_stat_e::MercenariesSlain: {
 				return "mercenaries_slain";
-			} case steam_stat_e::ThetwoSlain: {
-				return "thetwo_slain";
 			} case steam_stat_e::RangersSlain: {
 				return "rangers_slain";
 			} case steam_stat_e::SkulkersSlain: {
 				return "skulkers_slain";
+			} case steam_stat_e::ThetwoSlain: {
+				return "thetwo_slain";
+			} case steam_stat_e::MistLadiesSlain: {
+				return "mist_ladies_slain";
+			} case steam_stat_e::BannerBearersSlain: {
+				return "banner_bearers_slain";
 			} case steam_stat_e::BattleMonksSlain: {
 				return "battle_monks_slain";
 			} case steam_stat_e::BerserkersSlain: {
@@ -314,6 +374,14 @@ namespace necrowarp {
 				return "Random Warps";
 			} case steam_stat_e::TargetWarps: {
 				return "Target Warps";
+			} case steam_stat_e::Calcifications: {
+				return "Calcifications";
+			} case steam_stat_e::Repulsions: {
+				return "Repulsions";
+			} case steam_stat_e::Annihilations: {
+				return "Annihilations";
+			} case steam_stat_e::Incorporealizations: {
+				return "Incorporealizations";
 			} case steam_stat_e::CalciticInvocations: {
 				return "Calcitic Invocations";
 			} case steam_stat_e::SpectralInvocations: {
@@ -322,8 +390,16 @@ namespace necrowarp {
 				return "Sanguine Invocations";
 			} case steam_stat_e::GalvanicInvocations: {
 				return "Galvanic Invocations";
+			} case steam_stat_e::RavenousInvocations: {
+				return "Ravenous Invocations";
+			} case steam_stat_e::WretchedInvocations: {
+				return "Wretched Invocations";
+			} case steam_stat_e::AbyssalInvocations: {
+				return "Abyssal Invocations";
 			} case steam_stat_e::NecromanticAscensions: {
 				return "Necromantic Ascensions";
+			} case steam_stat_e::CalamitousRetaliations: {
+				return "Calamitous Retaliations";
 			} case steam_stat_e::MetersMoved: {
 				return "Meters Moved";
 			} case steam_stat_e::MetersWarped: {
@@ -332,20 +408,28 @@ namespace necrowarp {
 				return "Lowest Depth";
 			} case steam_stat_e::PortalsTraversed: {
 				return "Portals Traversed";
-			} case steam_stat_e::SkullsConsumed: {
-				return "Skulls Consumed";
+			} case steam_stat_e::BonesConsumed: {
+				return "Bones Consumed";
 			} case steam_stat_e::FleshConsumed: {
 				return "Flesh Consumed";
 			} case steam_stat_e::MetalConsumed: {
 				return "Metal Consumed";
+			} case steam_stat_e::CerebraConsumed: {
+				return "Cerebra Consumed";
 			} case steam_stat_e::BloodConsumed: {
 				return "Blood Consumed";
 			} case steam_stat_e::IchorConsumed: {
 				return "Ichor Consumed";
+			} case steam_stat_e::FilthConsumed: {
+				return "Filth Consumed";
+			} case steam_stat_e::EctoplasmConsumed: {
+				return "Ectoplasm Consumed";
 			} case steam_stat_e::SkeletonsConsumed: {
 				return "Skeletons Consumed";
 			} case steam_stat_e::BonespursConsumed: {
 				return "Bonespurs Consumed";
+			} case steam_stat_e::GrimoiresCollected: {
+				return "Grimoires Collected";
 			} case steam_stat_e::LaddersUnshackled: {
 				return "Ladders Unshackled";
 			} case steam_stat_e::LaddersShackled: {
@@ -354,12 +438,16 @@ namespace necrowarp {
 				return "Adventurers Slain";
 			} case steam_stat_e::MercenariesSlain: {
 				return "Mercenaries Slain";
-			} case steam_stat_e::ThetwoSlain: {
-				return "Thetwo Slain";
 			} case steam_stat_e::RangersSlain: {
 				return "Rangers Slain";
 			} case steam_stat_e::SkulkersSlain: {
 				return "Skulkers Slain";
+			} case steam_stat_e::ThetwoSlain: {
+				return "Thetwo Slain";
+			} case steam_stat_e::MistLadiesSlain: {
+				return "Mist Ladies Slain";
+			} case steam_stat_e::BannerBearersSlain: {
+				return "Banner Bearers Slain";
 			} case steam_stat_e::BattleMonksSlain: {
 				return "Battle Monks Slain";
 			} case steam_stat_e::BerserkersSlain: {
@@ -486,7 +574,13 @@ namespace necrowarp {
 			return interface;
 		}
 
-		static inline bool store() noexcept { return IsSteamless || user_stats()->StoreStats(); }
+		static inline bool store() noexcept {
+			if constexpr (IsSteamless) {
+				return false;
+			}
+
+			return user_stats()->StoreStats();
+		}
 
 		static inline void transcribe() noexcept {
 			if constexpr (IsSteamless) {

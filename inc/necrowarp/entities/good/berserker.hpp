@@ -12,6 +12,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_variants<berserker_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<berserker_t> {
 		static constexpr bool value = true;
 	};
@@ -63,8 +67,6 @@ namespace necrowarp {
 	template<> struct is_devourable<berserker_t> {
 		static constexpr bool value = true;
 	};
-
-	template<> inline constexpr glyph_t entity_glyphs<berserker_t>{};
 
 	enum struct endurance_e : u8 {
 		Fresh,

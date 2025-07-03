@@ -37,7 +37,7 @@ namespace necrowarp {
 
 			colored_string.concatenate(to_colored_string<Patron>(cval));
 
-			if constexpr (cval == discount_e::TargetWarp || cval == discount_e::Annihilate || cval == discount_e::WretchedInvocation) {
+			if constexpr (cval == discount_e::TargetWarp || cval == discount_e::Incorporealize || cval == discount_e::AbyssalInvocation) {
 				colored_string.concatenate(runes_t{ "\n" });
 			} if (cval == discount_e::CalamitousRetaliation) {
 				return;
