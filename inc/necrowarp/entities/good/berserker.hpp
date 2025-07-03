@@ -52,6 +52,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_spatterable<berserker_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_cleaver<berserker_t> {
 		static constexpr bool value = true;
 	};
@@ -60,7 +64,7 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<berserker_t>{ glyphs::Berserker };
+	template<> inline constexpr glyph_t entity_glyphs<berserker_t>{};
 
 	enum struct endurance_e : u8 {
 		Fresh,
@@ -269,27 +273,15 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline glyph_t current_glyph() const noexcept {
-			switch (spatter) {
-				case fluid_e::None: {
-					return glyphs::Berserker;
-				} case fluid_e::Blood: {
-					return glyphs::BloodyBerserker;
-				} case fluid_e::Ichor: {
-					return glyphs::IchorousBerserker;
-				} case fluid_e::BloodyIchor: {
-					return glyphs::BloodyIchorousBerserker;
-				}
-			}
-		}
+		inline keyframe_t current_keyframe() const noexcept { return keyframe_t{ indices::Berserker, static_cast<u8>(spatter) }; }
 
-		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
+		inline void draw() const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
+		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
+		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Berserker; }
 

@@ -57,7 +57,7 @@ namespace necrowarp {
 
 						spill_fluid<MapType>(victim.position, fluid);
 
-						if constexpr (is_berker<InitiatorType>::value) {
+						if constexpr (is_spatterable<InitiatorType>::value) {
 							initiator.enspatter(fluid);
 						}
 					}
@@ -73,7 +73,7 @@ namespace necrowarp {
 
 						spill_fluid<MapType>(victim.position, fluid);
 
-						if constexpr (is_berker<InitiatorType>::value) {
+						if constexpr (is_spatterable<InitiatorType>::value) {
 							initiator.enspatter(fluid);
 						}
 					}
@@ -83,7 +83,7 @@ namespace necrowarp {
 			}
 		}
 
-		if constexpr (is_bleeder<VictimType>::value && is_berker<InitiatorType>::value) {
+		if constexpr (is_bleeder<VictimType>::value && is_spatterable<InitiatorType>::value) {
 			initiator.enspatter(fluid_type<VictimType>::type);
 		}
 
@@ -135,7 +135,7 @@ namespace necrowarp {
 
 						spill_fluid<MapType>(initiator.position, fluid);
 
-						if constexpr (is_berker<VictimType>::value) {
+						if constexpr (is_spatterable<VictimType>::value) {
 							victim.enspatter(fluid);
 						}
 					}
@@ -151,7 +151,7 @@ namespace necrowarp {
 
 						spill_fluid<MapType>(initiator.position, fluid);
 
-						if constexpr (is_berker<VictimType>::value) {
+						if constexpr (is_spatterable<VictimType>::value) {
 							victim.enspatter(fluid);
 						}
 					}
@@ -161,7 +161,7 @@ namespace necrowarp {
 			}
 		}
 
-		if constexpr (is_bleeder<InitiatorType>::value && is_berker<VictimType>::value) {
+		if constexpr (is_bleeder<InitiatorType>::value && is_spatterable<VictimType>::value) {
 			victim.enspatter(fluid_type<InitiatorType>::type);
 		}
 
@@ -203,6 +203,10 @@ namespace necrowarp {
 			}
 		}
 
+		if constexpr (is_spatterable<VictimType>::value && is_bleeder<InitiatorType>::value) {
+			victim.enspatter(fluid_type<InitiatorType>::type);
+		}
+
 		if constexpr (!is_fodder<InitiatorType>::value) {
 			if (initiator.can_survive(damage)) {
 				initiator.receive_damage(damage);
@@ -212,7 +216,7 @@ namespace necrowarp {
 
 					spill_fluid<MapType>(initiator.position, fluid);
 
-					if constexpr (is_berker<InitiatorType>::value) {
+					if constexpr (is_spatterable<InitiatorType>::value) {
 						initiator.enspatter(fluid);
 					}
 				}

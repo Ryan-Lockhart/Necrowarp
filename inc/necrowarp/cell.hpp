@@ -23,6 +23,25 @@ namespace necrowarp {
 		Ichor = Blood << 1,
 
 		BloodyIchor = Blood | Ichor,
+
+		Filth = Ichor << 1,
+
+		BloodyFilth = Blood | Filth,
+		IchorousFilth = Ichor | Filth,
+
+		BloodyIchorousFilth = Blood | Ichor | Filth,
+
+		Ectoplasm = Filth << 1,
+
+		BloodyEctoplasm = Blood | Ectoplasm,
+		IchorousEctoplasm = Ichor | Ectoplasm,
+		FilthyEctoplasm = Filth | Ectoplasm,
+
+		BloodyIchorousEctoplasm = Blood | Ichor | Ectoplasm,
+		BloodyFilthyEctoplasm = Blood | Filth | Ectoplasm,
+		IchorousFilthyEctoplasm = Ichor | Filth | Ectoplasm,
+
+		BloodyIchorousFilthyEctoplasm = Blood | Ichor | Filth | Ectoplasm,
 	};
 
 	constexpr fluid_e operator+(fluid_e lhs, fluid_e rhs) noexcept { return static_cast<fluid_e>(static_cast<u8>(lhs) | static_cast<u8>(rhs)); }
@@ -47,6 +66,30 @@ namespace necrowarp {
 				return "ichor";
 			} case fluid_e::BloodyIchor: {
 				return "bloody ichor";
+			} case fluid_e::Filth: {
+				return "filth";
+			} case fluid_e::BloodyFilth: {
+				return "bloody filth";
+			} case fluid_e::IchorousFilth: {
+				return "ichorous filth";
+			} case fluid_e::BloodyIchorousFilth: {
+				return "bloody, ichorous filth";
+			} case fluid_e::Ectoplasm: {
+				return "ectoplasm";
+			} case fluid_e::BloodyEctoplasm: {
+				return "bloody ectoplasm";
+			} case fluid_e::IchorousEctoplasm: {
+				return "ichorous ectoplasm";
+			} case fluid_e::FilthyEctoplasm: {
+				return "filthy ectoplasm";
+			} case fluid_e::BloodyIchorousEctoplasm: {
+				return "bloody, ichorous ectoplasm";
+			} case fluid_e::BloodyFilthyEctoplasm: {
+				return "bloody, filthy ectoplasm";
+			} case fluid_e::IchorousFilthyEctoplasm: {
+				return "ichorous, filthy ectoplasm";
+			} case fluid_e::BloodyIchorousFilthyEctoplasm: {
+				return "bloody, ichorous, filthy ectoplasm";
 			}
 		}
 	}
@@ -61,6 +104,30 @@ namespace necrowarp {
 					return colors::materials::Ichor;
 				} case fluid_e::BloodyIchor: {
 					return colors::materials::BloodyIchor;
+				} case fluid_e::Filth: {
+					return colors::materials::Filth;
+				} case fluid_e::BloodyFilth: {
+					return colors::materials::BloodyFilth;
+				} case fluid_e::IchorousFilth: {
+					return colors::materials::IchorousFilth;
+				} case fluid_e::BloodyIchorousFilth: {
+					return colors::materials::BloodyIchorousFilth;
+				} case fluid_e::Ectoplasm: {
+					return colors::materials::Ectoplasm;
+				} case fluid_e::BloodyEctoplasm: {
+					return colors::materials::BloodyEctoplasm;
+				} case fluid_e::IchorousEctoplasm: {
+					return colors::materials::IchorousEctoplasm;
+				} case fluid_e::FilthyEctoplasm: {
+					return colors::materials::FilthyEctoplasm;
+				} case fluid_e::BloodyIchorousEctoplasm: {
+					return colors::materials::BloodyIchorousEctoplasm;
+				} case fluid_e::BloodyFilthyEctoplasm: {
+					return colors::materials::BloodyFilthyEctoplasm;
+				} case fluid_e::IchorousFilthyEctoplasm: {
+					return colors::materials::IchorousFilthyEctoplasm;
+				} case fluid_e::BloodyIchorousFilthyEctoplasm: {
+					return colors::materials::BloodyIchorousFilthyEctoplasm;
 				}
 			}
 		}
@@ -74,10 +141,33 @@ namespace necrowarp {
 			} case fluid_e::Blood: {
 				return runes_t{ string, colors::materials::Blood };
 			} case fluid_e::Ichor: {
-				// using magenta because I can't read the colored string for ichor
-				return runes_t{ string, colors::dark::Magenta };
+				return runes_t{ string, colors::materials::Ichor };
 			} case fluid_e::BloodyIchor: {
 				return runes_t{ string, colors::materials::BloodyIchor };
+			} case fluid_e::Filth: {
+				return runes_t{ string, colors::materials::Filth };
+			} case fluid_e::BloodyFilth: {
+				return runes_t{ string, colors::materials::BloodyFilth };
+			} case fluid_e::IchorousFilth: {
+				return runes_t{ string, colors::materials::IchorousFilth };
+			} case fluid_e::BloodyIchorousFilth: {
+				return runes_t{ string, colors::materials::BloodyIchorousFilth };
+			} case fluid_e::Ectoplasm: {
+				return runes_t{ string, colors::materials::Ectoplasm };
+			} case fluid_e::BloodyEctoplasm: {
+				return runes_t{ string, colors::materials::BloodyEctoplasm };
+			} case fluid_e::IchorousEctoplasm: {
+				return runes_t{ string, colors::materials::IchorousEctoplasm };
+			} case fluid_e::FilthyEctoplasm: {
+				return runes_t{ string, colors::materials::FilthyEctoplasm };
+			} case fluid_e::BloodyIchorousEctoplasm: {
+				return runes_t{ string, colors::materials::BloodyIchorousEctoplasm };
+			} case fluid_e::BloodyFilthyEctoplasm: {
+				return runes_t{ string, colors::materials::BloodyFilthyEctoplasm };
+			} case fluid_e::IchorousFilthyEctoplasm: {
+				return runes_t{ string, colors::materials::IchorousFilthyEctoplasm };
+			} case fluid_e::BloodyIchorousFilthyEctoplasm: {
+				return runes_t{ string, colors::materials::BloodyIchorousFilthyEctoplasm };
 			}
 		}
 	}
@@ -85,7 +175,9 @@ namespace necrowarp {
 	struct fluid_cell_t {
 		bool blood : 1 { false };
 		bool ichor : 1 { false };
-		bool : 6;
+		bool filth : 1 { false };
+		bool ectoplasm : 1 { false };
+		bool : 4;
 
 		constexpr fluid_cell_t() noexcept = default;
 
@@ -105,6 +197,30 @@ namespace necrowarp {
 					return ichor;
 				} case fluid_e::BloodyIchor: {
 					return blood && ichor;
+				} case fluid_e::Filth: {
+					return filth;
+				} case fluid_e::BloodyFilth: {
+					return blood && filth;
+				} case fluid_e::IchorousFilth: {
+					return ichor && filth;
+				} case fluid_e::BloodyIchorousFilth: {
+					return blood && ichor && filth;
+				} case fluid_e::Ectoplasm: {
+					return ectoplasm;
+				} case fluid_e::BloodyEctoplasm: {
+					return blood && ectoplasm;
+				} case fluid_e::IchorousEctoplasm: {
+					return ichor && ectoplasm;
+				} case fluid_e::FilthyEctoplasm: {
+					return filth && ectoplasm;
+				} case fluid_e::BloodyIchorousEctoplasm: {
+					return blood && ichor && ectoplasm;
+				} case fluid_e::BloodyFilthyEctoplasm: {
+					return blood && filth && ectoplasm;
+				} case fluid_e::IchorousFilthyEctoplasm: {
+					return ichor && filth && ectoplasm;
+				} case fluid_e::BloodyIchorousFilthyEctoplasm: {
+					return blood && ichor && filth && ectoplasm;
 				}
 			}
 		}
@@ -114,16 +230,86 @@ namespace necrowarp {
 				case fluid_e::None: {
 					blood = false;
 					ichor = false;
+					filth = false;
+					ectoplasm = false;
+
 					break;
 				} case fluid_e::Blood: {
 					blood = true;
+
 					break;
 				} case fluid_e::Ichor: {
 					ichor = true;
+
 					break;
 				} case fluid_e::BloodyIchor: {
 					blood = true;
 					ichor = true;
+
+					break;
+				} case fluid_e::Filth: {
+					filth = true;
+
+					break;
+				} case fluid_e::BloodyFilth: {
+					blood = true;
+					filth = true;
+
+					break;
+				} case fluid_e::IchorousFilth: {
+					ichor = true;
+					filth = true;
+
+					break;
+				} case fluid_e::BloodyIchorousFilth: {
+					blood = true;
+					ichor = true;
+					filth = true;
+
+					break;
+				} case fluid_e::Ectoplasm: {
+					ectoplasm = true;
+
+					break;
+				} case fluid_e::BloodyEctoplasm: {
+					blood = true;
+					ectoplasm = true;
+
+					break;
+				} case fluid_e::IchorousEctoplasm: {
+					ichor = true;
+					ectoplasm = true;
+
+					break;
+				} case fluid_e::FilthyEctoplasm: {
+					filth = true;
+					ectoplasm = true;
+
+					break;
+				} case fluid_e::BloodyIchorousEctoplasm: {
+					blood = true;
+					ichor = true;
+					ectoplasm = true;
+
+					break;
+				} case fluid_e::BloodyFilthyEctoplasm: {
+					blood = true;
+					filth = true;
+					ectoplasm = true;
+
+					break;
+				} case fluid_e::IchorousFilthyEctoplasm: {
+					ichor = true;
+					filth = true;
+					ectoplasm = true;
+
+					break;
+				} case fluid_e::BloodyIchorousFilthyEctoplasm: {
+					blood = true;
+					ichor = true;
+					filth = true;
+					ectoplasm = true;
+
 					break;
 				}
 			}
@@ -142,6 +328,70 @@ namespace necrowarp {
 				} case fluid_e::BloodyIchor: {
 					blood = false;
 					ichor = false;
+					break;
+				} case fluid_e::Filth: {
+					filth = false;
+
+					break;
+				} case fluid_e::BloodyFilth: {
+					blood = false;
+					filth = false;
+
+					break;
+				} case fluid_e::IchorousFilth: {
+					ichor = false;
+					filth = false;
+
+					break;
+				} case fluid_e::BloodyIchorousFilth: {
+					blood = false;
+					ichor = false;
+					filth = false;
+
+					break;
+				} case fluid_e::Ectoplasm: {
+					ectoplasm = false;
+
+					break;
+				} case fluid_e::BloodyEctoplasm: {
+					blood = false;
+					ectoplasm = false;
+
+					break;
+				} case fluid_e::IchorousEctoplasm: {
+					ichor = false;
+					ectoplasm = false;
+
+					break;
+				} case fluid_e::FilthyEctoplasm: {
+					filth = false;
+					ectoplasm = false;
+
+					break;
+				} case fluid_e::BloodyIchorousEctoplasm: {
+					blood = false;
+					ichor = false;
+					ectoplasm = false;
+
+					break;
+				} case fluid_e::BloodyFilthyEctoplasm: {
+					blood = false;
+					filth = false;
+					ectoplasm = false;
+
+					break;
+				} case fluid_e::IchorousFilthyEctoplasm: {
+					ichor = false;
+					filth = false;
+					ectoplasm = false;
+
+					break;
+				} case fluid_e::BloodyIchorousFilthyEctoplasm: {
+					blood = false;
+					ichor = false;
+					filth = false;
+					ectoplasm = false;
+
 					break;
 				}
 			}

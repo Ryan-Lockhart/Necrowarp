@@ -37,7 +37,6 @@ namespace necrowarp {
 		constexpr const glyph_t Cultist{ characters::Cultist, colors::White };
 		constexpr const glyph_t Bloodhound{ characters::Bloodhound, colors::White };
 
-		constexpr const glyph_t Bonespur{ characters::Bonespur, colors::White };
 		constexpr const glyph_t Wraith{ characters::Wraith, colors::White };
 		constexpr const glyph_t FleshGolem{ characters::FleshGolem, colors::White };
 
@@ -54,11 +53,6 @@ namespace necrowarp {
 		constexpr const glyph_t Skulker{ characters::Skulker, colors::White };
 		constexpr const glyph_t BattleMonk{ characters::BattleMonk, colors::White };
 		constexpr const glyph_t MistLady{ characters::MistLady, colors::White };
-
-		constexpr const glyph_t Berserker{ characters::Berserker, colors::White };
-		constexpr const glyph_t BloodyBerserker{ characters::BloodyBerserker, colors::White };
-		constexpr const glyph_t IchorousBerserker{ characters::IchorousBerserker, colors::White };
-		constexpr const glyph_t BloodyIchorousBerserker{ characters::BloodyIchorousBerserker, colors::White };
 
 		constexpr const glyph_t Paladin{ characters::Paladin, colors::White };
 

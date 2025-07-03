@@ -188,7 +188,7 @@ namespace necrowarp {
 			} case entity_e::Cultist: {
 				return runes_t{ string, colors::dark::Magenta };
 			} case entity_e::Bloodhound: {
-				return runes_t{ string, colors::materials::LightBlood };
+				return runes_t{ string, colors::materials::light::Blood };
 			} case entity_e::AnimatedSuit: {
 				return runes_t{ string, colors::metals::Tin };
 			} case entity_e::Bonespur: {
@@ -196,7 +196,7 @@ namespace necrowarp {
 			} case entity_e::Wraith: {
 				return runes_t{ string, colors::light::Green };
 			} case entity_e::FleshGolem: {
-				return runes_t{ string, colors::materials::DarkBlood };
+				return runes_t{ string, colors::materials::dark::Blood };
 			} case entity_e::DeathKnight: {
 				return runes_t{ string, colors::metals::Iron };
 			} case entity_e::Adventurer: {
@@ -485,6 +485,14 @@ namespace necrowarp {
 	template<typename T> constexpr bool is_concussable_v = is_concussable<T>::value;
 
 	template<typename T> concept ConcussableEntity = NonNullEntity<T> && is_concussable<T>::value;
+
+	template<typename T> struct is_spatterable {
+		static constexpr bool value = true;
+	};
+
+	template<typename T> constexpr bool is_spatterable_v = is_spatterable<T>::value;
+
+	template<typename T> concept SpatterableEntity = NonNullEntity<T> && is_spatterable<T>::value;
 
 	template<typename T> struct is_updateable {
 		static constexpr bool value = true;

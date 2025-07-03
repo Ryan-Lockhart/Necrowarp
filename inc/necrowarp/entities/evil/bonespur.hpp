@@ -44,13 +44,14 @@ namespace necrowarp {
 		static constexpr bool value = false;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<bonespur_t>{ glyphs::Bonespur };
+	template<> inline constexpr glyph_t entity_glyphs<bonespur_t>{};
 
 	struct bonespur_t {
 		offset_t position;
 
 	private:
 		i8 health;
+		fluid_e spatter;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 	
@@ -80,6 +81,8 @@ namespace necrowarp {
 
 		constexpr i8 max_health() const noexcept { return MaximumHealth; }
 
+		inline fluid_e get_spatter() const noexcept { return spatter; }
+
 		inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(MinimumDamageReceived, damage_amount); }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage(damage_amount); }
@@ -89,6 +92,10 @@ namespace necrowarp {
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
 		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - filter_damage(damage_amount)); }
+
+		inline void enspatter(fluid_e with) noexcept {
+			spatter += with;
+		}
 
 		template<map_type_e MapType> inline command_pack_t think() const noexcept;
 
@@ -104,13 +111,15 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<bonespur_t>, position); }
+		inline keyframe_t current_keyframe() const noexcept { return keyframe_t{ indices::Bonespur, static_cast<u8>(spatter) }; }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<bonespur_t>, position, offset); }
+		inline void draw() const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<bonespur_t>, position + camera.get_offset()); }
+		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position, offset); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<bonespur_t>, position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset()); }
+
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Bonespur; }
 
