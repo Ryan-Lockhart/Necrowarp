@@ -73,14 +73,6 @@ namespace necrowarp {
 
 		inline void clear() noexcept;
 
-		template<NonNullObject ObjectType> inline void reset() noexcept;
-
-		template<NonNullObject... ObjectTypes>
-			requires is_plurary<ObjectTypes...>::value
-		inline void reset() noexcept;
-
-		inline void reset() noexcept;
-
 		template<NonNullObject ObjectType> inline bool spawn(usize count) noexcept;
 
 		template<NonNullObject ObjectType, typename... Args> inline bool spawn(usize count, Args... args) noexcept;

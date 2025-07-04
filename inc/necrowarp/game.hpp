@@ -178,8 +178,8 @@ namespace necrowarp {
 			game_map<MapType>.dependent reset<zone_region_e::All>();
 			fluid_map<MapType>.dependent reset<zone_region_e::All>();
 
-			entity_registry<MapType>.reset();
-			object_registry<MapType>.reset();
+			entity_registry<MapType>.clear();
+			object_registry<MapType>.clear();
 
 			reset_patrons();
 
@@ -235,29 +235,18 @@ namespace necrowarp {
 
 			cauto player_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
-			if (!player_pos.has_value()) {
+			if (!player_pos.has_value() || !entity_registry<MapType>.dependent add<player_t>(player_pos.value())) {
 				error_log.add("could not find open position for player!");
 				terminate_prematurely();
 			}
 
-			player.position = player_pos.value();
-
-			entity_goal_map<MapType, player_t>.add(player.position);
-
-			good_goal_map<MapType>.add(player.position);
-
-			ranger_goal_map<MapType>.add(player.position);
-			skulker_goal_map<MapType>.add(player.position);
-
-			cauto portal_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
-
-			if (!portal_pos.has_value()) {
-				error_log.add("could not find open position for return portal!");
-				terminate_prematurely();
-			}
-
 			if constexpr (globals::SpawnTutorialPortal) {
-				object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+				cauto portal_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
+
+				if (!portal_pos.has_value() || !object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful })) {
+					error_log.add("could not find open position for tutorial portal!");
+					terminate_prematurely();
+				}
 			}
 
 			object_registry<MapType>.dependent spawn<ladder_t>(
@@ -320,12 +309,12 @@ namespace necrowarp {
 			game_map<MapType>.dependent reset<zone_region_e::All>();
 			fluid_map<MapType>.dependent reset<zone_region_e::All>();
 
-			entity_registry<MapType>.dependent reset<ALL_NON_PLAYER>();
+			entity_registry<MapType>.dependent clear<ALL_NON_PLAYER>();
 			entity_registry<MapType>.dependent reset_goal_map<player_t>();
 
-			entity_registry<MapType>.reset_alignment_goal_maps();
+			entity_registry<MapType>.reset_unique_goal_maps();
 
-			object_registry<MapType>.reset();
+			object_registry<MapType>.clear();
 
 			constexpr map_cell_t open_state{ cell_e::Open, cell_e::Transperant, cell_e::Seen, cell_e::Explored };
 			constexpr map_cell_t closed_state{ cell_e::Solid, cell_e::Opaque, cell_e::Seen, cell_e::Explored };
@@ -365,29 +354,20 @@ namespace necrowarp {
 					game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
 				}
 			}
-
+#if !defined(STEAMLESS)
+			cauto previous_position{ player.position };
+#endif
 			if (game_map<MapType>[player.position].solid) {
 				cauto player_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
-				if (!player_pos.has_value()) {
+				if (!player_pos.has_value() || !entity_registry<MapType>.dependent add<player_t>(player_pos.value())) {
 					error_log.add("could not find open position for player!");
 					terminate_prematurely();
 				}
-
-#if !defined(STEAMLESS)
-				steam_stats_s::stats<steam_stat_e::MetersMoved, f32> += offset_t::distance<f32>(player.position, player_pos.value());
-#endif
-
-				player.position = player_pos.value();
 			}
-
-			entity_goal_map<MapType, player_t>.add(player.position);
-
-			good_goal_map<MapType>.add(player.position);
-
-			ranger_goal_map<MapType>.add(player.position);
-			skulker_goal_map<MapType>.add(player.position);
-
+#if !defined(STEAMLESS)
+			steam_stats_s::stats<steam_stat_e::MetersMoved, f32> += offset_t::distance<f32>(previous_position, player.position);
+#endif
 			cauto portal_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
 			if (!portal_pos.has_value()) {
@@ -790,9 +770,10 @@ namespace necrowarp {
 			terminate_process_turn();
 
 			game_map<MapType>.dependent reset<zone_region_e::All>();
+			fluid_map<MapType>.dependent reset<zone_region_e::All>();
 			
-			entity_registry<MapType>.reset();
-			object_registry<MapType>.reset();
+			entity_registry<MapType>.clear();
+			object_registry<MapType>.clear();
 
 #if !defined(STEAMLESS)
 			steam_stats::store();

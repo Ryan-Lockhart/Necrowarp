@@ -346,7 +346,7 @@ namespace necrowarp {
 
 		constexpr i16 FloorsPerReinforcement{ 8 };
 
-		constexpr bool CheatsAllowed{ false };
+		constexpr bool CheatsAllowed{ true };
 
 		constexpr bool SpawnTutorialPortal{ false };
 
@@ -364,7 +364,7 @@ namespace necrowarp {
 		constexpr bool OopsAllRangers{ false };
 		constexpr bool OopsAllSkulkers{ false };
 		constexpr bool OopsAllBattleMonks{ false };
-		constexpr bool OopsAllBerserkers{ false };
+		constexpr bool OopsAllBerserkers{ true };
 		constexpr bool OopsAllPaladins{ false };
 
 		template<typename T> struct has_unique_descriptor {

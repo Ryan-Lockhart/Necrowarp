@@ -28,7 +28,7 @@ namespace necrowarp {
 		static constexpr entity_group_e value = entity_group_e::Adventurer;
 	};
 
-	template<> struct is_good_entity<adventurer_t> {
+	template<> struct is_good<adventurer_t> {
 		static constexpr bool value = true;
 	};
 
@@ -49,7 +49,7 @@ namespace necrowarp {
 	};
 
 	template<> struct fluid_type<adventurer_t> {
-		static constexpr fluid_e type = fluid_e::Blood;
+		static constexpr fluid_e type = fluid_e::Filth;
 	};
 
 	template<> struct is_devourable<adventurer_t> {

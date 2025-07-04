@@ -320,21 +320,21 @@ namespace necrowarp {
 
 	template<typename T> concept AnimatedEntity = NonNullEntity<T> && globals::has_animation<T>::value;
 
-	template<typename T> struct is_good_entity {
+	template<typename T> struct is_good {
 		static constexpr bool value = false;
 	};
 
-	template<typename T> constexpr bool is_good_entity_v = is_good_entity<T>::value;
+	template<typename T> constexpr bool is_good_v = is_good<T>::value;
 
-	template<typename T> concept GoodEntity = NonNullEntity<T> && is_good_entity<T>::value;
+	template<typename T> concept GoodEntity = NonNullEntity<T> && is_good<T>::value;
 
-	template<typename T> struct is_evil_entity {
+	template<typename T> struct is_evil {
 		static constexpr bool value = false;
 	};
 
-	template<typename T> constexpr bool is_evil_entity_v = is_evil_entity<T>::value;
+	template<typename T> constexpr bool is_evil_v = is_evil<T>::value;
 
-	template<typename T> concept EvilEntity = NonNullEntity<T> && is_evil_entity<T>::value;
+	template<typename T> concept EvilEntity = NonNullEntity<T> && is_evil<T>::value;
 
 	template<typename T> struct is_non_player_entity {
 		static constexpr bool value = true;
@@ -477,6 +477,14 @@ namespace necrowarp {
 	template<typename T> constexpr bool is_devourable_v = is_devourable<T>::value;
 
 	template<typename T> concept DevourableEntity = NonNullEntity<T> && is_devourable<T>::value;
+
+	template<typename T> struct is_afflictable {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_afflictable_v = is_afflictable<T>::value;
+
+	template<typename T> concept AfflicatableEntity = NonNullEntity<T> && is_afflictable<T>::value;
 
 	template<typename T> struct is_concussable {
 		static constexpr bool value = true;

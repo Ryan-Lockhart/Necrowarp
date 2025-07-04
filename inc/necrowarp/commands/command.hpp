@@ -298,5 +298,5 @@ namespace necrowarp {
 		static constexpr bool value = to_command_enum<T>::value == CommandType;
 	};
 
-	template<command_e> inline constexpr glyph_t command_icons;
+	template<command_e Command> inline constexpr glyph_t command_icons;
 } // namespace necrowarp

@@ -85,25 +85,21 @@ namespace necrowarp {
 			requires is_plurary<EntityTypes...>::value
 		inline std::optional<offset_t> nearest(offset_t position) const noexcept;
 
+		template<PlayerEntity EntityType> inline bool add(offset_t position) noexcept;
+
 		template<bool Force = false, NonPlayerEntity T> inline bool add(rval<T> entity) noexcept;
 
 		template<NonPlayerEntity EntityType> inline bool remove(offset_t position) noexcept;
 
+		template<PlayerEntity EntityType> inline void clear() noexcept;
+
 		template<NonPlayerEntity EntityType> inline void clear() noexcept;
 
-		template<NonPlayerEntity... EntityTypes>
+		template<NonNullEntity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void clear() noexcept;
 
 		inline void clear() noexcept;
-
-		template<NonPlayerEntity EntityType> inline void reset() noexcept;
-
-		template<NonPlayerEntity... EntityTypes>
-			requires is_plurary<EntityTypes...>::value
-		inline void reset() noexcept;
-
-		inline void reset() noexcept;
 
 		template<NonPlayerEntity EntityType> inline bool spawn(usize count) noexcept;
 
@@ -173,6 +169,8 @@ namespace necrowarp {
 
 		inline void recalculate_specialist_goal_maps() noexcept;
 
+		inline void recalculate_unique_goal_maps() noexcept;
+
 		template<NonNullEntity EntityType> inline void reset_goal_map() noexcept;
 
 		template<NonNullEntity... EntityTypes>
@@ -192,6 +190,8 @@ namespace necrowarp {
 		inline void reset_skulker_goal_map() noexcept;
 
 		inline void reset_specialist_goal_maps() noexcept;
+
+		inline void reset_unique_goal_maps() noexcept;
 
 		template<NonPlayerEntity EntityType> inline void draw() const noexcept;
 

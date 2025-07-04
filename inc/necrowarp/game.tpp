@@ -22,12 +22,12 @@ namespace necrowarp {
 				game_map<map_type>.dependent reset<zone_region_e::All>();
 				fluid_map<map_type>.dependent reset<zone_region_e::All>();
 
-				entity_registry<map_type>.dependent reset<ALL_NON_PLAYER>();
+				entity_registry<map_type>.dependent clear<ALL_NON_PLAYER>();
 				entity_registry<map_type>.dependent reset_goal_map<player_t>();
 
-				entity_registry<map_type>.reset_alignment_goal_maps();
+				entity_registry<map_type>.reset_unique_goal_maps();
 
-				object_registry<map_type>.reset();
+				object_registry<map_type>.clear();
 
 				plunge<cval>();
 

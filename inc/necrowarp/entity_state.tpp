@@ -341,6 +341,31 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept { return empty<ALL_ENTITIES>(position); }
 
+	template<map_type_e MapType> template<PlayerEntity EntityType> inline bool entity_registry_t<MapType>::add(offset_t position) noexcept {
+		const bool inserted{ !contains(position) };
+
+		if (inserted) {
+			player.position = position;
+
+			if constexpr (is_evil<EntityType>::value) {
+				good_goal_map<MapType>.add(position);
+				ranger_goal_map<MapType>.add(position);
+			} else if constexpr (is_good<EntityType>::value) {
+				evil_goal_map<MapType>.add(position);
+			}
+
+			if constexpr (is_vigilant<EntityType>::value) {
+				skulker_goal_map<MapType>.add(position);
+			}
+
+			entity_goal_map<MapType, EntityType>.add(position);
+
+			newborns.add(sparseling_t<bool>{ position });
+		}
+
+		return inserted;
+	}
+
 	template<map_type_e MapType> template<bool Force, NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::add(rval<EntityType> entity) noexcept {
 		if constexpr (!Force) {
 			if (contains(entity.position)) {
@@ -352,10 +377,10 @@ namespace necrowarp {
 		const bool inserted{ entity_registry_storage<EntityType>.add(std::move(entity)) };
 
 		if (inserted) {
-			if constexpr (is_evil_entity<EntityType>::value) {
+			if constexpr (is_evil<EntityType>::value) {
 				good_goal_map<MapType>.add(position);
 				ranger_goal_map<MapType>.add(position);
-			} else if constexpr (is_good_entity<EntityType>::value) {
+			} else if constexpr (is_good<EntityType>::value) {
 				evil_goal_map<MapType>.add(position);
 			}
 
@@ -380,10 +405,10 @@ namespace necrowarp {
 			return false;
 		}
 		
-		if constexpr (is_evil_entity<EntityType>::value) {
+		if constexpr (is_evil<EntityType>::value) {
 			good_goal_map<MapType>.remove(position);
 			ranger_goal_map<MapType>.remove(position);
-		} else if constexpr (is_good_entity<EntityType>::value) {
+		} else if constexpr (is_good<EntityType>::value) {
 			evil_goal_map<MapType>.remove(position);
 		}
 
@@ -396,40 +421,28 @@ namespace necrowarp {
 		return true;
 	}
 
+	template<map_type_e MapType> template<PlayerEntity EntityType> inline void entity_registry_t<MapType>::clear() noexcept {
+		player.reset();
+		reset_goal_map<EntityType>();
+	}
+
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::clear() noexcept {
 		entity_registry_storage<EntityType>.clear();
+		reset_goal_map<EntityType>();
 	}
 
 	template<map_type_e MapType>
-	template<NonPlayerEntity... EntityTypes>
+	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline void entity_registry_t<MapType>::clear() noexcept {
 		(clear<EntityTypes>(), ...);
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::clear() noexcept {
-		clear<ALL_NON_PLAYER>();
+		clear<ALL_ENTITIES>();
 
-		player = player_t{};
-	}
-
-	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::reset() noexcept {
-		entity_registry_storage<EntityType>.clear();
-		reset_goal_map<EntityType>();
-	}
-
-	template<map_type_e MapType>
-	template<NonPlayerEntity... EntityTypes>
-		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType>::reset() noexcept {
-		(clear<EntityTypes>(), ...);
-		(reset_goal_map<EntityTypes>(), ...);
-	}
-
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset() noexcept {
-		clear();
-
-		reset_goal_map();
+		reset_alignment_goal_maps();
+		reset_specialist_goal_maps();
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::spawn(usize count) noexcept {
@@ -503,10 +516,10 @@ namespace necrowarp {
 			return false;
 		}
 
-		if constexpr (is_evil_entity<EntityType>::value) {
+		if constexpr (is_evil<EntityType>::value) {
 			good_goal_map<MapType>.update(current, target);
 			ranger_goal_map<MapType>.update(current, target);
-		} else if constexpr (is_good_entity<EntityType>::value) {
+		} else if constexpr (is_good<EntityType>::value) {
 			evil_goal_map<MapType>.update(current, target);
 		}
 
@@ -530,10 +543,10 @@ namespace necrowarp {
 
 		player.position = target;
 
-		if constexpr (is_evil_entity<EntityType>::value) {
+		if constexpr (is_evil<EntityType>::value) {
 			good_goal_map<MapType>.update(current, target);
 			ranger_goal_map<MapType>.update(current, target);
-		} else if constexpr (is_good_entity<EntityType>::value) {
+		} else if constexpr (is_good<EntityType>::value) {
 			evil_goal_map<MapType>.update(current, target);
 		}
 
@@ -817,11 +830,14 @@ namespace necrowarp {
 		recalculate_skulker_goal_map();
 	}
 
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
-		recalculate_goal_map<ALL_ENTITIES>();
-
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_unique_goal_maps() noexcept {
 		recalculate_alignment_goal_maps();
 		recalculate_specialist_goal_maps();
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
+		recalculate_goal_map<ALL_ENTITIES>();
+		recalculate_unique_goal_maps();
 	}
 
 	template<map_type_e MapType> template<NonNullEntity EntityType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
@@ -849,23 +865,26 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_ranger_goal_map() noexcept {
-		ranger_goal_map<MapType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open);
+		ranger_goal_map<MapType>.reset();
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_skulker_goal_map() noexcept {
-		skulker_goal_map<MapType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open);
+		skulker_goal_map<MapType>.reset();
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_specialist_goal_maps() noexcept {
-		recalculate_ranger_goal_map();
-		recalculate_skulker_goal_map();
+		reset_ranger_goal_map();
+		reset_skulker_goal_map();
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_unique_goal_maps() noexcept {
+		reset_alignment_goal_maps();
+		reset_specialist_goal_maps();
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
 		reset_goal_map<ALL_ENTITIES>();
-
-		reset_alignment_goal_maps();
-		reset_specialist_goal_maps();
+		reset_unique_goal_maps();
 	}
 
 	template<map_type_e MapType> template<NonNullEntity EntityType, Command CommandType> inline bool entity_registry_t<MapType>::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {

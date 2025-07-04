@@ -36,7 +36,7 @@ namespace necrowarp {
 		static constexpr entity_group_e value = entity_group_e::Berserker;
 	};
 
-	template<> struct is_good_entity<berserker_t> {
+	template<> struct is_good<berserker_t> {
 		static constexpr bool value = true;
 	};
 
@@ -238,6 +238,8 @@ namespace necrowarp {
 
 			set_fatigue(fatigue - amount);
 		}
+
+		inline void soothe() noexcept { temperament = temperament_e::Calm; }
 
 		inline void enrage() noexcept { temperament = temperament_e::Enraged; }
 

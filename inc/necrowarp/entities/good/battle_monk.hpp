@@ -37,7 +37,7 @@ namespace necrowarp {
 		static constexpr entity_group_e value = entity_group_e::BattleMonk;
 	};
 
-	template<> struct is_good_entity<battle_monk_t> {
+	template<> struct is_good<battle_monk_t> {
 		static constexpr bool value = true;
 	};
 

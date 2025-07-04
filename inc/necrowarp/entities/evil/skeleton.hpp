@@ -37,7 +37,7 @@ namespace necrowarp {
 		static constexpr entity_group_e value = entity_group_e::Skeleton;
 	};
 
-	template<> struct is_evil_entity<skeleton_t> {
+	template<> struct is_evil<skeleton_t> {
 		static constexpr bool value = true;
 	};
 

@@ -91,7 +91,7 @@ namespace necrowarp {
 
 				using victim_type = to_entity_type<cval>::type;
 
-				if constexpr (!is_evil_entity<victim_type>::value) {
+				if constexpr (!is_evil<victim_type>::value) {
 					if constexpr (!is_null_entity<victim_type>::value && !std::is_same<EntityType, victim_type>::value) {
 						ptr<victim_type> victim_ptr{ entity_registry<MapType>.dependent at<victim_type>(position) };
 

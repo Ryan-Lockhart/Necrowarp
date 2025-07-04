@@ -138,36 +138,8 @@ namespace necrowarp {
 		switch (fluid) {
 			case fluid_e::None: {
 				return runes_t{ string, colors::White };
-			} case fluid_e::Blood: {
-				return runes_t{ string, colors::materials::Blood };
-			} case fluid_e::Ichor: {
-				return runes_t{ string, colors::materials::Ichor };
-			} case fluid_e::BloodyIchor: {
-				return runes_t{ string, colors::materials::BloodyIchor };
-			} case fluid_e::Filth: {
-				return runes_t{ string, colors::materials::Filth };
-			} case fluid_e::BloodyFilth: {
-				return runes_t{ string, colors::materials::BloodyFilth };
-			} case fluid_e::IchorousFilth: {
-				return runes_t{ string, colors::materials::IchorousFilth };
-			} case fluid_e::BloodyIchorousFilth: {
-				return runes_t{ string, colors::materials::BloodyIchorousFilth };
-			} case fluid_e::Ectoplasm: {
-				return runes_t{ string, colors::materials::Ectoplasm };
-			} case fluid_e::BloodyEctoplasm: {
-				return runes_t{ string, colors::materials::BloodyEctoplasm };
-			} case fluid_e::IchorousEctoplasm: {
-				return runes_t{ string, colors::materials::IchorousEctoplasm };
-			} case fluid_e::FilthyEctoplasm: {
-				return runes_t{ string, colors::materials::FilthyEctoplasm };
-			} case fluid_e::BloodyIchorousEctoplasm: {
-				return runes_t{ string, colors::materials::BloodyIchorousEctoplasm };
-			} case fluid_e::BloodyFilthyEctoplasm: {
-				return runes_t{ string, colors::materials::BloodyFilthyEctoplasm };
-			} case fluid_e::IchorousFilthyEctoplasm: {
-				return runes_t{ string, colors::materials::IchorousFilthyEctoplasm };
-			} case fluid_e::BloodyIchorousFilthyEctoplasm: {
-				return runes_t{ string, colors::materials::BloodyIchorousFilthyEctoplasm };
+			} default: {
+				return runes_t{ string, fluid_color(fluid) };
 			}
 		}
 	}
@@ -439,9 +411,13 @@ namespace necrowarp {
 			return *this;
 		}
 
-		constexpr bool operator==(fluid_cell_t other) const noexcept { return blood == other.blood && ichor == other.ichor; }
+		constexpr bool operator==(fluid_cell_t other) const noexcept {
+			return blood == other.blood && ichor == other.ichor && filth == other.filth && ectoplasm == other.ectoplasm;
+		}
 
-		constexpr bool operator!=(fluid_cell_t other) const noexcept { return blood != other.blood || ichor != other.ichor; }
+		constexpr bool operator!=(fluid_cell_t other) const noexcept {
+			return blood != other.blood || ichor != other.ichor || filth != other.filth || ectoplasm != other.ectoplasm;
+		}
 
 		constexpr bool operator==(fluid_e fluid) const noexcept { return contains(fluid); }
 
@@ -452,6 +428,8 @@ namespace necrowarp {
 
 			if (blood) { fluid |= static_cast<u8>(fluid_e::Blood); }
 			if (ichor) { fluid |= static_cast<u8>(fluid_e::Ichor); }
+			if (filth) { fluid |= static_cast<u8>(fluid_e::Filth); }
+			if (ectoplasm) { fluid |= static_cast<u8>(fluid_e::Ectoplasm); }
 
 			return static_cast<fluid_e>(fluid);
 		}

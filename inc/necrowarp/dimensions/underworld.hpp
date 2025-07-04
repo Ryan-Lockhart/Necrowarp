@@ -52,29 +52,18 @@ namespace necrowarp {
 
 		cauto player_pos{ game_map<map_type>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
-		if (!player_pos.has_value()) {
+		if (!player_pos.has_value() || !entity_registry<map_type>.dependent add<player_t>(player_pos.value())) {
 			error_log.add("could not find open position for player!");
 			terminate_prematurely();
 		}
 
-		player.position = player_pos.value();
-
-		entity_goal_map<map_type, player_t>.add(player.position);
-
-		good_goal_map<map_type>.add(player.position);
-
-		ranger_goal_map<map_type>.add(player.position);
-		skulker_goal_map<map_type>.add(player.position);
-
 		cauto portal_pos{ game_map<map_type>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
-		if (!portal_pos.has_value()) {
-			error_log.add("could not find open position for return portal!");
-			terminate_prematurely();
-		}
-
 		if constexpr (globals::SpawnTutorialPortal) {
-			object_registry<map_type>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+			if (!portal_pos.has_value() || !object_registry<map_type>.add(portal_t{ portal_pos.value(), stability_e::Insightful })) {
+				error_log.add("could not find open position for tutorial portal!");
+				terminate_prematurely();
+			}
 		}
 
 		object_registry<map_type>.dependent spawn<ladder_t>(

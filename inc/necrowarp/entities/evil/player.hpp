@@ -40,7 +40,7 @@ namespace necrowarp {
 	
 	TYPE_TRAIT_VALUE(to_entity_group, entity_e::Player, entity_group_e::Player);
 
-	TYPE_TRAIT_VALUE(is_evil_entity, player_t, true);
+	TYPE_TRAIT_VALUE(is_evil, player_t, true);
 
 	TYPE_TRAIT_VALUE(is_non_player_entity, player_t, false);
 
@@ -234,6 +234,14 @@ namespace necrowarp {
 
 			return *this;
 		}
+
+		inline void reset() noexcept { (*this) = player_t{}; }
+
+		inline void reset(offset_t position) noexcept { (*this) = player_t{ position }; }
+
+		inline void reset(patron_e patron) noexcept { (*this) = player_t{ patron }; }
+
+		inline void reset(offset_t position, patron_e patron) noexcept { (*this) = player_t{ position, patron }; }
 
 		inline i8 get_energy() const noexcept { return energy; }
 

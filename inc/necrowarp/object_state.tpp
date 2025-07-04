@@ -256,6 +256,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::clear() noexcept {
 		object_registry_storage<ObjectType>.clear();
+		reset_goal_map<ObjectType>();
 	}
 
 	template<map_type_e MapType>
@@ -267,25 +268,6 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void object_registry_t<MapType>::clear() noexcept {
 		clear<ALL_OBJECTS>();
-	}
-
-	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::reset() noexcept {
-		object_registry_storage<ObjectType>.clear();
-		reset_goal_map<ObjectType>();
-	}
-
-	template<map_type_e MapType>
-	template<NonNullObject... ObjectTypes>
-		requires is_plurary<ObjectTypes...>::value
-	inline void object_registry_t<MapType>::reset() noexcept {
-		(clear<ObjectTypes>(), ...);
-		(reset_goal_map<ObjectTypes>(), ...);
-	}
-
-	template<map_type_e MapType> inline void object_registry_t<MapType>::reset() noexcept {
-		clear();
-
-		reset_goal_map();
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count) noexcept {
