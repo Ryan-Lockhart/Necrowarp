@@ -46,8 +46,11 @@ namespace necrowarp {
 	template<map_type_e MapType> static inline zone_t<map_cell_t, globals::MapSize<MapType>, globals::BorderSize<MapType>> game_map{};
 
 	static inline std::vector<offset_t> ladder_positions{};
+	static inline sparse_t<sparseling_t<fluid_e>> fluid_positions{};
 
 	template<map_type_e MapType> static inline zone_t<fluid_cell_t, globals::MapSize<MapType>, globals::BorderSize<MapType>> fluid_map{};
+
+	static inline std::atomic<bool> fluid_map_dirty{ false };
 
 	static inline cursor_t ui_cursor{};
 
@@ -103,6 +106,8 @@ namespace necrowarp {
 		}
 
 		if (fluid_map<MapType>[position] != fluid) {
+			fluid_map_dirty = true;
+
 			fluid_map<MapType>[position] += fluid;
 			fluid %= static_cast<fluid_e>(fluid_map<MapType>[position]);
 
@@ -128,6 +133,8 @@ namespace necrowarp {
 			visited.insert(current.position);
 
 			if (fluid_map<MapType>[current.position] != fluid) {
+				fluid_map_dirty = true;
+
 				fluid_map<MapType>[current.position] += fluid;
 				fluid %= static_cast<fluid_e>(fluid_map<MapType>[current.position]);
 
@@ -156,6 +163,8 @@ namespace necrowarp {
 		}
 
 		if (fluid_map<MapType>[position] != fluid) {
+			fluid_map_dirty = true;
+
 			fluid_map<MapType>[position] += fluid;
 
 			if (amount <= 1) {
@@ -182,6 +191,8 @@ namespace necrowarp {
 			visited.insert(current.position);
 
 			if (fluid_map<MapType>[current.position] != fluid) {
+				fluid_map_dirty = true;
+
 				fluid_map<MapType>[current.position] += fluid;
 
 				if (amount <= 1) {

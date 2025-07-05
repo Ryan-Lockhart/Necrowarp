@@ -9,6 +9,8 @@
 
 #include <necrowarp/entities/entity.tpp>
 
+#include <necrowarp/entities/good/mist_lady.hpp>
+
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, move_t>::process() const noexcept {
 		if constexpr (is_afflictable<EntityType>::value || is_berker<EntityType>::value) {
@@ -18,7 +20,7 @@ namespace necrowarp {
 				return;
 			}
 
-		 	if (entity_goal_map<mist_lady_t>.at(source_position) <= mist_lady_t::EffectRadius) {
+		 	if (entity_goal_map<MapType, mist_lady_t>.at(source_position) <= mist_lady_t::EffectRadius) {
 		 		entity->soothe();
 		 	}
 		}

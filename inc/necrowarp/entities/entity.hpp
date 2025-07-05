@@ -16,25 +16,41 @@ namespace necrowarp {
 
 	// lesser minions
 
-	// a lesser minion that loses offensive potency as it decays
+	// calcitic domain (bones): a lesser minion that loses potency as it decays
 	struct skeleton_t;
-	// a lesser minion that will drown the map in ichor
+	// spectral domain (ichor): a lesser minion that will drown the map in ichor
 	struct cultist_t;
-	// a lesser minion that harries enemies with its speed
+	// sanguine domain (blood): a lesser minion that harries enemies with its speed
 	struct bloodhound_t;
-	// a lesser minion that gains defensive potency as it galvanises
+	// galvanic domain (metal): a lesser minion that gains potency as it galvanises
 	struct animated_suit_t;
+	// ravenous domain (flesh): a lesser minion that may replicate itself
+	struct abomination_t;
+	// wretched domain (filth): a lesser minion that grapples enemies
+	struct draugaz_t;
+	// abyssal domain (life): a lesser minion that controls the mind of its host
+	struct hamaz_t;
+	// abyssal domain (cerebra): a lesser minion that spreads ectoplasm
+	struct chromalese_t;
 
 	// exalted minions
 
-	// an exalted minion that reflects all damage while taking hardly any
+	// calcitic domain (bones): an exalted minion that reflects all damage while taking hardly any
 	struct bonespur_t;
-	// an exalted minion that strikes (fear into) all enemies around it
+	// spectral domain (ichor): an exalted minion that strikes all enemies around it
 	struct wraith_t;
-	// an exalted minion that consumes enemies with less health
-	struct flesh_golem_t;
-	// an exalted minion that gains defensive potency as it galvanises
+	// sanguine domain (blood): an exalted minion that consumes the blood of enemies it attacks and kills
+	struct hemogheist_t;
+	// galvanic domain (metal): an exalted minion that gains potency as it galvanises
 	struct death_knight_t;
+	// ravenous domain (flesh): an exalted minion that consumes enemies with less health
+	struct flesh_golem_t;
+	// wretched domain (filth): an exalted minion that spreads filth to vicitms
+	struct dreadworm_t;
+	// abyssal domain (cerebra): a lesser minion that explodes on death
+	struct furtive_horror_t;
+	// abyssal domain (ectoplasm): a lesser minion that kills instantaneously
+	struct isoscol_t;
 
 	// do-gooders
 
@@ -53,6 +69,12 @@ namespace necrowarp {
 	// a specialist adversary that traverses the interstice to avoid detection
 	struct skulker_t;
 
+	// a support adversary that soothes their comrades' addled minds
+	struct mist_lady_t;
+
+	// a support adversary that inspires their comrades to fight harder
+	struct banner_bearer_t;
+
 	// a powerful adversary that is undefeatable in decisive battle
 	struct battle_monk_t;
 
@@ -67,10 +89,18 @@ namespace necrowarp {
 		cultist_t, \
 		bloodhound_t, \
 		animated_suit_t, \
+		abomination_t, \
+		draugaz_t, \
+		hamaz_t, \
+		chromalese_t, \
 		bonespur_t, \
 		wraith_t, \
+		hemogheist_t, \
+		death_knight_t, \
 		flesh_golem_t, \
-		death_knight_t
+		dreadworm_t, \
+		furtive_horror_t, \
+		isoscol_t
 	
 	#define ALL_EVIL \
 		player_t, \
@@ -79,12 +109,14 @@ namespace necrowarp {
 	#define ALL_GOOD_NPCS \
 		adventurer_t, \
 		mercenary_t, \
-		thetwo_t, \
 		ranger_t, \
 		skulker_t, \
+		mist_lady_t, \
+		banner_bearer_t, \
+		thetwo_t, \
 		battle_monk_t, \
-		paladin_t, \
-		berserker_t
+		berserker_t, \
+		paladin_t
 	
 	#define ALL_GOOD \
 		ALL_GOOD_NPCS
@@ -102,6 +134,7 @@ namespace necrowarp {
 		cultist_t, \
 		bloodhound_t, \
 		wraith_t, \
+		hemogheist_t, \
 		death_knight_t
 
 	#define ALL_ENTITIES \
@@ -117,23 +150,35 @@ namespace necrowarp {
 		Cultist,
 		Bloodhound,
 		AnimatedSuit,
+		Abomination,
+		Draugaz,
+		Hamaz,
+		Chromalese,
 
 		Bonespur,
 		Wraith,
-		FleshGolem,
+		Hemogheist,
 		DeathKnight,
+		FleshGolem,
+		Dreadworm,
+		FurtiveHorror,
+		Isoscol,
 
 		Adventurer,
 		Mercenary,
 		Thetwo,
 		Ranger,
 		Skulker,
+		MistLady,
+		BannerBearer,
 		BattleMonk,
-		Paladin,
 		Berserker,
+		Paladin,
 	};
 
-	static constexpr cstr to_string(entity_e type) noexcept {
+	template<plurality_e Plurality = plurality_e::Singular> static constexpr cstr to_string(entity_e type) noexcept;
+
+	template<> constexpr cstr to_string<plurality_e::Singular>(entity_e type) noexcept {
 		switch (type) {
 			case entity_e::None: {
 				return "none";
@@ -147,14 +192,30 @@ namespace necrowarp {
 				return "bloodhound";
 			} case entity_e::AnimatedSuit: {
 				return "animated suit of armor";
+			} case entity_e::Abomination: {
+				return "abomination";
+			} case entity_e::Draugaz: {
+				return "draugaz";
+			} case entity_e::Hamaz: {
+				return "hamaz";
+			} case entity_e::Chromalese: {
+				return "chromalese";
 			} case entity_e::Bonespur: {
 				return "bonespur";
 			} case entity_e::Wraith: {
 				return "wraith";
-			} case entity_e::FleshGolem: {
-				return "flesh golem";
+			} case entity_e::Hemogheist: {
+				return "hemogheist";
 			} case entity_e::DeathKnight: {
 				return "death knight";
+			} case entity_e::FleshGolem: {
+				return "flesh golem";
+			} case entity_e::Dreadworm: {
+				return "dreadworm";
+			} case entity_e::FurtiveHorror: {
+				return "furtive horror";
+			} case entity_e::Isoscol: {
+				return "isoscol";
 			} case entity_e::Adventurer: {
 				return "adventurer";
 			} case entity_e::Mercenary: {
@@ -165,61 +226,155 @@ namespace necrowarp {
 				return "ranger";
 			} case entity_e::Skulker: {
 				return "skulker";
+			} case entity_e::MistLady: {
+				return "lady of the mist";
+			} case entity_e::BannerBearer: {
+				return "banner bearer";
 			} case entity_e::BattleMonk: {
 				return "battle monk";
-			} case entity_e::Paladin: {
-				return "paladin";
 			} case entity_e::Berserker: {
 				return "berserker";
+			} case entity_e::Paladin: {
+				return "paladin";
 			}
 		}
 	}
 
-	static constexpr runes_t to_colored_string(entity_e type) noexcept {
-		const cstr string{ to_string(type) };
-
+	template<> constexpr cstr to_string<plurality_e::Multiple>(entity_e type) noexcept {
 		switch (type) {
 			case entity_e::None: {
-				return runes_t{ string, colors::Grey };
+				return "none";
 			} case entity_e::Player: {
-				return runes_t{ string, colors::Magenta };
+				return "players";
 			} case entity_e::Skeleton: {
-				return runes_t{ string, colors::White };
+				return "skeletons";
 			} case entity_e::Cultist: {
-				return runes_t{ string, colors::dark::Magenta };
+				return "cultists";
 			} case entity_e::Bloodhound: {
-				return runes_t{ string, colors::materials::light::Blood };
+				return "bloodhounds";
 			} case entity_e::AnimatedSuit: {
-				return runes_t{ string, colors::metals::Tin };
+				return "animated suits of armor";
+			} case entity_e::Abomination: {
+				return "abominations";
+			} case entity_e::Draugaz: {
+				return "draugr";
+			} case entity_e::Hamaz: {
+				return "hamr";
+			} case entity_e::Chromalese: {
+				return "chromalesia";
 			} case entity_e::Bonespur: {
-				return runes_t{ string, colors::Marble };
+				return "bonespurs";
 			} case entity_e::Wraith: {
-				return runes_t{ string, colors::light::Green };
-			} case entity_e::FleshGolem: {
-				return runes_t{ string, colors::materials::dark::Blood };
+				return "wraithes";
+			} case entity_e::Hemogheist: {
+				return "hemogheist";
 			} case entity_e::DeathKnight: {
-				return runes_t{ string, colors::metals::Iron };
+				return "death knights";
+			} case entity_e::FleshGolem: {
+				return "flesh golems";
+			} case entity_e::Dreadworm: {
+				return "dreadworms";
+			} case entity_e::FurtiveHorror: {
+				return "furtive horrors";
+			} case entity_e::Isoscol: {
+				return "isoscoline";
 			} case entity_e::Adventurer: {
-				return runes_t{ string, colors::metals::Bronze };
+				return "adventurers";
 			} case entity_e::Mercenary: {
-				return runes_t{ string, colors::dark::Yellow };
+				return "mercenaries";
 			} case entity_e::Thetwo: {
-				return runes_t{ string, colors::metals::Brass };
+				return "thetwo";
 			} case entity_e::Ranger: {
-				return runes_t{ string, colors::dark::Green };
+				return "rangers";
 			} case entity_e::Skulker: {
-				return runes_t{ string, colors::dark::Grey };
+				return "skulkers";
+			} case entity_e::MistLady: {
+				return "ladies of the mist";
+			} case entity_e::BannerBearer: {
+				return "banner bearers";
 			} case entity_e::BattleMonk: {
-				return runes_t{ string, colors::light::Yellow };
-			} case entity_e::Paladin: {
-				return runes_t{ string, colors::metals::Steel };
+				return "battle monks";
 			} case entity_e::Berserker: {
-				return runes_t{ string, colors::dark::Orange };
+				return "berserkers";
+			} case entity_e::Paladin: {
+				return "paladins";
 			}
 		}
 	}
 
-	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Berserker) + 1 };
+	static constexpr color_t to_color(entity_e type) noexcept {
+		switch (type) {
+			case entity_e::None: {
+				return colors::Grey;
+			} case entity_e::Player: {
+				return colors::Magenta;
+			} case entity_e::Skeleton: {
+				return colors::White;
+			} case entity_e::Cultist: {
+				return colors::dark::Magenta;
+			} case entity_e::Bloodhound: {
+				return colors::materials::light::Blood;
+			} case entity_e::AnimatedSuit: {
+				return colors::metals::Tin;
+			} case entity_e::Abomination: {
+				return colors::dark::Orange;
+			} case entity_e::Draugaz: {
+				return mix(colors::Orange, colors::Green);
+			} case entity_e::Hamaz: {
+				return colors::materials::light::Ectoplasm;
+			} case entity_e::Chromalese: {
+				return colors::materials::dark::Ectoplasm;
+			} case entity_e::Bonespur: {
+				return colors::Marble;
+			} case entity_e::Wraith: {
+				return colors::light::Green;
+			} case entity_e::Hemogheist: {
+				return colors::materials::dark::Blood;
+			} case entity_e::DeathKnight: {
+				return colors::metals::Iron;
+			} case entity_e::FleshGolem: {
+				return mix(colors::Orange, colors::materials::Blood);
+			} case entity_e::Dreadworm: {
+				return mix(colors::Orange, colors::light::Grey);
+			} case entity_e::FurtiveHorror: {
+				return mix(colors::Blue, colors::light::Grey);
+			} case entity_e::Isoscol: {
+				return mix(colors::Green, colors::light::Grey);
+			} case entity_e::Adventurer: {
+				return colors::metals::Bronze;
+			} case entity_e::Mercenary: {
+				return colors::dark::Yellow;
+			} case entity_e::Thetwo: {
+				return colors::metals::Brass;
+			} case entity_e::Ranger: {
+				return colors::dark::Green;
+			} case entity_e::Skulker: {
+				return colors::dark::Grey;
+			} case entity_e::MistLady: {
+				return colors::dark::Green;
+			} case entity_e::BannerBearer: {
+				return colors::dark::Grey;
+			} case entity_e::BattleMonk: {
+				return colors::light::Yellow;
+			} case entity_e::Berserker: {
+				return colors::dark::Orange;
+			} case entity_e::Paladin: {
+				return colors::metals::Steel;
+			}
+		}
+	}
+
+	template<plurality_e Plurality = plurality_e::Singular> static constexpr runes_t to_colored_string(entity_e type) noexcept {
+		return magic_enum::enum_switch(
+			[](auto val) -> runes_t {
+				constexpr entity_e cval{ val };
+
+				return runes_t{ to_string<Plurality>(cval), to_color(cval) };
+			}, type
+		);
+	}
+
+	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Paladin) + 1 };
 
 	constexpr usize NPCSizeCap{ 16 };
 
@@ -234,20 +389,30 @@ namespace necrowarp {
 		Cultist = Skeleton << 1,
 		Bloodhound = Cultist << 1,
 		AnimatedSuit = Bloodhound << 1,
+		Abomination = AnimatedSuit << 1,
+		Draugaz = Abomination << 1,
+		Hamaz = Draugaz << 1,
+		Chromalese = Hamaz << 1,
 
-		Bonespur = AnimatedSuit << 1,
+		Bonespur = Chromalese << 1,
 		Wraith = Bonespur << 1,
-		FleshGolem = Wraith << 1,
-		DeathKnight = FleshGolem << 1,
+		Hemogheist = Bonespur << 1,
+		DeathKnight = Hemogheist << 1,
+		FleshGolem = DeathKnight << 1,
+		Dreadworm = FleshGolem << 1,
+		FurtiveHorror = Dreadworm << 1,
+		Isoscol = FurtiveHorror << 1,
 
-		Adventurer = DeathKnight << 1,
+		Adventurer = Isoscol << 1,
 		Mercenary = Adventurer << 1,
 		Thetwo = Mercenary << 1,
 		Ranger = Thetwo << 1,
 		Skulker = Ranger << 1,
-		BattleMonk = Skulker << 1,
-		Paladin = BattleMonk << 1,
-		Berserker = Paladin << 1,
+		MistLady = Skulker << 1,
+		BannerBearer = MistLady << 1,
+		BattleMonk = BannerBearer << 1,
+		Berserker = BattleMonk << 1,
+		Paladin = Berserker << 1,
 	};
 
 	constexpr entity_group_e operator+(entity_group_e lhs, entity_group_e rhs) noexcept { return static_cast<entity_group_e>(static_cast<entity_group_t>(lhs) | static_cast<entity_group_t>(rhs)); }

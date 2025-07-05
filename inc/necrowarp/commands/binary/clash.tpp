@@ -229,6 +229,10 @@ namespace necrowarp {
 	}
 
 	template<CombatantEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, clash_t>::process() const noexcept {
+		if constexpr (is_docile<EntityType>::value) {
+			return;
+		}
+
 		ptr<EntityType> initiator_ptr{ entity_registry<MapType>.dependent at<EntityType>(source_position) };
 
 		if (initiator_ptr == nullptr) {
@@ -259,13 +263,19 @@ namespace necrowarp {
 
 				const bool target_killed{ instigate<MapType>(initiator, victim) };
 
-				const bool source_killed{ [&]() -> bool {
-					if constexpr (cval == entity_e::Bonespur) {
-						return reflect<MapType>(initiator, victim);
-					} else {
-						return retaliate<MapType>(initiator, victim);
-					}
-				}()};
+				const bool source_killed{
+					[&]() -> bool {
+						if constexpr (is_docile<victim_type>::value) {
+							return false;
+						}
+
+						if constexpr (cval == entity_e::Bonespur) {
+							return reflect<MapType>(initiator, victim);
+						} else {
+							return retaliate<MapType>(initiator, victim);
+						}
+					}()
+				};
 
 				if (target_killed) {
 					victim.dependent die<MapType>();

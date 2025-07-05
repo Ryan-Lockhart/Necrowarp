@@ -82,17 +82,19 @@ namespace necrowarp {
 				case entity_e::Adventurer: {
 					add(10);
 					break;
-				} case entity_e::Ranger:
+				} case entity_e::Mercenary:
+				  case entity_e::Ranger:
 				  case entity_e::Skulker: {
 					add(25);
 					break;
-				} case entity_e::Mercenary:
-				  case entity_e::Thetwo:
-				  case entity_e::BattleMonk:
-				  case entity_e::Berserker: {
+				} case entity_e::Thetwo:
+				  case entity_e::MistLady:
+				  case entity_e::BannerBearer: {
 					add(50);
 					break;
-				} case entity_e::Paladin: {
+				} case entity_e::BattleMonk:
+				  case entity_e::Berserker:
+				  case entity_e::Paladin: {
 					add(100);
 					break;
 				} default: {

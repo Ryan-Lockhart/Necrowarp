@@ -230,8 +230,11 @@ namespace necrowarp {
 					const offset_t pos{ x, y };
 
 					game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
+					fluid_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, fluid_e::None);
 				}
 			}
+
+			fluid_map_dirty = false;
 
 			cauto player_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
@@ -296,14 +299,24 @@ namespace necrowarp {
 				steam_stats_s::stats<steam_stat_e::LowestDepth, i32> = -static_cast<i32>(game_stats.game_depth);
 			}
 #endif
+			fluid_positions.clear();
 			ladder_positions.clear();
 
 			for (crauto ladder : object_registry_storage<ladder_t>) {
-				if (ladder.is_up_ladder()) {
+				const offset_t position{ ladder.position };
+
+				if (!fluid_map<MapType>.dependent within<zone_region_e::Interior>(position) || ladder.is_up_ladder()) {
 					continue;
 				}
 
-				ladder_positions.push_back(ladder.position);
+				const fluid_e fluid{ fluid_map<MapType>.at(position) };
+
+				if (fluid == fluid_e::None) {
+					continue;
+				}
+
+				fluid_positions.add(sparseling_t<fluid_e>{ fluid, position });
+				ladder_positions.push_back(position);
 			}
 
 			game_map<MapType>.dependent reset<zone_region_e::All>();
@@ -351,9 +364,29 @@ namespace necrowarp {
 				for (offset_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
 					const offset_t pos{ x, y };
 
-					game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
+					if (game_map<MapType>[pos] != cell_e::Open || !fluid_positions.contains(pos)) {
+						continue;
+					}
+
+					fluid_map<MapType>[pos] = fluid_positions.at(pos).value;
+					fluid_positions.remove(pos);
 				}
 			}
+
+			for (offset_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
+				for (offset_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
+					const offset_t pos{ x, y };
+
+					if (fluid_positions.contains(pos)) {
+						fluid_map<MapType>[pos] = fluid_positions.at(pos).value;
+					}
+
+					game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
+					fluid_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, fluid_e::None);
+				}
+			}
+
+			fluid_map_dirty = false;
 #if !defined(STEAMLESS)
 			cauto previous_position{ player.position };
 #endif

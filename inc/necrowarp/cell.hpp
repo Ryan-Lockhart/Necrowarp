@@ -95,42 +95,42 @@ namespace necrowarp {
 	}
 
 	static inline color_t fluid_color(fluid_e fluid) noexcept {
-			switch (fluid) {
-				case fluid_e::None: {
-					return colors::Transparent;
-				} case fluid_e::Blood: {
-					return colors::materials::Blood;
-				} case fluid_e::Ichor: {
-					return colors::materials::Ichor;
-				} case fluid_e::BloodyIchor: {
-					return colors::materials::BloodyIchor;
-				} case fluid_e::Filth: {
-					return colors::materials::Filth;
-				} case fluid_e::BloodyFilth: {
-					return colors::materials::BloodyFilth;
-				} case fluid_e::IchorousFilth: {
-					return colors::materials::IchorousFilth;
-				} case fluid_e::BloodyIchorousFilth: {
-					return colors::materials::BloodyIchorousFilth;
-				} case fluid_e::Ectoplasm: {
-					return colors::materials::Ectoplasm;
-				} case fluid_e::BloodyEctoplasm: {
-					return colors::materials::BloodyEctoplasm;
-				} case fluid_e::IchorousEctoplasm: {
-					return colors::materials::IchorousEctoplasm;
-				} case fluid_e::FilthyEctoplasm: {
-					return colors::materials::FilthyEctoplasm;
-				} case fluid_e::BloodyIchorousEctoplasm: {
-					return colors::materials::BloodyIchorousEctoplasm;
-				} case fluid_e::BloodyFilthyEctoplasm: {
-					return colors::materials::BloodyFilthyEctoplasm;
-				} case fluid_e::IchorousFilthyEctoplasm: {
-					return colors::materials::IchorousFilthyEctoplasm;
-				} case fluid_e::BloodyIchorousFilthyEctoplasm: {
-					return colors::materials::BloodyIchorousFilthyEctoplasm;
-				}
+		switch (fluid) {
+			case fluid_e::None: {
+				return colors::Transparent;
+			} case fluid_e::Blood: {
+				return colors::materials::Blood;
+			} case fluid_e::Ichor: {
+				return colors::materials::Ichor;
+			} case fluid_e::BloodyIchor: {
+				return colors::materials::BloodyIchor;
+			} case fluid_e::Filth: {
+				return colors::materials::Filth;
+			} case fluid_e::BloodyFilth: {
+				return colors::materials::BloodyFilth;
+			} case fluid_e::IchorousFilth: {
+				return colors::materials::IchorousFilth;
+			} case fluid_e::BloodyIchorousFilth: {
+				return colors::materials::BloodyIchorousFilth;
+			} case fluid_e::Ectoplasm: {
+				return colors::materials::Ectoplasm;
+			} case fluid_e::BloodyEctoplasm: {
+				return colors::materials::BloodyEctoplasm;
+			} case fluid_e::IchorousEctoplasm: {
+				return colors::materials::IchorousEctoplasm;
+			} case fluid_e::FilthyEctoplasm: {
+				return colors::materials::FilthyEctoplasm;
+			} case fluid_e::BloodyIchorousEctoplasm: {
+				return colors::materials::BloodyIchorousEctoplasm;
+			} case fluid_e::BloodyFilthyEctoplasm: {
+				return colors::materials::BloodyFilthyEctoplasm;
+			} case fluid_e::IchorousFilthyEctoplasm: {
+				return colors::materials::IchorousFilthyEctoplasm;
+			} case fluid_e::BloodyIchorousFilthyEctoplasm: {
+				return colors::materials::BloodyIchorousFilthyEctoplasm;
 			}
 		}
+	}
 
 	constexpr runes_t to_colored_string(fluid_e fluid) noexcept {
 		const cstr string{ to_string(fluid) };
@@ -149,7 +149,8 @@ namespace necrowarp {
 		bool ichor : 1 { false };
 		bool filth : 1 { false };
 		bool ectoplasm : 1 { false };
-		bool : 4;
+
+		u8 index : 4 { 0 };
 
 		constexpr fluid_cell_t() noexcept = default;
 
@@ -440,6 +441,21 @@ namespace necrowarp {
 			return std::format("The cell is {}.", fluid == fluid_e::None ? "dry" : std::format("spattered with {}", to_string(fluid)));
 		}
 
+		inline constexpr operator std::string() const {
+			return std::format(
+				"[{}, {}, {}, {}]",
+				blood ? "Blood" : "Bloodless",
+				ichor ? "Ichor" : "Ichorless",
+				filth ? "Filth" : "Filthless",
+				ectoplasm ? "Ectoplasm" : "Ectoplasmless"
+			);
+		}
+
+		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr void recalculate_index(cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, fluid_e fluid) noexcept {
+			index = zone.dependent calculate_index<solver_e::Melded>(position, fluid);
+		}
+
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref< zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
 			atlas.draw(glyph_t{ characters::Floor, fluid_color(static_cast<fluid_e>(zone[position])) }, position);
@@ -504,7 +520,7 @@ namespace necrowarp {
 		bool seen : 1 { false };
 		bool explored : 1 { false };
 
-		u8 index: 4 { 0 };
+		u8 index : 4 { 0 };
 
 		constexpr map_cell_t() noexcept = default;
 

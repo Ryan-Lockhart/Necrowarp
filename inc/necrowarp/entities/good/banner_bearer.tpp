@@ -1,0 +1,43 @@
+#pragma once
+
+#include <necrowarp/entities/good/banner_bearer.hpp>
+
+#include <necrowarp/entity_state.hpp>
+#include <necrowarp/entity_state.tpp>
+
+#include <necrowarp/scorekeeper.hpp>
+
+namespace necrowarp {
+	template<map_type_e MapType> inline command_pack_t banner_bearer_t::think() const noexcept {
+		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
+			const offset_t current_position{ position + offset };
+
+			if (entity_registry<MapType>.dependent empty<ALL_EVIL>(current_position)) {
+				continue;
+			}
+
+			return command_pack_t{ command_e::Clash, position, current_position };
+		}
+
+		cauto descent_pos{ good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+
+		if (!descent_pos.has_value()) {
+			return command_pack_t{ command_e::None };
+		}
+
+		return command_pack_t{ command_e::Move, position, descent_pos.value() };
+	}
+
+	template<map_type_e MapType> inline void banner_bearer_t::die() noexcept {
+		object_registry<MapType>.spill(bones_t{ position });
+		object_registry<MapType>.spill(flesh_t{ position });
+
+		spill_fluid<MapType>(position, fluid_type<banner_bearer_t>::type);
+
+		player.receive_death_boon<banner_bearer_t>();
+
+		++steam_stats::stats<steam_stat_e::BannerBearersSlain, i32>;
+
+		scorekeeper.add(entity_e::BannerBearer);
+	}
+} // namespace necrowarp

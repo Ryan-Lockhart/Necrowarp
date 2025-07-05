@@ -142,9 +142,9 @@ namespace necrowarp {
 			entity_e::Bonespur,
 		};
 
-		static constexpr i8 MinimumDamageReceived{ 1 };
-		static constexpr i8 MiddlingDamageReceived{ 3 };
-		static constexpr i8 MaximumDamageReceived{ 5 };
+		static constexpr i8 MinimumDamageReceived{ 0 };
+		static constexpr i8 MiddlingDamageReceived{ 2 };
+		static constexpr i8 MaximumDamageReceived{ 4 };
 
 		static constexpr i8 DeathBoon{ 3 };
 

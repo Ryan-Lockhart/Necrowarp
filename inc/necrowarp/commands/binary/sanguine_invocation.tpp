@@ -44,6 +44,8 @@ namespace necrowarp {
 			}
 
 			if (has_blood) {
+				fluid_map_dirty = true;
+
 				fluid_map<MapType>[position] -= fluid_e::Blood;
 				++pools_consumed;
 
@@ -72,6 +74,8 @@ namespace necrowarp {
 		}
 
 		if (fluid_map<MapType>[target_position].contains(fluid_e::Blood)) {
+			fluid_map_dirty = true;
+
 			fluid_map<MapType>[target_position] -= fluid_e::Blood;
 			++pools_consumed;
 

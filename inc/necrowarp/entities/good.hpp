@@ -3,9 +3,11 @@
 // IWYU pragma: begin_exports
 #include <necrowarp/entities/good/adventurer.hpp>
 #include <necrowarp/entities/good/mercenary.hpp>
-#include <necrowarp/entities/good/thetwo.hpp>
 #include <necrowarp/entities/good/ranger.hpp>
 #include <necrowarp/entities/good/skulker.hpp>
+#include <necrowarp/entities/good/mist_lady.hpp>
+#include <necrowarp/entities/good/banner_bearer.hpp>
+#include <necrowarp/entities/good/thetwo.hpp>
 #include <necrowarp/entities/good/battle_monk.hpp>
 #include <necrowarp/entities/good/berserker.hpp>
 #include <necrowarp/entities/good/paladin.hpp>

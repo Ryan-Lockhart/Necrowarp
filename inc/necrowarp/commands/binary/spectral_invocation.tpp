@@ -43,6 +43,8 @@ namespace necrowarp {
 			}
 
 			if (has_ichor) {
+				fluid_map_dirty = true;
+
 				fluid_map<MapType>[position] -= fluid_e::Ichor;
 				++pools_consumed;
 
@@ -72,6 +74,8 @@ namespace necrowarp {
 
 		if (fluid_map<MapType>[target_position].contains(fluid_e::Ichor)) {
 			const offset_t pos{ target_position };
+
+			fluid_map_dirty = true;
 
 			fluid_map<MapType>[pos] -= fluid_e::Ichor;
 			++pools_consumed;
