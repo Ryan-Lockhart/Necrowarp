@@ -37,7 +37,7 @@ namespace necrowarp {
 
 		player.receive_death_boon<mercenary_t>();
 
-		++steam_stats::stats<steam_stat_e::MercenariesSlain, i32>;
+		++steam_stats::stats<steam_stat_e::MercenariesSlain>;
 
 		scorekeeper.add(entity_e::Mercenary);
 	}

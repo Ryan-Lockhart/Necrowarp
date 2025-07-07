@@ -57,63 +57,6 @@ namespace necrowarp {
 		}
 	}
 
-	enum struct shackle_e : u8 {
-		Unshackled,
-		Calcitic,
-		Spectral,
-		Sanguine,
-		Galvanic,
-		Ravenous,
-		Wretched,
-		Abyssal
-	};
-
-	constexpr cstr to_string(shackle_e type) noexcept {
-		switch (type) {
-			case shackle_e::Unshackled: {
-				return "unshackled";
-			} case shackle_e::Calcitic: {
-				return "spooky shackle";
-			} case shackle_e::Spectral: {
-				return "haunted shackle";
-			} case shackle_e::Sanguine: {
-				return "bloody shackle";
-			} case shackle_e::Galvanic: {
-				return "glimmering shackle";
-			} case shackle_e::Ravenous: {
-				return "wriggling shackle";
-			} case shackle_e::Wretched: {
-				return "festering shackle";
-			} case shackle_e::Abyssal: {
-				return "eldritch shackle";
-			}
-		}
-	}
-
-	constexpr runes_t to_colored_string(shackle_e type) noexcept {
-		const cstr string{ to_string(type) };
-
-		switch (type) {
-			case shackle_e::Unshackled: {
-				return runes_t{ string, colors::metals::Iron };
-			} case shackle_e::Calcitic: {
-				return runes_t{ string, colors::metals::shackles::Calcitic };
-			} case shackle_e::Spectral: {
-				return runes_t{ string, colors::metals::shackles::Spectral };
-			} case shackle_e::Sanguine: {
-				return runes_t{ string, colors::metals::shackles::Sanguine };
-			} case shackle_e::Galvanic: {
-				return runes_t{ string, colors::metals::shackles::Galvanic };
-			} case shackle_e::Ravenous: {
-				return runes_t{ string, colors::metals::shackles::Ravenous };
-			} case shackle_e::Wretched: {
-				return runes_t{ string, colors::metals::shackles::Wretched };
-			} case shackle_e::Abyssal: {
-				return runes_t{ string, colors::metals::shackles::Abyssal };
-			}
-		}
-	}
-
 	struct ladder_t {
 		offset_t position;
 		
@@ -139,8 +82,10 @@ namespace necrowarp {
 					return indices::RavenousShackle;
 				} case shackle_e::Wretched: {
 					return indices::WretchedShackle;
-				} case shackle_e::Abyssal: {
-					return indices::AbyssalShackle;
+				} case shackle_e::Infernal: {
+					return indices::InfernalShackle;
+				} case shackle_e::Cerebral: {
+					return indices::CerebralShackle;
 				} case shackle_e::Unshackled: {
 					return 0;
 				}				
@@ -183,8 +128,7 @@ namespace necrowarp {
 			position{ position },
 			verticality{ verticality },
 			shackle{ shackle },
-			idle_animation{ get_index(shackle), random_engine }
-		{ sync_animation(); }
+			idle_animation{ get_index(shackle), random_engine } { sync_animation(); }
 
 		inline bool is_up_ladder() const noexcept { return verticality == verticality_e::Up; }
 
@@ -223,7 +167,7 @@ namespace necrowarp {
 			shackle = random_shackle(random_engine);
 			idle_animation.index = get_index(shackle);
 
-			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
+			++steam_stats_s::stats<steam_stat_e::LaddersShackled>;
 
 			sync_animation();
 		}
@@ -236,7 +180,7 @@ namespace necrowarp {
 			shackle = type;
 			idle_animation.index = get_index(shackle);
 
-			++steam_stats_s::stats<steam_stat_e::LaddersShackled, i32>;
+			++steam_stats_s::stats<steam_stat_e::LaddersShackled>;
 
 			sync_animation();
 		}
@@ -249,7 +193,7 @@ namespace necrowarp {
 			shackle = shackle_e::Unshackled;
 			idle_animation.index = get_index(shackle);
 
-			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled, i32>;
+			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled>;
 
 			sync_animation();
 		};

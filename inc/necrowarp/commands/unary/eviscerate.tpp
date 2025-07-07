@@ -113,7 +113,7 @@ namespace necrowarp {
 							switch (to_entity_enum<EntityType>::value) {
 								case entity_e::Player: {
 									++game_stats.player_kills;
-									++steam_stats::stats<steam_stat_e::PlayerKills, i32>;
+									++steam_stats::stats<steam_stat_e::PlayerKills>;
 
 									draw_warp_cursor = false;
 									break;
@@ -126,7 +126,7 @@ namespace necrowarp {
 								  case entity_e::FleshGolem:
 								  case entity_e::DeathKnight: {
 									++game_stats.minion_kills;
-									++steam_stats::stats<steam_stat_e::MinionKills, i32>;
+									++steam_stats::stats<steam_stat_e::MinionKills>;
 									break;
 								} default: {
 									break;

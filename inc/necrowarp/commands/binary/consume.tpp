@@ -23,7 +23,7 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent remove<skeleton_t>(target_position);
 
-				++steam_stats::stats<steam_stat_e::SkeletonsConsumed, i32>;
+				++steam_stats::stats<steam_stat_e::SkeletonsConsumed>;
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 				
@@ -37,7 +37,7 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent remove<bonespur_t>(target_position);
 
-				++steam_stats::stats<steam_stat_e::BonespursConsumed, i32>;
+				++steam_stats::stats<steam_stat_e::BonespursConsumed>;
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 				
@@ -62,7 +62,7 @@ namespace necrowarp {
 				object_registry<MapType>.dependent remove<bones_t>(target_position);
 				entity_registry<MapType>.add(skeleton_t{ target_position, state });
 
-				++steam_stats::stats<steam_stat_e::BonesConsumed, i32>;
+				++steam_stats::stats<steam_stat_e::BonesConsumed>;
 
 				if (state == decay_e::Fresh) {
 					player.receive_skull_boon();

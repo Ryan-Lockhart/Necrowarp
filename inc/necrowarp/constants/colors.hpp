@@ -2,6 +2,9 @@
 
 #include <bleak/constants/colors.hpp>
 
+#include <necrowarp/constants/enums/fluid.hpp>
+#include <necrowarp/constants/enums/shackle.hpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -11,83 +14,89 @@ namespace necrowarp {
 		namespace materials {
 			using namespace bleak::colors::materials;
 
-			static constexpr color_t Blood{ u8{ 122 }, u8{ 3 }, u8{ 10 } };
+			template<fluid_e Fluid> static constexpr color_t Fluids;
 
-			static constexpr color_t Ichor{ u8{ 51 }, u8{ 39 }, u8{ 78 } };
+			template<> inline constexpr color_t Fluids<fluid_e::Blood>{ u8{ 122 }, u8{ 3 }, u8{ 10 } };
 
-			static constexpr color_t BloodyIchor{ mix(Blood, Ichor) };
+			template<> inline constexpr color_t Fluids<fluid_e::Ichor>{ u8{ 51 }, u8{ 39 }, u8{ 78 } };
+
+			template<> inline constexpr color_t Fluids<fluid_e::BloodyIchor>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>) };
 			
-			static constexpr color_t Filth{ u8{ 138 }, u8{ 138 }, u8{ 0 } };
+			template<> inline constexpr color_t Fluids<fluid_e::Filth>{ u8{ 138 }, u8{ 138 }, u8{ 0 } };
 
-			static constexpr color_t BloodyFilth{ mix(Blood, Filth) };
-			static constexpr color_t IchorousFilth{ mix(Ichor, Filth) };
+			template<> inline constexpr color_t Fluids<fluid_e::BloodyFilth>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Filth>) };
+			template<> inline constexpr color_t Fluids<fluid_e::IchorousFilth>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>) };
 
-			static constexpr color_t BloodyIchorousFilth{ mix(Blood, Ichor, Filth) };
+			template<> inline constexpr color_t Fluids<fluid_e::BloodyIchorousFilth>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>) };
 
-			static constexpr color_t Ectoplasm{ u8{ 212 }, u8{ 189 }, u8{ 255 } };
+			template<> inline constexpr color_t Fluids<fluid_e::Ectoplasm>{ u8{ 212 }, u8{ 189 }, u8{ 255 } };
 
-			static constexpr color_t BloodyEctoplasm{ mix(Blood, Ectoplasm) };
-			static constexpr color_t IchorousEctoplasm{ mix(Ichor, Ectoplasm) };
-			static constexpr color_t FilthyEctoplasm{ mix(Filth, Ectoplasm) };
+			template<> inline constexpr color_t Fluids<fluid_e::BloodyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ectoplasm>) };
+			template<> inline constexpr color_t Fluids<fluid_e::IchorousEctoplasm>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Ectoplasm>) };
+			template<> inline constexpr color_t Fluids<fluid_e::FilthyEctoplasm>{ mix(Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 
-			static constexpr color_t BloodyIchorousEctoplasm{ mix(Blood, Ichor, Ectoplasm) };
-			static constexpr color_t BloodyFilthyEctoplasm{ mix(Blood, Filth, Ectoplasm) };
-			static constexpr color_t IchorousFilthyEctoplasm{ mix(Ichor, Filth, Ectoplasm) };
+			template<> inline constexpr color_t Fluids<fluid_e::BloodyIchorousEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Ectoplasm>) };
+			template<> inline constexpr color_t Fluids<fluid_e::BloodyFilthyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
+			template<> inline constexpr color_t Fluids<fluid_e::IchorousFilthyEctoplasm>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 
-			static constexpr color_t BloodyIchorousFilthyEctoplasm{ mix(Blood, Ichor, Filth, Ectoplasm) };
+			static constexpr color_t BloodyIchorousFilthyEctoplasm{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 
 			namespace light {
-				static constexpr color_t Blood{ u8{ 146 }, u8{ 6 }, u8{ 6 } };
+				template<fluid_e Fluid> static constexpr color_t Fluids;
 
-				static constexpr color_t Ichor{ u8{ 69 }, u8{ 56 }, u8{ 99 } };
+				template<> inline constexpr color_t Fluids<fluid_e::Blood>{ u8{ 146 }, u8{ 6 }, u8{ 6 } };
 
-				static constexpr color_t BloodyIchor{ mix(Blood, Ichor) };
+				template<> inline constexpr color_t Fluids<fluid_e::Ichor>{ u8{ 69 }, u8{ 56 }, u8{ 99 } };
+
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyIchor>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>) };
 			
-				static constexpr color_t Filth{ u8{ 178 }, u8{ 170 }, u8{ 8 } };
+				template<> inline constexpr color_t Fluids<fluid_e::Filth>{ u8{ 178 }, u8{ 170 }, u8{ 8 } };
 
-				static constexpr color_t BloodyFilth{ mix(Blood, Filth) };
-				static constexpr color_t IchorousFilth{ mix(Ichor, Filth) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyFilth>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Filth>) };
+				template<> inline constexpr color_t Fluids<fluid_e::IchorousFilth>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>) };
 
-				static constexpr color_t BloodyIchorousFilth{ mix(Blood, Ichor, Filth) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyIchorousFilth>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>) };
 
-				static constexpr color_t Ectoplasm{ u8{ 232 }, u8{ 212 }, u8{ 255 } };
+				template<> inline constexpr color_t Fluids<fluid_e::Ectoplasm>{ u8{ 232 }, u8{ 212 }, u8{ 255 } };
 
-				static constexpr color_t BloodyEctoplasm{ mix(Blood, Ectoplasm) };
-				static constexpr color_t IchorousEctoplasm{ mix(Ichor, Ectoplasm) };
-				static constexpr color_t FilthyEctoplasm{ mix(Filth, Ectoplasm) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ectoplasm>) };
+				template<> inline constexpr color_t Fluids<fluid_e::IchorousEctoplasm>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Ectoplasm>) };
+				template<> inline constexpr color_t Fluids<fluid_e::FilthyEctoplasm>{ mix(Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 
-				static constexpr color_t BloodyIchorousEctoplasm{ mix(Blood, Ichor, Ectoplasm) };
-				static constexpr color_t BloodyFilthyEctoplasm{ mix(Blood, Filth, Ectoplasm) };
-				static constexpr color_t IchorousFilthyEctoplasm{ mix(Ichor, Filth, Ectoplasm) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyIchorousEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Ectoplasm>) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyFilthyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
+				template<> inline constexpr color_t Fluids<fluid_e::IchorousFilthyEctoplasm>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 
-				static constexpr color_t BloodyIchorousFilthyEctoplasm{ mix(Blood, Ichor, Filth, Ectoplasm) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyIchorousFilthyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 			}
 
 			namespace dark {
-				static constexpr color_t Blood{ u8{ 98 }, u8{ 0 }, u8{ 15 } };
+				template<fluid_e Fluid> static constexpr color_t Fluids;
 
-				static constexpr color_t Ichor{ u8{ 32 }, u8{ 21 }, u8{ 56 } };
+				template<> inline constexpr color_t Fluids<fluid_e::Blood>{ u8{ 98 }, u8{ 0 }, u8{ 15 } };
 
-				static constexpr color_t BloodyIchor{ mix(Blood, Ichor) };
+				template<> inline constexpr color_t Fluids<fluid_e::Ichor>{ u8{ 32 }, u8{ 21 }, u8{ 56 } };
+
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyIchor>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>) };
 			
-				static constexpr color_t Filth{ u8{ 80 }, u8{ 64 }, u8{ 16 } };
+				template<> inline constexpr color_t Fluids<fluid_e::Filth>{ u8{ 80 }, u8{ 64 }, u8{ 16 } };
 
-				static constexpr color_t BloodyFilth{ mix(Blood, Filth) };
-				static constexpr color_t IchorousFilth{ mix(Ichor, Filth) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyFilth>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Filth>) };
+				template<> inline constexpr color_t Fluids<fluid_e::IchorousFilth>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>) };
 
-				static constexpr color_t BloodyIchorousFilth{ mix(Blood, Ichor, Filth) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyIchorousFilth>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>) };
 
-				static constexpr color_t Ectoplasm{ u8{ 156 }, u8{ 131 }, u8{ 204 } };
+				template<> inline constexpr color_t Fluids<fluid_e::Ectoplasm>{ u8{ 156 }, u8{ 131 }, u8{ 204 } };
 
-				static constexpr color_t BloodyEctoplasm{ mix(Blood, Ectoplasm) };
-				static constexpr color_t IchorousEctoplasm{ mix(Ichor, Ectoplasm) };
-				static constexpr color_t FilthyEctoplasm{ mix(Filth, Ectoplasm) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ectoplasm>) };
+				template<> inline constexpr color_t Fluids<fluid_e::IchorousEctoplasm>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Ectoplasm>) };
+				template<> inline constexpr color_t Fluids<fluid_e::FilthyEctoplasm>{ mix(Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 
-				static constexpr color_t BloodyIchorousEctoplasm{ mix(Blood, Ichor, Ectoplasm) };
-				static constexpr color_t BloodyFilthyEctoplasm{ mix(Blood, Filth, Ectoplasm) };
-				static constexpr color_t IchorousFilthyEctoplasm{ mix(Ichor, Filth, Ectoplasm) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyIchorousEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Ectoplasm>) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyFilthyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
+				template<> inline constexpr color_t Fluids<fluid_e::IchorousFilthyEctoplasm>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 
-				static constexpr color_t BloodyIchorousFilthyEctoplasm{ mix(Blood, Ichor, Filth, Ectoplasm) };
+				template<> inline constexpr color_t Fluids<fluid_e::BloodyIchorousFilthyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 			}
 		} // namespace materials
 
@@ -105,15 +114,16 @@ namespace necrowarp {
 			static constexpr color_t Zinc{ u8{ 186 }, u8{ 196 }, u8{ 200 } };
 			static constexpr color_t Brass{ u8{ 181 }, u8{ 166 }, u8{ 66 } };
 
-			namespace shackles {
-				static constexpr color_t Calcitic{ u8{ 255 }, u8{ 255 }, u8{ 240 } };
-				static constexpr color_t Spectral{ u8{  72 }, u8{ 100 }, u8{  83 } };
-				static constexpr color_t Sanguine{ u8{ 157 }, u8{  34 }, u8{  53 } };
-				static constexpr color_t Galvanic{ u8{  42 }, u8{  74 }, u8{ 110 } };
-				static constexpr color_t Ravenous{ u8{  72 }, u8{ 100 }, u8{  83 } };
-				static constexpr color_t Wretched{ u8{ 157 }, u8{  34 }, u8{  53 } };
-				static constexpr color_t Abyssal{ u8{  42 }, u8{  74 }, u8{ 110 } };
-			} // namespace shackles
+			template<shackle_e Shackle> static constexpr color_t Shackles;
+
+			template<> inline constexpr color_t Shackles<shackle_e::Calcitic>{ u8{ 255 }, u8{ 255 }, u8{ 240 } };
+			template<> inline constexpr color_t Shackles<shackle_e::Spectral>{ u8{  72 }, u8{ 100 }, u8{  83 } };
+			template<> inline constexpr color_t Shackles<shackle_e::Sanguine>{ u8{ 157 }, u8{  34 }, u8{  53 } };
+			template<> inline constexpr color_t Shackles<shackle_e::Galvanic>{ u8{  42 }, u8{  74 }, u8{ 110 } };
+			template<> inline constexpr color_t Shackles<shackle_e::Ravenous>{ u8{  72 }, u8{ 100 }, u8{  83 } };
+			template<> inline constexpr color_t Shackles<shackle_e::Wretched>{ u8{ 157 }, u8{  34 }, u8{  53 } };
+			template<> inline constexpr color_t Shackles<shackle_e::Infernal>{ u8{ 106 }, u8{  27 }, u8{  54 } };
+			template<> inline constexpr color_t Shackles<shackle_e::Cerebral>{ u8{ 255 }, u8{ 129 }, u8{ 234 } };
 		} // namespace metals
 	} // namespace colors
 } // namespace necrowarp

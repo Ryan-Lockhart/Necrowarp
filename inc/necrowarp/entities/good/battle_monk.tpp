@@ -40,7 +40,7 @@ namespace necrowarp {
 
 		player.receive_death_boon<battle_monk_t>();
 
-		++steam_stats::stats<steam_stat_e::BattleMonksSlain, i32>;
+		++steam_stats::stats<steam_stat_e::BattleMonksSlain>;
 
 		scorekeeper.add(entity_e::BattleMonk);
 	}

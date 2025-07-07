@@ -40,9 +40,9 @@ namespace necrowarp {
 
 			entity_registry<MapType>.dependent update<player_t>(position, random_unsafe_position.value());
 
-			++steam_stats::stats<steam_stat_e::RandomWarps, i32>;
+			++steam_stats::stats<steam_stat_e::RandomWarps>;
 
-			steam_stats::stats<steam_stat_e::MetersWarped, f32> += offset_t::distance<f32>(position, player.position);
+			steam_stats::stats<steam_stat_e::MetersWarped> += offset_t::distance<f32>(position, player.position);
 
 			warp_cursor<MapType>.set(player.position);
 			draw_warp_cursor = true;
@@ -52,9 +52,9 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent update<player_t>(position, random_safe_position.value());
 
-		++steam_stats::stats<steam_stat_e::RandomWarps, i32>;
+		++steam_stats::stats<steam_stat_e::RandomWarps>;
 
-		steam_stats::stats<steam_stat_e::MetersWarped, f32> += offset_t::distance<f32>(position, player.position);
+		steam_stats::stats<steam_stat_e::MetersWarped> += offset_t::distance<f32>(position, player.position);
 
 		warp_cursor<MapType>.set(player.position);
 		draw_warp_cursor = true;

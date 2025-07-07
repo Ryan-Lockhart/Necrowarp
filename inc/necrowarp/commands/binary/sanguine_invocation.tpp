@@ -98,7 +98,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::BloodConsumed, f32> += fluid_pool_volume(pools_consumed);
+		steam_stats::stats<steam_stat_e::BloodConsumed> += fluid_pool_volume(pools_consumed);
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -148,7 +148,7 @@ namespace necrowarp {
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::SanguineInvocations, i32>;
+		++steam_stats::stats<steam_stat_e::SanguineInvocations>;
 
 		player.pay_cost(discount_e::SanguineInvocation);
 

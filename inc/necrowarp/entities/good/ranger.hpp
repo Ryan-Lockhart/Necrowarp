@@ -18,6 +18,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_variants<ranger_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<ranger_t> {
 		static constexpr bool value = true;
 	};
@@ -81,8 +85,6 @@ namespace necrowarp {
 	template<> struct is_entity_command_valid<ranger_t, loose_t> {
 		static constexpr bool value = true;
 	};
-
-	template<> inline constexpr glyph_t entity_glyphs<ranger_t>{ glyphs::Ranger };
 
 	struct ranger_t {
 	  private:
@@ -214,13 +216,25 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<ranger_t>, position); }
+		inline glyph_t current_glyph() const noexcept {
+			if (nocked) {
+				return has_ammunition() ?
+					glyphs::NockedFullRanger :
+					glyphs::NockedEmptyRanger;
+			} else {
+				return has_ammunition() ?
+					glyphs::UnnockedFullRanger :
+					glyphs::UnnockedEmptyRanger;
+			}
+		}
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<ranger_t>, position, offset); }
+		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<ranger_t>, position + camera.get_offset()); }
+		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<ranger_t>, position + camera.get_offset(), offset); }
+		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
+
+		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Ranger; }
 

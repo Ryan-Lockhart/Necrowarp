@@ -50,7 +50,7 @@ namespace necrowarp {
 							} else if (game_map<MapType>[pos].solid) {
 								return colors::light::Charcoal;
 							} else if (!fluid_map<MapType>[pos].contains(fluid_e::None)) {
-								return fluid_color(static_cast<fluid_e>(fluid_map<MapType>[pos]));
+								return to_color(static_cast<fluid_e>(fluid_map<MapType>[pos]));
 							} else {
 								return colors::dark::Marble;
 							}

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <necrowarp/entities/evil/wraith.hpp>
+#include <necrowarp/entities/evil/exalted/dreadwurm.hpp>
 
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline command_pack_t wraith_t::think() const noexcept {
+	template<map_type_e MapType> inline command_pack_t dreadwurm_t::think() const noexcept {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
@@ -26,7 +26,7 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void wraith_t::die() noexcept {
-		spill_fluid<MapType>(position, fluid_type<wraith_t>::type);
+	template<map_type_e MapType> inline void dreadwurm_t::die() noexcept {
+		spill_fluid<MapType>(position, fluid_type<dreadwurm_t>::type);
 	}
 } // namespace necrowarp

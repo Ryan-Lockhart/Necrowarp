@@ -36,7 +36,7 @@ namespace necrowarp {
 
 		player.receive_death_boon<berserker_t>();
 
-		++steam_stats::stats<steam_stat_e::BerserkersSlain, i32>;
+		++steam_stats::stats<steam_stat_e::BerserkersSlain>;
 
 		scorekeeper.add(entity_e::Berserker);
 	}

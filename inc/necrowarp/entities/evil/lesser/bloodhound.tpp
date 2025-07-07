@@ -1,6 +1,6 @@
 #pragma once
 
-#include <necrowarp/entities/evil/bloodhound.hpp>
+#include <necrowarp/entities/evil/lesser/bloodhound.hpp>
 
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <necrowarp/entities/evil/bonespur.hpp>
+#include <necrowarp/entities/evil/exalted/bonespur.hpp>
 
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>

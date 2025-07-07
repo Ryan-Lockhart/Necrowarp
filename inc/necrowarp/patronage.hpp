@@ -120,11 +120,12 @@ namespace necrowarp {
 
 		CalciticInvocation,		// domain of bones; patrons are Kalypdrot, Rathghul, and Ionna; minions are skeletons and bonespurs
 		SpectralInvocation,		// domain of ichor; patrons are Akurakhaithan, Rathghul, and Saeiligarkeuss; minions are cultists and wraithes
-		SanguineInvocation,		// domain of blood; patrons are Viedskavn, Merirfin, and Neolithia; minions are bloodhounds and hemogheists
+		SanguineInvocation,		// domain of blood; patrons are Viedskavn, Merirfin, and Neolithia; minions are bloodhounds and hemogheist
 		GalvanicInvocation,		// domain of metal; patrons are Thuljanor, Praethornyn, and Exar; minions are animated suits of armor and death knights
 		RavenousInvocation,		// domain of flesh; patrons are Tselgwedixxikog, Sketzuum, and Praethornyn; minions are abominations and flesh golems
 	 	WretchedInvocation,		// domain of filth; patrons are Ionna, Kalypdrot, and Rathghul; minions are draugr and dreadwurms
-		AbyssalInvocation,		// domain of cerebra; patrons are Saeiligarkeuss, the Moslager, and Akurakhaithan; minions are hamr, furtive horrors, chromalesia, and isosceline
+		CerebralInvocation,		// domain of cerebra; patrons are Rathghul, Akurakhaithan, and Saeiligarkeuss; minions are chromalesia and isosceline
+		InfernalInvocation,		// domain of ectoplasm; patrons are Saeiligarkeuss, the Moslager, and Akurakhaithan; minions are hamr and furtive horrors
 
 		NecromanticAscendance,	// expend massive amount of energy for invulnerability and empowered invocations
 		CalamitousRetaliation, 	// kill all entities on the map, regardless of allegiance
@@ -156,8 +157,10 @@ namespace necrowarp {
 				return 4;
 			} case discount_e::WretchedInvocation: {
 				return 4;
-			} case discount_e::AbyssalInvocation: {
-				return 5;
+			} case discount_e::InfernalInvocation: {
+				return 4;
+			} case discount_e::CerebralInvocation: {
+				return 4;
 			} case discount_e::NecromanticAscendance: {
 				return 1;
 			} case discount_e::CalamitousRetaliation: {
@@ -192,8 +195,10 @@ namespace necrowarp {
 				return "Ravenous Invocation";
 			} case discount_e::WretchedInvocation: {
 				return "Wretched Invocation";
-			} case discount_e::AbyssalInvocation: {
-				return "Abyssal Invocation";
+			} case discount_e::InfernalInvocation: {
+				return "Infernal Invocation";
+			} case discount_e::CerebralInvocation: {
+				return "Cerebral Invocation";
 			} case discount_e::NecromanticAscendance: {
 				return "Necromantic Ascendance";
 			} case discount_e::CalamitousRetaliation: {
@@ -285,7 +290,8 @@ namespace necrowarp {
 		const discount_t galvanic_invocation{};
 		const discount_t ravenous_invocation{};
 		const discount_t wretched_invocation{};
-		const discount_t abyssal_invocation{};
+		const discount_t infernal_invocation{};
+		const discount_t cerebral_invocation{};
 
 		const discount_t necromantic_ascendance{};
 		const discount_t calamitous_retaliation{};
@@ -316,8 +322,10 @@ namespace necrowarp {
 					return ravenous_invocation;
 				} case discount_e::WretchedInvocation: {
 					return wretched_invocation;
-				} case discount_e::AbyssalInvocation: {
-					return abyssal_invocation;
+				} case discount_e::InfernalInvocation: {
+					return infernal_invocation;
+				} case discount_e::CerebralInvocation: {
+					return cerebral_invocation;
 				} case discount_e::NecromanticAscendance: {
 					return necromantic_ascendance;
 				} case discount_e::CalamitousRetaliation: {
@@ -346,7 +354,8 @@ namespace necrowarp {
 		.galvanic_invocation = discount_t{ 0, 0, 0 },
 		.ravenous_invocation = discount_t{ 0, 0, 0 },
 		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.abyssal_invocation = discount_t{ 0, 0, 0 },
+		.infernal_invocation = discount_t{ 0, 0, 0 },
+		.cerebral_invocation = discount_t{ 0, 0, 0 },
 
 		.necromantic_ascendance = discount_t{ 0, 0, 0 },
 		.calamitous_retaliation = discount_t{ 0, 0, 0 },
@@ -369,7 +378,8 @@ namespace necrowarp {
 		.galvanic_invocation = discount_t{ -4, 0, 4 },
 		.ravenous_invocation = discount_t{ 0, 0, 0 },
 		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.abyssal_invocation = discount_t{ 0, 0, 0 },
+		.infernal_invocation = discount_t{ 0, 0, 0 },
+		.cerebral_invocation = discount_t{ 0, 0, 0 },
 
 		.necromantic_ascendance = discount_t{ -8, 0, 4 },
 		.calamitous_retaliation = discount_t{ 0, 0, 0 },
@@ -392,7 +402,8 @@ namespace necrowarp {
 		.galvanic_invocation = discount_t{ -4, 0, 4 },
 		.ravenous_invocation = discount_t{ 0, 0, 0 },
 		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.abyssal_invocation = discount_t{ 0, 0, 0 },
+		.infernal_invocation = discount_t{ 0, 0, 0 },
+		.cerebral_invocation = discount_t{ 0, 0, 0 },
 
 		.necromantic_ascendance = discount_t{ -4, 0, 8 },
 		.calamitous_retaliation = discount_t{ 0, 0, 0 },
@@ -415,7 +426,8 @@ namespace necrowarp {
 		.galvanic_invocation = discount_t{ -4, 0, 4 },
 		.ravenous_invocation = discount_t{ 0, 0, 0 },
 		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.abyssal_invocation = discount_t{ 0, 0, 0 },
+		.infernal_invocation = discount_t{ 0, 0, 0 },
+		.cerebral_invocation = discount_t{ 0, 0, 0 },
 
 		.necromantic_ascendance = discount_t{ -6, 0, 6 },
 		.calamitous_retaliation = discount_t{ 0, 0, 0 },
@@ -438,7 +450,8 @@ namespace necrowarp {
 		.galvanic_invocation = discount_t{ -6, 0, 6 },
 		.ravenous_invocation = discount_t{ 0, 0, 0 },
 		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.abyssal_invocation = discount_t{ 0, 0, 0 },
+		.infernal_invocation = discount_t{ 0, 0, 0 },
+		.cerebral_invocation = discount_t{ 0, 0, 0 },
 
 		.necromantic_ascendance = discount_t{ 0, 8, 16 },
 		.calamitous_retaliation = discount_t{ 0, 0, 0 },

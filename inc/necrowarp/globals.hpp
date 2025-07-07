@@ -223,7 +223,7 @@ namespace necrowarp {
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
 
 		static constexpr extent_t TilesetSize{ 16, 4 };
-		static constexpr extent_t AnimatedSize{ 16, 29 };
+		static constexpr extent_t AnimatedSize{ 16, 30 };
 
 		static constexpr extent_t IconsetSize{ 2, 4 };
 
@@ -360,9 +360,11 @@ namespace necrowarp {
 
 		constexpr bool OopsAllAdventurers{ false };
 		constexpr bool OopsAllMercenaries{ false };
-		constexpr bool OopsAllThetwo{ false };
 		constexpr bool OopsAllRangers{ false };
 		constexpr bool OopsAllSkulkers{ false };
+		constexpr bool OopsAllMistLadies{ false };
+		constexpr bool OopsAllBannerBearers{ false };
+		constexpr bool OopsAllThetwo{ false };
 		constexpr bool OopsAllBattleMonks{ false };
 		constexpr bool OopsAllBerserkers{ true };
 		constexpr bool OopsAllPaladins{ false };

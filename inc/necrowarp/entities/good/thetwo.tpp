@@ -52,7 +52,7 @@ namespace necrowarp {
 
 		player.receive_death_boon<thetwo_t>(droppings);
 
-		++steam_stats::stats<steam_stat_e::ThetwoSlain, i32>;
+		++steam_stats::stats<steam_stat_e::ThetwoSlain>;
 
 		scorekeeper.add(entity_e::Thetwo, droppings);
 	}

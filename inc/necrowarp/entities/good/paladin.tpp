@@ -37,7 +37,7 @@ namespace necrowarp {
 
 		player.receive_death_boon<paladin_t>();
 
-		++steam_stats::stats<steam_stat_e::PaladinsSlain, i32>;
+		++steam_stats::stats<steam_stat_e::PaladinsSlain>;
 
 		scorekeeper.add(entity_e::Paladin);
 	}

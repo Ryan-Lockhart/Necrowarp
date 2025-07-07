@@ -1,12 +1,12 @@
 #pragma once
 
-#include <necrowarp/entities/evil/animated_suit.hpp>
+#include <necrowarp/entities/evil/lesser/cultist.hpp>
 
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline command_pack_t animated_suit_t::think() const noexcept {
+	template<map_type_e MapType> inline command_pack_t cultist_t::think() const noexcept {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
@@ -26,9 +26,9 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void animated_suit_t::die() noexcept {
-		object_registry<MapType>.spill(metal_t{ position, state });
+	template<map_type_e MapType> inline void cultist_t::die() noexcept {
+		object_registry<MapType>.spill(bones_t{ position, decay_e::Rotted });
 
-		spill_fluid<MapType>(position, fluid_type<animated_suit_t>::type);
+		spill_fluid<MapType>(position, fluid_type<cultist_t>::type);
 	}
 } // namespace necrowarp

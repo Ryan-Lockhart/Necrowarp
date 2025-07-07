@@ -100,7 +100,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::BonesConsumed, i32> += accumulated_skulls;
+		steam_stats::stats<steam_stat_e::BonesConsumed> += accumulated_skulls;
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -150,7 +150,7 @@ namespace necrowarp {
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::CalciticInvocations, i32>;
+		++steam_stats::stats<steam_stat_e::CalciticInvocations>;
 
 		player.pay_cost(discount_e::CalciticInvocation);
 

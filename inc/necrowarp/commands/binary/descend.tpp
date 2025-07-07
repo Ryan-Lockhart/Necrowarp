@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, descend_t>::process() const noexcept {
-		++steam_stats::stats<steam_stat_e::MetersMoved, f32>;
+		++steam_stats::stats<steam_stat_e::MetersMoved>;
 
 		descent_flag = true;
 	}

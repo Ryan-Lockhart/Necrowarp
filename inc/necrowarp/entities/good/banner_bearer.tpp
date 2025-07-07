@@ -36,7 +36,7 @@ namespace necrowarp {
 
 		player.receive_death_boon<banner_bearer_t>();
 
-		++steam_stats::stats<steam_stat_e::BannerBearersSlain, i32>;
+		++steam_stats::stats<steam_stat_e::BannerBearersSlain>;
 
 		scorekeeper.add(entity_e::BannerBearer);
 	}

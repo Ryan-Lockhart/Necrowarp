@@ -4,7 +4,7 @@
 
 #include <cstddef>
 
-#include <necrowarp/cell.hpp>
+#include <necrowarp/constants/enums.hpp>
 
 #include <magic_enum/magic_enum_utility.hpp>
 #include <magic_enum/magic_enum_switch.hpp>
@@ -28,10 +28,10 @@ namespace necrowarp {
 	struct abomination_t;
 	// wretched domain (filth): a lesser minion that grapples enemies
 	struct draugaz_t;
-	// abyssal domain (life): a lesser minion that controls the mind of its host
-	struct hamaz_t;
-	// abyssal domain (cerebra): a lesser minion that spreads ectoplasm
-	struct chromalese_t;
+	// cerebral domain (cerebra): a lesser minion that explodes on death
+ // struct furtive_horror_t;
+	// infernal domain (ectoplasm): a lesser minion that spreads ectoplasm
+ // struct chromalese_t;
 
 	// exalted minions
 
@@ -46,11 +46,11 @@ namespace necrowarp {
 	// ravenous domain (flesh): an exalted minion that consumes enemies with less health
 	struct flesh_golem_t;
 	// wretched domain (filth): an exalted minion that spreads filth to vicitms
-	struct dreadworm_t;
-	// abyssal domain (cerebra): a lesser minion that explodes on death
-	struct furtive_horror_t;
-	// abyssal domain (ectoplasm): a lesser minion that kills instantaneously
-	struct isoscol_t;
+	struct dreadwurm_t;
+	// cerebral domain (cerebra): a lesser minion that controls the mind of its host
+ // struct hamaz_t;
+	// infernal domain (ectoplasm): an exalted minion that kills instantaneously
+ // struct isoscol_t;
 
 	// do-gooders
 
@@ -91,16 +91,12 @@ namespace necrowarp {
 		animated_suit_t, \
 		abomination_t, \
 		draugaz_t, \
-		hamaz_t, \
-		chromalese_t, \
 		bonespur_t, \
 		wraith_t, \
 		hemogheist_t, \
 		death_knight_t, \
 		flesh_golem_t, \
-		dreadworm_t, \
-		furtive_horror_t, \
-		isoscol_t
+		dreadwurm_t
 	
 	#define ALL_EVIL \
 		player_t, \
@@ -152,17 +148,17 @@ namespace necrowarp {
 		AnimatedSuit,
 		Abomination,
 		Draugaz,
-		Hamaz,
-		Chromalese,
+	 // Hamaz,
+	 // Chromalese,
 
 		Bonespur,
 		Wraith,
 		Hemogheist,
 		DeathKnight,
 		FleshGolem,
-		Dreadworm,
-		FurtiveHorror,
-		Isoscol,
+		Dreadwurm,
+	 // FurtiveHorror,
+	 // Isoscol,
 
 		Adventurer,
 		Mercenary,
@@ -196,11 +192,11 @@ namespace necrowarp {
 				return "abomination";
 			} case entity_e::Draugaz: {
 				return "draugaz";
-			} case entity_e::Hamaz: {
+			}/* case entity_e::Hamaz: {
 				return "hamaz";
 			} case entity_e::Chromalese: {
 				return "chromalese";
-			} case entity_e::Bonespur: {
+			}*/ case entity_e::Bonespur: {
 				return "bonespur";
 			} case entity_e::Wraith: {
 				return "wraith";
@@ -210,13 +206,13 @@ namespace necrowarp {
 				return "death knight";
 			} case entity_e::FleshGolem: {
 				return "flesh golem";
-			} case entity_e::Dreadworm: {
-				return "dreadworm";
-			} case entity_e::FurtiveHorror: {
+			} case entity_e::Dreadwurm: {
+				return "dreadwurm";
+			}/* case entity_e::FurtiveHorror: {
 				return "furtive horror";
 			} case entity_e::Isoscol: {
 				return "isoscol";
-			} case entity_e::Adventurer: {
+			}*/ case entity_e::Adventurer: {
 				return "adventurer";
 			} case entity_e::Mercenary: {
 				return "mercenary";
@@ -258,11 +254,11 @@ namespace necrowarp {
 				return "abominations";
 			} case entity_e::Draugaz: {
 				return "draugr";
-			} case entity_e::Hamaz: {
+			}/* case entity_e::Hamaz: {
 				return "hamr";
 			} case entity_e::Chromalese: {
 				return "chromalesia";
-			} case entity_e::Bonespur: {
+			}*/ case entity_e::Bonespur: {
 				return "bonespurs";
 			} case entity_e::Wraith: {
 				return "wraithes";
@@ -272,13 +268,13 @@ namespace necrowarp {
 				return "death knights";
 			} case entity_e::FleshGolem: {
 				return "flesh golems";
-			} case entity_e::Dreadworm: {
-				return "dreadworms";
-			} case entity_e::FurtiveHorror: {
+			} case entity_e::Dreadwurm: {
+				return "dreadwurms";
+			}/* case entity_e::FurtiveHorror: {
 				return "furtive horrors";
 			} case entity_e::Isoscol: {
 				return "isoscoline";
-			} case entity_e::Adventurer: {
+			}*/ case entity_e::Adventurer: {
 				return "adventurers";
 			} case entity_e::Mercenary: {
 				return "mercenaries";
@@ -313,18 +309,18 @@ namespace necrowarp {
 			} case entity_e::Cultist: {
 				return colors::dark::Magenta;
 			} case entity_e::Bloodhound: {
-				return colors::materials::light::Blood;
+				return colors::materials::light::Fluids<fluid_e::Blood>;
 			} case entity_e::AnimatedSuit: {
 				return colors::metals::Tin;
 			} case entity_e::Abomination: {
 				return colors::dark::Orange;
 			} case entity_e::Draugaz: {
 				return mix(colors::Orange, colors::Green);
-			} case entity_e::Hamaz: {
+			}/* case entity_e::Hamaz: {
 				return colors::materials::light::Ectoplasm;
 			} case entity_e::Chromalese: {
 				return colors::materials::dark::Ectoplasm;
-			} case entity_e::Bonespur: {
+			}*/ case entity_e::Bonespur: {
 				return colors::Marble;
 			} case entity_e::Wraith: {
 				return colors::light::Green;
@@ -333,14 +329,14 @@ namespace necrowarp {
 			} case entity_e::DeathKnight: {
 				return colors::metals::Iron;
 			} case entity_e::FleshGolem: {
-				return mix(colors::Orange, colors::materials::Blood);
-			} case entity_e::Dreadworm: {
+				return mix(colors::Orange, colors::materials::Fluids<fluid_e::Blood>);
+			} case entity_e::Dreadwurm: {
 				return mix(colors::Orange, colors::light::Grey);
-			} case entity_e::FurtiveHorror: {
+			}/* case entity_e::FurtiveHorror: {
 				return mix(colors::Blue, colors::light::Grey);
 			} case entity_e::Isoscol: {
 				return mix(colors::Green, colors::light::Grey);
-			} case entity_e::Adventurer: {
+			}*/ case entity_e::Adventurer: {
 				return colors::metals::Bronze;
 			} case entity_e::Mercenary: {
 				return colors::dark::Yellow;
@@ -391,19 +387,19 @@ namespace necrowarp {
 		AnimatedSuit = Bloodhound << 1,
 		Abomination = AnimatedSuit << 1,
 		Draugaz = Abomination << 1,
-		Hamaz = Draugaz << 1,
-		Chromalese = Hamaz << 1,
+	 // Hamaz = Draugaz << 1,
+	 // Chromalese = Hamaz << 1,
 
-		Bonespur = Chromalese << 1,
+		Bonespur = Draugaz << 1, // Chromalese << 1,
 		Wraith = Bonespur << 1,
 		Hemogheist = Bonespur << 1,
 		DeathKnight = Hemogheist << 1,
 		FleshGolem = DeathKnight << 1,
-		Dreadworm = FleshGolem << 1,
-		FurtiveHorror = Dreadworm << 1,
-		Isoscol = FurtiveHorror << 1,
+		Dreadwurm = FleshGolem << 1,
+	 // FurtiveHorror = Dreadwurm << 1,
+	 // Isoscol = FurtiveHorror << 1,
 
-		Adventurer = Isoscol << 1,
+		Adventurer = Dreadwurm << 1, // Isoscol << 1,
 		Mercenary = Adventurer << 1,
 		Thetwo = Mercenary << 1,
 		Ranger = Thetwo << 1,

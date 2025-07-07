@@ -103,11 +103,11 @@ template<> struct phase_state_t<phase_e::GameOver> {
 
 					using Type = to_stat_type<Stat>::type;
 
-					const Type current_value{ steam_stats::stats<Stat, Type>.get_value() };
-					const Type delta_value{ steam_stats::stats<Stat, Type>.get_value() - steam_stats::stats<Stat, Type>.initial_value };
+					const Type current_value{ steam_stats::stats<Stat>.get_value() };
+					const Type delta_value{ steam_stats::stats<Stat>.get_value() - steam_stats::stats<Stat>.initial_value };
 
 					stats_str.concatenate(std::format(" {}: {} ({}{}) \n\n",
-						steam_stats::stats<Stat, Type>.display_name,
+						steam_stats::stats<Stat>.display_name,
 						std::to_string(current_value),
 						delta_value > 0 ? "+" : "",
 						std::to_string(delta_value)

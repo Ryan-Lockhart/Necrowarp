@@ -86,6 +86,6 @@ namespace necrowarp {
 
 		phase.transition(phase_e::GameOver);
 
-		++steam_stats::stats<steam_stat_e::PlayerDeaths, i32>;
+		++steam_stats::stats<steam_stat_e::PlayerDeaths>;
 	}
 } // namespace necrowarp

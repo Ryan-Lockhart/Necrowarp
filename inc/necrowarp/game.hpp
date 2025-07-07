@@ -230,7 +230,7 @@ namespace necrowarp {
 					const offset_t pos{ x, y };
 
 					game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
-					fluid_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, fluid_e::None);
+					fluid_map<MapType>[pos].recalculate_index(fluid_map<MapType>, pos, fluid_e::None);
 				}
 			}
 
@@ -295,8 +295,8 @@ namespace necrowarp {
 
 			++game_stats.game_depth;
 #if !defined(STEAMLESS)
-			if (steam_stats_s::stats<steam_stat_e::LowestDepth, i32>.get_value() > -static_cast<i32>(game_stats.game_depth)) {
-				steam_stats_s::stats<steam_stat_e::LowestDepth, i32> = -static_cast<i32>(game_stats.game_depth);
+			if (steam_stats_s::stats<steam_stat_e::LowestDepth>.get_value() > -static_cast<i32>(game_stats.game_depth)) {
+				steam_stats_s::stats<steam_stat_e::LowestDepth> = -static_cast<i32>(game_stats.game_depth);
 			}
 #endif
 			fluid_positions.clear();
@@ -309,7 +309,7 @@ namespace necrowarp {
 					continue;
 				}
 
-				const fluid_e fluid{ fluid_map<MapType>.at(position) };
+				const fluid_e fluid{ fluid_map<MapType>[position] };
 
 				if (fluid == fluid_e::None) {
 					continue;
@@ -382,7 +382,7 @@ namespace necrowarp {
 					}
 
 					game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
-					fluid_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, fluid_e::None);
+					fluid_map<MapType>[pos].recalculate_index(fluid_map<MapType>, pos, fluid_e::None);
 				}
 			}
 
@@ -399,7 +399,7 @@ namespace necrowarp {
 				}
 			}
 #if !defined(STEAMLESS)
-			steam_stats_s::stats<steam_stat_e::MetersMoved, f32> += offset_t::distance<f32>(previous_position, player.position);
+			steam_stats_s::stats<steam_stat_e::MetersMoved> += offset_t::distance<f32>(previous_position, player.position);
 #endif
 			cauto portal_pos{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
 
@@ -557,12 +557,6 @@ namespace necrowarp {
 				return true;
 			}
 
-			if constexpr (globals::OopsAllThetwo) {
-				entity_registry<MapType>.dependent add<true>(thetwo_t{ spawn_pos.value() });
-
-				return true;
-			}
-
 			if constexpr (globals::OopsAllRangers) {
 				entity_registry<MapType>.dependent add<true>(ranger_t{ spawn_pos.value() });
 
@@ -571,6 +565,24 @@ namespace necrowarp {
 
 			if constexpr (globals::OopsAllSkulkers) {
 				entity_registry<MapType>.dependent add<true>(skulker_t{ spawn_pos.value() });
+
+				return true;
+			}
+
+			if constexpr (globals::OopsAllMistLadies) {
+				entity_registry<MapType>.dependent add<true>(mist_lady_t{ spawn_pos.value() });
+
+				return true;
+			}
+
+			if constexpr (globals::OopsAllBannerBearers) {
+				entity_registry<MapType>.dependent add<true>(banner_bearer_t{ spawn_pos.value() });
+
+				return true;
+			}
+
+			if constexpr (globals::OopsAllThetwo) {
+				entity_registry<MapType>.dependent add<true>(thetwo_t{ spawn_pos.value() });
 
 				return true;
 			}

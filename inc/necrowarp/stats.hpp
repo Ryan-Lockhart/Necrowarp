@@ -164,7 +164,8 @@ namespace necrowarp {
 		GalvanicInvocations,
 		RavenousInvocations,
 		WretchedInvocations,
-		AbyssalInvocations,
+		InfernalInvocations,
+		CerebralInvocations,
 
 		NecromanticAscensions,
 		CalamitousRetaliations,
@@ -225,7 +226,8 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::GalvanicInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::RavenousInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::WretchedInvocations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::AbyssalInvocations> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::InfernalInvocations> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::CerebralInvocations> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::NecromanticAscensions> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::CalamitousRetaliations> { using type = i32; };
@@ -298,8 +300,10 @@ namespace necrowarp {
 				return "ravenous_invocations";
 			} case steam_stat_e::WretchedInvocations: {
 				return "wretched_invocations";
-			} case steam_stat_e::AbyssalInvocations: {
-				return "abyssal_invocations";
+			} case steam_stat_e::InfernalInvocations: {
+				return "infernal_invocations";
+			} case steam_stat_e::CerebralInvocations: {
+				return "cerebral_invocations";
 			} case steam_stat_e::NecromanticAscensions: {
 				return "necromantic_ascensions";
 			} case steam_stat_e::CalamitousRetaliations: {
@@ -394,8 +398,10 @@ namespace necrowarp {
 				return "Ravenous Invocations";
 			} case steam_stat_e::WretchedInvocations: {
 				return "Wretched Invocations";
-			} case steam_stat_e::AbyssalInvocations: {
-				return "Abyssal Invocations";
+			} case steam_stat_e::InfernalInvocations: {
+				return "Infernal Invocations";
+			} case steam_stat_e::CerebralInvocations: {
+				return "Cerebral Invocations";
 			} case steam_stat_e::NecromanticAscensions: {
 				return "Necromantic Ascensions";
 			} case steam_stat_e::CalamitousRetaliations: {
@@ -556,9 +562,7 @@ namespace necrowarp {
 		static STEAM_CALLBACK(steam_stats_s, on_user_stats_stored, UserStatsStored_t);
 		static STEAM_CALLBACK(steam_stats_s, on_global_stats_received, GlobalStatsReceived_t);
 
-		template<steam_stat_e Type, typename T>
-			requires (std::is_same<T, i32>::value || std::is_same<T, f32>::value)
-		static inline steam_stat_t<Type, T> stats{};
+		template<steam_stat_e Type> static inline steam_stat_t<Type, typename to_stat_type<Type>::type> stats{};
 		
 		static inline ptr<ISteamUserStats> user_stats() {
 			if constexpr (IsSteamless) {
@@ -589,10 +593,8 @@ namespace necrowarp {
 
 			magic_enum::enum_for_each<steam_stat_e>([] (auto val) -> void {
 				constexpr steam_stat_e Stat{ val };
-
-				using Type = to_stat_type<Stat>::type;
 				
-				stats<Stat, Type>.initial_value = stats<Stat, Type>.get_value();
+				stats<Stat>.initial_value = stats<Stat>.get_value();
 			});
 		}
 

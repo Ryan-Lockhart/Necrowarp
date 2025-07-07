@@ -19,13 +19,13 @@ namespace necrowarp {
 			return;
 		}
 
-		++steam_stats::stats<steam_stat_e::TargetWarps, i32>;
+		++steam_stats::stats<steam_stat_e::TargetWarps>;
 
 		player.pay_cost(discount_e::TargetWarp);
 
 		entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-		steam_stats::stats<steam_stat_e::MetersWarped, f32> += offset_t::distance<f32>(source_position, player.position);
+		steam_stats::stats<steam_stat_e::MetersWarped> += offset_t::distance<f32>(source_position, player.position);
 
 		draw_warp_cursor = false;		
 	}

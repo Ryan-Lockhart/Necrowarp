@@ -26,7 +26,7 @@ namespace necrowarp {
 
 		player.receive_death_boon<mist_lady_t>();
 
-		++steam_stats::stats<steam_stat_e::MistLadiesSlain, i32>;
+		++steam_stats::stats<steam_stat_e::MistLadiesSlain>;
 
 		scorekeeper.add(entity_e::MistLady);
 	}

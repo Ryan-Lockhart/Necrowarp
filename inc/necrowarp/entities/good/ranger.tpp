@@ -150,7 +150,7 @@ namespace necrowarp {
 
 		player.receive_death_boon<ranger_t>();
 
-		++steam_stats::stats<steam_stat_e::RangersSlain, i32>;
+		++steam_stats::stats<steam_stat_e::RangersSlain>;
 
 		scorekeeper.add(entity_e::Ranger);
 	}

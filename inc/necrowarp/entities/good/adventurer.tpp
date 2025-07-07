@@ -36,7 +36,7 @@ namespace necrowarp {
 
 		player.receive_death_boon<adventurer_t>();
 
-		++steam_stats::stats<steam_stat_e::AdventurersSlain, i32>;
+		++steam_stats::stats<steam_stat_e::AdventurersSlain>;
 
 		scorekeeper.add(entity_e::Adventurer);
 

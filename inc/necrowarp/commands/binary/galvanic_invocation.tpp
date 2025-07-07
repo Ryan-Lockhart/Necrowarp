@@ -105,7 +105,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::MetalConsumed, i32> += metal_consumed;
+		steam_stats::stats<steam_stat_e::MetalConsumed> += metal_consumed;
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -155,7 +155,7 @@ namespace necrowarp {
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::GalvanicInvocations, i32>;
+		++steam_stats::stats<steam_stat_e::GalvanicInvocations>;
 
 		player.pay_cost(discount_e::GalvanicInvocation);
 

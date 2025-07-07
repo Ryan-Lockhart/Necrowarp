@@ -60,12 +60,14 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 2 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 8> EntityPriorities{
+		static constexpr std::array<entity_e, 10> EntityPriorities{
 			entity_e::Adventurer,
 			entity_e::Mercenary,
-			entity_e::Thetwo,
 			entity_e::Ranger,
 			entity_e::Skulker,
+			entity_e::MistLady,
+			entity_e::BannerBearer,
+			entity_e::Thetwo,
 			entity_e::BattleMonk,
 			entity_e::Berserker,
 			entity_e::Paladin,
