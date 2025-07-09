@@ -25,7 +25,7 @@ cxx = meson.get_compiler('cpp')
 
 if target_machine.system() == 'windows'
 
-    necrowarp_private_includes = include_directories('src', 'C:/dev/msys64/ucrt64/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include')
+    necrowarp_private_includes = include_directories('src', 'C:/dev/msys64/ucrt64/include/SDL2', 'C:/dev/steam/include', 'C:/dev/external/magic_enum/include', 'C:/dev/external/gtl/include')
 
     dyn_libs = ['C:/dev/steam/bin/win64/steam_api64.dll']
 
