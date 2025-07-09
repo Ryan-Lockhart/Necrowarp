@@ -87,7 +87,9 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline bool add(offset_t position) noexcept;
 
-		template<bool Force = false, NonPlayerEntity T> inline bool add(rval<T> entity) noexcept;
+		template<NonPlayerEntity T, bool Force = false> inline bool add(offset_t position) noexcept;
+
+		template<bool Force = false, NonPlayerEntity T> inline bool add(offset_t position, rval<T> entity) noexcept;
 
 		template<NonPlayerEntity EntityType> inline bool remove(offset_t position) noexcept;
 

@@ -69,7 +69,8 @@ namespace necrowarp {
 		}
 	};
 	
-	template<map_type_e MapType, extent_t PixelSize = extent_t{ 1, 1 }> struct minimap_t : public anchor_t, public embedded_minimap_t<MapType, PixelSize> {
+	template<map_type_e MapType, extent_t PixelSize = extent_t{ 1, 1 }> class minimap_t : public anchor_t, public embedded_minimap_t<MapType, PixelSize> {
+	  public:
 		constexpr minimap_t() noexcept : anchor_t{}, embedded_minimap_t<MapType, PixelSize>{} {}
 
 		constexpr minimap_t(anchor_t anchor, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_minimap_t<MapType, PixelSize>{ box, padding } {}

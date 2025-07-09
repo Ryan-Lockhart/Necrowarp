@@ -44,7 +44,8 @@ namespace necrowarp {
 		}
 	};
 
-	struct label_t : public anchor_t, public embedded_label_t {
+	class label_t : public anchor_t, public embedded_label_t {
+	  public:
 		constexpr label_t() noexcept : anchor_t{}, embedded_label_t{} {}
 
 		constexpr label_t(anchor_t anchor, embedded_label_t label) noexcept : anchor_t{ anchor }, embedded_label_t{ label } {}

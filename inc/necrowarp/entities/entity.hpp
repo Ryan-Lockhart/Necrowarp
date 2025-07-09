@@ -325,7 +325,7 @@ namespace necrowarp {
 			} case entity_e::Wraith: {
 				return colors::light::Green;
 			} case entity_e::Hemogheist: {
-				return colors::materials::dark::Blood;
+				return colors::materials::dark::Fluids<fluid_e::Blood>;
 			} case entity_e::DeathKnight: {
 				return colors::metals::Iron;
 			} case entity_e::FleshGolem: {
@@ -690,4 +690,19 @@ namespace necrowarp {
 	template<NonNullEntity EntityType> static inline constexpr usize num_death_sounds{ 0 };
 
 	template<NonNullEntity EntityType> static inline clip_pool_t<num_death_sounds<EntityType>> death_sounds;
+
+	template<NonNullEntity EntityType> struct entity_t {
+		offset_t position;
+		ptr<EntityType> entity;
+
+		template<region_e Region> bool is_valid() const noexcept;
+
+		bool is_newborn() const noexcept;
+
+		bool is_dead() const noexcept;
+
+		bool is_stunned() const noexcept;
+
+		bool has_affliction() const noexcept;
+	};
 } // namespace necrowarp

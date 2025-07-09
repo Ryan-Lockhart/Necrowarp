@@ -31,7 +31,7 @@ namespace necrowarp {
 				}
 			}
 
-			object_registry<MapType>.spill(arrow_t{ position });
+			object_registry<MapType>.spill(position, arrow_t{});
 		}
 
 		return missed;
@@ -40,7 +40,7 @@ namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, loose_t>::process() const noexcept {
 		ptr<ranger_t> maybe_ranger{ entity_registry<MapType>.dependent at<ranger_t>(source_position) };
 
-		if (maybe_ranger == nullptr || !maybe_ranger->in_range(target_position) || !maybe_ranger->can_loose()) {
+		if (maybe_ranger == nullptr || !ranger_t::in_range(source_position, target_position) || !maybe_ranger->can_loose()) {
 			return;
 		}
 
@@ -71,14 +71,18 @@ namespace necrowarp {
 						if constexpr (is_bleeder<entity_type>::value) {
 							constexpr fluid_e fluid{ fluid_type<entity_type>::type };
 
-							spill_fluid<MapType>(maybe_target->position, fluid);
+							spill_fluid<MapType>(target_position, fluid);
 						}
 
 						return;
 					}
 				}
 
-				maybe_target->template die<MapType>();
+				if constexpr (is_player<entity_type>::value) {
+					maybe_target->dependent die<MapType>();
+				} else {
+					maybe_target->dependent die<MapType>(target_position);
+				}
 
 				if constexpr (is_npc_entity<entity_type>::value) {
 					entity_registry<MapType>.dependent remove<entity_type>(target_position);

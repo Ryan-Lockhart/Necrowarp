@@ -8,7 +8,7 @@
 #include <necrowarp/scorekeeper.hpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline command_pack_t skulker_t::think() const noexcept {
+	template<map_type_e MapType> inline command_pack_t skulker_t::think(offset_t position) const noexcept {
 		concealment = skulker_t::determine_concealment(skulker_goal_map<MapType>.at(position));
 
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -24,9 +24,9 @@ namespace necrowarp {
 		cauto descent_pos{
 			[&]() -> std::optional<offset_t> {
 				if (concealment == concealment_e::Imperceptible) {
-					return entity_goal_map<MapType, player_t>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>);
+					return entity_goal_map<MapType, player_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>);
 				} else {
-					return good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>);
+					return good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>);
 				}
 			}()
 		};
@@ -38,9 +38,9 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void skulker_t::die() noexcept {
-		object_registry<MapType>.spill(bones_t{ position });
-		object_registry<MapType>.spill(flesh_t{ position });
+	template<map_type_e MapType> inline void skulker_t::die(offset_t position) noexcept {
+		object_registry<MapType>.spill(position, bones_t{});
+		object_registry<MapType>.spill(position, flesh_t{});
 
 		spill_fluid<MapType>(position, fluid_type<skulker_t>::type);
 

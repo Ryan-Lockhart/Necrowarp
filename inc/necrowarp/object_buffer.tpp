@@ -93,7 +93,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline bool object_buffer_t<MapType>::empty(offset_t position) const noexcept { return empty<ALL_OBJECTS>(position); }
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_buffer_t<MapType>::draw() const noexcept {
-		for (crauto object : object_buffer_storage<ObjectType>) {
+		for (crauto [position, object] : object_buffer_storage<ObjectType>) {
 			object.draw();
 		}
 	}
@@ -101,24 +101,24 @@ namespace necrowarp {
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_buffer_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto object : object_buffer_storage<ObjectType>) {
-			if (!viewport.within(object.position)) {
+		for (crauto [position, object] : object_buffer_storage<ObjectType>) {
+			if (!viewport.within(position)) {
 				continue;
 			}
 
-			object.draw(camera);
+			object.draw(position, camera);
 		}
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_buffer_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto object : object_buffer_storage<ObjectType>) {
-			if (!viewport.within(object.position)) {
+		for (crauto [position, object] : object_buffer_storage<ObjectType>) {
+			if (!viewport.within(position)) {
 				continue;
 			}
 
-			object.draw(camera, offset);
+			object.draw(position, camera, offset);
 		}
 	}
 

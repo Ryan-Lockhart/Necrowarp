@@ -46,7 +46,8 @@ namespace necrowarp {
 		}
 	};
 
-	struct command_icon_t : public anchor_t, public embedded_command_icon_t {
+	class command_icon_t : public anchor_t, public embedded_command_icon_t {
+	  public:
 		constexpr command_icon_t(glyph_t glyph) noexcept : anchor_t{}, embedded_command_icon_t{ glyph } {}
 
 		constexpr command_icon_t(anchor_t anchor, glyph_t glyph, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_command_icon_t{ glyph, box, padding } {}
@@ -157,7 +158,8 @@ namespace necrowarp {
 		}
 	};
 
-	template<usize Commands> struct command_bar_t : public anchor_t, public embedded_command_bar_t<Commands> {
+	template<usize Commands> class command_bar_t : public anchor_t, public embedded_command_bar_t<Commands> {
+	  public:
 		constexpr command_bar_t(cref<std::array<embedded_command_icon_t, Commands>> commands) noexcept : anchor_t{}, embedded_command_bar_t<Commands>{ commands } {}
 
 		constexpr command_bar_t(anchor_t anchor, cref<std::array<embedded_command_icon_t, Commands>> commands, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_command_bar_t<Commands>{ commands, box, padding } {}

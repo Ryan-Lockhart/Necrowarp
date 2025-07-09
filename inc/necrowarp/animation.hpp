@@ -5,14 +5,14 @@
 
 namespace necrowarp {
 	struct animation_controller_s {
-		static constexpr usize target_fps{ 16 };
+		static constexpr usize target_fps{ 12 };
 
 		static constexpr usize interval{ static_cast<usize>(1000.0 / target_fps) };
 
 	  private:
 		static inline timer_t timer{ interval };
 
-		static inline bool suspended;
+		static inline bool suspended{ false };
 	  public:
 		static inline void suspend() noexcept { suspended = true; }
 		static inline void resume() noexcept { suspended = false; }

@@ -41,7 +41,5 @@ namespace necrowarp {
 		}
 	}
 	
-	static constexpr runes_t to_colored_string(affliction_e affliction) noexcept {
-		return runes_t{ to_string(affliction), to_color(affliction) };
-	}
+	static constexpr runes_t to_colored_string(affliction_e affliction) noexcept { return runes_t{ to_string(affliction), to_color(affliction) }; }
 } // namespace necrowarp

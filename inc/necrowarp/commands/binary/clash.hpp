@@ -25,15 +25,15 @@ namespace necrowarp {
 
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<InitiatorType>::value && !std::is_same<InitiatorType, VictimType>::value)
-	static inline bool instigate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
+	static inline bool instigate(offset_t source_position, offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
 
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<VictimType>::value && !std::is_same<InitiatorType, VictimType>::value)
-	static inline bool retaliate(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
+	static inline bool retaliate(offset_t source_position, offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
 
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<InitiatorType>::value && !std::is_same<InitiatorType, VictimType>::value)
-	static inline bool reflect(ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
+	static inline bool reflect(offset_t source_position, offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept;
 
 	template<CombatantEntity EntityType> struct entity_command_t<EntityType, clash_t> {
 		using entity_type = EntityType;

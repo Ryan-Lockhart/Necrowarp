@@ -8,7 +8,7 @@
 #include <necrowarp/scorekeeper.hpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline command_pack_t battle_monk_t::think() const noexcept {
+	template<map_type_e MapType> inline command_pack_t battle_monk_t::think(offset_t position) const noexcept {
 		if (!entity_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, ALL_EVIL>(position) && !object_registry<MapType>.dependent contains<ladder_t>(position) && !is_zen()) {
 			return command_pack_t{ command_e::Meditate, position };
 		} else if (entity_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, ALL_EVIL>(position)){
@@ -23,7 +23,7 @@ namespace necrowarp {
 			}
 		}		
 
-		cauto descent_pos{ good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+		cauto descent_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 		if (!descent_pos.has_value()) {
 			return command_pack_t{ command_e::None };
@@ -32,9 +32,9 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void battle_monk_t::die() noexcept {
-		object_registry<MapType>.spill(bones_t{ position });
-		object_registry<MapType>.spill(flesh_t{ position });
+	template<map_type_e MapType> inline void battle_monk_t::die(offset_t position) noexcept {
+		object_registry<MapType>.spill(position, bones_t{});
+		object_registry<MapType>.spill(position, flesh_t{});
 
 		spill_fluid<MapType>(position, fluid_type<battle_monk_t>::type);
 

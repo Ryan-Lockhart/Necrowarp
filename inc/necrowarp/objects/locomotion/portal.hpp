@@ -67,8 +67,8 @@ namespace necrowarp {
 		}
 	}
 
-	constexpr cstr to_string(stability_e type) noexcept {
-		switch (type) {
+	constexpr cstr to_string(stability_e stability) noexcept {
+		switch (stability) {
 			case stability_e::Calm: {
 				return "calm";
 			} case stability_e::Vocal: {
@@ -87,35 +87,35 @@ namespace necrowarp {
 		}
 	}
 
-	constexpr runes_t to_colored_string(stability_e type) noexcept {
-		const cstr string{ to_string(type) };
-		switch (type) {
+	constexpr color_t to_color(stability_e stability) noexcept {
+		switch (stability) {
 			case stability_e::Calm: {
-				return runes_t{ string, colors::light::Blue };
+				return colors::light::Blue;
 			} case stability_e::Vocal: {
-				return runes_t{ string, colors::light::Orange };
+				return colors::light::Orange;
 			} case stability_e::Turbulent: {
-				return runes_t{ string, colors::light::Red };
+				return colors::light::Red;
 			} case stability_e::Insightful: {
-				return runes_t{ string, colors::light::Green };
+				return colors::light::Green;
 			} case stability_e::Collapsing: {
-				return runes_t{ string, colors::light::Magenta };
+				return colors::light::Magenta;
 			} case stability_e::Yawning: {
-				return runes_t{ string, colors::light::Yellow };
+				return colors::light::Yellow;
 			} case stability_e::Echoing: {
-				return runes_t{ string, colors::light::Cyan };
+				return colors::light::Cyan;
 			}
 		}
 	}
+
+	constexpr runes_t to_colored_string(stability_e stability) noexcept { return runes_t{ to_string(stability), to_color(stability) }; }
 
 	static inline std::uniform_int_distribution<u16> stability_dis{ static_cast<u16>(stability_e::Calm), static_cast<u16>(stability_e::Yawning) };
 
 	template<RandomEngine Generator> static inline stability_e random_stability(ref<Generator> generator) noexcept { return static_cast<stability_e>(stability_dis(generator)); }
 
 	struct portal_t {
-		offset_t position;
-		
 		const stability_e stability;
+		keyframe_t idle_animation;
 
 	  private:
 		static constexpr u8 get_index(stability_e stability) noexcept {
@@ -139,17 +139,13 @@ namespace necrowarp {
 		}
 
 	  public:
-		keyframe_t idle_animation;
-
-		inline portal_t(offset_t position, bool random = false) noexcept :
-			position{ position },
-			stability{ random ? random_stability(random_engine) : stability_e::Calm },
+		inline portal_t(stability_e stability) noexcept :
+			stability{ stability },
 			idle_animation{ get_index(stability), random_engine, true }
 		{}
 
-		inline portal_t(offset_t position, stability_e stability) noexcept :
-			position{ position },
-			stability{ stability },
+		template<RandomEngine Generator> inline portal_t(ref<Generator> engine) noexcept :
+			stability{ random_stability(engine) },
 			idle_animation{ get_index(stability), random_engine, true }
 		{}
 
@@ -166,36 +162,14 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator object_e() const noexcept { return object_e::Portal; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<portal_t> portal) noexcept { return offset_t::std_hasher::operator()(portal.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-			
-				static constexpr bool operator()(cref<portal_t> lhs, cref<portal_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<portal_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<portal_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 } // namespace necrowarp

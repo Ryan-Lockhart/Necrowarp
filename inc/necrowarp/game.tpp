@@ -4,6 +4,8 @@
 
 #include <necrowarp/game.hpp>
 
+#include <necrowarp/constants/enums.tpp>
+
 namespace necrowarp {
 	template<map_type_e MapType> inline void game_s::plunge() noexcept {
 		terminate_process_turn();
@@ -19,8 +21,8 @@ namespace necrowarp {
 			if constexpr (is_material<cval>::value) {
 				constexpr map_type_e map_type{ determine_map<cval>() };
 
-				game_map<map_type>.dependent reset<zone_region_e::All>();
-				fluid_map<map_type>.dependent reset<zone_region_e::All>();
+				game_map<map_type>.dependent reset<region_e::All>();
+				fluid_map<map_type>.dependent reset<region_e::All>();
 
 				entity_registry<map_type>.dependent clear<ALL_NON_PLAYER>();
 				entity_registry<map_type>.dependent reset_goal_map<player_t>();

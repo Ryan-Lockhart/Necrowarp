@@ -8,8 +8,8 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	struct labeled_button_t;
-	struct labeled_toggle_t;
+	class labeled_button_t;
+	class labeled_toggle_t;
 
 	struct embedded_button_t {
 		bool previous_state;
@@ -35,7 +35,8 @@ namespace necrowarp {
 		}
 	};
 
-	struct button_t : public transform_t, public embedded_button_t, public embedded_box_t {
+	class button_t : public transform_t, public embedded_button_t, public embedded_box_t {
+	  public:
 		constexpr button_t() noexcept : transform_t{}, embedded_button_t{}, embedded_box_t{} {}
 
 		constexpr button_t(transform_t transform, embedded_box_t box) noexcept : transform_t{ transform }, embedded_button_t{}, embedded_box_t{ box } {}
@@ -113,7 +114,8 @@ namespace necrowarp {
 		constexpr void update(button_e button, offset_t position, extent_t size, ptr<Linked>... linked) noexcept;
 	};
 
-	struct toggle_t : public transform_t, public embedded_toggle_t, public embedded_box_t {
+	class toggle_t : public transform_t, public embedded_toggle_t, public embedded_box_t {
+	  public:
 		constexpr toggle_t() noexcept : transform_t{}, embedded_toggle_t{}, embedded_box_t{} {}
 
 		constexpr toggle_t(transform_t transform, embedded_box_t box) noexcept : transform_t{ transform }, embedded_toggle_t{}, embedded_box_t{ box } {}

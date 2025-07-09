@@ -125,27 +125,25 @@ namespace necrowarp {
 		}
 	}
 
-	constexpr runes_t to_colored_string(bulk_e bulk) noexcept {
-		const cstr string{ to_string(bulk) };
-
+	constexpr color_t to_color(bulk_e bulk) noexcept {
 		switch (bulk) {
 			case bulk_e::Neonatal: {
-				return runes_t{ string, colors::White };
+				return colors::White;
 			} case bulk_e::Young: {
-				return runes_t{ string, colors::White };
+				return colors::White;
 			} case bulk_e::Mature: {
-				return runes_t{ string, colors::White };
+				return colors::White;
 			} case bulk_e::Gross: {
-				return runes_t{ string, colors::White };
+				return colors::White;
 			} case bulk_e::Titanic: {
-				return runes_t{ string, colors::White };
+				return colors::White;
 			}
 		}
 	}
 
-	struct thetwo_t {
-		offset_t position;
+	constexpr runes_t to_colored_string(bulk_e bulk) noexcept { return runes_t{ to_string(bulk), to_color(bulk) }; }
 
+	struct thetwo_t {
 		static constexpr i8 MaximumHealth{ 64 };
 		static constexpr i8 MinimumHealth{ 4 };
 
@@ -161,7 +159,7 @@ namespace necrowarp {
 
 		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,
-		 // entity_e::Rake,
+		 // entity_e::Abomination,
 			entity_e::FleshGolem,
 			entity_e::Bloodhound,
 		 // entity_e::Hemogheist,
@@ -212,16 +210,12 @@ namespace necrowarp {
 		inline void set_protein(i8 value) noexcept { protein = clamp<i8>(value, 0, max_protein()); }
 
 	public:
-		inline thetwo_t(offset_t position) noexcept : position{ position }, bulk{ bulk_e::Neonatal }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
+		inline thetwo_t() noexcept : bulk{ bulk_e::Neonatal }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
 
-		inline thetwo_t(offset_t position, bulk_e bulk) noexcept : position{ position }, bulk{ bulk }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
+		inline thetwo_t(bulk_e bulk) noexcept : bulk{ bulk }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
 
-		template<RandomEngine Generator> inline thetwo_t(offset_t position, ref<Generator> engine) noexcept :
-			position{ position },
-			bulk{ random_bulk(engine) },
-			health{ determine_health(bulk) },
-			protein{ 0 },
-			shedding{ false }
+		template<RandomEngine Generator> inline thetwo_t(ref<Generator> engine) noexcept :
+			bulk{ random_bulk(engine) }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false }
 		{}
 		
 		inline i8 get_health() const noexcept { return health; }
@@ -328,9 +322,9 @@ namespace necrowarp {
 
 		inline u8 get_droppings() const noexcept { return static_cast<u8>(bulk) + 1; }
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline glyph_t current_glyph() const noexcept {
 			switch (bulk) {
@@ -348,37 +342,15 @@ namespace necrowarp {
 			}
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(current_glyph(), position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Thetwo; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<thetwo_t> thetwo) noexcept { return offset_t::std_hasher::operator()(thetwo.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<thetwo_t> lhs, cref<thetwo_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<thetwo_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<thetwo_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 
 	static_assert(sizeof(thetwo_t) <= NPCSizeCap, "thetwo entity size must not exceed npc size cap!");

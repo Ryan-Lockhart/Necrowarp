@@ -88,7 +88,7 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<Distance>) {
 				const offset_t offset_position{ current.position + offset };
 
-				if (!game_map<MapType>.dependent within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open ||!visited.insert(offset_position).second) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open ||!visited.insert(offset_position).second) {
 					continue;
 				}
 
@@ -134,7 +134,7 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<Distance>) {
 				const offset_t offset_position{ current.position + offset };
 
-				if (!game_map<MapType>.dependent within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open ||!visited.insert(offset_position).second) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open ||!visited.insert(offset_position).second) {
 					continue;
 				}
 
@@ -231,32 +231,32 @@ namespace necrowarp {
 	template<map_type_e MapType> inline bool entity_buffer_t<MapType>::empty(offset_t position) const noexcept { return empty<ALL_ENTITIES>(position); }
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_buffer_t<MapType>::draw() const noexcept {
-		for (crauto entity : entity_buffer_storage<EntityType>) {
-			entity.draw();
+		for (crauto [position, entity] : entity_buffer_storage<EntityType>) {
+			entity.draw(position);
 		}
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_buffer_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto entity : entity_buffer_storage<EntityType>) {
-			if (!viewport.within(entity.position)) {
+		for (crauto [position, entity] : entity_buffer_storage<EntityType>) {
+			if (!viewport.within(position)) {
 				continue;
 			}
 
-			entity.draw(camera);
+			entity.draw(position, camera);
 		}
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_buffer_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto entity : entity_buffer_storage<EntityType>) {
-			if (!viewport.within(entity.position)) {
+		for (crauto [position, entity] : entity_buffer_storage<EntityType>) {
+			if (!viewport.within(position)) {
 				continue;
 			}
 
-			entity.draw(camera, offset);
+			entity.draw(position, camera, offset);
 		}
 	}
 

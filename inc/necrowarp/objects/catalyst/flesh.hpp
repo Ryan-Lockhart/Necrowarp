@@ -30,40 +30,16 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t object_glyphs<flesh_t>{ glyphs::Flesh };
 
 	struct flesh_t {
-		offset_t position;
+		inline flesh_t() noexcept {}
 
-		inline flesh_t(offset_t position) noexcept : position{ position } {}
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position); }
 
-		inline void draw() const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position, offset); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position, offset); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset()); }
-
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset(), offset); }
 
 		constexpr operator object_e() const noexcept { return object_e::Flesh; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<flesh_t> flesh) noexcept { return offset_t::std_hasher::operator()(flesh.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-			
-				static constexpr bool operator()(cref<flesh_t> lhs, cref<flesh_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<flesh_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<flesh_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 } // namespace necrowarp

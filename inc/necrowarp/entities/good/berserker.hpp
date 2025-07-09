@@ -5,6 +5,8 @@
 
 #include <necrowarp/game_state.hpp>
 
+#include <necrowarp/constants/enums/fluid.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -86,19 +88,19 @@ namespace necrowarp {
 		}
 	}
 
-	constexpr runes_t to_colored_string(endurance_e endurance) noexcept {
-		const cstr string{ to_string(endurance) };
-
+	constexpr color_t to_color(endurance_e endurance) noexcept {
 		switch (endurance) {
 			case endurance_e::Fresh: {
-				return runes_t{ string, colors::dark::Green };
+				return colors::dark::Green;
 			} case endurance_e::Fatigued: {
-				return runes_t{ string, colors::dark::Yellow };
+				return colors::dark::Yellow;
 			} case endurance_e::Exhausted: {
-				return runes_t{ string, colors::dark::Red };
+				return colors::dark::Red;
 			}
 		}
 	}
+
+	constexpr runes_t to_colored_string(endurance_e endurance) noexcept { return runes_t{ to_string(endurance), to_color(endurance) }; }
 
 	enum struct temperament_e : u8 {
 		Calm,
@@ -115,26 +117,26 @@ namespace necrowarp {
 		}
 	}
 
-	constexpr runes_t to_colored_string(temperament_e temperament) noexcept {
-		const cstr string{ to_string(temperament) };
-
+	constexpr color_t to_color(temperament_e temperament) noexcept {
 		switch (temperament) {
 			case temperament_e::Calm: {
-				return runes_t{ string, colors::light::Blue };
+				return colors::light::Blue;
 			} case temperament_e::Enraged: {
-				return runes_t{ string, colors::Orange };
+				return colors::Orange;
 			}
 		}
 	}
 
-	struct berserker_t {
-		offset_t position;
+	constexpr runes_t to_colored_string(temperament_e temperament) noexcept { return runes_t{ to_string(temperament), to_color(temperament) }; }
 
-		static constexpr i8 StartingFatigue{ 0 };
+	struct berserker_t {
+		static constexpr i8 MinimumFatigue{ 0 };
+		static constexpr i8 MaximumFatigue{ 8 };
+
+		static constexpr i8 StartingFatigue{ MinimumFatigue };
 
 		static constexpr i8 FatiguePoint{ 3 };
 
-		static constexpr i8 MaximumFatigue{ 8 };
 		static constexpr i8 MaximumDamage{ 2 };
 
 		static constexpr std::array<entity_e, 9> EntityPriorities{
@@ -159,7 +161,7 @@ namespace necrowarp {
 		inline void set_fatigue(i8 value) noexcept { fatigue = clamp<i8>(value, 0, max_fatigue()); }
 
 	public:
-		inline berserker_t(offset_t position) noexcept : position{ position }, fatigue{ StartingFatigue }, temperament{ temperament_e::Calm } {}
+		inline berserker_t() noexcept : fatigue{ StartingFatigue }, temperament{ temperament_e::Calm } {}
 		
 		inline i8 get_fatigue() const noexcept { return fatigue; }
 
@@ -247,9 +249,9 @@ namespace necrowarp {
 			spatter += with;
 		}
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
 			return std::format("{} [{}/{} ({})] ({} | {})",
@@ -279,37 +281,15 @@ namespace necrowarp {
 
 		inline keyframe_t current_keyframe() const noexcept { return keyframe_t{ indices::Berserker, static_cast<u8>(spatter) }; }
 
-		inline void draw() const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
 
-		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Berserker; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<berserker_t> berserker) noexcept { return offset_t::std_hasher::operator()(berserker.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<berserker_t> lhs, cref<berserker_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<berserker_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<berserker_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 
 	static_assert(sizeof(berserker_t) <= NPCSizeCap, "berserker entity size must not exceed npc size cap!");

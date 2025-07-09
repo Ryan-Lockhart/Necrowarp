@@ -93,31 +93,28 @@ namespace necrowarp {
 		}
 	}
 
-	constexpr runes_t to_colored_string(tranquility_e tranquility) noexcept {
-		const cstr string{ to_string(tranquility) };
-
+	constexpr color_t to_color(tranquility_e tranquility) noexcept {
 		switch (tranquility) {
 			case tranquility_e::Distraught: {
-				return runes_t{ string, colors::dark::Red };
+				return colors::dark::Red;
 			} case tranquility_e::Focused: {
-				return runes_t{ string, colors::dark::Yellow };
+				return colors::dark::Yellow;
 			} case tranquility_e::Zen: {
-				return runes_t{ string, colors::light::Cyan };
+				return colors::light::Cyan;
 			}
 		}
 	}
 
-	struct battle_monk_t {
-		offset_t position;
+	constexpr runes_t to_colored_string(tranquility_e tranquility) noexcept { return runes_t{ to_string(tranquility), to_color(tranquility) }; }
 
+	struct battle_monk_t {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr i8 StartingTranquility{ 4 };
-
 		static constexpr i8 QiPoint{ 3 };
-
 		static constexpr i8 MaximumQi{ 8 };
+
+		static constexpr i8 StartingTranquility{ QiPoint + 1 };
 
 		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,
@@ -149,7 +146,7 @@ namespace necrowarp {
 		inline void set_qi(i8 value) noexcept { qi = clamp<i8>(value, 0, max_qi()); }
 
 	  public:
-		inline battle_monk_t(offset_t position) noexcept : position{ position }, qi{ StartingTranquility } {}
+		inline battle_monk_t() noexcept : qi{ StartingTranquility } {}
 		
 		inline i8 get_qi() const noexcept { return qi; }
 
@@ -207,9 +204,9 @@ namespace necrowarp {
 
 		inline void destabilize(i8 amount) noexcept { set_qi(qi - amount); }
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
 			return std::format("{} [{}/{} ({})]", necrowarp::to_string(entity_e::BattleMonk), get_qi(), max_qi(), necrowarp::to_string(get_tranquility()));
@@ -226,37 +223,15 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<battle_monk_t>, position); }
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<battle_monk_t>, position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<battle_monk_t>, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<battle_monk_t>, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<battle_monk_t>, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<battle_monk_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<battle_monk_t>, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<battle_monk_t>, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::BattleMonk; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<battle_monk_t> battle_monk) noexcept { return offset_t::std_hasher::operator()(battle_monk.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<battle_monk_t> lhs, cref<battle_monk_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<battle_monk_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<battle_monk_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 
 	static_assert(sizeof(battle_monk_t) <= NPCSizeCap, "battle_monk entity size must not exceed npc size cap!");

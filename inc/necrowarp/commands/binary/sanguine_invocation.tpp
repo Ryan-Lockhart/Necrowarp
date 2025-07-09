@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, sanguine_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SanguineInvocation) || !fluid_map<MapType>.dependent contains<zone_region_e::Interior>(fluid_e::Blood))) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SanguineInvocation) || !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Blood))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -32,14 +32,14 @@ namespace necrowarp {
 				++pools_consumed;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.dependent add<true>(bloodhound_t{ position });
+					entity_registry<MapType>.dependent add<true>(position, bloodhound_t{});
 				}
 			}
 
 			const bool has_blood{ fluid_map<MapType>[position].contains(fluid_e::Blood) };
 			const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-			if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || (!has_blood && (eligible_ladder != nullptr || !has_ladder))) {
+			if (!game_map<MapType>.dependent within<region_e::Interior>(position) || (!has_blood && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
@@ -50,7 +50,7 @@ namespace necrowarp {
 				++pools_consumed;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.dependent add<true>(bloodhound_t{ position });
+					entity_registry<MapType>.dependent add<true>(position, bloodhound_t{});
 				}
 			}
 
@@ -83,7 +83,7 @@ namespace necrowarp {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
-					entity_registry<MapType>.dependent add<true>(bloodhound_t{ target_position });
+					entity_registry<MapType>.dependent add<true>(target_position, bloodhound_t{});
 				}
 			}
 		} else if (player.bypass_invocations_enabled()) {
@@ -93,7 +93,7 @@ namespace necrowarp {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
-					entity_registry<MapType>.dependent add<true>(bloodhound_t{ target_position });
+					entity_registry<MapType>.dependent add<true>(target_position, bloodhound_t{});
 				}
 			}
 		}
@@ -106,7 +106,7 @@ namespace necrowarp {
 
 				const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-				if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
 					continue;
 				}
 
@@ -168,7 +168,7 @@ namespace necrowarp {
 			return;
 		}
 
-		entity_registry<MapType>.dependent add<true>(flesh_golem_t{ source_position, pools_consumed });
+		entity_registry<MapType>.dependent add<true>(source_position, flesh_golem_t{ pools_consumed });
 
 		if (pools_consumed == globals::MaximumCatalyst) {
 			// summon flesh golem with max health achievment placeholder : Mountain of Flesh

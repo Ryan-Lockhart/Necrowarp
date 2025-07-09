@@ -25,7 +25,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
-	static inline bool brutalize(ref<InitiatorType> initiator, ref<VictimType> victim, ref<i8> damage) noexcept;
+	static inline bool brutalize(offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim, ref<i8> damage) noexcept;
 
 	template<CombatantEntity EntityType> struct entity_command_t<EntityType, eviscerate_t> {
 		using entity_type = EntityType;

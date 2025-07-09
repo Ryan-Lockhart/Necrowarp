@@ -4,6 +4,8 @@
 
 #include <necrowarp/game_state.hpp>
 
+#include <necrowarp/constants/enums/galvanisation.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -36,8 +38,11 @@ namespace necrowarp {
 	};
 
 	struct metal_t {
-		offset_t position;
+		keyframe_t idle_animation;
+
 		const galvanisation_e state;
+
+		static constexpr galvanisation_e DefaultGalvanisation{ galvanisation_e::Twisted };
 
 	  private:
 		static constexpr u8 get_index(galvanisation_e state) noexcept {
@@ -55,19 +60,11 @@ namespace necrowarp {
 		}
 
 	  public:
-		keyframe_t idle_animation;
+		inline metal_t() noexcept : idle_animation{ get_index(DefaultGalvanisation), random_engine, true }, state{ DefaultGalvanisation } {}
 
-		inline metal_t(offset_t position) noexcept : position{ position }, state{ galvanisation_e::Twisted }, idle_animation{ get_index(state), random_engine, true } {}
+		inline metal_t(galvanisation_e state) noexcept : idle_animation{ get_index(state), random_engine, true }, state{ state } {}
 
-		inline metal_t(offset_t position, galvanisation_e state) noexcept : position{ position }, state{ state }, idle_animation{ get_index(state), random_engine, true } {}
-
-		inline bool is_twisted() const noexcept { return state == galvanisation_e::Twisted; }
-
-		inline bool is_shimmering() const noexcept { return state == galvanisation_e::Shimmering; }
-
-		inline bool is_wriggling() const noexcept { return state == galvanisation_e::Wriggling; }
-
-		inline bool is_writhing() const noexcept { return state == galvanisation_e::Writhing; }
+		template<galvanisation_e Galvanisation> inline bool is() const noexcept { return state == Galvanisation; }
 
 		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(object_e::Metal), necrowarp::to_string(state)); }
 
@@ -82,36 +79,14 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator object_e() const noexcept { return object_e::Metal; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<metal_t> metal) noexcept { return offset_t::std_hasher::operator()(metal.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-			
-				static constexpr bool operator()(cref<metal_t> lhs, cref<metal_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<metal_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<metal_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 } // namespace necrowarp

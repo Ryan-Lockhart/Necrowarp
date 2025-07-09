@@ -50,14 +50,18 @@ namespace necrowarp {
 						if constexpr (is_bleeder<entity_type>::value) {
 							constexpr fluid_e fluid{ fluid_type<entity_type>::type };
 
-							spill_fluid<MapType>(maybe_target->position, fluid);
+							spill_fluid<MapType>(target_position, fluid);
 						}
 
 						return;
 					}
 				}
 
-				maybe_target->template die<MapType>();
+				if constexpr (is_player<entity_type>::value) {
+					maybe_target->dependent die<MapType>();
+				} else {
+					maybe_target->dependent die<MapType>(target_position);
+				}
 
 				if constexpr (is_npc_entity<entity_type>::value) {
 					entity_registry<MapType>.dependent remove<entity_type>(target_position);

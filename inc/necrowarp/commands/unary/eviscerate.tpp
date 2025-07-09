@@ -14,7 +14,7 @@
 namespace necrowarp {
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!std::is_same<InitiatorType, VictimType>::value)
-	inline bool brutalize(ref<InitiatorType> initiator, ref<VictimType> victim, ref<i8> damage) noexcept {
+	inline bool brutalize(offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim, ref<i8> damage) noexcept {
 		if constexpr (is_clumsy<InitiatorType>::value) {
 			if (!coinflip(random_engine)) {
 				return false;
@@ -32,7 +32,7 @@ namespace necrowarp {
 				if constexpr (is_bleeder<VictimType>::value) {
 					const fluid_e fluid{ fluid_type<VictimType>::type };
 
-					spill_fluid<MapType>(victim.position, fluid);
+					spill_fluid<MapType>(target_position, fluid);
 
 					if constexpr (is_berker<VictimType>::value) {
 						victim.enspatter(fluid);
@@ -78,7 +78,7 @@ namespace necrowarp {
 				break;
 			}
 
-			cauto position{ initiator.position + offset };
+			cauto position{ source_position + offset };
 
 			const entity_e victim_enum{ determine_target<EntityType>(entity_registry<MapType>.at(position)) };
 
@@ -101,13 +101,17 @@ namespace necrowarp {
 
 						ref<victim_type> victim{ *victim_ptr };
 
-						const bool target_killed{ brutalize<MapType>(initiator, victim, remaining_damage) };
+						const bool target_killed{ brutalize<MapType>(position, initiator, victim, remaining_damage) };
 
 						if (target_killed) {
-							victim.dependent die<MapType>();
+							if constexpr (is_player<victim_type>::value) {
+								victim.dependent die<MapType>();
+							} else {
+								victim.dependent die<MapType>(position);
+							}
 
 							if constexpr (is_npc_entity<victim_type>::value) {
-								entity_registry<MapType>.dependent remove<victim_type>(victim.position);
+								entity_registry<MapType>.dependent remove<victim_type>(position);
 							}
 
 							switch (to_entity_enum<EntityType>::value) {

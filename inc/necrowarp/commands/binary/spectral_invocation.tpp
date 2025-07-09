@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, spectral_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map<MapType>.dependent contains<zone_region_e::Interior>(fluid_e::Ichor))) {
+		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Ichor))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -32,13 +32,13 @@ namespace necrowarp {
 				++pools_consumed;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.dependent add<true>(cultist_t{ position });
+					entity_registry<MapType>.dependent add<true>(position, cultist_t{});
 				}
 			}
 
 			const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-			if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || (!has_ichor && (eligible_ladder != nullptr || !has_ladder))) {
+			if (!game_map<MapType>.dependent within<region_e::Interior>(position) || (!has_ichor && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
@@ -49,7 +49,7 @@ namespace necrowarp {
 				++pools_consumed;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.dependent add<true>(cultist_t{ position });
+					entity_registry<MapType>.dependent add<true>(position, cultist_t{});
 				}
 			}
 
@@ -73,29 +73,29 @@ namespace necrowarp {
 		}
 
 		if (fluid_map<MapType>[target_position].contains(fluid_e::Ichor)) {
-			const offset_t pos{ target_position };
+			const offset_t position{ target_position };
 
 			fluid_map_dirty = true;
 
-			fluid_map<MapType>[pos] -= fluid_e::Ichor;
+			fluid_map<MapType>[position] -= fluid_e::Ichor;
 			++pools_consumed;
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
-					entity_registry<MapType>.dependent add<true>(cultist_t{ pos });
+					entity_registry<MapType>.dependent add<true>(position, cultist_t{});
 				}
 			}
 		} else if (player.bypass_invocations_enabled()) {
-			const offset_t pos{ target_position };
+			const offset_t position{ target_position };
 			++pools_consumed;
 
 			if (!is_exalted) {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
-					entity_registry<MapType>.dependent add<true>(cultist_t{ pos });
+					entity_registry<MapType>.dependent add<true>(position, cultist_t{});
 				}
 			}
 		}
@@ -108,7 +108,7 @@ namespace necrowarp {
 
 				const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-				if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
 					continue;
 				}
 
@@ -170,7 +170,7 @@ namespace necrowarp {
 			return;
 		}
 
-		entity_registry<MapType>.dependent add<true>(wraith_t{ source_position, pools_consumed });
+		entity_registry<MapType>.dependent add<true>(source_position, wraith_t{ pools_consumed });
 
 		if (pools_consumed == globals::MaximumCatalyst) {
 			// summon first wraith achievment placeholder : Intersticial

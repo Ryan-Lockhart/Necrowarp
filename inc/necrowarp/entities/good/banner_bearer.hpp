@@ -55,8 +55,6 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t entity_glyphs<banner_bearer_t>{ glyphs::BannerBearer };
 
 	struct banner_bearer_t {
-		offset_t position;
-
 		static constexpr i8 EffectRadius{ 8 };
 		static constexpr f32 EffectDamageMultiplier{ 1.5f };
 
@@ -83,7 +81,7 @@ namespace necrowarp {
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 
 	  public:
-		inline banner_bearer_t(offset_t position) noexcept : position{ position }, health{ MaximumHealth } {}
+		inline banner_bearer_t() noexcept : health{ MaximumHealth } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -99,9 +97,9 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::BannerBearer), get_health(), max_health()); }
 
@@ -113,37 +111,15 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<banner_bearer_t>, position); }
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<banner_bearer_t>, position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<banner_bearer_t>, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<banner_bearer_t>, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<banner_bearer_t>, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<banner_bearer_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<banner_bearer_t>, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<banner_bearer_t>, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::BannerBearer; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<banner_bearer_t> banner_bearer) noexcept { return offset_t::std_hasher::operator()(banner_bearer.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<banner_bearer_t> lhs, cref<banner_bearer_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<banner_bearer_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<banner_bearer_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 
 	static_assert(sizeof(banner_bearer_t) <= NPCSizeCap, "mist lady entity size must not exceed npc size cap!");

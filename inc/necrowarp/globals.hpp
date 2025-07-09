@@ -223,7 +223,7 @@ namespace necrowarp {
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
 
 		static constexpr extent_t TilesetSize{ 16, 4 };
-		static constexpr extent_t AnimatedSize{ 16, 30 };
+		static constexpr extent_t AnimatedSize{ 16, 31 };
 
 		static constexpr extent_t IconsetSize{ 2, 4 };
 
@@ -342,11 +342,11 @@ namespace necrowarp {
 		constexpr i16 KillsPerDivinityTurn{ 64 };
 
 		constexpr i16 MinimumReinforcements{ 0 };
-		constexpr i16 MaximumReinforcements{ 4 };
+		constexpr i16 MaximumReinforcements{ 8 };
 
-		constexpr i16 FloorsPerReinforcement{ 8 };
+		constexpr i16 FloorsPerReinforcement{ 2 };
 
-		constexpr bool CheatsAllowed{ true };
+		constexpr bool CheatsAllowed{ false };
 
 		constexpr bool SpawnTutorialPortal{ false };
 
@@ -366,7 +366,7 @@ namespace necrowarp {
 		constexpr bool OopsAllBannerBearers{ false };
 		constexpr bool OopsAllThetwo{ false };
 		constexpr bool OopsAllBattleMonks{ false };
-		constexpr bool OopsAllBerserkers{ true };
+		constexpr bool OopsAllBerserkers{ false };
 		constexpr bool OopsAllPaladins{ false };
 
 		template<typename T> struct has_unique_descriptor {

@@ -67,8 +67,6 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t entity_glyphs<bloodhound_t>{ glyphs::Bloodhound };
 
 	struct bloodhound_t {
-		offset_t position;
-
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
@@ -85,48 +83,34 @@ namespace necrowarp {
 			entity_e::Paladin,
 		};
 
-		inline bloodhound_t(offset_t position) noexcept : position{ position } {}
+		inline bloodhound_t() noexcept {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
-		inline i8 get_damage(entity_e target) const noexcept { return target != entity_e::Paladin ? MaximumDamage : 0; }
+		inline i8 get_damage(entity_e target) const noexcept {
+			switch (target) {
+				case entity_e::Paladin: {
+					return 0;
+				} default: {
+					return MaximumDamage;
+				}
+			}
+		}
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<bloodhound_t>, position); }
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<bloodhound_t>, position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<bloodhound_t>, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<bloodhound_t>, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<bloodhound_t>, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<bloodhound_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<bloodhound_t>, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<bloodhound_t>, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Bloodhound; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<bloodhound_t> bloodhound) noexcept { return offset_t::std_hasher::operator()(bloodhound.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<bloodhound_t> lhs, cref<bloodhound_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<bloodhound_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<bloodhound_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 } // namespace necrowarp

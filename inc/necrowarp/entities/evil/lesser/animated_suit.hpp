@@ -6,6 +6,8 @@
 
 #include <necrowarp/game_state.hpp>
 
+#include <necrowarp/constants/enums/galvanisation.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -62,8 +64,27 @@ namespace necrowarp {
 	};
 
 	struct animated_suit_t {
-		offset_t position;
+		keyframe_t idle_animation;
+
 		const galvanisation_e state;
+
+		static constexpr i8 MaximumHealth{ 3 };
+		static constexpr i8 MaximumDamage{ 1 };
+
+		static constexpr std::array<entity_e, 10> EntityPriorities{
+			entity_e::Paladin,
+			entity_e::Berserker,
+			entity_e::BattleMonk,
+			entity_e::BannerBearer,
+			entity_e::Thetwo,
+			entity_e::Mercenary,
+			entity_e::MistLady,
+			entity_e::Skulker,
+			entity_e::Ranger,
+			entity_e::Adventurer,
+		};
+
+		static constexpr galvanisation_e default_galvanisation{ galvanisation_e::Twisted };
 
 	private:
 		i8 health;
@@ -85,36 +106,12 @@ namespace necrowarp {
 		}
 	
 	public:
-		keyframe_t idle_animation;
-
-		static constexpr i8 MaximumHealth{ 3 };
-		static constexpr i8 MaximumDamage{ 1 };
-
-		static constexpr std::array<entity_e, 10> EntityPriorities{
-			entity_e::Paladin,
-			entity_e::Berserker,
-			entity_e::BattleMonk,
-			entity_e::BannerBearer,
-			entity_e::Thetwo,
-			entity_e::Mercenary,
-			entity_e::MistLady,
-			entity_e::Skulker,
-			entity_e::Ranger,
-			entity_e::Adventurer,
-		};
-
-		inline animated_suit_t(offset_t position) noexcept :
-			position{ position },
-			state{ galvanisation_e::Twisted },
-			health{ MaximumHealth },
-			idle_animation{ get_index(state), random_engine, true }
+		inline animated_suit_t() noexcept :
+			idle_animation{ get_index(default_galvanisation), random_engine, true }, state{ default_galvanisation }, health{ MaximumHealth }
 		{}
 
-		inline animated_suit_t(offset_t position, galvanisation_e state) noexcept :
-			position{ position },
-			state{ state },
-			health{ MaximumHealth },
-			idle_animation{ get_index(state), random_engine, true }
+		inline animated_suit_t(galvanisation_e state) noexcept :
+			idle_animation{ get_index(state), random_engine, true }, state{ state }, health{ MaximumHealth }
 		{}
 		
 		inline i8 get_health() const noexcept { return health; }
@@ -163,9 +160,9 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} ({}) [{}/{}]", necrowarp::to_string(entity_e::AnimatedSuit), necrowarp::to_string(state), get_health(), max_health()); }
 
@@ -181,36 +178,14 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::AnimatedSuit; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<animated_suit_t> animated_suit) noexcept { return offset_t::std_hasher::operator()(animated_suit.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<animated_suit_t> lhs, cref<animated_suit_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<animated_suit_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<animated_suit_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 } // namespace necrowarp

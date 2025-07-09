@@ -87,18 +87,7 @@ namespace necrowarp {
 	};
 
 	struct ranger_t {
-	  private:
-		static inline std::bernoulli_distribution dodge_dis{ 0.333 };
-		static inline std::bernoulli_distribution fumble_dis{ 0.333 };
-
-		i8 ammunition;
-		bool nocked;
-
-		inline void set_ammunition(i8 value) noexcept { ammunition = clamp<i8>(value, 0, max_ammunition()); }
-
 	  public:
-		offset_t position;
-
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
@@ -107,16 +96,6 @@ namespace necrowarp {
 		static constexpr i8 MinimumRange{ 2 };
 		static constexpr i8 OptimalRange{ 4 };
 		static constexpr i8 MaximumRange{ 6 };
-
-		static inline bool in_range(offset_t origin, offset_t target) noexcept {
-			return between<f32>(offset_t::distance<distance_function_e::Octile>(origin, target), ranger_t::MinimumRange, ranger_t::MaximumRange);
-		}
-
-		static inline bool in_range(f32 distance) noexcept {
-			return between<f32>(distance, ranger_t::MinimumRange, ranger_t::MaximumRange);
-		}
-
-		inline bool in_range(offset_t target) const noexcept { return in_range(position, target); }
 
 		static constexpr std::array<entity_e, 9> EntityPriorities{
 			entity_e::Player,
@@ -132,8 +111,28 @@ namespace necrowarp {
 
 		static constexpr i8 DeathBoon{ 2 };
 
-		inline ranger_t(offset_t position) noexcept : ammunition{ QuiverCapacity }, nocked{ false }, position{ position } {}
-		
+		static inline bool in_range(offset_t origin, offset_t target) noexcept {
+			return between<f32>(offset_t::distance<distance_function_e::Octile>(origin, target), ranger_t::MinimumRange, ranger_t::MaximumRange);
+		}
+
+		static inline bool in_range(f32 distance) noexcept {
+			return between<f32>(distance, ranger_t::MinimumRange, ranger_t::MaximumRange);
+		}
+
+	  private:
+		static inline std::bernoulli_distribution dodge_dis{ 0.333 };
+		static inline std::bernoulli_distribution fumble_dis{ 0.333 };
+
+		i8 ammunition;
+		bool nocked;
+
+		inline void set_ammunition(i8 value) noexcept { ammunition = clamp<i8>(value, 0, max_ammunition()); }
+
+	  public:
+		inline ranger_t() noexcept : ammunition{ QuiverCapacity }, nocked{ false } {}
+
+		inline ranger_t(i8 ammunition, bool nocked = false) noexcept : ammunition{ ammunition }, nocked{ nocked } {}
+
 		inline i8 get_ammunition() const noexcept { return ammunition; }
 
 		inline bool has_ammunition() const noexcept { return ammunition > 0; }
@@ -192,9 +191,9 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
 			return std::format("{} [{}/{} ({})]",
@@ -228,37 +227,15 @@ namespace necrowarp {
 			}
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(current_glyph(), position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Ranger; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<ranger_t> ranger) noexcept { return offset_t::std_hasher::operator()(ranger.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<ranger_t> lhs, cref<ranger_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<ranger_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<ranger_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 
 	static_assert(sizeof(ranger_t) <= NPCSizeCap, "ranger entity size must not exceed npc size cap!");

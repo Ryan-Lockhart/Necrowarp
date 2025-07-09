@@ -6,6 +6,8 @@
 
 #include <necrowarp/game_state.hpp>
 
+#include <necrowarp/constants/enums/decay.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -66,7 +68,6 @@ namespace necrowarp {
 		static inline std::bernoulli_distribution fumble_dis{ 0.25 };
 
 	  public:
-		offset_t position;
 		const decay_e state;
 
 		static constexpr i8 MaximumHealth{ 1 };
@@ -89,9 +90,9 @@ namespace necrowarp {
 			return static_cast<i8>(state) + 1;
 		}
 
-		inline skeleton_t(offset_t position) noexcept : position{ position }, state{ decay_e::Fresh } {}
+		inline skeleton_t() noexcept : state{ decay_e::Fresh } {}
 
-		inline skeleton_t(offset_t position, decay_e state) noexcept : position{ position }, state{ state } {}
+		inline skeleton_t(decay_e state) noexcept : state{ state } {}
 
 		inline bool is_fresh() const noexcept { return state == decay_e::Fresh; }
 
@@ -107,9 +108,9 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string(entity_e::Skeleton), necrowarp::to_string(state)); }
 
@@ -136,37 +137,15 @@ namespace necrowarp {
 			}
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(current_glyph(), position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Skeleton; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<skeleton_t> skeleton) noexcept { return offset_t::std_hasher::operator()(skeleton.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<skeleton_t> lhs, cref<skeleton_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<skeleton_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<skeleton_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 
 	static_assert(sizeof(skeleton_t) <= NPCSizeCap, "skeleton entity size must not exceed npc size cap!");

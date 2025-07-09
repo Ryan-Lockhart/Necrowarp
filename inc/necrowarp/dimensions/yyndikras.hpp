@@ -16,15 +16,15 @@ namespace necrowarp {
 		globals::randomize_map_config(random_engine);
 
 		game_map<map_type>
-			.dependent set<zone_region_e::Border>(closed_state)
-			.dependent generate<zone_region_e::Interior>(
+			.dependent set<region_e::Border>(closed_state)
+			.dependent generate<region_e::Interior>(
 				random_engine,
 				globals::map_config.fill_percent,
 				globals::map_config.automata_iterations,
 				globals::map_config.automata_threshold,
 				cell_applicator
 			)
-			.dependent collapse<zone_region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
+			.dependent collapse<region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
 
 		std::vector<area_t> areas{ area_t::partition(game_map<map_type>, cell_e::Open) };
 
@@ -46,16 +46,16 @@ namespace necrowarp {
 			}
 		}
 
-		cauto player_pos{ game_map<map_type>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
+		cauto player_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
 
 		if (!player_pos.has_value() || !entity_registry<map_type>.dependent add<player_t>(player_pos.value())) {
 			error_log.add("could not find open position for player!");
 			terminate_prematurely();
 		}
 
-		cauto portal_pos{ game_map<map_type>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open) };
+		cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
 
-		if (!portal_pos.has_value() || !object_registry<map_type>.add(portal_t{ portal_pos.value(), stability_e::Collapsing })) {
+		if (!portal_pos.has_value() || !object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Collapsing })) {
 			error_log.add("could not find open position for return portal!");
 			terminate_prematurely();
 		}

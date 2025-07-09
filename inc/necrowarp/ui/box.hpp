@@ -30,7 +30,8 @@ namespace necrowarp {
 		}
 	};
 
-	struct box_t : public transform_t, public embedded_box_t {
+	class box_t : public transform_t, public embedded_box_t {
+	  public:
 		constexpr box_t() noexcept : transform_t{}, embedded_box_t{} {}
 
 		constexpr box_t(transform_t transform, color_t background, border_t border) noexcept : transform_t{ transform }, embedded_box_t{ background, border } {}

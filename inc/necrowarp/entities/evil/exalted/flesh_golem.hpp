@@ -55,14 +55,6 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t entity_glyphs<flesh_golem_t>{ glyphs::FleshGolem };
 
 	struct flesh_golem_t {
-		offset_t position;
-
-	private:
-		i8 health;
-
-		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
-	
-	public:
 		static constexpr f32 HealthMultiplier{ 2.0f };
 
 		static constexpr i8 BaseMaximumHealth{ 9 };
@@ -82,8 +74,14 @@ namespace necrowarp {
 			entity_e::Berserker,
 			entity_e::Paladin,
 		};
-		
-		inline flesh_golem_t(offset_t position, i8 health) noexcept : position{ position }, health{ static_cast<i8>(health * HealthMultiplier) } {}
+
+	private:
+		i8 health;
+
+		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
+	
+	public:		
+		inline flesh_golem_t(i8 health) noexcept : health{ static_cast<i8>(health * HealthMultiplier) } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -99,9 +97,9 @@ namespace necrowarp {
 
 		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::FleshGolem), get_health(), max_health()); }
 
@@ -113,36 +111,14 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position); }
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<flesh_golem_t>, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::FleshGolem; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<flesh_golem_t> flesh_golem) noexcept { return offset_t::std_hasher::operator()(flesh_golem.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<flesh_golem_t> lhs, cref<flesh_golem_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<flesh_golem_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<flesh_golem_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 } // namespace necrowarp

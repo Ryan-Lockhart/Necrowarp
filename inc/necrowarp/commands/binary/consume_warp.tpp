@@ -78,7 +78,7 @@ namespace necrowarp {
 				}
 
 				object_registry<MapType>.dependent remove<bones_t>(target_position);
-				entity_registry<MapType>.add(skeleton_t{ target_position, state });
+				entity_registry<MapType>.add(target_position, skeleton_t{ state });
 
 				++steam_stats::stats<steam_stat_e::BonesConsumed>;
 

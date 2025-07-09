@@ -8,7 +8,7 @@
 #include <necrowarp/scorekeeper.hpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline command_pack_t ranger_t::think() const noexcept {
+	template<map_type_e MapType> inline command_pack_t ranger_t::think(offset_t position) const noexcept {
 		const f32 current_distance{ std::ceil(ranger_goal_map<MapType>.at(position)) };
 
 		const bool in_range{ ranger_t::in_range(current_distance) };
@@ -21,7 +21,7 @@ namespace necrowarp {
 			}
 
 			if (game_map<MapType>.linear_blockage(position, maybe_position.value(), cell_e::Solid, ranger_t::MaximumRange)) {
-				cauto approach_pos{ good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+				cauto approach_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 				if (!approach_pos.has_value()) {
 					return command_pack_t{ command_e::None };
@@ -50,7 +50,7 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Retrieve, position, current_position };
 			}
 
-			cauto descent_pos{ object_goal_map<MapType, arrow_t>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+			cauto descent_pos{ object_goal_map<MapType, arrow_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!descent_pos.has_value()) {
 				return command_pack_t{ command_e::None };
@@ -68,7 +68,7 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Clash, position, current_position };
 			}
 
-			cauto descent_pos{ good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+			cauto descent_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!descent_pos.has_value()) {
 				return command_pack_t{ command_e::None };
@@ -89,7 +89,7 @@ namespace necrowarp {
 					return command_pack_t{ command_e::Retrieve, position, current_position };
 				}
 
-				cauto descent_pos{ object_goal_map<MapType, arrow_t>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+				cauto descent_pos{ object_goal_map<MapType, arrow_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 				if (!descent_pos.has_value()) {
 					return command_pack_t{ command_e::None };
@@ -98,7 +98,7 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Move, position, descent_pos.value() };
 			}
 
-			cauto approach_pos{ good_goal_map<MapType>.dependent descend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+			cauto approach_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!approach_pos.has_value()) {
 				return command_pack_t{ command_e::None };
@@ -106,7 +106,7 @@ namespace necrowarp {
 
 			return command_pack_t{ command_e::Move, position, approach_pos.value() };
 		} else if (current_distance < OptimalRange) {
-			cauto retreat_pos{ good_goal_map<MapType>.dependent ascend<zone_region_e::Interior>(position, entity_registry<MapType>) };
+			cauto retreat_pos{ good_goal_map<MapType>.dependent ascend<region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!retreat_pos.has_value()) {
 				return command_pack_t{ command_e::None };
@@ -118,9 +118,9 @@ namespace necrowarp {
 		return command_pack_t{ command_e::None };
 	}
 
-	template<map_type_e MapType> inline void ranger_t::die() noexcept {
-		object_registry<MapType>.spill(bones_t{ position });
-		object_registry<MapType>.spill(flesh_t{ position });
+	template<map_type_e MapType> inline void ranger_t::die(offset_t position) noexcept {
+		object_registry<MapType>.spill(position, bones_t{});
+		object_registry<MapType>.spill(position, flesh_t{});
 
 		if (has_ammunition()) {
 			i8 dropped_ammunition{ get_ammunition() };
@@ -142,7 +142,7 @@ namespace necrowarp {
 			}
 
 			if (dropped_ammunition > 0) {
-				object_registry<MapType>.spill(arrow_t{ position, dropped_ammunition });
+				object_registry<MapType>.spill(position, arrow_t{ dropped_ammunition });
 			}
 		}
 

@@ -6,6 +6,8 @@
 
 #include <necrowarp/game_state.hpp>
 
+#include <necrowarp/constants/enums/shackle.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -58,8 +60,8 @@ namespace necrowarp {
 	}
 
 	struct ladder_t {
-		offset_t position;
-		
+		keyframe_t idle_animation;
+
 		const verticality_e verticality;
 		shackle_e shackle;
 
@@ -93,6 +95,8 @@ namespace necrowarp {
 		}
 
 		inline void sync_animation() noexcept {
+			idle_animation.index = get_index(shackle);
+
 			if (has_shackle()) {
 				idle_animation.start();
 			} else {
@@ -101,34 +105,21 @@ namespace necrowarp {
 		}
 	
 	public:
-		keyframe_t idle_animation;
+		inline ladder_t() noexcept : idle_animation{ random_engine }, verticality{ verticality_e::Up }, shackle{ shackle_e::Unshackled } {
+			sync_animation();
+		}
 
-		inline ladder_t(offset_t position) noexcept :
-			position{ position },
-			verticality{ verticality_e::Up },
-			shackle{ shackle_e::Unshackled },
-			idle_animation{ get_index(shackle), random_engine }
-		{ sync_animation(); }
+		inline ladder_t(verticality_e verticality) noexcept : idle_animation{ random_engine }, verticality{ verticality }, shackle{ shackle_e::Unshackled } {
+			sync_animation();
+		}
 
-		inline ladder_t(offset_t position, verticality_e verticality) noexcept :
-			position{ position },
-			verticality{ verticality },
-			shackle{ shackle_e::Unshackled },
-			idle_animation{ get_index(shackle), random_engine }
-		{ sync_animation(); }
+		template<RandomEngine Generator> inline ladder_t(verticality_e verticality, ref<Generator> generator) noexcept : idle_animation{ random_engine }, verticality{ verticality }, shackle{ random_shackle(generator) } {
+			sync_animation();
+		}
 
-		template<RandomEngine Generator> inline ladder_t(offset_t position, verticality_e verticality, ref<Generator> generator) noexcept :
-			position{ position },
-			verticality{ verticality },
-			shackle{ random_shackle(generator) },
-			idle_animation{ get_index(shackle), random_engine }
-		{ sync_animation(); }
-
-		inline ladder_t(offset_t position, verticality_e verticality, shackle_e shackle) noexcept :
-			position{ position },
-			verticality{ verticality },
-			shackle{ shackle },
-			idle_animation{ get_index(shackle), random_engine } { sync_animation(); }
+		inline ladder_t(verticality_e verticality, shackle_e shackle) noexcept : idle_animation{ random_engine }, verticality{ verticality }, shackle{ shackle } {
+			sync_animation();
+		}
 
 		inline bool is_up_ladder() const noexcept { return verticality == verticality_e::Up; }
 
@@ -165,11 +156,9 @@ namespace necrowarp {
 			}
 			
 			shackle = random_shackle(random_engine);
-			idle_animation.index = get_index(shackle);
+			sync_animation();
 
 			++steam_stats_s::stats<steam_stat_e::LaddersShackled>;
-
-			sync_animation();
 		}
 
 		inline void enshackle(shackle_e type) noexcept {
@@ -178,11 +167,9 @@ namespace necrowarp {
 			}
 			
 			shackle = type;
-			idle_animation.index = get_index(shackle);
+			sync_animation();
 
 			++steam_stats_s::stats<steam_stat_e::LaddersShackled>;
-
-			sync_animation();
 		}
 
 		inline void unshackle() noexcept {
@@ -191,14 +178,12 @@ namespace necrowarp {
 			}
 
 			shackle = shackle_e::Unshackled;
-			idle_animation.index = get_index(shackle);
+			sync_animation();
 
 			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled>;
-
-			sync_animation();
 		};
 
-		inline void draw() const noexcept {
+		inline void draw(offset_t position) const noexcept {
 			game_atlas.draw(current_glyph(), position);
 
 			if (has_shackle()) {
@@ -206,7 +191,7 @@ namespace necrowarp {
 			}
 		}
 
-		inline void draw(offset_t offset) const noexcept {
+		inline void draw(offset_t position, offset_t offset) const noexcept {
 			game_atlas.draw(current_glyph(), position, offset);
 
 			if (has_shackle()) {
@@ -214,48 +199,26 @@ namespace necrowarp {
 			}
 		}
 
-		inline void draw(cref<camera_t> camera) const noexcept {
-			const offset_t pos{ position + camera.get_offset() };
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept {
+			position += camera.get_offset();
 	
-			game_atlas.draw(current_glyph(), pos);
+			game_atlas.draw(current_glyph(), position);
 
 			if (has_shackle()) {
-				animated_atlas.draw(idle_animation, colors::White, pos);
+				animated_atlas.draw(idle_animation, colors::White, position);
 			}
 		}
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept {
-			const offset_t pos{ position + camera.get_offset() };
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept {
+			position += camera.get_offset();
 	
-			game_atlas.draw(current_glyph(), pos, offset);
+			game_atlas.draw(current_glyph(), position, offset);
 
 			if (has_shackle()) {
-				animated_atlas.draw(idle_animation, colors::White, pos, offset);
+				animated_atlas.draw(idle_animation, colors::White, position, offset);
 			}
 		}
 
 		constexpr operator object_e() const noexcept { return object_e::Ladder; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<ladder_t> ladder) noexcept { return offset_t::std_hasher::operator()(ladder.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-			
-				static constexpr bool operator()(cref<ladder_t> lhs, cref<ladder_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<ladder_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<ladder_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 } // namespace necrowarp

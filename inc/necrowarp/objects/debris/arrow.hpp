@@ -50,6 +50,10 @@ namespace necrowarp {
 		inline void set_count(i8 amount) noexcept { count = clamp<i8>(amount, MinimumArrows, MaximumArrows); }
 
 	  public:
+		inline arrow_t() noexcept : count{ StartingArrows } {}
+		
+		inline arrow_t(i8 amount) noexcept : count{ amount } {}
+
 		template<RandomEngine Generator> static inline bool snap(ref<Generator> generator) noexcept { return snap_dis(generator); }
 
 		inline i8 stack_size() const noexcept { return count; }
@@ -84,12 +88,6 @@ namespace necrowarp {
 			return *this;
 		}
 
-		offset_t position;
-
-		inline arrow_t(offset_t position) noexcept : count{ StartingArrows }, position{ position } {}
-		
-		inline arrow_t(offset_t position, i8 amount) noexcept : count{ amount }, position{ position } {}
-
 		inline std::string to_string() const noexcept {
 			return std::format("{}{}",
 				has_singular() ?
@@ -115,36 +113,14 @@ namespace necrowarp {
 
 		inline keyframe_t current_keyframe() const noexcept { return keyframe_t{ indices::Arrow, static_cast<u8>(count - 1) }; }
 
-		inline void draw() const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
 
-		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator object_e() const noexcept { return object_e::Arrow; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<arrow_t> arrow) noexcept { return offset_t::std_hasher::operator()(arrow.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-			
-				static constexpr bool operator()(cref<arrow_t> lhs, cref<arrow_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<arrow_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<arrow_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 } // namespace necrowarp

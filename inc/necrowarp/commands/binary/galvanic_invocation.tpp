@@ -35,13 +35,13 @@ namespace necrowarp {
 				aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.dependent add<true>(animated_suit_t{ position, galvanisation_e::Writhing });
+					entity_registry<MapType>.dependent add<true>(position, animated_suit_t{ galvanisation_e::Writhing });
 				}
 			}
 
 			const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-			if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || (!has_metal && (eligible_ladder != nullptr || !has_ladder))) {
+			if (!game_map<MapType>.dependent within<region_e::Interior>(position) || (!has_metal && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
@@ -54,7 +54,7 @@ namespace necrowarp {
 				aggregate_quality += static_cast<u8>(state) + 1;
 
 				if (!is_exalted) {
-					entity_registry<MapType>.dependent add<true>(animated_suit_t{ position, triflip(random_engine) ? galvanise(state) : state });
+					entity_registry<MapType>.dependent add<true>(position, animated_suit_t{ triflip(random_engine) ? galvanise(state) : state });
 				}
 			}
 
@@ -89,7 +89,7 @@ namespace necrowarp {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(metal_consumed);
 				} else {
-					entity_registry<MapType>.dependent add<true>(animated_suit_t{ target_position, triflip(random_engine) ? galvanise(state) : state });
+					entity_registry<MapType>.dependent add<true>(target_position, animated_suit_t{ triflip(random_engine) ? galvanise(state) : state });
 				}
 			}
 		} else if (player.bypass_invocations_enabled()) {
@@ -100,7 +100,7 @@ namespace necrowarp {
 				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(metal_consumed);
 				} else {
-					entity_registry<MapType>.dependent add<true>(animated_suit_t{ target_position, galvanisation_e::Writhing });
+					entity_registry<MapType>.dependent add<true>(target_position, animated_suit_t{ galvanisation_e::Writhing });
 				}
 			}
 		}
@@ -113,7 +113,7 @@ namespace necrowarp {
 
 				const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-				if (!game_map<MapType>.dependent within<zone_region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
 					continue;
 				}
 
@@ -184,7 +184,7 @@ namespace necrowarp {
 			)
 		)};
 
-		entity_registry<MapType>.dependent add<true>(death_knight_t{ target_position, metal_consumed, triflip(random_engine) ? galvanise(dk_quality) : dk_quality });
+		entity_registry<MapType>.dependent add<true>(target_position, death_knight_t{ metal_consumed, triflip(random_engine) ? galvanise(dk_quality) : dk_quality });
 
 		if (metal_consumed == globals::MaximumCatalyst) {
 			// summon first death knight achievment placeholder : A Pale Gaze

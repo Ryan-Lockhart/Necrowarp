@@ -96,30 +96,29 @@ namespace necrowarp {
 		}
 	}
 
-	constexpr runes_t to_colored_string(zeal_e zeal) noexcept {
-		const cstr string{ to_string(zeal) };
-
+	constexpr color_t to_color(zeal_e zeal) noexcept {
 		switch (zeal) {
 			case zeal_e::Downtrodden:{
-				return runes_t{ string, colors::dark::Orange };
+				return colors::dark::Orange;
 			} case zeal_e::Vengeant:{
-				return runes_t{ string, colors::Red };
+				return colors::Red;
 			} case zeal_e::Fallen:{
-				return runes_t{ string, colors::Orange };
+				return colors::Orange;
 			} case zeal_e::Alacritous:{
-				return runes_t{ string, colors::Blue };
+				return colors::Blue;
 			} case zeal_e::Righteous:{
-				return runes_t{ string, colors::Magenta };
+				return colors::Magenta;
 			} case zeal_e::Zealous:{
-				return runes_t{ string, colors::Yellow };
+				return colors::Yellow;
 			} case zeal_e::Ascendant:{
-				return runes_t{ string, colors::Green };
+				return colors::Green;
 			}
 		}
 	}
 
+	constexpr runes_t to_colored_string(zeal_e zeal) noexcept { return runes_t{ to_string(zeal), to_color(zeal) }; }
+
 	struct paladin_t {
-		offset_t position;
 		const zeal_e zeal;
 
 		static constexpr i8 MinimumHealth{ 4 };
@@ -176,22 +175,12 @@ namespace necrowarp {
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 
 	public:
-		inline paladin_t(offset_t position) noexcept :
-			position{ position },
-			zeal{ zeal_e::Alacritous },
-			health{ determine_health(zeal) }
-		{}
+		inline paladin_t() noexcept : zeal{ zeal_e::Alacritous }, health{ determine_health(zeal) } {}
 
-		inline paladin_t(offset_t position, zeal_e zeal) noexcept :
-			position{ position },
-			zeal{ zeal },
-			health{ determine_health(zeal) }
-		{}
+		inline paladin_t(zeal_e zeal) noexcept : zeal{ zeal }, health{ determine_health(zeal) } {}
 
-		template<RandomEngine Generator> inline paladin_t(offset_t position, ref<Generator> generator) noexcept :
-			position{ position },
-			zeal{ random_zeal(generator) },
-			health{ determine_health(zeal) }
+		template<RandomEngine Generator> inline paladin_t(ref<Generator> generator) noexcept :
+			zeal{ random_zeal(generator) }, health{ determine_health(zeal) }
 		{}
 		
 		inline i8 get_health() const noexcept { return health; }
@@ -276,9 +265,9 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return get_damage(); }
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
 			return std::format("{} ({}) [{}/{}]",
@@ -300,43 +289,15 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position); }
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position); }
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Paladin; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<paladin_t> paladin) noexcept { return offset_t::std_hasher::operator()(paladin.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-			
-				static constexpr bool operator()(cref<paladin_t> lhs, cref<paladin_t> rhs) noexcept {
-					return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position);
-				}
-
-				static constexpr bool operator()(cref<paladin_t> lhs, offset_t rhs) noexcept {
-					return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs);
-				}
-
-				static constexpr bool operator()(offset_t lhs, cref<paladin_t> rhs) noexcept {
-					return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position);
-				}
-			};
-		};
 	};
 
 	static_assert(sizeof(paladin_t) <= NPCSizeCap, "paladin entity size must not exceed npc size cap!");

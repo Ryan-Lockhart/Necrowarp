@@ -111,15 +111,14 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline bool object_registry_t<MapType>::empty(offset_t position) const noexcept { return empty<ALL_OBJECTS>(position); }
 
-	template<map_type_e MapType> template<bool Force, NonNullObject ObjectType> inline bool object_registry_t<MapType>::add(rval<ObjectType> object) noexcept {
+	template<map_type_e MapType> template<NonNullObject ObjectType, bool Force> inline bool object_registry_t<MapType>::add(offset_t position) noexcept {
 		if constexpr (!Force) {
-			if (contains(object.position)) {
+			if (contains(position)) {
 				return false;
 			}
 		}
-		
-		const offset_t position{ object.position };
-		const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
+
+		const bool inserted{ object_registry_storage<ObjectType>.add(position, ObjectType{}) };
 
 		if (inserted) {
 			object_goal_map<MapType, ObjectType>.add(position);
@@ -128,16 +127,32 @@ namespace necrowarp {
 		return inserted;
 	}
 
-	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spill(rval<ObjectType> object) noexcept {
-		if (!game_map<MapType>.dependent within<zone_region_e::Interior>(object.position) || game_map<MapType>[object.position] != cell_e::Open) {
+	template<map_type_e MapType> template<bool Force, NonNullObject ObjectType> inline bool object_registry_t<MapType>::add(offset_t position, rval<ObjectType> object) noexcept {
+		if constexpr (!Force) {
+			if (contains(position)) {
+				return false;
+			}
+		}
+
+		const bool inserted{ object_registry_storage<ObjectType>.add(position, std::move(object)) };
+
+		if (inserted) {
+			object_goal_map<MapType, ObjectType>.add(position);
+		}
+
+		return inserted;
+	}
+
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spill(offset_t position, rval<ObjectType> object) noexcept {
+		if (!game_map<MapType>.dependent within<region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open) {
 			return false;
 		}
 
-		if (!contains<ObjectType>(object.position)) {
-			const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
+		if (!contains<ObjectType>(position)) {
+			const bool inserted{ object_registry_storage<ObjectType>.add(position, std::move(object)) };
 
 			if (inserted) {
-				object_goal_map<MapType, ObjectType>.add(object.position);
+				object_goal_map<MapType, ObjectType>.add(position);
 			}
 
 			return inserted;
@@ -146,8 +161,8 @@ namespace necrowarp {
 		std::queue<creeper_t<offset_t::product_t>> frontier{};
 		std::unordered_set<offset_t, offset_t::std_hasher> visited{};
 
-		frontier.emplace(object.position, 0);
-		visited.insert(object.position);
+		frontier.emplace(position, 0);
+		visited.insert(position);
 
 		while (!frontier.empty()) {
 			const creeper_t<offset_t::product_t> current{ frontier.front() };
@@ -156,8 +171,7 @@ namespace necrowarp {
 			visited.insert(current.position);
 
 			if (!contains<ObjectType>(current.position)) {
-				object.position = current.position;
-				const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
+				const bool inserted{ object_registry_storage<ObjectType>.add(current.position, std::move(object)) };
 
 				if (inserted) {
 					object_goal_map<MapType, ObjectType>.add(current.position);
@@ -169,27 +183,27 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t offset_position{ current.position + offset };
 
-				if (!visited.insert(offset_position).second || !game_map<MapType>.dependent within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
+				if (!visited.insert(offset_position).second || !game_map<MapType>.dependent within<region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
 					continue;
 				}
 
-				frontier.emplace(offset_position, offset_t::product_t{ current.distance + 1 });					
+				frontier.emplace(offset_position, offset_t::product_t{ current.distance + 1 });
 			}
 		}
 
 		return false;
 	}
 
-	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spill(rval<ObjectType> object, usize amount) noexcept {
-		if (!game_map<MapType>.dependent within<zone_region_e::Interior>(object.position) || game_map<MapType>[object.position] != cell_e::Open || amount <= 0) {
+	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spill(offset_t position, rval<ObjectType> object, usize amount) noexcept {
+		if (!game_map<MapType>.dependent within<region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open || amount <= 0) {
 			return false;
 		}
 
-		if (!contains<ObjectType>(object.position)) {
-			const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
+		if (!contains<ObjectType>(position)) {
+			const bool inserted{ object_registry_storage<ObjectType>.add(position, std::move(object)) };
 
 			if (inserted) {
-				object_goal_map<MapType, ObjectType>.add(object.position);
+				object_goal_map<MapType, ObjectType>.add(position);
 			}
 
 			if (amount <= 1) {
@@ -202,8 +216,8 @@ namespace necrowarp {
 		std::queue<creeper_t<offset_t::product_t>> frontier{};
 		std::unordered_set<offset_t, offset_t::std_hasher> visited{};
 
-		frontier.emplace(object.position, 0);
-		visited.insert(object.position);
+		frontier.emplace(position, 0);
+		visited.insert(position);
 
 		while (!frontier.empty()) {
 			const creeper_t<offset_t::product_t> current{ frontier.front() };
@@ -212,8 +226,7 @@ namespace necrowarp {
 			visited.insert(current.position);
 
 			if (!contains<ObjectType>(current.position)) {
-				object.position = current.position;
-				const bool inserted{ object_registry_storage<ObjectType>.add(std::move(object)) };
+				const bool inserted{ object_registry_storage<ObjectType>.add(current.position, std::move(object)) };
 
 				if (inserted) {
 					object_goal_map<MapType, ObjectType>.add(current.position);
@@ -229,7 +242,7 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t offset_position{ current.position + offset };
 
-				if (!visited.insert(offset_position).second || !game_map<MapType>.dependent within<zone_region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
+				if (!visited.insert(offset_position).second || !game_map<MapType>.dependent within<region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open) {
 					continue;
 				}
 
@@ -272,13 +285,13 @@ namespace necrowarp {
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
+			cauto maybe_position{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
 
 			if (!maybe_position.has_value()) {
 				return false;
 			}
 
-			add(ObjectType{ maybe_position.value() });
+			add(maybe_position.value(), ObjectType{});
 		}
 
 		return true;
@@ -286,56 +299,56 @@ namespace necrowarp {
 
 	template<map_type_e MapType> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType>::spawn(usize count, Args... args) noexcept {
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map<MapType>.dependent find_random<zone_region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
+			cauto maybe_position{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open, object_registry<MapType>) };
 
 			if (!maybe_position.has_value()) {
 				return false;
 			}
 
-			add(ObjectType{ maybe_position.value(), args... });
+			add(maybe_position.value(), ObjectType{ args... });
 		}
 
 		return true;
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance) noexcept {
-		object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
+			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
 			}
 
-			add(ObjectType{ maybe_position.value() });
+			add(maybe_position.value(), ObjectType{});
 
-			object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+			object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 		}
 
 		return true;
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
-		object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 		
 		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<zone_region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
+			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
 
 			if (!maybe_position.has_value()) {
 				return false;
 			}
 
-			add(ObjectType{ maybe_position.value(), args... });
+			add(maybe_position.value(), ObjectType{ args... });
 
-			object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+			object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 		}
 
 		return true;
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::update(offset_t current, offset_t target) noexcept {
-		if (empty(current) || !game_map<MapType>.dependent within<zone_region_e::Interior>(current) || contains(target) || !game_map<MapType>.dependent within<zone_region_e::Interior>(target)) {
+		if (empty(current) || !game_map<MapType>.dependent within<region_e::Interior>(current) || contains(target) || !game_map<MapType>.dependent within<region_e::Interior>(target)) {
 			return false;
 		}
 		
@@ -349,7 +362,9 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<AnimatedObject ObjectType> inline void object_registry_t<MapType>::advance() noexcept {
-		for (crauto object : object_registry_storage<ObjectType>) { object.idle_animation.advance(); }
+		for (crauto [_, object] : object_registry_storage<ObjectType>) {
+			object.idle_animation.advance();
+		}
 	}
 
 	template<map_type_e MapType> 
@@ -362,7 +377,9 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void object_registry_t<MapType>::advance() noexcept { advance<ALL_ANIMATED_OBJECTS>(); }
 
 	template<map_type_e MapType> template<AnimatedObject ObjectType> inline void object_registry_t<MapType>::retreat() noexcept {
-		for (crauto object : object_registry_storage<ObjectType>) { object.idle_animation.retreat(); }
+		for (crauto [_, object] : object_registry_storage<ObjectType>) {
+			object.idle_animation.retreat();
+		}
 	}
 
 	template<map_type_e MapType> 
@@ -375,7 +392,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void object_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_OBJECTS>(); }
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
-		object_goal_map<MapType, ObjectType>.dependent recalculate<zone_region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
 	}
 
 	template<map_type_e MapType>
@@ -405,32 +422,32 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw() const noexcept {
-		for (crauto object : object_registry_storage<ObjectType>) {
-			object.draw();
+		for (crauto [position, object] : object_registry_storage<ObjectType>) {
+			object.draw(position);
 		}
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto object : object_registry_storage<ObjectType>) {
-			if (!viewport.within(object.position)) {
+		for (crauto [position, object] : object_registry_storage<ObjectType>) {
+			if (!viewport.within(position)) {
 				continue;
 			}
 
-			object.draw(camera);
+			object.draw(position, camera);
 		}
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
 		cauto viewport{ camera.get_viewport() }; 
 
-		for (crauto object : object_registry_storage<ObjectType>) {
-			if (!viewport.within(object.position)) {
+		for (crauto [position, object] : object_registry_storage<ObjectType>) {
+			if (!viewport.within(position)) {
 				continue;
 			}
 
-			object.draw(camera, offset);
+			object.draw(position, camera, offset);
 		}
 	}
 

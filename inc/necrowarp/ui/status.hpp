@@ -87,7 +87,8 @@ namespace necrowarp {
 		}
 	};
 	
-	template<usize Statuses> struct status_bar_t : public anchor_t, public embedded_status_bar_t<Statuses> {
+	template<usize Statuses> class status_bar_t : public anchor_t, public embedded_status_bar_t<Statuses> {
+	  public:
 		constexpr status_bar_t(cref<std::array<status_t, Statuses>> statuses) noexcept : anchor_t{}, embedded_status_bar_t<Statuses>{ statuses } {}
 
 		constexpr status_bar_t(anchor_t anchor, cref<std::array<status_t, Statuses>> statuses, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_status_bar_t<Statuses>{ statuses, box, padding } {}

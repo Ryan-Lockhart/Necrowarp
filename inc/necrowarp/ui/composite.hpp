@@ -5,7 +5,8 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	struct labeled_button_t : public anchor_t, public embedded_button_t, public embedded_label_t {
+	class labeled_button_t : public anchor_t, public embedded_button_t, public embedded_label_t {
+	  public:
 		constexpr labeled_button_t() noexcept : anchor_t{}, embedded_button_t{}, embedded_label_t{} {}
 
 		constexpr labeled_button_t(anchor_t anchor, embedded_label_t label) noexcept : anchor_t{ anchor }, embedded_button_t{}, embedded_label_t{ label } {}
@@ -34,7 +35,8 @@ namespace necrowarp {
 		}
 	};
 
-	struct labeled_toggle_t : public anchor_t, public embedded_toggle_t, public embedded_label_t {
+	class labeled_toggle_t : public anchor_t, public embedded_toggle_t, public embedded_label_t {
+	  public:
 		constexpr labeled_toggle_t() noexcept : anchor_t{}, embedded_toggle_t{}, embedded_label_t{} {}
 
 		constexpr labeled_toggle_t(anchor_t anchor, embedded_label_t label) noexcept : anchor_t{ anchor }, embedded_toggle_t{}, embedded_label_t{ label } {}

@@ -5,6 +5,8 @@
 
 #include <necrowarp/game_state.hpp>
 
+#include <necrowarp/constants/enums/fluid.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -53,17 +55,10 @@ namespace necrowarp {
 	};
 
 	struct bonespur_t {
-		offset_t position;
-
-	private:
-		i8 health;
-		fluid_e spatter;
-
-		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
-	
-	public:
 		static constexpr i8 MaximumHealth{ 9 };
 		static constexpr i8 MaximumDamage{ 0 };
+
+		static constexpr i8 MinimumDamageReceived{ 1 };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
 			entity_e::Paladin,
@@ -77,18 +72,23 @@ namespace necrowarp {
 			entity_e::Ranger,
 			entity_e::Adventurer,
 		};
-		
-		inline i8 armor_boon() const noexcept { return health; }
 
-		static constexpr i8 MinimumDamageReceived{ 1 };
-		
-		inline bonespur_t(offset_t position, i8 health) noexcept : position{ position }, health{ health } {}
+	private:
+		i8 health;
+		fluid_e spatter;
+
+		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
+	
+	public:
+		inline bonespur_t(i8 health) noexcept : health{ health } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 
 		inline bool has_health() const noexcept { return health > 0; }
 
 		constexpr i8 max_health() const noexcept { return MaximumHealth; }
+
+		inline i8 armor_boon() const noexcept { return health; }
 
 		inline fluid_e get_spatter() const noexcept { return spatter; }
 
@@ -106,9 +106,9 @@ namespace necrowarp {
 			spatter += with;
 		}
 
-		template<map_type_e MapType> inline command_pack_t think() const noexcept;
+		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} [{}/{}] ({})", necrowarp::to_string(entity_e::Bonespur), get_health(), max_health(), necrowarp::to_string(spatter)); }
 
@@ -125,36 +125,14 @@ namespace necrowarp {
 
 		inline keyframe_t current_keyframe() const noexcept { return keyframe_t{ indices::Bonespur, static_cast<u8>(spatter) }; }
 
-		inline void draw() const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
 
-		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position, offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset()); }
+		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset()); }
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + camera.get_offset(), offset); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Bonespur; }
-
-		struct hasher {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr usize operator()(cref<bonespur_t> flesh_golem) noexcept { return offset_t::std_hasher::operator()(flesh_golem.position); }
-
-				static constexpr usize operator()(offset_t position) noexcept { return offset_t::std_hasher::operator()(position); }
-			};
-		};
-
-		struct comparator {
-			struct offset {
-				using is_transparent = void;
-
-				static constexpr bool operator()(cref<bonespur_t> lhs, cref<bonespur_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs.position); }
-
-				static constexpr bool operator()(cref<bonespur_t> lhs, offset_t rhs) noexcept { return offset_t::std_hasher::operator()(lhs.position) == offset_t::std_hasher::operator()(rhs); }
-
-				static constexpr bool operator()(offset_t lhs, cref<bonespur_t> rhs) noexcept { return offset_t::std_hasher::operator()(lhs) == offset_t::std_hasher::operator()(rhs.position); }
-			};
-		};
 	};
 } // namespace necrowarp
