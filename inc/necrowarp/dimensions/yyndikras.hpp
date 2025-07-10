@@ -13,15 +13,13 @@ namespace necrowarp {
 
 		constexpr binary_applicator_t<map_cell_t> cell_applicator{ closed_state, open_state };
 
-		globals::randomize_map_config(random_engine);
-
 		game_map<map_type>
 			.dependent set<region_e::Border>(closed_state)
 			.dependent generate<region_e::Interior>(
 				random_engine,
-				globals::map_config.fill_percent,
-				globals::map_config.automata_iterations,
-				globals::map_config.automata_threshold,
+				globals::CavernPreset.fill_percent,
+				globals::CavernPreset.automata_iterations,
+				globals::CavernPreset.automata_threshold,
 				cell_applicator
 			)
 			.dependent collapse<region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);

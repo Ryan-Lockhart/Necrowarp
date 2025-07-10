@@ -121,9 +121,14 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void ranger_t::die(offset_t position) noexcept {
 		object_registry<MapType>.spill(position, bones_t{});
 		object_registry<MapType>.spill(position, flesh_t{});
+		object_registry<MapType>.spill(position, cerebra_t{ entity_e::Ranger });
 
 		if (has_ammunition()) {
 			i8 dropped_ammunition{ get_ammunition() };
+
+			if (nocked) {
+				++dropped_ammunition;
+			}
 
 			if (object_registry<MapType>.dependent contains<arrow_t>(position)) {
 				ptr<arrow_t> maybe_arrow{ object_registry<MapType>.dependent at<arrow_t>(position) };
@@ -145,8 +150,6 @@ namespace necrowarp {
 				object_registry<MapType>.spill(position, arrow_t{ dropped_ammunition });
 			}
 		}
-
-		spill_fluid<MapType>(position, fluid_type<ranger_t>::type);
 
 		player.receive_death_boon<ranger_t>();
 

@@ -48,9 +48,13 @@ namespace necrowarp {
 
 	template<> struct is_bleeder<hemogheist_t> {
 		static constexpr bool value = true;
+		static constexpr fluid_e type = fluid_e::Blood;
+
+		static constexpr bool conditional = false;
 	};
 
-	template<> struct fluid_type<hemogheist_t> {
+	template<> struct is_thirsty<hemogheist_t> {
+		static constexpr bool value = true;
 		static constexpr fluid_e type = fluid_e::Blood;
 	};
 
@@ -65,7 +69,7 @@ namespace necrowarp {
 	struct hemogheist_t {
 		keyframe_t idle_animation;
 
-		static constexpr i8 MaximumHealth{ 9 };
+		static constexpr f32 MaximumVolume{ globals::MaximumCatalyst * globals::FluidPoolMaximumVolume };
 		static constexpr i8 MaximumDamage{ 5 };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
@@ -82,37 +86,59 @@ namespace necrowarp {
 		};
 
 	private:
-		i8 health;
+		f32 volume;
 
-		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
-	
+		inline void set_volume(f32 value) noexcept { volume = clamp<f32>(value, 0, max_volume()); }
+
 	public:		
-		inline hemogheist_t(i8 health) noexcept : idle_animation{ indices::Hemogheist, random_engine, true }, health{ health } {}
+		inline hemogheist_t(i8 catalyst) noexcept : idle_animation{ indices::Hemogheist, random_engine, true }, volume{ fluid_pool_volume(catalyst) } {}
 		
-		inline i8 get_health() const noexcept { return health; }
+		inline f32 get_volume() const noexcept { return volume; }
 
-		inline bool has_health() const noexcept { return health > 0; }
+		inline bool has_volume() const noexcept { return volume > 0; }
 
-		constexpr i8 max_health() const noexcept { return MaximumHealth; }
+		constexpr f32 max_volume() const noexcept { return MaximumVolume; }
 
-		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
+		inline bool can_imbibe() const noexcept { return volume + globals::FluidPoolMaximumVolume <= max_volume(); }
+
+		inline i8 can_imbibe(i8 amount) const noexcept {
+			return (max_volume() - volume) / globals::FluidPoolMaximumVolume;
+		}
+
+		inline void imbibe() noexcept {
+			if (!can_imbibe()) {
+				return;
+			}
+
+			set_volume(volume + fluid_pool_volume());
+		}
+
+		inline void imbibe(i8 amount) noexcept {
+			if (!can_imbibe(amount)) {
+				return;
+			}
+
+			set_volume(volume + fluid_pool_volume(amount));
+		}
+
+		inline bool can_survive(i8 damage_amount) const noexcept { return volume > damage_amount; }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
+		inline void receive_damage(i8 damage_amount) noexcept { set_volume(volume - damage_amount); }
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
 		template<map_type_e MapType> inline void die(offset_t position) noexcept;
 
-		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::Hemogheist), get_health(), max_health()); }
+		inline std::string to_string() const noexcept { return std::format("{} [{:.1f}L/{:.1f}L]", necrowarp::to_string(entity_e::Hemogheist), get_volume(), max_volume()); }
 
 		inline runes_t to_colored_string() const noexcept {
 			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Hemogheist) };
 
-			colored_string.concatenate(runes_t{ std::format(" [{}/{}]", get_health(), max_health()) });
+			colored_string.concatenate(runes_t{ std::format(" [{:.1f}L/{:.1f}L]", get_volume(), max_volume()) });
 			
 			return colored_string;
 		}

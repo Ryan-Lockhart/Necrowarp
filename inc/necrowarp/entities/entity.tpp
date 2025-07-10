@@ -113,4 +113,16 @@ namespace necrowarp {
 
 		return runes;
 	}
+
+	namespace globals {
+		static constexpr entity_e OopsAllEnum{ entity_e::Ranger };
+
+		template<> inline constexpr bool OopsAll<OopsAllEnum>{ true };
+		
+		template<NonNullEntity... Entities> static constexpr usize OopsAllCount{ (OopsAll<to_entity_enum<Entities>::value> + ...) };
+
+		static_assert(OopsAllCount<ALL_GOOD_NPCS> == 1, "cannot force multiple enemy types!");
+
+		static constexpr bool OopsAllEnabled{ OopsAllCount<ALL_GOOD_NPCS> == 1 };
+	}
 } // namespace necrowarp

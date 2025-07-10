@@ -46,10 +46,9 @@ namespace necrowarp {
 
 	template<> struct is_bleeder<mist_lady_t> {
 		static constexpr bool value = true;
-	};
-
-	template<> struct fluid_type<mist_lady_t> {
 		static constexpr fluid_e type = fluid_e::BloodyEctoplasm;
+
+		static constexpr bool conditional = false;
 	};
 
 	template<> struct is_devourable<mist_lady_t> {

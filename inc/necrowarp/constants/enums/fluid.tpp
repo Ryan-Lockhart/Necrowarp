@@ -17,10 +17,6 @@ namespace necrowarp {
 
 	constexpr ref<fluid_e> operator-=(ref<fluid_e> lhs, fluid_e rhs) noexcept { return lhs = lhs - rhs, lhs; }
 
-	constexpr fluid_e operator%(fluid_e lhs, fluid_e rhs) noexcept { return static_cast<fluid_e>(static_cast<u8>(lhs) ^ static_cast<u8>(rhs)); }
-
-	constexpr ref<fluid_e> operator%=(ref<fluid_e> lhs, fluid_e rhs) noexcept { return lhs = lhs % rhs, lhs; }
-
 	constexpr cstr to_string(fluid_e fluid) noexcept {
 		switch (fluid) {
 			case fluid_e::None: {
@@ -77,5 +73,15 @@ namespace necrowarp {
 				return runes_t{ string, to_color(fluid) };
 			}
 		}
+	}
+
+	static constexpr bool contains(fluid_e lhs, fluid_e rhs) noexcept { return lhs != lhs - rhs; }
+
+	static constexpr fluid_e shares(fluid_e lhs, fluid_e rhs) noexcept {
+		if (!contains(lhs, rhs)) {
+			return fluid_e::None;
+		}
+
+		return static_cast<fluid_e>(static_cast<u8>(lhs) & static_cast<u8>(rhs));
 	}
 }

@@ -28,7 +28,5 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void flesh_golem_t::die(offset_t position) noexcept {
 		object_registry<MapType>.spill(position, flesh_t{});
-
-		spill_fluid<MapType>(position, fluid_type<flesh_golem_t>::type);
 	}
 } // namespace necrowarp

@@ -50,19 +50,33 @@ namespace necrowarp {
 			}
 		}
 
-		cauto player_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
-
-		if (!player_pos.has_value() || !entity_registry<map_type>.dependent add<player_t>(player_pos.value())) {
+		if (cauto player_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; !player_pos.has_value() || !entity_registry<map_type>.dependent add<player_t>(player_pos.value())) {
 			error_log.add("could not find open position for player!");
 			terminate_prematurely();
 		}
 
-		cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
-
 		if constexpr (globals::SpawnTutorialPortal) {
-			if (!portal_pos.has_value() || !object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Insightful })) {
+			if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; !portal_pos.has_value() || !object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Insightful })) {
 				error_log.add("could not find open position for tutorial portal!");
 				terminate_prematurely();
+			}
+		}
+
+		if constexpr (globals::EnableBoonPortal) {
+			if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
+				object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Calm });
+			}
+		}
+
+		if constexpr (globals::EnableTribulationPortal) {
+			if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
+				object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Turbulent });
+			}
+		}
+
+		if constexpr (globals::EnableAudiencePortal) {
+			if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
+				object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Vocal });
 			}
 		}
 

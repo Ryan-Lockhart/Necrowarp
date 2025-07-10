@@ -109,7 +109,7 @@ namespace necrowarp {
 			fluid_map_dirty = true;
 
 			fluid_map<MapType>[position] += fluid;
-			fluid %= static_cast<fluid_e>(fluid_map<MapType>[position]);
+			fluid -= static_cast<fluid_e>(fluid_map<MapType>[position]);
 
 			if (fluid == fluid_e::None) {
 				return true;
@@ -136,7 +136,7 @@ namespace necrowarp {
 				fluid_map_dirty = true;
 
 				fluid_map<MapType>[current.position] += fluid;
-				fluid %= static_cast<fluid_e>(fluid_map<MapType>[current.position]);
+				fluid -= static_cast<fluid_e>(fluid_map<MapType>[current.position]);
 
 				if (fluid == fluid_e::None) {
 					return true;

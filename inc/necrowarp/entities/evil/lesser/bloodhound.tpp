@@ -42,7 +42,5 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, further_descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void bloodhound_t::die(offset_t position) noexcept {
-		spill_fluid<MapType>(position, fluid_type<bloodhound_t>::type);
-	}
+	template<map_type_e MapType> inline void bloodhound_t::die(offset_t position) noexcept {}
 } // namespace necrowarp

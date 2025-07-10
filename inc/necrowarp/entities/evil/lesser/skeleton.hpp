@@ -57,10 +57,9 @@ namespace necrowarp {
 
 	template<> struct is_bleeder<skeleton_t> {
 		static constexpr bool value = true;
-	};
-
-	template<> struct fluid_type<skeleton_t> {
 		static constexpr fluid_e type = fluid_e::Ichor;
+
+		static constexpr bool conditional = true;
 	};
 
 	struct skeleton_t {
@@ -99,6 +98,8 @@ namespace necrowarp {
 		inline bool is_animate() const noexcept { return state == decay_e::Animate; }
 
 		inline bool is_rotted() const noexcept { return state == decay_e::Rotted; }
+
+		inline bool can_bleed() const noexcept { return is_rotted(); }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 

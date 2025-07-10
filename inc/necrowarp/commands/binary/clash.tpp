@@ -15,6 +15,34 @@ namespace necrowarp {
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<InitiatorType>::value && !std::is_same<InitiatorType, VictimType>::value)
 	inline bool instigate(offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+		cauto try_bleed = [&] {
+			if constexpr (is_bleeder_v<VictimType>) {
+				if constexpr (is_bleeder<VictimType>::conditional) {
+					if (!victim.can_bleed()) {
+						return;
+					}
+				}
+
+				fluid_e fluid{ is_bleeder<VictimType>::type };
+
+				if constexpr (is_thirsty_for<InitiatorType, VictimType>) {
+					if (initiator.can_imbibe()) {
+						initiator.imbibe();
+						
+						fluid -= shares(is_thirsty<VictimType>::type, is_bleeder<InitiatorType>::type);
+					}
+				}
+
+				if (fluid != fluid_e::None) {
+					spill_fluid<MapType>(target_position, fluid);
+
+					if constexpr (is_spatterable<InitiatorType>::value) {
+						initiator.enspatter(fluid);
+					}				
+				}
+			}
+		};
+
 		if constexpr (is_docile<InitiatorType>::value) {
 			return false;
 		}
@@ -56,15 +84,7 @@ namespace necrowarp {
 				if (victim.dependent can_survive<InitiatorType>(damage)) {
 					victim.dependent receive_damage<InitiatorType>(damage);
 
-					if constexpr (is_bleeder<VictimType>::value) {
-						constexpr fluid_e fluid{ fluid_type<VictimType>::type };
-
-						spill_fluid<MapType>(target_position, fluid);
-
-						if constexpr (is_spatterable<InitiatorType>::value) {
-							initiator.enspatter(fluid);
-						}
-					}
+					try_bleed();
 
 					return false;
 				}
@@ -72,24 +92,14 @@ namespace necrowarp {
 				if (victim.can_survive(damage)) {
 					victim.receive_damage(damage);
 
-					if constexpr (is_bleeder<VictimType>::value) {
-						constexpr fluid_e fluid{ fluid_type<VictimType>::type };
-
-						spill_fluid<MapType>(target_position, fluid);
-
-						if constexpr (is_spatterable<InitiatorType>::value) {
-							initiator.enspatter(fluid);
-						}
-					}
+					try_bleed();
 
 					return false;
 				}
 			}
 		}
 
-		if constexpr (is_bleeder<VictimType>::value && is_spatterable<InitiatorType>::value) {
-			initiator.enspatter(fluid_type<VictimType>::type);
-		}
+		try_bleed();
 
 		return true;
 	}
@@ -97,6 +107,34 @@ namespace necrowarp {
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<VictimType>::value && !std::is_same<InitiatorType, VictimType>::value)
 	inline bool retaliate(offset_t source_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+		cauto try_bleed = [&] {
+			if constexpr (is_bleeder_v<InitiatorType>) {
+				if constexpr (is_bleeder<InitiatorType>::conditional) {
+					if (!initiator.can_bleed()) {
+						return;
+					}
+				}
+
+				fluid_e fluid{ is_bleeder<InitiatorType>::type };
+
+				if constexpr (is_thirsty_for<VictimType, InitiatorType>) {
+					if (victim.can_imbibe()) {
+						victim.imbibe();
+						
+						fluid -= shares(is_thirsty<VictimType>::type, is_bleeder<InitiatorType>::type);
+					}
+				}
+
+				if (fluid != fluid_e::None) {
+					spill_fluid<MapType>(source_position, fluid);
+
+					if constexpr (is_spatterable<VictimType>::value) {
+						victim.enspatter(fluid);
+					}
+				}
+			}
+		};
+
 		if constexpr (is_docile<VictimType>::value) {
 			return false;
 		}
@@ -138,15 +176,7 @@ namespace necrowarp {
 				if (initiator.dependent can_survive<VictimType>(damage)) {
 					initiator.dependent receive_damage<VictimType>(damage);
 
-					if constexpr (is_bleeder<InitiatorType>::value) {
-						constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
-
-						spill_fluid<MapType>(source_position, fluid);
-
-						if constexpr (is_spatterable<VictimType>::value) {
-							victim.enspatter(fluid);
-						}
-					}
+					try_bleed();
 
 					return false;
 				}
@@ -154,24 +184,14 @@ namespace necrowarp {
 				if (initiator.can_survive(damage)) {
 					initiator.receive_damage(damage);
 
-					if constexpr (is_bleeder<InitiatorType>::value) {
-						constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
-
-						spill_fluid<MapType>(source_position, fluid);
-
-						if constexpr (is_spatterable<VictimType>::value) {
-							victim.enspatter(fluid);
-						}
-					}
+					try_bleed();
 
 					return false;
 				}
 			}
 		}
 
-		if constexpr (is_bleeder<InitiatorType>::value && is_spatterable<VictimType>::value) {
-			victim.enspatter(fluid_type<InitiatorType>::type);
-		}
+		try_bleed();
 
 		return true;
 	}
@@ -179,6 +199,29 @@ namespace necrowarp {
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<InitiatorType>::value && !std::is_same<InitiatorType, VictimType>::value)
 	inline bool reflect(offset_t source_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+		
+		cauto try_bleed = [&] {
+			if constexpr (is_bleeder<InitiatorType>::value) {
+				if constexpr (is_bleeder<InitiatorType>::conditional) {
+					if (!initiator.can_bleed()) {
+						return;
+					}
+				}
+
+				constexpr fluid_e fluid{ is_bleeder<InitiatorType>::type };
+
+				spill_fluid<MapType>(source_position, fluid);
+
+				if constexpr (is_spatterable<InitiatorType>::value) {
+					initiator.enspatter(fluid);
+				}
+
+				if constexpr (is_spatterable<VictimType>::value) {
+					victim.enspatter(fluid);
+				}
+			}
+		};
+
 		if constexpr (is_clumsy<InitiatorType>::value) {
 			if (InitiatorType::fumble(random_engine)) {
 				return false;
@@ -211,27 +254,17 @@ namespace necrowarp {
 			}
 		}
 
-		if constexpr (is_spatterable<VictimType>::value && is_bleeder<InitiatorType>::value) {
-			victim.enspatter(fluid_type<InitiatorType>::type);
-		}
-
 		if constexpr (!is_fodder<InitiatorType>::value) {
 			if (initiator.can_survive(damage)) {
 				initiator.receive_damage(damage);
 
-				if constexpr (is_bleeder<InitiatorType>::value) {
-					constexpr fluid_e fluid{ fluid_type<InitiatorType>::type };
-
-					spill_fluid<MapType>(source_position, fluid);
-
-					if constexpr (is_spatterable<InitiatorType>::value) {
-						initiator.enspatter(fluid);
-					}
-				}
+				try_bleed();
 
 				return false;
 			}
 		}
+
+		try_bleed();
 
 		return true;
 	}
@@ -321,7 +354,7 @@ namespace necrowarp {
 						if constexpr (is_player<EntityType>::value) {
 							initiator.dependent die<MapType>();
 						} else {
-							initiator.dependent die<MapType>(target_position);
+							initiator.dependent die<MapType>(source_position);
 						}
 
 						if constexpr (is_npc_entity<EntityType>::value) {

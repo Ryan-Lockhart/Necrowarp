@@ -49,10 +49,9 @@ namespace necrowarp {
 
 	template<> struct is_bleeder<death_knight_t> {
 		static constexpr bool value = true;
-	};
-
-	template<> struct fluid_type<death_knight_t> {
 		static constexpr fluid_e type = fluid_e::Ichor;
+
+		static constexpr bool conditional = false;
 	};
 
 	template<> struct is_concussable<death_knight_t> {

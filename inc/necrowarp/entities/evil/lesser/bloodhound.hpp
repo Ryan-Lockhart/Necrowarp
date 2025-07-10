@@ -46,10 +46,9 @@ namespace necrowarp {
 
 	template<> struct is_bleeder<bloodhound_t> {
 		static constexpr bool value = true;
-	};
-
-	template<> struct fluid_type<bloodhound_t> {
 		static constexpr fluid_e type = fluid_e::Blood;
+
+		static constexpr bool conditional = false;
 	};
 
 	template<> struct is_fast<bloodhound_t> {

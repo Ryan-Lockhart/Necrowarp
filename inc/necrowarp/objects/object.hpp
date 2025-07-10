@@ -15,6 +15,7 @@ namespace necrowarp {
 	struct bones_t;
 	struct flesh_t;
 	struct metal_t;
+	struct cerebra_t;
 
 	struct ladder_t;
 	struct portal_t;
@@ -24,7 +25,8 @@ namespace necrowarp {
 	#define ALL_CATALYST_OBJECTS \
 		bones_t, \
 		flesh_t, \
-		metal_t
+		metal_t, \
+		cerebra_t
 
 	#define ALL_LOCOMOTION_OBJECTS \
 		ladder_t, \
@@ -49,6 +51,7 @@ namespace necrowarp {
 		Bones,
 		Flesh,
 		Metal,
+		Cerebra,
 
 		Ladder,
 		Portal,
@@ -56,10 +59,10 @@ namespace necrowarp {
 		Arrow,
 	};
 
-	template<plurality_e Plurality = plurality_e::Singular> static constexpr cstr to_string(object_e type) noexcept;
+	template<plurality_e Plurality = plurality_e::Singular> static constexpr cstr to_string(object_e object) noexcept;
 
-	template<> constexpr cstr to_string<plurality_e::Singular>(object_e type) noexcept {
-		switch (type) {
+	template<> constexpr cstr to_string<plurality_e::Singular>(object_e object) noexcept {
+		switch (object) {
 			case object_e::None: {
 				return "none";
 			} case object_e::Bones: {
@@ -68,6 +71,8 @@ namespace necrowarp {
 				return "flesh";
 			} case object_e::Metal: {
 				return "metal";
+			} case object_e::Cerebra: {
+				return "cerebrum";
 			} case object_e::Ladder: {
 				return "ladder";
 			} case object_e::Portal: {
@@ -78,8 +83,8 @@ namespace necrowarp {
 		}
 	}
 
-	template<> constexpr cstr to_string<plurality_e::Multiple>(object_e type) noexcept {
-		switch (type) {
+	template<> constexpr cstr to_string<plurality_e::Multiple>(object_e object) noexcept {
+		switch (object) {
 			case object_e::None: {
 				return "none";
 			} case object_e::Bones: {
@@ -88,6 +93,8 @@ namespace necrowarp {
 				return "flesh";
 			} case object_e::Metal: {
 				return "metal";
+			} case object_e::Cerebra: {
+				return "cerebra";
 			} case object_e::Ladder: {
 				return "ladders";
 			} case object_e::Portal: {
@@ -98,26 +105,30 @@ namespace necrowarp {
 		}
 	}
 
-	template<plurality_e Plurality = plurality_e::Singular> static constexpr runes_t to_colored_string(object_e type) noexcept {
-		const cstr string{ to_string<Plurality>(type) };
-
-		switch (type) {
+	static constexpr color_t to_color(object_e object) noexcept {
+		switch (object) {
 			case object_e::None: {
-				return runes_t{ string, colors::Grey };
+				return colors::Grey;
 			} case object_e::Bones: {
-				return runes_t{ string, colors::White };
+				return colors::White;
 			} case object_e::Flesh: {
-				return runes_t{ string, colors::Orange };
+				return colors::Orange;
+			} case object_e::Cerebra: {
+				return mix(colors::Red, colors::Magenta);
 			} case object_e::Metal: {
-				return runes_t{ string, colors::metals::Iron };
+				return colors::metals::Iron;
 			} case object_e::Ladder: {
-				return runes_t{ string, colors::materials::Oak };
+				return colors::materials::Oak;
 			} case object_e::Portal: {
-				return runes_t{ string, colors::light::Green };
+				return colors::light::Green;
 			} case object_e::Arrow: {
-				return runes_t{ string, colors::materials::Oak };
+				return colors::materials::Oak;
 			}
 		}
+	}
+
+	template<plurality_e Plurality = plurality_e::Singular> static constexpr runes_t to_colored_string(object_e object) noexcept {
+		return runes_t{ to_string<Plurality>(object), to_color(object) };
 	}
 
 	constexpr usize ObjectTypeCount{ static_cast<usize>(object_e::Arrow) + 1 };
@@ -130,8 +141,9 @@ namespace necrowarp {
 		Bones = 1 << 0,
 		Flesh = Bones << 1,
 		Metal = Flesh << 1,
+		Cerebra = Metal << 1,
 
-		Ladder = Metal << 1,
+		Ladder = Cerebra << 1,
 		Portal = Ladder << 1,
 
 		Arrow = Portal << 1,

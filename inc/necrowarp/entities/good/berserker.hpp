@@ -48,10 +48,9 @@ namespace necrowarp {
 
 	template<> struct is_bleeder<berserker_t> {
 		static constexpr bool value = true;
-	};
-
-	template<> struct fluid_type<berserker_t> {
 		static constexpr fluid_e type = fluid_e::Blood;
+
+		static constexpr bool conditional = false;
 	};
 
 	template<> struct is_berker<berserker_t> {
@@ -139,16 +138,20 @@ namespace necrowarp {
 
 		static constexpr i8 MaximumDamage{ 2 };
 
-		static constexpr std::array<entity_e, 9> EntityPriorities{
+		static constexpr std::array<entity_e, 13> EntityPriorities{
 			entity_e::Player,
-			entity_e::AnimatedSuit,
-			entity_e::Bloodhound,
-			entity_e::Cultist,
-			entity_e::Skeleton,
-			entity_e::Bonespur,
-			entity_e::Wraith,
-			entity_e::FleshGolem,
 			entity_e::DeathKnight,
+			entity_e::AnimatedSuit,
+			entity_e::Dreadwurm,
+			entity_e::Draugaz,
+			entity_e::FleshGolem,
+			entity_e::Abomination,
+			entity_e::Wraith,
+			entity_e::Cultist,
+			entity_e::Hemogheist,
+			entity_e::Bloodhound,
+			entity_e::Bonespur,
+			entity_e::Skeleton,
 		};
 
 		static constexpr i8 DeathBoon{ 3 };
@@ -161,7 +164,7 @@ namespace necrowarp {
 		inline void set_fatigue(i8 value) noexcept { fatigue = clamp<i8>(value, 0, max_fatigue()); }
 
 	public:
-		inline berserker_t() noexcept : fatigue{ StartingFatigue }, temperament{ temperament_e::Calm } {}
+		inline berserker_t() noexcept : fatigue{ StartingFatigue }, temperament{ temperament_e::Calm }, spatter{ fluid_e::None } {}
 		
 		inline i8 get_fatigue() const noexcept { return fatigue; }
 
@@ -206,7 +209,7 @@ namespace necrowarp {
 				return;
 			}
 
-			spatter += fluid_type<berserker_t>::type;
+			spatter += is_bleeder<berserker_t>::type;
 		}
 
 		inline void exhaust() noexcept {

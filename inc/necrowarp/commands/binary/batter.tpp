@@ -17,6 +17,8 @@ namespace necrowarp {
 			return;
 		}
 
+		ref<battle_monk_t> initiator{ *maybe_monk };
+
 		const entity_e target{ determine_target<battle_monk_t>(entity_registry<MapType>.at(target_position)) };
 		
 		magic_enum::enum_switch([&](auto val) -> void {
@@ -31,36 +33,50 @@ namespace necrowarp {
 					return;
 				}
 
+				ref<entity_type> target{ *maybe_target };
+				
+				cauto try_bleed = [&] {
+					if constexpr (is_bleeder_v<entity_type>) {
+						if constexpr (is_bleeder<entity_type>::conditional) {
+							if (!target.can_bleed()) {
+								return;
+							}
+						}
+
+						constexpr fluid_e fluid{ is_bleeder<entity_type>::type };
+						
+						spill_fluid<MapType>(target_position, fluid);
+					}
+				};
+
 				bool critical_strike{ false };
 
 				if constexpr (is_concussable<entity_type>::value) {
-					if (!stunned.contains(target_position)) {
-						stunned.add(target_position);
+					if (!entity_registry<MapType>.is_concussed(target_position)) {
+						concussed.add(target_position);
 					} else {
 						critical_strike = true;
 					}
 				}
 
-				const i8 damage{ static_cast<i8>(maybe_monk->get_damage(cval) * (critical_strike ? 2 : 1)) };
+				const i8 damage{ static_cast<i8>(initiator.get_damage(cval) * (critical_strike ? 2 : 1)) };
 
 				if constexpr (!is_fodder<entity_type>::value) {
-					if (maybe_target->can_survive(damage)) {
-						maybe_target->receive_damage(damage);
-
-						if constexpr (is_bleeder<entity_type>::value) {
-							constexpr fluid_e fluid{ fluid_type<entity_type>::type };
-
-							spill_fluid<MapType>(target_position, fluid);
-						}
+					if (target.can_survive(damage)) {
+						target.receive_damage(damage);
+						
+						try_bleed();
 
 						return;
 					}
 				}
+						
+				try_bleed();
 
 				if constexpr (is_player<entity_type>::value) {
-					maybe_target->dependent die<MapType>();
+					target.dependent die<MapType>();
 				} else {
-					maybe_target->dependent die<MapType>(target_position);
+					target.dependent die<MapType>(target_position);
 				}
 
 				if constexpr (is_npc_entity<entity_type>::value) {

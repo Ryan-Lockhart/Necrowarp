@@ -28,7 +28,5 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void animated_suit_t::die(offset_t position) noexcept {
 		object_registry<MapType>.spill(position, metal_t{ state });
-
-		spill_fluid<MapType>(position, fluid_type<animated_suit_t>::type);
 	}
 } // namespace necrowarp

@@ -8,6 +8,8 @@
 
 #include <necrowarp/globals.hpp>
 
+#include <necrowarp/constants/enums/fluid.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 

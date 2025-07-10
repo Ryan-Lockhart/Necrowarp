@@ -195,6 +195,18 @@ namespace necrowarp {
 
 		inline void reset_unique_goal_maps() noexcept;
 
+		inline bool is_newborn(offset_t position) const noexcept;
+
+		inline bool is_deceased(offset_t position) const noexcept;
+
+		inline bool is_concussed(offset_t position) const noexcept;
+		
+		inline bool is_afflicted(offset_t position) const noexcept;
+
+		inline std::optional<affliction_e> get_affliction(offset_t position) const noexcept;
+
+		template<affliction_e Affliction> bool has_affliction(offset_t position) const noexcept;
+
 		template<NonPlayerEntity EntityType> inline void draw() const noexcept;
 
 		template<PlayerEntity EntityType> inline void draw() const noexcept;

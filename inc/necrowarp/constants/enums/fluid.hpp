@@ -38,15 +38,15 @@ namespace necrowarp {
 
 	constexpr fluid_e operator+(fluid_e lhs, fluid_e rhs) noexcept;
 	constexpr fluid_e operator-(fluid_e lhs, fluid_e rhs) noexcept;
-	constexpr fluid_e operator%(fluid_e lhs, fluid_e rhs) noexcept;
 
 	constexpr ref<fluid_e> operator+=(ref<fluid_e> lhs, fluid_e rhs) noexcept;
 	constexpr ref<fluid_e> operator-=(ref<fluid_e> lhs, fluid_e rhs) noexcept;
-	constexpr ref<fluid_e> operator%=(ref<fluid_e> lhs, fluid_e rhs) noexcept;
 
 	constexpr cstr to_string(fluid_e fluid) noexcept;
 
 	constexpr color_t to_color(fluid_e fluid) noexcept;
 
 	constexpr runes_t to_colored_string(fluid_e fluid) noexcept;
+
+	static constexpr bool contains(fluid_e lhs, fluid_e rhs) noexcept;
 } // namespace necrowarp

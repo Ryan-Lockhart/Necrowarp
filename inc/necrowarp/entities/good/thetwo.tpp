@@ -47,8 +47,7 @@ namespace necrowarp {
 
 		object_registry<MapType>.spill(position, bones_t{}, droppings);
 		object_registry<MapType>.spill(position, flesh_t{}, droppings);
-
-		spill_fluid<MapType>(position, fluid_type<thetwo_t>::type, droppings);
+		object_registry<MapType>.spill(position, cerebra_t{ entity_e::Thetwo });
 
 		player.receive_death_boon<thetwo_t>(droppings);
 

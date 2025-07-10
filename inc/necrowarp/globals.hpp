@@ -178,13 +178,11 @@ namespace necrowarp {
 					return "32:9 - 5120 x 1440 (QHD-UW)";
 				} case resolution_e::Resolution7680x2160: {
 					return "32:9 - 7680 x 2160 (4KHD-UW)";
-				} default: {
-					return "unknown resolution";
 				}
 			}
 		}
 		
-		static inline extent_t window_size{ 1920, 1080 };
+		static inline extent_t window_size{ Resolutions[resolution_e::Resolution1024x768] };
 
 		template<grid_type_e GridType> static constexpr extent_t cell_size;
 
@@ -220,6 +218,14 @@ namespace necrowarp {
 			}
 		}
 
+		template<grid_type_e GridType> inline offset_t grid_center() noexcept {
+			if constexpr (use_grid_offset<GridType>) {
+				return offset_t{ window_size / 2 - grid_overflow<GridType>() / 2 - 1 };
+			} else {
+				return offset_t::Zero;
+			}
+		}
+
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
 
 		static constexpr extent_t TilesetSize{ 16, 4 };
@@ -232,7 +238,7 @@ namespace necrowarp {
 		template<map_type_e MapType> static constexpr extent_t MapSize;
 
 		template<> inline constexpr extent_t MapSize<map_type_e::Standard>{ 128, 128 };
-		template<> inline constexpr extent_t MapSize<map_type_e::Pocket>{ 48, 48 };
+		template<> inline constexpr extent_t MapSize<map_type_e::Pocket>{ 64, 64 };
 
 		template<map_type_e MapType> static constexpr offset_t MapOrigin{ offset_t::Zero };
 		template<map_type_e MapType> static constexpr offset_t MapExtent{ MapOrigin<MapType> + MapSize<MapType> - 1 };
@@ -287,6 +293,12 @@ namespace necrowarp {
 		
 		constexpr const map_config_t TunnelsPreset{
 			.fill_percent = 0.5,
+			.automata_iterations = 512,
+			.automata_threshold = 4,
+		};
+		
+		constexpr const map_config_t FieldPreset{
+			.fill_percent = 0.4,
 			.automata_iterations = 512,
 			.automata_threshold = 4,
 		};
@@ -346,9 +358,13 @@ namespace necrowarp {
 
 		constexpr i16 FloorsPerReinforcement{ 2 };
 
-		constexpr bool CheatsAllowed{ false };
+		constexpr bool CheatsAllowed{ true };
 
-		constexpr bool SpawnTutorialPortal{ false };
+		constexpr bool SpawnTutorialPortal{ true };
+
+		constexpr bool EnableBoonPortal{ true };
+		constexpr bool EnableTribulationPortal{ true };
+		constexpr bool EnableAudiencePortal{ true };
 
 		constexpr f32 FluidPoolMinimumVolume{ 4.5f };
 		constexpr f32 FluidPoolMaximumVolume{ 5.7f };
@@ -357,17 +373,6 @@ namespace necrowarp {
 
 		constexpr i8 MinimumCatalyst{ 4 };
 		constexpr i8 MaximumCatalyst{ 9 };
-
-		constexpr bool OopsAllAdventurers{ false };
-		constexpr bool OopsAllMercenaries{ false };
-		constexpr bool OopsAllRangers{ false };
-		constexpr bool OopsAllSkulkers{ false };
-		constexpr bool OopsAllMistLadies{ false };
-		constexpr bool OopsAllBannerBearers{ false };
-		constexpr bool OopsAllThetwo{ false };
-		constexpr bool OopsAllBattleMonks{ false };
-		constexpr bool OopsAllBerserkers{ false };
-		constexpr bool OopsAllPaladins{ false };
 
 		template<typename T> struct has_unique_descriptor {
 			static constexpr bool value = false;

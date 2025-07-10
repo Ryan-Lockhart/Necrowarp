@@ -31,10 +31,8 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void paladin_t::die(offset_t position) noexcept {
 		object_registry<MapType>.spill(position, bones_t{});
 		object_registry<MapType>.spill(position, flesh_t{});
-
 		object_registry<MapType>.spill(position, metal_t{ galvanisation_e::Shimmering });
-
-		spill_fluid<MapType>(position, fluid_type<paladin_t>::type);
+		object_registry<MapType>.spill(position, cerebra_t{ entity_e::Paladin });
 
 		player.receive_death_boon<paladin_t>();
 

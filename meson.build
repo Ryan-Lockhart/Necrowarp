@@ -43,8 +43,19 @@ bleak_dep = dependency('bleak', required: true, fallback: ['bleak', 'bleak_dep']
 
 subdir('inc')
 
+diagnostics = [
+	'-Wall',
+	'-Wextra',
+	'-Wpedantic',
+	'-Wuninitialized',
+	'-Wno-unused-parameter',
+	'-Wno-gnu-anonymous-struct',
+	'-Wno-nested-anon-types',
+	'-Wno-invalid-utf8',
+]
+
 executable('necrowarp', 'src/program.cpp',
-	cpp_args: ['-DSTEAMLESS', '-march=x86-64-v3', necrowarp_args],
+	cpp_args: ['-DSTEAMLESS', '-march=x86-64-v3', necrowarp_args, diagnostics],
 
     include_directories: [necrowarp_private_includes, necrowarp_internal_includes],
     dependencies: bleak_dep,

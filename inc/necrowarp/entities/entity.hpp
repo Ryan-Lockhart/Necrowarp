@@ -123,6 +123,7 @@ namespace necrowarp {
 
 	#define ALL_ANIMATED_ENTITIES \
 		animated_suit_t, \
+		hemogheist_t, \
 		death_knight_t
 	
 	#define ALL_VIGILANT_ENTITIES \
@@ -392,7 +393,7 @@ namespace necrowarp {
 
 		Bonespur = Draugaz << 1, // Chromalese << 1,
 		Wraith = Bonespur << 1,
-		Hemogheist = Bonespur << 1,
+		Hemogheist = Wraith << 1,
 		DeathKnight = Hemogheist << 1,
 		FleshGolem = DeathKnight << 1,
 		Dreadwurm = FleshGolem << 1,
@@ -619,17 +620,27 @@ namespace necrowarp {
 
 	template<typename T> struct is_bleeder {
 		static constexpr bool value = false;
+		static constexpr fluid_e type = fluid_e::None;
+
+		static constexpr bool conditional = false;
 	};
 
-	template<typename T> constexpr bool is_bleeder_v = is_bleeder<T>::value;
+	template<typename T> constexpr bool is_bleeder_v = is_bleeder<T>::value && is_bleeder<T>::type != fluid_e::None;
 
-	template<typename T> concept BleederEntity = NonNullEntity<T> && is_bleeder<T>::value;
+	template<typename T> concept BleederEntity = NonNullEntity<T> && is_bleeder_v<T>;
 
-	template<typename T> struct fluid_type {
+	template<typename T> struct is_thirsty {
+		static constexpr bool value = false;
 		static constexpr fluid_e type = fluid_e::None;
 	};
 
-	template<typename T> constexpr fluid_e fluid_type_v = fluid_type<T>::type;
+	template<typename T> constexpr bool is_thirsty_v = is_thirsty<T>::value && is_thirsty<T>::type != fluid_e::None;
+
+	template<typename T> concept ThirstyEntity = NonNullEntity<T> && is_thirsty_v<T>;
+
+	template<typename T, typename U> constexpr bool is_thirsty_for = is_thirsty_v<T> && is_bleeder_v<U> && contains(is_thirsty<T>::type, is_bleeder<U>::type);
+
+	template<ThirstyEntity Thirster, BleederEntity Bleeder> constexpr fluid_e thirsting_for = shares(is_thirsty<Thirster>::type, is_bleeder<Bleeder>::type);
 
 	template<typename T> struct is_devourable {
 		static constexpr bool value = false;
@@ -695,14 +706,24 @@ namespace necrowarp {
 		offset_t position;
 		ptr<EntityType> entity;
 
-		template<region_e Region> bool is_valid() const noexcept;
+		template<region_e Region> inline bool is_valid() const noexcept;
 
-		bool is_newborn() const noexcept;
+		inline bool is_newborn() const noexcept;
 
-		bool is_dead() const noexcept;
+		inline bool is_deceased() const noexcept;
 
-		bool is_stunned() const noexcept;
+		inline bool is_concussed() const noexcept;
 
-		bool has_affliction() const noexcept;
+		inline bool is_afflicted() const noexcept;
+
+		inline std::optional<affliction_e> get_affliction() const noexcept;
+
+		template<affliction_e Affliction> inline bool has_affliction() const noexcept;
 	};
+
+	namespace globals {
+		template<entity_e Entity>
+			requires (Entity != entity_e::None && is_good<typename to_entity_type<Entity>::type>::value)
+		constexpr bool OopsAll{ false };
+	}
 } // namespace necrowarp

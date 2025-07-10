@@ -30,7 +30,7 @@ namespace necrowarp {
 				victim.receive_damage(damage);
 
 				if constexpr (is_bleeder<VictimType>::value) {
-					const fluid_e fluid{ fluid_type<VictimType>::type };
+					const fluid_e fluid{ is_bleeder<VictimType>::type };
 
 					spill_fluid<MapType>(target_position, fluid);
 

@@ -244,11 +244,27 @@ namespace necrowarp {
 			}
 
 			if constexpr (globals::SpawnTutorialPortal) {
-				cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
-
-				if (!portal_pos.has_value() || !object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful })) {
+				if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; !portal_pos.has_value() || !object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Insightful })) {
 					error_log.add("could not find open position for tutorial portal!");
 					terminate_prematurely();
+				}
+			}
+
+			if constexpr (globals::EnableBoonPortal) {
+				if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
+					object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Calm });
+				}
+			}
+
+			if constexpr (globals::EnableTribulationPortal) {
+				if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
+					object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Turbulent });
+				}
+			}
+
+			if constexpr (globals::EnableAudiencePortal) {
+				if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
+					object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Vocal });
 				}
 			}
 
@@ -303,9 +319,11 @@ namespace necrowarp {
 			ladder_positions.clear();
 
 			for (crauto [position, ladder] : object_registry_storage<ladder_t>) {
-				if (!fluid_map<MapType>.dependent within<region_e::Interior>(position) || ladder.is_up_ladder()) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(position) || ladder.is_up_ladder()) {
 					continue;
 				}
+
+				ladder_positions.add(position);
 
 				const fluid_e fluid{ fluid_map<MapType>[position] };
 
@@ -314,7 +332,6 @@ namespace necrowarp {
 				}
 
 				fluid_positions.add(position, fluid);
-				ladder_positions.add(position);
 			}
 
 			game_map<MapType>.dependent reset<region_e::All>();
@@ -322,6 +339,11 @@ namespace necrowarp {
 
 			entity_registry<MapType>.dependent clear<ALL_NON_PLAYER>();
 			entity_registry<MapType>.dependent reset_goal_map<player_t>();
+
+			newborns.clear();
+			deceased.clear();
+			concussed.clear();
+			afflicted.clear();
 
 			entity_registry<MapType>.reset_unique_goal_maps();
 
@@ -388,19 +410,36 @@ namespace necrowarp {
 					error_log.add("could not find open position for player!");
 					terminate_prematurely();
 				}
+			} else if (!entity_registry<MapType>.dependent add<player_t>(player.position)) {
+				error_log.add("failed to add player to map!");
+				terminate_prematurely();
 			}
 #if !defined(STEAMLESS)
 			steam_stats_s::stats<steam_stat_e::MetersMoved> += offset_t::distance<f32>(previous_position, player.position);
 #endif
-			cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
-
-			if (!portal_pos.has_value()) {
-				error_log.add("could not find open position for return portal!");
-				terminate_prematurely();
+			if constexpr (globals::SpawnTutorialPortal) {
+				if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; !portal_pos.has_value() || !object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Insightful })) {
+					error_log.add("could not find open position for tutorial portal!");
+					terminate_prematurely();
+				}
 			}
 
-			if constexpr (globals::SpawnTutorialPortal) {
-				object_registry<MapType>.add(portal_t{ portal_pos.value(), stability_e::Insightful });
+			if constexpr (globals::EnableBoonPortal) {
+				if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
+					object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Calm });
+				}
+			}
+
+			if constexpr (globals::EnableTribulationPortal) {
+				if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
+					object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Turbulent });
+				}
+			}
+
+			if constexpr (globals::EnableAudiencePortal) {
+				if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
+					object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Vocal });
+				}
 			}
 
 			i16 num_up_ladders_needed{ globals::StartingUpLadders };
@@ -512,6 +551,10 @@ namespace necrowarp {
 
 				if (player_acted || camera_input<MapType>()) {
 					input_timer.record();
+				} else if (keyboard_s::is_key<input_e::Down>(keys::Alpha::M)) {
+					phase_state_t<phase_e::Playing>::show_big_map = !phase_state_t<phase_e::Playing>::show_big_map;
+
+					input_timer.record();
 				}
 			}
 		}
@@ -537,64 +580,8 @@ namespace necrowarp {
 
 			const offset_t spawn_position{ maybe_spawn.value() };
 
-			if constexpr (globals::OopsAllAdventurers) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, adventurer_t{});
-
-				return true;
-			}
-
-			if constexpr (globals::OopsAllMercenaries) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, mercenary_t{});
-
-				return true;
-			}
-
-			if constexpr (globals::OopsAllRangers) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, ranger_t{});
-
-				return true;
-			}
-
-			if constexpr (globals::OopsAllSkulkers) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, skulker_t{});
-
-				return true;
-			}
-
-			if constexpr (globals::OopsAllMistLadies) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, mist_lady_t{});
-
-				return true;
-			}
-
-			if constexpr (globals::OopsAllBannerBearers) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, banner_bearer_t{});
-
-				return true;
-			}
-
-			if constexpr (globals::OopsAllThetwo) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, thetwo_t{});
-
-				return true;
-			}
-
-			if constexpr (globals::OopsAllBattleMonks) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, battle_monk_t{});
-
-				return true;
-			}
-
-			if constexpr (globals::OopsAllBerserkers) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, berserker_t{});
-
-				return true;
-			}
-
-			if constexpr (globals::OopsAllPaladins) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, paladin_t{ maybe_spawn.value(), random_engine });
-
-				return true;
+			if constexpr (globals::OopsAllEnabled) {
+				entity_registry<MapType>.dependent add<true>(spawn_position, to_entity_type<globals::OopsAllEnum>::type{});
 			}
 
 			const u8 spawn_chance{ static_cast<u8>(globals::spawn_dis(random_engine)) };

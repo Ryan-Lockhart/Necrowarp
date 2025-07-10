@@ -42,10 +42,9 @@ namespace necrowarp {
 
 	template<> struct is_bleeder<flesh_golem_t> {
 		static constexpr bool value = true;
-	};
-
-	template<> struct fluid_type<flesh_golem_t> {
 		static constexpr fluid_e type = fluid_e::Blood;
+
+		static constexpr bool conditional = false;
 	};
 
 	template<> struct is_devourable<flesh_golem_t> {

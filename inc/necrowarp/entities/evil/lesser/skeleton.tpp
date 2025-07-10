@@ -27,10 +27,10 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void skeleton_t::die(offset_t position) noexcept {
-		if (state != decay_e::Rotted) {
-			object_registry<MapType>.spill(position, bones_t{ decay(state) });
-		} else {
-			spill_fluid<MapType>(position, fluid_type<skeleton_t>::type);
+		if (state == decay_e::Rotted) {
+			return;
 		}
+
+		object_registry<MapType>.spill(position, bones_t{ decay(state) });
 	}
 } // namespace necrowarp

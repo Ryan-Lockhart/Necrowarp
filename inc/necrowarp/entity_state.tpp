@@ -96,7 +96,11 @@ namespace necrowarp {
 	template<NonPlayerEntity EntityType, NonNullCommand CommandType> static inline std::queue<entity_command_t<EntityType, CommandType>> entity_commands{};
 
 	static inline sparse_t<bool> newborns{};
-	static inline sparse_t<bool> stunned{};
+	static inline sparse_t<bool> deceased{};
+
+	static inline sparse_t<bool> concussed{};
+
+	static inline sparse_t<affliction_e> afflicted{};
 
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> good_goal_map{};
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> evil_goal_map{};
@@ -342,28 +346,30 @@ namespace necrowarp {
 	template<map_type_e MapType> inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept { return empty<ALL_ENTITIES>(position); }
 
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline bool entity_registry_t<MapType>::add(offset_t position) noexcept {
-		const bool inserted{ !contains(position) };
-
-		if (inserted) {
-			player.position = position;
-
-			if constexpr (is_evil<EntityType>::value) {
-				good_goal_map<MapType>.add(position);
-				ranger_goal_map<MapType>.add(position);
-			} else if constexpr (is_good<EntityType>::value) {
-				evil_goal_map<MapType>.add(position);
-			}
-
-			if constexpr (is_vigilant<EntityType>::value) {
-				skulker_goal_map<MapType>.add(position);
-			}
-
-			entity_goal_map<MapType, EntityType>.add(position);
-
-			newborns.add(position);
+		if (contains<ALL_NON_PLAYER>(position)) {
+			return false;
 		}
 
-		return inserted;
+		player.position = position;
+
+		if constexpr (is_evil<EntityType>::value) {
+			good_goal_map<MapType>.add(position);
+			ranger_goal_map<MapType>.add(position);
+		} else if constexpr (is_good<EntityType>::value) {
+			evil_goal_map<MapType>.add(position);
+		}
+
+		if constexpr (is_vigilant<EntityType>::value) {
+			skulker_goal_map<MapType>.add(position);
+		}
+
+		entity_goal_map<MapType, EntityType>.add(position);
+
+		if constexpr (is_afflictable<EntityType>::value) {
+			afflicted.add(position, affliction_e::Stable);
+		}
+
+		return true;
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType, bool Force> inline bool entity_registry_t<MapType>::add(offset_t position) noexcept {
@@ -390,6 +396,10 @@ namespace necrowarp {
 			entity_goal_map<MapType, EntityType>.add(position);
 
 			newborns.add(position);
+
+			if constexpr (is_afflictable<EntityType>::value) {
+				afflicted.add(position, affliction_e::Stable);
+			}
 		}
 
 		return inserted;
@@ -419,6 +429,10 @@ namespace necrowarp {
 			entity_goal_map<MapType, EntityType>.add(position);
 
 			newborns.add(position);
+
+			if constexpr (is_afflictable<EntityType>::value) {
+				afflicted.add(position, affliction_e::Stable);
+			}
 		}
 
 		return inserted;
@@ -445,6 +459,16 @@ namespace necrowarp {
 		}
 
 		entity_goal_map<MapType, EntityType>.remove(position);
+
+		newborns.remove(position);
+
+		if constexpr (is_concussable<EntityType>::value) {
+			concussed.remove(position);
+		}
+
+		if constexpr (is_afflictable<EntityType>::value) {
+			afflicted.remove(position);
+		}
 
 		return true;
 	}
@@ -557,8 +581,20 @@ namespace necrowarp {
 
 		entity_goal_map<MapType, EntityType>.update(current, target);
 
-		if (stunned.contains(current)) {
-			stunned.update(current, target);
+		if (newborns.contains(current)) {
+			newborns.update(current, target);
+		}
+
+		if constexpr (is_concussable<EntityType>::value) {
+			if (concussed.contains(current)) {
+				concussed.update(current, target);
+			}
+		}
+
+		if constexpr (is_afflictable<EntityType>::value) {
+			if (afflicted.contains(current)) {
+				afflicted.update(current, target);
+			}
 		}
 
 		return true;
@@ -583,6 +619,22 @@ namespace necrowarp {
 		}
 
 		entity_goal_map<MapType, EntityType>.update(current, target);
+
+		if (newborns.contains(current)) {
+			newborns.update(current, target);
+		}
+
+		if constexpr (is_concussable<EntityType>::value) {
+			if (concussed.contains(current)) {
+				concussed.update(current, target);
+			}
+		}
+
+		if constexpr (is_afflictable<EntityType>::value) {
+			if (afflicted.contains(current)) {
+				afflicted.update(current, target);
+			}
+		}
 
 		return true;
 	}
@@ -667,8 +719,8 @@ namespace necrowarp {
 				continue;
 			}
 
-			if (stunned.contains(position)) {
-				stunned.remove(position);
+			if (concussed.contains(position)) {
+				concussed.remove(position);
 				continue;
 			}
 
@@ -776,7 +828,7 @@ namespace necrowarp {
 		for (crauto [_, entity] : entity_registry_storage<EntityType>) { entity.idle_animation.advance(); }
 	}
 
-	template<map_type_e MapType> 
+	template<map_type_e MapType>
 	template<AnimatedEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline void entity_registry_t<MapType>::advance() noexcept {
@@ -789,7 +841,7 @@ namespace necrowarp {
 		for (crauto [_, entity] : entity_registry_storage<EntityType>) { entity.idle_animation.retreat(); }
 	}
 
-	template<map_type_e MapType> 
+	template<map_type_e MapType>
 	template<AnimatedEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline void entity_registry_t<MapType>::retreat() noexcept {
@@ -1074,6 +1126,40 @@ namespace necrowarp {
 		}		
 
 		return true;
+	}
+
+	template<map_type_e MapType> inline bool entity_registry_t<MapType>::is_newborn(offset_t position) const noexcept { return newborns.contains(position); }
+
+	template<map_type_e MapType> inline bool entity_registry_t<MapType>::is_concussed(offset_t position) const noexcept { return concussed.contains(position); }
+	
+	template<map_type_e MapType> inline bool entity_registry_t<MapType>::is_afflicted(offset_t position) const noexcept { return afflicted.contains(position); }
+
+	template<map_type_e MapType> inline std::optional<affliction_e> entity_registry_t<MapType>::get_affliction(offset_t position) const noexcept {
+		if (!is_afflicted(position)) {
+			return std::nullopt;
+		}
+
+		cptr<affliction_e> maybe_affliction{ afflicted[position] };
+
+		if (maybe_affliction == nullptr) {
+			return std::nullopt;
+		}
+
+		return *maybe_affliction;
+	}
+
+	template<map_type_e MapType> template<affliction_e Affliction> bool entity_registry_t<MapType>::has_affliction(offset_t position) const noexcept {
+		if (!is_afflicted(position)) {
+			return false;
+		}
+
+		cauto maybe_affliction{ get_affliction(position) };
+
+		if (!maybe_affliction.has_value()) {
+			return false;
+		}
+
+		return maybe_affliction.value() == Affliction;
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw() const noexcept {

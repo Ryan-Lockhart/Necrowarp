@@ -21,8 +21,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void mist_lady_t::die(offset_t position) noexcept {
 		object_registry<MapType>.spill(position, bones_t{});
 		object_registry<MapType>.spill(position, flesh_t{});
-
-		spill_fluid<MapType>(position, fluid_type<mist_lady_t>::type);
+		object_registry<MapType>.spill(position, cerebra_t{ entity_e::MistLady });
 
 		player.receive_death_boon<mist_lady_t>();
 

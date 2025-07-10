@@ -63,21 +63,21 @@ namespace necrowarp {
 	constexpr cstr to_description(dimension_e dimension) {
 		switch (dimension) {
 			case dimension_e::Abyss: {
-				return "The Abyss, also known as the Great Chaos, is an immense region of desolated space around the galactic core destroyed thousands of millennia ago by the Andavanga";
+				return "The Great Chaos, is an immense region of desolated space around the galactic core destroyed thousands of millennia ago by the Andavanga";
 			} case dimension_e::Underworld: {
 				return "The Underworld is a massive expanse of caverns and natural tunnels that trickle throughout the subsurface of Mokrae";
 			} case dimension_e::Voitykras: {
-				return "Voitykras are the remnants of the First Plane and sovereign territory of the extramortal revenant; the Moslager";
+				return "Voitykras are the remnants of the First Plane and sovereign territory of the extramortal revenant, the Moslager";
 			} case dimension_e::Sudokras: {
-				return "Sudokras is the divine realm of Akurakhaithan and his banished subjects";
+				return "Sudokras is the divine realm of Akurakhaithan and his banished subjects and their subrealms";
 			} case dimension_e::Tribulation: {
 				return "Tribulation! You are being tested by your patron; do not fail them now...";
 			} case dimension_e::Yyndikras: {
 				return "Yyndikras is the divine realm of the eponymous Yyantranu, one of the Trydaiastokhai and ascendant vanguard of the Third Plane";
 			} case dimension_e::Overworld: {
-				return "The Overworld is the surface of Mokrae; the chiefest of planets in Nurrheim with three continents and a rich and excessively violent history";
+				return "The Overworld is the surface of Mokrae, the chiefest of planets in Nurrheim with its three continents and rich, excessively violent history";
 			} case dimension_e::AncientVault: {
-				return "An ancient vault storing the embalmed corpses of long dead necromancers and their necrotic fluids within ornately hewn chalices";
+				return "The Ancient Vaults were constructed a millennium ago to store the embalmed corpses of archnecromancers and their fermenting, necrotic fluids";
 			}
 		}
 	}

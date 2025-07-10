@@ -80,7 +80,7 @@ namespace necrowarp {
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 	
 	public:
-		inline bonespur_t(i8 health) noexcept : health{ health } {}
+		inline bonespur_t(i8 health) noexcept : health{ health }, spatter{ fluid_e::None } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 

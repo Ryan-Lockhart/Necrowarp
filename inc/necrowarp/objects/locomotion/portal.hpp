@@ -38,13 +38,13 @@ namespace necrowarp {
 	};
 
 	enum struct stability_e : u8 {
-		Calm, // calm portals  take you to a pocket dimension with lesser ability improvements without tribulation
-		Vocal, // vocal portals take you to an audience chamber with your patron
-		Turbulent, // turbulent portals take you to a pocket dimension with unique ability unlocks after tribulation
+		Calm,		// calm portals take you to a pocket dimension with lesser ability improvements without tribulation
+		Vocal,		// vocal portals take you to an audience chamber with your patron
+		Turbulent,	// turbulent portals take you to a pocket dimension with unique ability unlocks after tribulation
 		Insightful, // insightful portals take you to the tutorial dimension
 		Collapsing, // collapsing portals return you to the underworld
-		Yawning, // yawning portals take you to the overworld
-		Echoing, // echoing portals take you to the ruins
+		Yawning,	// yawning portals take you to the overworld
+		Echoing,	// echoing portals take you to the ruins
 	};
 
 	static constexpr bool operator==(stability_e lhs, dimension_e rhs) noexcept {

@@ -35,8 +35,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void battle_monk_t::die(offset_t position) noexcept {
 		object_registry<MapType>.spill(position, bones_t{});
 		object_registry<MapType>.spill(position, flesh_t{});
-
-		spill_fluid<MapType>(position, fluid_type<battle_monk_t>::type);
+		object_registry<MapType>.spill(position, cerebra_t{ entity_e::BattleMonk });
 
 		player.receive_death_boon<battle_monk_t>();
 

@@ -42,13 +42,16 @@ namespace necrowarp {
 
 	template<> struct is_bleeder<abomination_t> {
 		static constexpr bool value = true;
-	};
-
-	template<> struct fluid_type<abomination_t> {
 		static constexpr fluid_e type = fluid_e::IchorousFilth;
+
+		static constexpr bool conditional = false;
 	};
 
 	template<> struct is_vigilant<abomination_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_devourable<abomination_t> {
 		static constexpr bool value = true;
 	};
 

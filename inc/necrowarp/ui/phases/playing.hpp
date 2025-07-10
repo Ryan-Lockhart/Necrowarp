@@ -117,12 +117,21 @@ namespace necrowarp {
 			}
 		};
 
+		static inline bool show_big_map{ false };
+
 		static constexpr extent_t MinimapPixelSize{ 2, 2 };
+		static constexpr extent_t BigMapPixelSize{ 4, 4 };
 
 		template<map_type_e MapType> static inline minimap_t<MapType, MinimapPixelSize> minimap{
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w * globals::cell_size<grid_type_e::UI>.w, 1 }, cardinal_e::Northeast },
 			embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 			extent_t{ 1, 1 }
+		};
+
+		template<map_type_e MapType> static inline minimap_t<MapType, BigMapPixelSize> big_map{
+			anchor_t{ offset_t{ globals::grid_center<grid_type_e::UI>() * globals::cell_size<grid_type_e::UI> }, cardinal_e::Northwest },
+			embedded_box_t{ colors::Black, border_t{ colors::White, 2 } },
+			extent_t{ 2, 2 }
 		};
 
 		template<map_type_e MapType> static inline label_t tooltip_label{
@@ -175,7 +184,7 @@ namespace necrowarp {
 				return false;
 			}
 			
-			return player_statuses.is_hovered() || any_icon_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || minimap<MapType>.is_hovered();
+			return player_statuses.is_hovered() || any_icon_hovered() || advancement_label.is_hovered() || (show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered()) || (show_favor ? favor_expanded_label.is_hovered() : favor_hidden_label.is_hovered()) || (show_big_map ? big_map<MapType>.is_hovered() : minimap<MapType>.is_hovered());
 		}
 
 		template<map_type_e MapType> static inline void update(button_e button) noexcept {
@@ -407,7 +416,54 @@ namespace necrowarp {
 
 				registry_access.unlock();
 			} else if (buffer_access.try_lock()) {
+				const bool has_entity{ entity_buffer<MapType>.contains(grid_cursor<MapType>.current_position) };
+				const bool has_object{ object_buffer<MapType>.contains(grid_cursor<MapType>.current_position) };
 
+				const fluid_e fluid{ fluid_map<MapType>[grid_cursor<MapType>.current_position] };
+
+				show_tooltip = has_entity || has_object || fluid != fluid_e::None;
+
+				if (show_tooltip) {
+					tooltip_label<MapType>.text = runes_t{};
+
+					if (has_entity) {
+						tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(entity_buffer<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
+					}
+
+					if (has_entity && has_object) {
+						tooltip_label<MapType>.text.concatenate({ " | " });
+					}
+
+					if (has_object) {
+						tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(object_buffer<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
+					}
+
+					if ((has_entity || has_object) && fluid != fluid_e::None) {
+						tooltip_label<MapType>.text.concatenate({ " | " });
+					}
+					
+					if (fluid != fluid_e::None) {
+						tooltip_label<MapType>.text.concatenate(to_colored_string(fluid));
+					}
+				}
+
+				if (has_entity) {
+					if (entity_buffer<MapType>.dependent contains<player_t>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Magenta;
+					} else if (entity_buffer<MapType>.dependent contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Green;
+					} else if (entity_buffer<MapType>.dependent contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Red;
+					} else {
+						grid_cursor<MapType>.color = colors::metals::Gold;
+					}
+				} else if (has_object) {
+					grid_cursor<MapType>.color = colors::Blue;
+				} else if (fluid != fluid_e::None) {
+					grid_cursor<MapType>.color = to_color(fluid);
+				} else {
+					grid_cursor<MapType>.color = colors::metals::Gold;
+				}
 
 				buffer_access.unlock();
 			}
@@ -447,11 +503,19 @@ namespace necrowarp {
 			}
 
 			if (registry_access.try_lock()) {
-				minimap<MapType>.draw(renderer, entity_registry<MapType>, object_registry<MapType>);
+				if (show_big_map) {
+					big_map<MapType>.draw(renderer, entity_registry<MapType>, object_registry<MapType>);
+				} else {
+					minimap<MapType>.draw(renderer, entity_registry<MapType>, object_registry<MapType>);
+				}
 
 				registry_access.unlock();
 			} else if (buffer_access.try_lock()) {
-				minimap<MapType>.draw(renderer, entity_buffer<MapType>, object_buffer<MapType>);
+				if (show_big_map) {
+					big_map<MapType>.draw(renderer, entity_buffer<MapType>, object_buffer<MapType>);
+				} else {
+					minimap<MapType>.draw(renderer, entity_buffer<MapType>, object_buffer<MapType>);
+				}
 
 				buffer_access.unlock();
 			}
