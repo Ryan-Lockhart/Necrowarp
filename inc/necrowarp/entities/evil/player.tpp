@@ -39,12 +39,15 @@ namespace necrowarp {
 		
 		switch (entity_target) {
 			case entity_e::Adventurer:
+			case entity_e::Mercenary:
 			case entity_e::Ranger:
 			case entity_e::Skulker:
+			case entity_e::MistLady:
+			case entity_e::BannerBearer:
 			case entity_e::BattleMonk:
-			case entity_e::Mercenary:
+			case entity_e::Berserker:
 			case entity_e::Paladin:
-			case entity_e::Berserker: {
+			case entity_e::Thetwo: {
 				return command_e::Clash;
 			} case entity_e::Skeleton:
 			  case entity_e::Bonespur: {
@@ -75,7 +78,11 @@ namespace necrowarp {
 
 	inline bool player_t::can_receive_divine_intervention() const noexcept { return !divine_intervention_invoked; }
 
-	template<map_type_e MapType> inline void player_t::die() noexcept {
+	template<map_type_e MapType> inline void player_t::killed() noexcept {
+		if (no_hit_enabled() || has_ascended()) {
+			return;
+		}
+
 		if (can_receive_divine_intervention() && player_t::intervention(get_patron_disposition(patron), random_engine)) {
 			divine_intervention_invoked = true;
 
@@ -87,5 +94,25 @@ namespace necrowarp {
 		phase.transition(phase_e::GameOver);
 
 		++steam_stats::stats<steam_stat_e::PlayerDeaths>;
+	}
+
+	template<map_type_e MapType> inline i8 player_t::devoured() noexcept {
+		if (no_hit_enabled() || has_ascended()) {
+			return 0;
+		}
+
+		if (can_receive_divine_intervention() && player_t::intervention(get_patron_disposition(patron), random_engine)) {
+			divine_intervention_invoked = true;
+
+			intervention_sound.delay(random_epoch_interval(random_engine));
+
+			return 0;
+		}
+
+		phase.transition(phase_e::GameOver);
+
+		++steam_stats::stats<steam_stat_e::PlayerDeaths>;
+
+		return 0;
 	}
 } // namespace necrowarp

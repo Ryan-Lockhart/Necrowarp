@@ -10,12 +10,14 @@
 
 #include <necrowarp/commands/binary/devour.hpp>
 
-#include <necrowarp/commands/ternary/lunge.hpp>
-
 #include <necrowarp/game_state.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
+
+	template<> struct globals::has_unique_descriptor<thetwo_t> {
+		static constexpr bool value = true;
+	};
 
 	template<> struct globals::has_variants<thetwo_t> {
 		static constexpr bool value = true;
@@ -41,7 +43,7 @@ namespace necrowarp {
 		static constexpr entity_group_e value = entity_group_e::Thetwo;
 	};
 
-	template<> struct is_good<thetwo_t> {
+	template<> struct is_neutral<thetwo_t> {
 		static constexpr bool value = true;
 	};
 
@@ -54,10 +56,6 @@ namespace necrowarp {
 		static constexpr fluid_e type = fluid_e::Blood;
 
 		static constexpr bool conditional = false;
-	};
-
-	template<> struct is_fast<thetwo_t> {
-		static constexpr bool value = true;
 	};
 
 	template<> struct is_cleaver<thetwo_t> {
@@ -77,10 +75,6 @@ namespace necrowarp {
 	};
 
 	template<> struct is_entity_command_valid<thetwo_t, devour_t> {
-		static constexpr bool value = true;
-	};
-
-	template<> struct is_entity_command_valid<thetwo_t, lunge_t> {
 		static constexpr bool value = true;
 	};
 
@@ -127,15 +121,15 @@ namespace necrowarp {
 	constexpr color_t to_color(bulk_e bulk) noexcept {
 		switch (bulk) {
 			case bulk_e::Neonatal: {
-				return colors::White;
+				return colors::light::Blue;
 			} case bulk_e::Young: {
-				return colors::White;
+				return colors::light::Green;
 			} case bulk_e::Mature: {
-				return colors::White;
+				return colors::light::Yellow;
 			} case bulk_e::Gross: {
-				return colors::White;
+				return colors::light::Orange;
 			} case bulk_e::Titanic: {
-				return colors::White;
+				return colors::light::Red;
 			}
 		}
 	}
@@ -143,25 +137,34 @@ namespace necrowarp {
 	constexpr runes_t to_colored_string(bulk_e bulk) noexcept { return runes_t{ to_string(bulk), to_color(bulk) }; }
 
 	struct thetwo_t {
-		static constexpr i8 MaximumHealth{ 64 };
-		static constexpr i8 MinimumHealth{ 4 };
+		static constexpr i8 MaximumHealth{ 32 };
+		static constexpr i8 MinimumHealth{ 2 };
 
 		static_assert(MaximumHealth >> 4 == MinimumHealth, "minimum health should be precisely four powers below maximum health!");
 
-		static constexpr i8 MaximumProtein{ 32 };
-		static constexpr i8 MinimumProtein{ 2 };
+		static constexpr i8 MaximumProtein{ 64 };
+		static constexpr i8 MinimumProtein{ 4 };
 
 		static_assert(MaximumProtein >> 4 == MinimumProtein, "minimum protein should be precisely four powers below maximum protein!");
 
 		static constexpr i8 MinimumDamage{ 1 };
 		static constexpr i8 MaximumDamage{ 8 };
 
-		static constexpr std::array<entity_e, 9> EntityPriorities{
+		static constexpr std::array<entity_e, 20> EntityPriorities{
 			entity_e::Player,
-		 // entity_e::Abomination,
+			entity_e::Abomination,
 			entity_e::FleshGolem,
+			entity_e::Skulker,
+			entity_e::Ranger,
+			entity_e::MistLady,
+			entity_e::BannerBearer,
+			entity_e::Adventurer,
+			entity_e::Mercenary,
+			entity_e::BattleMonk,
+			entity_e::Berserker,
+			entity_e::Paladin,
 			entity_e::Bloodhound,
-		 // entity_e::Hemogheist,
+		 	entity_e::Hemogheist,
 			entity_e::Skeleton,
 			entity_e::Bonespur,
 			entity_e::Cultist,
@@ -176,6 +179,9 @@ namespace necrowarp {
 
 		static constexpr i8 SheddingTurns{ 8 };
 		static constexpr i8 MinimumShedAmount{ 2 };
+
+		static constexpr i8 MetabolisedProtein{ 2 };
+		static constexpr i8 MetabolisedHealth{ 1 };
 		
 	private:
 		static constexpr i8 determine_health(bulk_e bulk) noexcept {
@@ -257,6 +263,83 @@ namespace necrowarp {
 			}
 		}
 
+		template<bulk_e Bulk> inline bool can_devour(entity_e entity) const noexcept {
+			return false;
+		}
+		
+		template<> inline bool can_devour<bulk_e::Titanic>(entity_e entity) const noexcept {
+			switch (entity) {
+				case entity_e::Player:
+				case entity_e::Abomination:
+				case entity_e::Skulker:
+				case entity_e::Ranger:
+				case entity_e::MistLady:
+				case entity_e::BannerBearer:
+				case entity_e::Adventurer:
+				case entity_e::Mercenary:
+				case entity_e::BattleMonk:
+				case entity_e::Berserker:
+				case entity_e::Paladin: {
+					return true;
+				} default: {
+					return false;
+				}
+			}
+		}
+		
+		template<> inline bool can_devour<bulk_e::Gross>(entity_e entity) const noexcept {
+			switch (entity) {
+				case entity_e::Skulker:
+				case entity_e::Ranger:
+				case entity_e::MistLady:
+				case entity_e::Adventurer:
+				case entity_e::Mercenary: {
+					return true;
+				} default: {
+					return false;
+				}
+			}
+		}
+		
+		template<> inline bool can_devour<bulk_e::Mature>(entity_e entity) const noexcept {
+			switch (entity) {
+				case entity_e::Adventurer: {
+					return true;
+				} default: {
+					return false;
+				}
+			}
+		}
+
+		inline bool can_devour(entity_e entity) const noexcept {
+			if (protein >= max_protein()) {
+				return false;
+			}
+			
+			return magic_enum::enum_switch([&](auto val) -> bool {
+				constexpr bulk_e cval{ val };
+
+				return can_devour<cval>(entity);
+			}, bulk);
+		}
+
+		inline bool can_devour(object_e object) const noexcept { return protein < max_protein() && object == object_e::Flesh; }
+
+		inline void fatten() noexcept { set_protein(protein + 1); }
+
+		inline void fatten(i8 amount) noexcept { set_protein(protein + amount); }
+
+		inline bool can_metabolise() const noexcept { return protein >= MetabolisedProtein && health < max_health(); }
+
+		inline void metabolise() noexcept {
+			if (!can_metabolise()) {
+				return;
+			}
+
+			set_protein(protein - MetabolisedProtein);
+			set_health(health + MetabolisedHealth);
+		}
+
 		inline bool is_shedding() const noexcept { return shedding; }
 
 		inline bool can_shed() const noexcept { return !is_shedding() && protein >= max_protein() && bulk != bulk_e::Titanic; }
@@ -283,7 +366,7 @@ namespace necrowarp {
 			}
 		}
 
-		inline bool can_survive(i8 damage_amount) const noexcept { return shedding ? health > damage_amount : health + protein > damage_amount; }
+		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
 
 		inline i8 get_damage() const noexcept {
 			switch (bulk) {
@@ -303,27 +386,37 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return get_damage(); }
 
-		inline void receive_damage(i8 damage_amount) noexcept {
-			if (!shedding) {
-				if (protein >= damage_amount) {
-					set_protein(protein - damage_amount);
+		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
-					return;
-				} else if (has_protein()) {
-					damage_amount -= protein;
-
-					set_protein(0);
-				}
-			}
-
-			set_health(health - damage_amount);
-		}
-
-		inline u8 get_droppings() const noexcept { return static_cast<u8>(bulk) + 1; }
+		inline u8 get_droppings() const noexcept { return static_cast<u8>(bulk); }
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die(offset_t position) noexcept;
+		template<map_type_e MapType> inline void killed(offset_t position) noexcept;
+
+		template<map_type_e MapType> inline i8 devoured(offset_t position) noexcept;
+
+		inline std::string to_string() const noexcept {
+			return std::format("{} [{}/{}] ({}, [{}/{}])",
+				necrowarp::to_string(entity_e::Thetwo),
+				get_health(), max_health(),
+				necrowarp::to_string(bulk),
+				get_protein(), max_protein()
+			);
+		}
+
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Thetwo) };
+
+			colored_string
+				.concatenate(runes_t{ std::format(" [{}/{}] (", get_health(), max_health()) })
+				.concatenate(necrowarp::to_colored_string(bulk))
+				.concatenate(shedding ?
+					runes_t{ ", shedding)" } :
+					runes_t{ std::format(", [{}/{}])", get_protein(), max_protein())});
+
+			return colored_string;
+		}
 
 		inline glyph_t current_glyph() const noexcept {
 			switch (bulk) {

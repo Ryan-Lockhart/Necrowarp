@@ -159,9 +159,11 @@ namespace necrowarp {
 
 		inline void recalculate_goal_map() noexcept;
 
+		inline void recalculate_evil_goal_map() noexcept;
+
 		inline void recalculate_good_goal_map() noexcept;
 
-		inline void recalculate_evil_goal_map() noexcept;
+		inline void recalculate_neutral_goal_map() noexcept;
 
 		inline void recalculate_alignment_goal_maps() noexcept;
 
@@ -181,9 +183,11 @@ namespace necrowarp {
 
 		inline void reset_goal_map() noexcept;
 
+		inline void reset_evil_goal_map() noexcept;
+
 		inline void reset_good_goal_map() noexcept;
 
-		inline void reset_evil_goal_map() noexcept;
+		inline void reset_neutral_goal_map() noexcept;
 
 		inline void reset_alignment_goal_maps() noexcept;
 

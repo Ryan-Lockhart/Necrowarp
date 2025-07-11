@@ -104,7 +104,9 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die(offset_t position) noexcept;
+		template<map_type_e MapType> inline void killed(offset_t position) noexcept;
+
+		template<map_type_e MapType> inline i8 devoured(offset_t position) noexcept;
 
 		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<adventurer_t>, position); }
 

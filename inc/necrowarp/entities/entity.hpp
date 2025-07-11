@@ -60,9 +60,6 @@ namespace necrowarp {
 	// a common adversary that provides metal
 	struct mercenary_t;
 
-	// a common adversary that grows off of the flesh of its comrades
-	struct thetwo_t;
-
 	// a specialist adversary that attacks from range
 	struct ranger_t;
 
@@ -83,6 +80,11 @@ namespace necrowarp {
 
 	// a dangerous adversary that crushes lesser minions without effort
 	struct paladin_t;
+
+	// neutral creatures
+
+	// a common adversary that grows off of the flesh the dead
+	struct thetwo_t;
 
 	#define ALL_EVIL_NPCS \
 		skeleton_t, \
@@ -109,7 +111,6 @@ namespace necrowarp {
 		skulker_t, \
 		mist_lady_t, \
 		banner_bearer_t, \
-		thetwo_t, \
 		battle_monk_t, \
 		berserker_t, \
 		paladin_t
@@ -117,9 +118,40 @@ namespace necrowarp {
 	#define ALL_GOOD \
 		ALL_GOOD_NPCS
 
-	#define ALL_NON_PLAYER \
+	#define ALL_NEUTRAL_NPCS \
+		thetwo_t
+
+	#define ALL_NEUTRAL \
+		ALL_NEUTRAL_NPCS
+
+	#define ALL_NON_EVIL_NPCS \
+		ALL_GOOD_NPCS, \
+		ALL_NEUTRAL_NPCS
+
+	#define ALL_NON_EVIL \
+		ALL_GOOD, \
+		ALL_NEUTRAL
+
+	#define ALL_NON_GOOD_NPCS \
+		ALL_EVIL_NPCS, \
+		ALL_NEUTRAL_NPCS
+
+	#define ALL_NON_GOOD \
+		ALL_EVIL, \
+		ALL_NEUTRAL
+
+	#define ALL_NON_NEUTRAL_NPCS \
 		ALL_EVIL_NPCS, \
 		ALL_GOOD_NPCS
+
+	#define ALL_NON_NEUTRAL \
+		ALL_EVIL, \
+		ALL_GOOD
+
+	#define ALL_NON_PLAYER \
+		ALL_EVIL_NPCS, \
+		ALL_GOOD_NPCS, \
+		ALL_NEUTRAL_NPCS
 
 	#define ALL_ANIMATED_ENTITIES \
 		animated_suit_t, \
@@ -163,7 +195,6 @@ namespace necrowarp {
 
 		Adventurer,
 		Mercenary,
-		Thetwo,
 		Ranger,
 		Skulker,
 		MistLady,
@@ -171,6 +202,8 @@ namespace necrowarp {
 		BattleMonk,
 		Berserker,
 		Paladin,
+		
+		Thetwo,
 	};
 
 	template<plurality_e Plurality = plurality_e::Singular> static constexpr cstr to_string(entity_e type) noexcept;
@@ -217,8 +250,6 @@ namespace necrowarp {
 				return "adventurer";
 			} case entity_e::Mercenary: {
 				return "mercenary";
-			} case entity_e::Thetwo: {
-				return "thetwo";
 			} case entity_e::Ranger: {
 				return "ranger";
 			} case entity_e::Skulker: {
@@ -233,6 +264,8 @@ namespace necrowarp {
 				return "berserker";
 			} case entity_e::Paladin: {
 				return "paladin";
+			} case entity_e::Thetwo: {
+				return "thetwo";
 			}
 		}
 	}
@@ -279,8 +312,6 @@ namespace necrowarp {
 				return "adventurers";
 			} case entity_e::Mercenary: {
 				return "mercenaries";
-			} case entity_e::Thetwo: {
-				return "thetwo";
 			} case entity_e::Ranger: {
 				return "rangers";
 			} case entity_e::Skulker: {
@@ -295,6 +326,8 @@ namespace necrowarp {
 				return "berserkers";
 			} case entity_e::Paladin: {
 				return "paladins";
+			} case entity_e::Thetwo: {
+				return "thetwo";
 			}
 		}
 	}
@@ -341,8 +374,6 @@ namespace necrowarp {
 				return colors::metals::Bronze;
 			} case entity_e::Mercenary: {
 				return colors::dark::Yellow;
-			} case entity_e::Thetwo: {
-				return colors::metals::Brass;
 			} case entity_e::Ranger: {
 				return colors::dark::Green;
 			} case entity_e::Skulker: {
@@ -357,6 +388,8 @@ namespace necrowarp {
 				return colors::dark::Orange;
 			} case entity_e::Paladin: {
 				return colors::metals::Steel;
+			} case entity_e::Thetwo: {
+				return colors::metals::Brass;
 			}
 		}
 	}
@@ -371,9 +404,9 @@ namespace necrowarp {
 		);
 	}
 
-	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Paladin) + 1 };
+	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Thetwo) + 1 };
 
-	constexpr usize NPCSizeCap{ 16 };
+	constexpr usize NPCSizeCap{ 8 };
 
 	using entity_group_t = u32;
 
@@ -402,14 +435,15 @@ namespace necrowarp {
 
 		Adventurer = Dreadwurm << 1, // Isoscol << 1,
 		Mercenary = Adventurer << 1,
-		Thetwo = Mercenary << 1,
-		Ranger = Thetwo << 1,
+		Ranger = Mercenary << 1,
 		Skulker = Ranger << 1,
 		MistLady = Skulker << 1,
 		BannerBearer = MistLady << 1,
 		BattleMonk = BannerBearer << 1,
 		Berserker = BattleMonk << 1,
 		Paladin = Berserker << 1,
+
+		Thetwo = Paladin << 1,
 	};
 
 	constexpr entity_group_e operator+(entity_group_e lhs, entity_group_e rhs) noexcept { return static_cast<entity_group_e>(static_cast<entity_group_t>(lhs) | static_cast<entity_group_t>(rhs)); }
@@ -482,6 +516,14 @@ namespace necrowarp {
 
 	template<typename T> concept AnimatedEntity = NonNullEntity<T> && globals::has_animation<T>::value;
 
+	template<typename T> struct is_evil {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_evil_v = is_evil<T>::value;
+
+	template<typename T> concept EvilEntity = NonNullEntity<T> && is_evil<T>::value;
+
 	template<typename T> struct is_good {
 		static constexpr bool value = false;
 	};
@@ -490,13 +532,37 @@ namespace necrowarp {
 
 	template<typename T> concept GoodEntity = NonNullEntity<T> && is_good<T>::value;
 
-	template<typename T> struct is_evil {
+	template<typename T> struct is_neutral {
 		static constexpr bool value = false;
 	};
 
-	template<typename T> constexpr bool is_evil_v = is_evil<T>::value;
+	template<typename T> constexpr bool is_neutral_v = is_neutral<T>::value;
 
-	template<typename T> concept EvilEntity = NonNullEntity<T> && is_evil<T>::value;
+	template<typename T> concept NeutralEntity = NonNullEntity<T> && is_neutral<T>::value;
+	
+	template<typename T> struct is_non_evil {
+		static constexpr bool value = !is_evil<T>::value && (is_good<T>::value || is_neutral<T>::value);
+	};
+
+	template<typename T> constexpr bool is_non_evil_v = is_non_evil<T>::value;
+
+	template<typename T> concept NonEvilEntity = NonNullEntity<T> && is_non_evil<T>::value;
+	
+	template<typename T> struct is_non_good {
+		static constexpr bool value = !is_good<T>::value && (is_evil<T>::value || is_neutral<T>::value);
+	};
+
+	template<typename T> constexpr bool is_non_good_v = is_non_good<T>::value;
+
+	template<typename T> concept NonGoodEntity = NonNullEntity<T> && is_non_good<T>::value;
+	
+	template<typename T> struct is_non_neutral {
+		static constexpr bool value = !is_neutral<T>::value && (is_evil<T>::value || is_good<T>::value);
+	};
+
+	template<typename T> constexpr bool is_non_neutral_v = is_non_neutral<T>::value;
+
+	template<typename T> concept NonNeutralEntity = NonNullEntity<T> && is_non_neutral<T>::value;
 
 	template<typename T> struct is_non_player_entity {
 		static constexpr bool value = true;
@@ -723,7 +789,7 @@ namespace necrowarp {
 
 	namespace globals {
 		template<entity_e Entity>
-			requires (Entity != entity_e::None && is_good<typename to_entity_type<Entity>::type>::value)
+			requires (Entity != entity_e::None && is_non_evil<typename to_entity_type<Entity>::type>::value)
 		constexpr bool OopsAll{ false };
 	}
 } // namespace necrowarp

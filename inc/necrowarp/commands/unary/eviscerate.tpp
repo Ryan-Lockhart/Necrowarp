@@ -105,9 +105,9 @@ namespace necrowarp {
 
 						if (target_killed) {
 							if constexpr (is_player<victim_type>::value) {
-								victim.dependent die<MapType>();
+								victim.dependent killed<MapType>();
 							} else {
-								victim.dependent die<MapType>(position);
+								victim.dependent killed<MapType>(position);
 							}
 
 							if constexpr (is_npc_entity<victim_type>::value) {

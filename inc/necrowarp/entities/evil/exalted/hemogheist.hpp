@@ -131,7 +131,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void die(offset_t position) noexcept;
+		template<map_type_e MapType> inline void killed(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} [{:.1f}L/{:.1f}L]", necrowarp::to_string(entity_e::Hemogheist), get_volume(), max_volume()); }
 

@@ -7,7 +7,6 @@
 #include <necrowarp/entities/good/skulker.hpp>
 #include <necrowarp/entities/good/mist_lady.hpp>
 #include <necrowarp/entities/good/banner_bearer.hpp>
-#include <necrowarp/entities/good/thetwo.hpp>
 #include <necrowarp/entities/good/battle_monk.hpp>
 #include <necrowarp/entities/good/berserker.hpp>
 #include <necrowarp/entities/good/paladin.hpp>

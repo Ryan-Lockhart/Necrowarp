@@ -317,9 +317,9 @@ namespace necrowarp {
 
 					if (target_killed) {
 						if constexpr (is_player<victim_type>::value) {
-							victim.dependent die<MapType>();
+							victim.dependent killed<MapType>();
 						} else {
-							victim.dependent die<MapType>(target_position);
+							victim.dependent killed<MapType>(target_position);
 						}
 
 						if constexpr (is_npc_entity<victim_type>::value) {
@@ -352,9 +352,9 @@ namespace necrowarp {
 
 					if (source_killed) {
 						if constexpr (is_player<EntityType>::value) {
-							initiator.dependent die<MapType>();
+							initiator.dependent killed<MapType>();
 						} else {
-							initiator.dependent die<MapType>(source_position);
+							initiator.dependent killed<MapType>(source_position);
 						}
 
 						if constexpr (is_npc_entity<EntityType>::value) {

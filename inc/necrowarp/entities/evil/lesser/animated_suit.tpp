@@ -10,7 +10,7 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
-			if (!entity_registry<MapType>.dependent contains<ALL_GOOD>(current_position)) {
+			if (!entity_registry<MapType>.dependent contains<ALL_NON_EVIL>(current_position)) {
 				continue;
 			}
 
@@ -26,7 +26,7 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void animated_suit_t::die(offset_t position) noexcept {
+	template<map_type_e MapType> inline void animated_suit_t::killed(offset_t position) noexcept {
 		object_registry<MapType>.spill(position, metal_t{ state });
 	}
 } // namespace necrowarp

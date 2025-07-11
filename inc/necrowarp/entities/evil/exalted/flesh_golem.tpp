@@ -10,7 +10,7 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
-			if (!entity_registry<MapType>.dependent contains<ALL_GOOD>(current_position)) {
+			if (!entity_registry<MapType>.dependent contains<ALL_NON_EVIL>(current_position)) {
 				continue;
 			}
 
@@ -26,7 +26,9 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void flesh_golem_t::die(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, flesh_t{});
+	template<map_type_e MapType> inline void flesh_golem_t::killed(offset_t position) noexcept {
+		object_registry<MapType>.spill(position, flesh_t{}, 256);
 	}
+
+	template<map_type_e MapType> inline i8 flesh_golem_t::devoured(offset_t position) noexcept { return 1; }
 } // namespace necrowarp

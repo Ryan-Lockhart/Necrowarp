@@ -399,10 +399,12 @@ namespace necrowarp {
 				if (has_entity) {
 					if (entity_registry<MapType>.dependent contains<player_t>(grid_cursor<MapType>.current_position)) {
 						grid_cursor<MapType>.color = colors::Magenta;
-					} else if (entity_registry<MapType>.dependent contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
-						grid_cursor<MapType>.color = colors::Green;
 					} else if (entity_registry<MapType>.dependent contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
 						grid_cursor<MapType>.color = colors::Red;
+					} else if (entity_registry<MapType>.dependent contains<ALL_NEUTRAL_NPCS>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Orange;
+					} else if (entity_registry<MapType>.dependent contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Green;
 					} else {
 						grid_cursor<MapType>.color = colors::metals::Gold;
 					}
@@ -450,10 +452,12 @@ namespace necrowarp {
 				if (has_entity) {
 					if (entity_buffer<MapType>.dependent contains<player_t>(grid_cursor<MapType>.current_position)) {
 						grid_cursor<MapType>.color = colors::Magenta;
-					} else if (entity_buffer<MapType>.dependent contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
-						grid_cursor<MapType>.color = colors::Green;
 					} else if (entity_buffer<MapType>.dependent contains<ALL_GOOD_NPCS>(grid_cursor<MapType>.current_position)) {
 						grid_cursor<MapType>.color = colors::Red;
+					} else if (entity_buffer<MapType>.dependent contains<ALL_NEUTRAL_NPCS>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Orange;
+					} else if (entity_buffer<MapType>.dependent contains<ALL_EVIL_NPCS>(grid_cursor<MapType>.current_position)) {
+						grid_cursor<MapType>.color = colors::Green;
 					} else {
 						grid_cursor<MapType>.color = colors::metals::Gold;
 					}

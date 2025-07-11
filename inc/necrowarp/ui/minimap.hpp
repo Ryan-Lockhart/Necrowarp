@@ -41,10 +41,12 @@ namespace necrowarp {
 						[&]() -> color_t {
 							if (entities.dependent contains<player_t>(pos)) {
 								return colors::Magenta;
-							} else if (entities.dependent contains<ALL_EVIL_NPCS>(pos)) {
-								return colors::Green;
 							} else if (entities.dependent contains<ALL_GOOD_NPCS>(pos)) {
 								return colors::Red;
+							} else if (entities.dependent contains<ALL_NEUTRAL_NPCS>(pos)) {
+								return colors::Orange;
+							} else if (entities.dependent contains<ALL_EVIL_NPCS>(pos)) {
+								return colors::Green;
 							} else if (objects.contains(pos)) {
 								return colors::Blue;
 							} else if (game_map<MapType>[pos].solid) {

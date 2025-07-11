@@ -102,8 +102,9 @@ namespace necrowarp {
 
 	static inline sparse_t<affliction_e> afflicted{};
 
-	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> good_goal_map{};
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> evil_goal_map{};
+	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> good_goal_map{};
+	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> neutral_goal_map{};
 
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> ranger_goal_map{};
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> skulker_goal_map{};
@@ -352,11 +353,17 @@ namespace necrowarp {
 
 		player.position = position;
 
-		if constexpr (is_evil<EntityType>::value) {
+		if constexpr (is_non_good<EntityType>::value) {
 			good_goal_map<MapType>.add(position);
 			ranger_goal_map<MapType>.add(position);
-		} else if constexpr (is_good<EntityType>::value) {
+		}
+
+		if constexpr (is_non_evil<EntityType>::value) {
 			evil_goal_map<MapType>.add(position);
+		}
+
+		if constexpr (is_non_neutral<EntityType>::value) {
+			neutral_goal_map<MapType>.add(position);
 		}
 
 		if constexpr (is_vigilant<EntityType>::value) {
@@ -364,10 +371,6 @@ namespace necrowarp {
 		}
 
 		entity_goal_map<MapType, EntityType>.add(position);
-
-		if constexpr (is_afflictable<EntityType>::value) {
-			afflicted.add(position, affliction_e::Stable);
-		}
 
 		return true;
 	}
@@ -382,11 +385,17 @@ namespace necrowarp {
 		const bool inserted{ entity_registry_storage<EntityType>.add(position, EntityType{}) };
 
 		if (inserted) {
-			if constexpr (is_evil<EntityType>::value) {
+			if constexpr (is_non_good<EntityType>::value) {
 				good_goal_map<MapType>.add(position);
 				ranger_goal_map<MapType>.add(position);
-			} else if constexpr (is_good<EntityType>::value) {
+			}
+
+			if constexpr (is_non_evil<EntityType>::value) {
 				evil_goal_map<MapType>.add(position);
+			}
+
+			if constexpr (is_non_neutral<EntityType>::value) {
+				neutral_goal_map<MapType>.add(position);
 			}
 
 			if constexpr (is_vigilant<EntityType>::value) {
@@ -415,11 +424,17 @@ namespace necrowarp {
 		const bool inserted{ entity_registry_storage<EntityType>.add(position, std::move(entity)) };
 
 		if (inserted) {
-			if constexpr (is_evil<EntityType>::value) {
+			if constexpr (is_non_good<EntityType>::value) {
 				good_goal_map<MapType>.add(position);
 				ranger_goal_map<MapType>.add(position);
-			} else if constexpr (is_good<EntityType>::value) {
+			}
+	
+			if constexpr (is_non_evil<EntityType>::value) {
 				evil_goal_map<MapType>.add(position);
+			}
+	
+			if constexpr (is_non_neutral<EntityType>::value) {
+				neutral_goal_map<MapType>.add(position);
 			}
 
 			if constexpr (is_vigilant<EntityType>::value) {
@@ -446,12 +461,18 @@ namespace necrowarp {
 		if (!entity_registry_storage<EntityType>.remove(position)) {
 			return false;
 		}
-		
-		if constexpr (is_evil<EntityType>::value) {
+
+		if constexpr (is_non_good<EntityType>::value) {
 			good_goal_map<MapType>.remove(position);
 			ranger_goal_map<MapType>.remove(position);
-		} else if constexpr (is_good<EntityType>::value) {
+		}
+
+		if constexpr (is_non_evil<EntityType>::value) {
 			evil_goal_map<MapType>.remove(position);
+		}
+
+		if constexpr (is_non_neutral<EntityType>::value) {
+			neutral_goal_map<MapType>.remove(position);
 		}
 
 		if constexpr (is_vigilant<EntityType>::value) {
@@ -568,11 +589,17 @@ namespace necrowarp {
 			return false;
 		}
 
-		if constexpr (is_evil<EntityType>::value) {
+		if constexpr (is_non_good<EntityType>::value) {
 			good_goal_map<MapType>.update(current, target);
 			ranger_goal_map<MapType>.update(current, target);
-		} else if constexpr (is_good<EntityType>::value) {
+		}
+
+		if constexpr (is_non_evil<EntityType>::value) {
 			evil_goal_map<MapType>.update(current, target);
+		}
+
+		if constexpr (is_non_neutral<EntityType>::value) {
+			neutral_goal_map<MapType>.update(current, target);
 		}
 
 		if constexpr (is_vigilant<EntityType>::value) {
@@ -607,11 +634,17 @@ namespace necrowarp {
 
 		player.position = target;
 
-		if constexpr (is_evil<EntityType>::value) {
+		if constexpr (is_non_good<EntityType>::value) {
 			good_goal_map<MapType>.update(current, target);
 			ranger_goal_map<MapType>.update(current, target);
-		} else if constexpr (is_good<EntityType>::value) {
+		}
+
+		if constexpr (is_non_evil<EntityType>::value) {
 			evil_goal_map<MapType>.update(current, target);
+		}
+
+		if constexpr (is_non_neutral<EntityType>::value) {
+			neutral_goal_map<MapType>.update(current, target);
 		}
 
 		if constexpr (is_vigilant<EntityType>::value) {
@@ -619,22 +652,6 @@ namespace necrowarp {
 		}
 
 		entity_goal_map<MapType, EntityType>.update(current, target);
-
-		if (newborns.contains(current)) {
-			newborns.update(current, target);
-		}
-
-		if constexpr (is_concussable<EntityType>::value) {
-			if (concussed.contains(current)) {
-				concussed.update(current, target);
-			}
-		}
-
-		if constexpr (is_afflictable<EntityType>::value) {
-			if (afflicted.contains(current)) {
-				afflicted.update(current, target);
-			}
-		}
 
 		return true;
 	}
@@ -884,17 +901,22 @@ namespace necrowarp {
 		(recalculate_goal_map<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_good_goal_map() noexcept {
-		good_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-	}
-
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_evil_goal_map() noexcept {
 		evil_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
 	}
 
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_good_goal_map() noexcept {
+		good_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_neutral_goal_map() noexcept {
+		neutral_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+	}
+
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_alignment_goal_maps() noexcept {
-		recalculate_good_goal_map();
 		recalculate_evil_goal_map();
+		recalculate_good_goal_map();
+		recalculate_neutral_goal_map();
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_ranger_goal_map() noexcept {
@@ -931,17 +953,22 @@ namespace necrowarp {
 		(reset_goal_map<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_good_goal_map() noexcept {
-		good_goal_map<MapType>.reset();
-	}
-
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_evil_goal_map() noexcept {
 		evil_goal_map<MapType>.reset();
 	}
 
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_good_goal_map() noexcept {
+		good_goal_map<MapType>.reset();
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_neutral_goal_map() noexcept {
+		neutral_goal_map<MapType>.reset();
+	}
+
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_alignment_goal_maps() noexcept {
-		reset_good_goal_map();
 		reset_evil_goal_map();
+		reset_good_goal_map();
+		reset_neutral_goal_map();
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_ranger_goal_map() noexcept {
@@ -1041,7 +1068,28 @@ namespace necrowarp {
 				}
 			}
 		}
-		
+
+		if constexpr (entity_enum != entity_e::Thetwo) {
+			switch (command_enum) {
+				case command_e::Metabolise:
+				case command_e::Shed: {
+					return false;
+				} default: {
+					break;
+				}
+			}
+		}
+
+		if constexpr (entity_enum != entity_e::FleshGolem && entity_enum != entity_e::Thetwo) {
+			switch (command_enum) {
+				case command_e::Devour: {
+					return false;
+				} default: {
+					break;
+				}
+			}
+		}
+
 		if constexpr (is_binary_command<CommandType>::value) {
 			if (!game_map<MapType>.dependent within<region_e::Interior>(command.target_position)) {
 				return false;
@@ -1060,6 +1108,12 @@ namespace necrowarp {
 				  case command_e::Loose:
 				  case command_e::Batter: {
 					if (empty(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Devour: {
+					if (empty(command.target_position) && object_registry<MapType>.dependent empty<flesh_t>(command.target_position)) {
 						return false;
 					}
 

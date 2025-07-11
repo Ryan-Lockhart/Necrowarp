@@ -16,5 +16,5 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void bonespur_t::die(offset_t position) noexcept {}
+	template<map_type_e MapType> inline void bonespur_t::killed(offset_t position) noexcept {}
 } // namespace necrowarp

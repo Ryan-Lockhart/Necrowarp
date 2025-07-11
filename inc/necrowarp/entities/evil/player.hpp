@@ -105,14 +105,17 @@ namespace necrowarp {
 		static constexpr i8 MaximumDamage{ 1 };
 		static constexpr i8 MinimumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 9> EntityPriorities{
+		static constexpr std::array<entity_e, 12> EntityPriorities{
 			entity_e::Skeleton,
+			entity_e::Bonespur,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
-			entity_e::Thetwo,
 			entity_e::Ranger,
 			entity_e::Skulker,
+			entity_e::MistLady,
+			entity_e::BannerBearer,
 			entity_e::BattleMonk,
+			entity_e::Thetwo,
 			entity_e::Berserker,
 			entity_e::Paladin,
 		};
@@ -121,8 +124,6 @@ namespace necrowarp {
 			object_e::Portal,
 			object_e::Ladder,
 			object_e::Bones,
-			object_e::Metal,
-			object_e::Flesh,
 		};
 
 		template<discount_e Type> static constexpr i8 Cost{};
@@ -423,7 +424,9 @@ namespace necrowarp {
 
 		inline bool can_receive_divine_intervention() const noexcept;
 
-		template<map_type_e MapType> inline void die() noexcept;
+		template<map_type_e MapType> inline void killed() noexcept;
+
+		template<map_type_e MapType> inline i8 devoured() noexcept;
 
 		template<RandomEngine Generator> static inline bool intervention(disposition_e disposition, ref<Generator> engine) noexcept {
 			switch (disposition) {

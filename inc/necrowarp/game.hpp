@@ -561,7 +561,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> static inline std::optional<offset_t> find_spawn_position() noexcept {
 			for (crauto [position, ladder] : object_registry_storage<ladder_t>) {
-				if (entity_registry<MapType>.dependent contains<ALL_GOOD_NPCS>(position) || ladder.is_down_ladder() || ladder.has_shackle()) {
+				if (entity_registry<MapType>.dependent contains<ALL_NON_EVIL_NPCS>(position) || ladder.is_down_ladder() || ladder.has_shackle()) {
 					continue;
 				}
 
@@ -581,7 +581,7 @@ namespace necrowarp {
 			const offset_t spawn_position{ maybe_spawn.value() };
 
 			if constexpr (globals::OopsAllEnabled) {
-				entity_registry<MapType>.dependent add<true>(spawn_position, to_entity_type<globals::OopsAllEnum>::type{});
+				return entity_registry<MapType>.dependent add<true>(spawn_position, to_entity_type<globals::OopsAllEnum>::type{});
 			}
 
 			const u8 spawn_chance{ static_cast<u8>(globals::spawn_dis(random_engine)) };
@@ -701,7 +701,7 @@ namespace necrowarp {
 				globals::MaximumWaveSize
 			);
 
-			if (entity_registry<MapType>.dependent empty<ALL_GOOD_NPCS>() && !game_stats.has_spawns()) {
+			if (entity_registry<MapType>.dependent empty<ALL_NON_EVIL_NPCS>() && !game_stats.has_spawns()) {
 				game_stats.spawns_remaining = game_stats.wave_size;
 			}
 
