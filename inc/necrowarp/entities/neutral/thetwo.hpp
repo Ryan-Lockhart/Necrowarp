@@ -12,6 +12,8 @@
 
 #include <necrowarp/game_state.hpp>
 
+#include <necrowarp/constants/enums/bulk.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -78,69 +80,11 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	enum struct bulk_e : u8 {
-		Neonatal,
-		Young,
-		Mature,
-		Gross,
-		Titanic
-	};
-
-	static constexpr bulk_e grow(bulk_e bulk) noexcept {
-		switch (bulk) {
-			case bulk_e::Neonatal: {
-				return bulk_e::Young;
-			} case bulk_e::Young: {
-				return bulk_e::Mature;
-			} case bulk_e::Mature: {
-				return bulk_e::Gross;
-			} case bulk_e::Gross: {
-				return bulk_e::Titanic;
-			} case bulk_e::Titanic: {
-				return bulk_e::Titanic;
-			}
-		}
-	}
-
-	constexpr cstr to_string(bulk_e bulk) noexcept {
-		switch (bulk) {
-			case bulk_e::Neonatal: {
-				return "neonatal";
-			} case bulk_e::Young: {
-				return "young";
-			} case bulk_e::Mature: {
-				return "mature";
-			} case bulk_e::Gross: {
-				return "gross";
-			} case bulk_e::Titanic: {
-				return "titanic";
-			}
-		}
-	}
-
-	constexpr color_t to_color(bulk_e bulk) noexcept {
-		switch (bulk) {
-			case bulk_e::Neonatal: {
-				return colors::light::Blue;
-			} case bulk_e::Young: {
-				return colors::light::Green;
-			} case bulk_e::Mature: {
-				return colors::light::Yellow;
-			} case bulk_e::Gross: {
-				return colors::light::Orange;
-			} case bulk_e::Titanic: {
-				return colors::light::Red;
-			}
-		}
-	}
-
-	constexpr runes_t to_colored_string(bulk_e bulk) noexcept { return runes_t{ to_string(bulk), to_color(bulk) }; }
-
 	struct thetwo_t {
 		static constexpr i8 MaximumHealth{ 32 };
-		static constexpr i8 MinimumHealth{ 2 };
+		static constexpr i8 MinimumHealth{ 1 };
 
-		static_assert(MaximumHealth >> 4 == MinimumHealth, "minimum health should be precisely four powers below maximum health!");
+		static_assert(MaximumHealth >> 5 == MinimumHealth, "minimum health should be precisely four powers below maximum health!");
 
 		static constexpr i8 MaximumProtein{ 64 };
 		static constexpr i8 MinimumProtein{ 4 };
@@ -175,22 +119,26 @@ namespace necrowarp {
 
 		static constexpr std::array<object_e, 1> ObjectPriorities{ object_e::Flesh };
 
-		static constexpr i8 DeathBoon{ 2 };
+		static constexpr i8 DeathBoon{ 1 };
 
 		static constexpr i8 SheddingTurns{ 8 };
 		static constexpr i8 MinimumShedAmount{ 2 };
 
 		static constexpr i8 MetabolisedProtein{ 2 };
 		static constexpr i8 MetabolisedHealth{ 1 };
+
+		static constexpr i8 SkittishApproachDistance{ 4 };
 		
 	private:
 		static constexpr i8 determine_health(bulk_e bulk) noexcept {
 			switch (bulk) {
 				case bulk_e::Neonatal: {
-					return MaximumHealth >> 4;
+					return MaximumHealth >> 5;
 				} case bulk_e::Young: {
-					return MaximumHealth >> 3;
+					return MaximumHealth >> 4;
 				} case bulk_e::Mature: {
+					return MaximumHealth >> 3;
+				} case bulk_e::Bulky: {
 					return MaximumHealth >> 2;
 				} case bulk_e::Gross: {
 					return MaximumHealth >> 1;
@@ -230,10 +178,12 @@ namespace necrowarp {
 		constexpr i8 max_health() const noexcept {
 			switch (bulk) {
 				case bulk_e::Neonatal: {
-					return MaximumHealth >> 4;
+					return MaximumHealth >> 5;
 				} case bulk_e::Young: {
-					return MaximumHealth >> 3;
+					return MaximumHealth >> 4;
 				} case bulk_e::Mature: {
+					return MaximumHealth >> 3;
+				} case bulk_e::Bulky: {
 					return MaximumHealth >> 2;
 				} case bulk_e::Gross: {
 					return MaximumHealth >> 1;
@@ -255,8 +205,10 @@ namespace necrowarp {
 					return MaximumProtein >> 3;
 				} case bulk_e::Mature: {
 					return MaximumProtein >> 2;
-				} case bulk_e::Gross: {
+				} case bulk_e::Bulky: {
 					return MaximumProtein >> 1;
+				} case bulk_e::Gross: {
+					return MaximumProtein;
 				} case bulk_e::Titanic: {
 					return MaximumProtein;
 				}
@@ -267,26 +219,6 @@ namespace necrowarp {
 			return false;
 		}
 		
-		template<> inline bool can_devour<bulk_e::Titanic>(entity_e entity) const noexcept {
-			switch (entity) {
-				case entity_e::Player:
-				case entity_e::Abomination:
-				case entity_e::Skulker:
-				case entity_e::Ranger:
-				case entity_e::MistLady:
-				case entity_e::BannerBearer:
-				case entity_e::Adventurer:
-				case entity_e::Mercenary:
-				case entity_e::BattleMonk:
-				case entity_e::Berserker:
-				case entity_e::Paladin: {
-					return true;
-				} default: {
-					return false;
-				}
-			}
-		}
-		
 		template<> inline bool can_devour<bulk_e::Gross>(entity_e entity) const noexcept {
 			switch (entity) {
 				case entity_e::Skulker:
@@ -294,6 +226,18 @@ namespace necrowarp {
 				case entity_e::MistLady:
 				case entity_e::Adventurer:
 				case entity_e::Mercenary: {
+					return true;
+				} default: {
+					return false;
+				}
+			}
+		}
+		
+		template<> inline bool can_devour<bulk_e::Bulky>(entity_e entity) const noexcept {
+			switch (entity) {
+				case entity_e::Ranger:
+				case entity_e::MistLady:
+				case entity_e::Adventurer: {
 					return true;
 				} default: {
 					return false;
@@ -311,17 +255,7 @@ namespace necrowarp {
 			}
 		}
 
-		inline bool can_devour(entity_e entity) const noexcept {
-			if (protein >= max_protein()) {
-				return false;
-			}
-			
-			return magic_enum::enum_switch([&](auto val) -> bool {
-				constexpr bulk_e cval{ val };
-
-				return can_devour<cval>(entity);
-			}, bulk);
-		}
+		inline bool can_devour(entity_e entity) const noexcept;
 
 		inline bool can_devour(object_e object) const noexcept { return protein < max_protein() && object == object_e::Flesh; }
 
@@ -371,10 +305,12 @@ namespace necrowarp {
 		inline i8 get_damage() const noexcept {
 			switch (bulk) {
 				case bulk_e::Neonatal: {
-					return MinimumDamage;
+					return 0;
 				} case bulk_e::Young: {
-					return MinimumDamage + 1;
+					return MinimumDamage;
 				} case bulk_e::Mature: {
+					return MinimumDamage + 1;
+				} case bulk_e::Bulky: {
 					return MaximumDamage / 2;
 				} case bulk_e::Gross: {
 					return MaximumDamage - 2;
@@ -388,7 +324,7 @@ namespace necrowarp {
 
 		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
-		inline u8 get_droppings() const noexcept { return static_cast<u8>(bulk); }
+		inline u8 get_droppings() const noexcept { return static_cast<u8>(bulk) + 1; }
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
@@ -426,6 +362,8 @@ namespace necrowarp {
 					return glyphs::YoungThetwo;
 				} case bulk_e::Mature: {
 					return glyphs::MatureThetwo;
+				} case bulk_e::Bulky: {
+					return glyphs::BulkyThetwo;
 				} case bulk_e::Gross: {
 					return glyphs::GrossThetwo;
 				} case bulk_e::Titanic: {
@@ -436,11 +374,9 @@ namespace necrowarp {
 
 		inline void draw(offset_t position) const noexcept { game_atlas.draw(current_glyph(), position); }
 
-		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + offset); }
 
-		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
-
-		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(current_glyph(), position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Thetwo; }
 	};

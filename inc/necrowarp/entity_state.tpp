@@ -17,6 +17,22 @@
 
 namespace necrowarp {	
 	using namespace bleak;
+
+	template<typename T> struct is_entity_registry {
+		static constexpr bool value{ false };
+	};
+
+	template<typename T> constexpr bool is_entity_registry_v = is_entity_registry<T>::value;
+
+	template<typename T> concept EntityRegistry = is_entity_registry<T>::value;
+
+	template<map_type_e MapType> struct is_entity_registry<entity_registry_t<MapType>> {
+		static constexpr bool value{ true };
+	};
+
+	template<map_type_e MapType> struct is_entity_registry<entity_buffer_t<MapType>> {
+		static constexpr bool value{ true };
+	};
 	
 	template<map_type_e MapType> extern grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor;
 
@@ -149,8 +165,6 @@ namespace necrowarp {
 		return (contains<EntityTypes>(position) || ...);
 	}
 
-	template<map_type_e MapType> template<NullEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return !contains<ALL_ENTITIES>(position); }
-
 	template<map_type_e MapType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return contains<ALL_ENTITIES>(position); }
 
 	template<map_type_e MapType> template<distance_function_e Distance, NonNullEntity EntityType> inline bool entity_registry_t<MapType>::nearby(offset_t position) const noexcept {
@@ -269,8 +283,10 @@ namespace necrowarp {
 
 			using entity_type = to_entity_type<cval>::type;
 
-			if (contains<entity_type>(position)) {
-				entities += to_entity_group<cval>::value;
+			if constexpr (!is_null_entity<entity_type>::value) {
+				if (contains<entity_type>(position)) {
+					entities += to_entity_group<cval>::value;
+				}
 			}
 		});
 		
@@ -314,27 +330,36 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType>
-	template<Entity... EntityTypes>
+	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline usize entity_registry_t<MapType>::count() const noexcept {
 		return (count<EntityTypes>() + ...);
 	}
 
 	template<map_type_e MapType> inline usize entity_registry_t<MapType>::count() const noexcept { return count<ALL_ENTITIES>(); }
+
+	template<map_type_e MapType>
+	template<NonNullEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline usize entity_registry_t<MapType>::count(offset_t position) const noexcept {
+		return (contains<EntityTypes>(position) + ...);
+	}
+
+	template<map_type_e MapType> inline usize entity_registry_t<MapType>::count(offset_t position) const noexcept { return count<ALL_ENTITIES>(position); }
 	
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::empty() const noexcept {
 		return entity_registry_storage<EntityType>.empty();
 	}
 	
 	template<map_type_e MapType>
-	template<Entity... EntityTypes>
+	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline bool entity_registry_t<MapType>::empty() const noexcept {
 		return (empty<EntityTypes>() && ...);
 	}
 	
 	template<map_type_e MapType>
-	template<Entity... EntityTypes>
+	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline bool entity_registry_t<MapType>::empty(offset_t position) const noexcept {
 		return (empty<EntityTypes>(position) && ...);
@@ -1222,27 +1247,15 @@ namespace necrowarp {
 		}
 	}
 
-	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
-		cauto viewport{ camera.get_viewport() }; 
-
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw(offset_t offset) const noexcept {
 		for (crauto [position, entity] : entity_registry_storage<EntityType>) {
-			if (!viewport.within(position)) {
-				continue;
-			}
-
-			entity.draw(position, camera);
+			entity.draw(position, offset);
 		}
 	}
 
-	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
-		cauto viewport{ camera.get_viewport() }; 
-
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::draw(offset_t offset, offset_t nudge) const noexcept {
 		for (crauto [position, entity] : entity_registry_storage<EntityType>) {
-			if (!viewport.within(position)) {
-				continue;
-			}
-
-			entity.draw(position, camera, offset);
+			entity.draw(position, offset, nudge);
 		}
 	}
 
@@ -1256,15 +1269,15 @@ namespace necrowarp {
 	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
-		(draw<EntityTypes>(camera), ...);
+	inline void entity_registry_t<MapType>::draw(offset_t offset) const noexcept {
+		(draw<EntityTypes>(offset), ...);
 	}
 
 	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
-		(draw<EntityTypes>(camera, offset), ...);
+	inline void entity_registry_t<MapType>::draw(offset_t offset, offset_t nudge) const noexcept {
+		(draw<EntityTypes>(offset, nudge), ...);
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::draw() const noexcept {
@@ -1273,16 +1286,16 @@ namespace necrowarp {
 		player.draw();
 	}
 
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera) const noexcept {
-		draw<ALL_NON_PLAYER>(camera);
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::draw(offset_t offset) const noexcept {
+		draw<ALL_NON_PLAYER>(offset);
 
-		player.draw(camera);
+		player.draw(offset);
 	}
 
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
-		draw<ALL_NON_PLAYER>(camera, offset);
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::draw(offset_t offset, offset_t nudge) const noexcept {
+		draw<ALL_NON_PLAYER>(offset, nudge);
 
-		player.draw(camera, offset);
+		player.draw(offset, nudge);
 	}
 } // namespace necrowarp
 

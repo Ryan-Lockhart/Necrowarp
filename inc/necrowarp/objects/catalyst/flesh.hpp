@@ -34,11 +34,9 @@ namespace necrowarp {
 
 		inline void draw(offset_t position) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position); }
 
-		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position, offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + offset); }
 
-		inline void draw(offset_t position, cref<camera_t> camera) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset()); }
-
-		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + camera.get_offset(), offset); }
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(object_glyphs<flesh_t>, position + offset, nudge); }
 
 		constexpr operator object_e() const noexcept { return object_e::Flesh; }
 	};

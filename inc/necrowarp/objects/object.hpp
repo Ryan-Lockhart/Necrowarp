@@ -177,6 +177,8 @@ namespace necrowarp {
 
 	static constexpr runes_t to_colored_string(object_group_e group) noexcept;
 
+	constexpr object_e at(object_group_e group, usize index) noexcept;
+
 	template<typename T> struct is_object {
 		static constexpr bool value = false;
 	};
@@ -196,6 +198,8 @@ namespace necrowarp {
 	};
 	
 	template<object_e ObjectType> struct to_object_type;
+
+	template<usize Index> using from_object_index = to_object_type<static_cast<object_e>(Index)>::type;
 	
 	template<> struct to_object_type<object_e::None> {
 		using type = std::nullptr_t;

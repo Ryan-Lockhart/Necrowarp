@@ -59,6 +59,7 @@ namespace necrowarp {
 		constexpr const glyph_t NeonatalThetwo{ characters::NeonatalThetwo, colors::White };
 		constexpr const glyph_t YoungThetwo{ characters::YoungThetwo, colors::White };
 		constexpr const glyph_t MatureThetwo{ characters::MatureThetwo, colors::White };
+		constexpr const glyph_t BulkyThetwo{ characters::BulkyThetwo, colors::White };
 		constexpr const glyph_t GrossThetwo{ characters::GrossThetwo, colors::White };
 		constexpr const glyph_t TitanicThetwo{ characters::TitanicThetwo, colors::White };
 

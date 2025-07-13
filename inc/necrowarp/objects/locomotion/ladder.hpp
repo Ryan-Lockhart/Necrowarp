@@ -192,30 +192,18 @@ namespace necrowarp {
 		}
 
 		inline void draw(offset_t position, offset_t offset) const noexcept {
-			game_atlas.draw(current_glyph(), position, offset);
+			game_atlas.draw(current_glyph(), position + offset);
 
 			if (has_shackle()) {
-				animated_atlas.draw(idle_animation, colors::White, position, offset);
+				animated_atlas.draw(idle_animation, colors::White, position + offset);
 			}
 		}
 
-		inline void draw(offset_t position, cref<camera_t> camera) const noexcept {
-			position += camera.get_offset();
-	
-			game_atlas.draw(current_glyph(), position);
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept {
+			game_atlas.draw(current_glyph(), position + offset, nudge);
 
 			if (has_shackle()) {
-				animated_atlas.draw(idle_animation, colors::White, position);
-			}
-		}
-
-		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept {
-			position += camera.get_offset();
-	
-			game_atlas.draw(current_glyph(), position, offset);
-
-			if (has_shackle()) {
-				animated_atlas.draw(idle_animation, colors::White, position, offset);
+				animated_atlas.draw(idle_animation, colors::White, position + offset, nudge);
 			}
 		}
 

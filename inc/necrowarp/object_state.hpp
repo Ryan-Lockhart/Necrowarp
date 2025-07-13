@@ -23,31 +23,33 @@ namespace necrowarp {
 
 		template<NonNullObject ObjectType> inline usize count() const noexcept;
 
-		template<NullObject ObjectType> inline usize count() const noexcept;
-
-		template<Object... ObjectTypes>
+		template<NonNullObject... ObjectTypes>
 			requires is_plurary<ObjectTypes...>::value
 		inline usize count() const noexcept;
 
 		inline usize count() const noexcept;
+
+		template<NonNullObject... ObjectTypes>
+			requires is_plurary<ObjectTypes...>::value
+		inline usize count(offset_t position) const noexcept;
+
+		inline usize count(offset_t position) const noexcept;
 
 		template<NonNullObject ObjectType> inline bool empty() const noexcept;
 
-		template<NonNullObject ObjectType> inline bool empty(offset_t position) const noexcept;
-
-		inline bool empty(offset_t position) const noexcept;
-
-		template<Object... ObjectTypes>
+		template<NonNullObject... ObjectTypes>
 			requires is_plurary<ObjectTypes...>::value
 		inline bool empty() const noexcept;
 
-		template<Object... ObjectTypes>
+		inline bool empty() const noexcept;
+
+		template<NonNullObject ObjectType> inline bool empty(offset_t position) const noexcept;
+
+		template<NonNullObject... ObjectTypes>
 			requires is_plurary<ObjectTypes...>::value
 		inline bool empty(offset_t position) const noexcept;
 
-		constexpr bool empty() const noexcept { return false; }
-
-		inline bool contains(offset_t position) const noexcept;
+		inline bool empty(offset_t position) const noexcept;
 
 		template<NonNullObject ObjectType> inline bool contains(offset_t position) const noexcept;
 
@@ -55,7 +57,7 @@ namespace necrowarp {
 			requires is_plurary<ObjectTypes...>::value
 		inline bool contains(offset_t position) const noexcept;
 
-		template<NullObject ObjectType> inline bool contains(offset_t position) const noexcept;
+		inline bool contains(offset_t position) const noexcept;
 
 		template<NonNullObject ObjectType, bool Force = false> inline bool add(offset_t position) noexcept;
 
@@ -119,9 +121,9 @@ namespace necrowarp {
 
 		template<NonNullObject ObjectType> inline void draw() const noexcept;
 
-		template<NonNullObject ObjectType> inline void draw(cref<camera_t> camera) const noexcept;
+		template<NonNullObject ObjectType> inline void draw(offset_t offset) const noexcept;
 
-		template<NonNullObject ObjectType> inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
+		template<NonNullObject ObjectType> inline void draw(offset_t offset, offset_t nudge) const noexcept;
 
 		template<NonNullObject... ObjectTypes>
 			requires is_plurary<ObjectTypes...>::value
@@ -129,16 +131,16 @@ namespace necrowarp {
 
 		template<NonNullObject... ObjectTypes>
 			requires is_plurary<ObjectTypes...>::value
-		inline void draw(cref<camera_t> camera) const noexcept;
+		inline void draw(offset_t offset) const noexcept;
 
 		template<NonNullObject... ObjectTypes>
 			requires is_plurary<ObjectTypes...>::value
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
+		inline void draw(offset_t offset, offset_t nudge) const noexcept;
 
 		inline void draw() const noexcept;
 
-		inline void draw(cref<camera_t> camera) const noexcept;
+		inline void draw(offset_t offset) const noexcept;
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
+		inline void draw(offset_t offset, offset_t nudge) const noexcept;
 	};
 } // namespace necrowarp

@@ -199,45 +199,21 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw(offset_t position)  const noexcept {
+		inline glyph_t current_glyph() const noexcept {
 			glyph_t glyph{ entity_glyphs<skulker_t> };
 
 			if (!is_visible()) {
 				glyph.color.fade(is_imperceptible() ? 0.1f : 0.5f);
 			}
 
-			game_atlas.draw(glyph, position);
+			return glyph;
 		}
 
-		inline void draw(offset_t position, offset_t offset) const noexcept {
-			glyph_t glyph{ entity_glyphs<skulker_t> };
+		inline void draw(offset_t position) const noexcept { game_atlas.draw(current_glyph(), position); }
 
-			if (!is_visible()) {
-				glyph.color.fade(is_imperceptible() ? 0.1f : 0.5f);
-			}
+		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + offset); }
 
-			game_atlas.draw(glyph, position, offset);
-		}
-
-		inline void draw(offset_t position, cref<camera_t> camera) const noexcept {
-			glyph_t glyph{ entity_glyphs<skulker_t> };
-
-			if (!is_visible()) {
-				glyph.color.fade(is_imperceptible() ? 0.1f : 0.5f);
-			}
-
-			game_atlas.draw(glyph, position + camera.get_offset());
-		}
-
-		inline void draw(offset_t position, cref<camera_t> camera, offset_t offset) const noexcept {
-			glyph_t glyph{ entity_glyphs<skulker_t> };
-
-			if (!is_visible()) {
-				glyph.color.fade(is_imperceptible() ? 0.1f : 0.5f);
-			}
-
-			game_atlas.draw(glyph, position + camera.get_offset(), offset);
-		}
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(current_glyph(), position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Skulker; }
 	};

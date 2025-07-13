@@ -82,6 +82,28 @@ namespace necrowarp {
 		return runes;
 	}
 
+	constexpr entity_e at(entity_group_e group, usize index) noexcept {
+		if (index < 0 || index >= EntityTypeCount) {
+			return entity_e::None;
+		}
+
+		usize i{ 0 };
+
+		for (usize j{ 1 }; j < EntityTypeCount; ++j) {
+			const entity_e as_entity{ static_cast<entity_e>(j) };
+
+			if (group == as_entity) {
+				if (i == index) {
+					return as_entity;
+				}
+
+				++i;
+			}
+		}
+
+		return entity_e::None;
+	}
+
 	template<map_type_e MapType> static constexpr runes_t to_colored_string(entity_group_e group, offset_t position) noexcept {
 		runes_t runes{};
 
@@ -115,13 +137,13 @@ namespace necrowarp {
 	}
 
 	namespace globals {
-		static constexpr entity_e OopsAllEnum{ entity_e::Thetwo };
+		static constexpr entity_e OopsAllEnum{ entity_e::Berserker };
 
-		template<> inline constexpr bool OopsAll<OopsAllEnum>{ true };
+		template<> inline constexpr bool OopsAll<OopsAllEnum>{ false };
 		
 		template<NonNullEntity... Entities> static constexpr usize OopsAllCount{ (OopsAll<to_entity_enum<Entities>::value> + ...) };
 
-		static_assert(OopsAllCount<ALL_NON_EVIL_NPCS> == 1, "cannot force multiple enemy types!");
+		static_assert(OopsAllCount<ALL_NON_EVIL_NPCS> <= 1, "cannot force multiple enemy types!");
 
 		static constexpr bool OopsAllEnabled{ OopsAllCount<ALL_NON_EVIL_NPCS> == 1 };
 	}

@@ -32,13 +32,6 @@ namespace necrowarp {
 
 		static inline u32 frame_limit{ 60u };
 		static inline f32 frame_time() { return 1000.0f / frame_limit; }
-		
-		static constexpr extent_t MinimumWindowSize{ 640, 480 }; // VGA
-		static constexpr extent_t MaximumWindowSize{ 7680, 4320 }; //  8K
-
-		static inline constexpr bool is_valid_window_size(extent_t size) noexcept {
-			return !between<extent_t::scalar_t>(size.w, MinimumWindowSize.w, MaximumWindowSize.w) || !between<extent_t::scalar_t>(size.h, MinimumWindowSize.h, MaximumWindowSize.h);
-		}
 
 		enum struct resolution_e : u8 {
 			// 4:3 resolutions
@@ -137,6 +130,13 @@ namespace necrowarp {
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution5120x1440, extent_t{ 5120, 1440 } },
 			pair_t<resolution_e, extent_t>{ resolution_e::Resolution7680x2160, extent_t{ 7680, 2160 } }
 		};
+		
+		static constexpr extent_t MinimumWindowSize{ Resolutions[resolution_e::Resolution640x480] }; // VGA
+		static constexpr extent_t MaximumWindowSize{ Resolutions[resolution_e::Resolution7680x2160] }; // 8K
+
+		static inline constexpr bool is_valid_window_size(extent_t size) noexcept {
+			return !between<extent_t::scalar_t>(size.w, MinimumWindowSize.w, MaximumWindowSize.w) || !between<extent_t::scalar_t>(size.h, MinimumWindowSize.h, MaximumWindowSize.h);
+		}
 
 		static constexpr cstr to_string(resolution_e resolution) noexcept {
 			switch (resolution) {
@@ -182,7 +182,7 @@ namespace necrowarp {
 			}
 		}
 		
-		static inline extent_t window_size{ Resolutions[resolution_e::Resolution1024x768] };
+		static inline extent_t window_size{ Resolutions[resolution_e::Resolution1440x900] };
 
 		template<grid_type_e GridType> static constexpr extent_t cell_size;
 
@@ -228,7 +228,7 @@ namespace necrowarp {
 
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
 
-		static constexpr extent_t TilesetSize{ 16, 4 };
+		static constexpr extent_t TilesetSize{ 16, 5 };
 		static constexpr extent_t AnimatedSize{ 16, 31 };
 
 		static constexpr extent_t IconsetSize{ 2, 4 };
@@ -358,6 +358,8 @@ namespace necrowarp {
 
 		constexpr i16 FloorsPerReinforcement{ 2 };
 
+		constexpr i16 FleshPerThetwoPopulation{ 32 };
+
 		constexpr bool CheatsAllowed{ true };
 
 		constexpr bool SpawnTutorialPortal{ true };
@@ -365,6 +367,9 @@ namespace necrowarp {
 		constexpr bool EnableBoonPortal{ true };
 		constexpr bool EnableTribulationPortal{ true };
 		constexpr bool EnableAudiencePortal{ true };
+
+		constexpr offset_t CavernTileNudge{ 32, 32 };
+		constexpr offset_t FluidTileNudge{ 32, 32 };
 
 		constexpr f32 FluidPoolMinimumVolume{ 4.5f };
 		constexpr f32 FluidPoolMaximumVolume{ 5.7f };

@@ -33,8 +33,6 @@ namespace necrowarp {
 		return (contains<EntityTypes>(position) || ...);
 	}
 
-	template<map_type_e MapType> template<NullEntity EntityType> inline bool entity_buffer_t<MapType>::contains(offset_t position) const noexcept { return !contains<ALL_ENTITIES>(position); }
-
 	template<map_type_e MapType> inline bool entity_buffer_t<MapType>::contains(offset_t position) const noexcept { return contains<ALL_ENTITIES>(position); }
 
 	template<map_type_e MapType> template<distance_function_e Distance, NonNullEntity EntityType> inline bool entity_buffer_t<MapType>::nearby(offset_t position) const noexcept {
@@ -153,8 +151,10 @@ namespace necrowarp {
 
 			using entity_type = to_entity_type<cval>::type;
 
-			if (contains<entity_type>(position)) {
-				entities += to_entity_group<cval>::value;
+			if constexpr (!is_null_entity<entity_type>::value) {
+				if (contains<entity_type>(position)) {
+					entities += to_entity_group<cval>::value;
+				}
 			}
 		});
 		
@@ -198,27 +198,36 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType>
-	template<Entity... EntityTypes>
+	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline usize entity_buffer_t<MapType>::count() const noexcept {
 		return (count<EntityTypes>() + ...);
 	}
 
 	template<map_type_e MapType> inline usize entity_buffer_t<MapType>::count() const noexcept { return count<ALL_ENTITIES>(); }
+
+	template<map_type_e MapType>
+	template<NonNullEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline usize entity_buffer_t<MapType>::count(offset_t position) const noexcept {
+		return (contains<EntityTypes>(position) + ...);
+	}
+
+	template<map_type_e MapType> inline usize entity_buffer_t<MapType>::count(offset_t position) const noexcept { return count<ALL_ENTITIES>(position); }
 	
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_buffer_t<MapType>::empty() const noexcept {
 		return entity_buffer_storage<EntityType>.empty();
 	}
 	
 	template<map_type_e MapType>
-	template<Entity... EntityTypes>
+	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline bool entity_buffer_t<MapType>::empty() const noexcept {
 		return (empty<EntityTypes>() && ...);
 	}
 	
 	template<map_type_e MapType>
-	template<Entity... EntityTypes>
+	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
 	inline bool entity_buffer_t<MapType>::empty(offset_t position) const noexcept {
 		return (empty<EntityTypes>(position) && ...);
@@ -236,27 +245,15 @@ namespace necrowarp {
 		}
 	}
 
-	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_buffer_t<MapType>::draw(cref<camera_t> camera) const noexcept {
-		cauto viewport{ camera.get_viewport() }; 
-
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_buffer_t<MapType>::draw(offset_t offset) const noexcept {
 		for (crauto [position, entity] : entity_buffer_storage<EntityType>) {
-			if (!viewport.within(position)) {
-				continue;
-			}
-
-			entity.draw(position, camera);
+			entity.draw(position, offset);
 		}
 	}
 
-	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_buffer_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
-		cauto viewport{ camera.get_viewport() }; 
-
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_buffer_t<MapType>::draw(offset_t offset, offset_t nudge) const noexcept {
 		for (crauto [position, entity] : entity_buffer_storage<EntityType>) {
-			if (!viewport.within(position)) {
-				continue;
-			}
-
-			entity.draw(position, camera, offset);
+			entity.draw(position, offset, nudge);
 		}
 	}
 
@@ -270,15 +267,15 @@ namespace necrowarp {
 	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_buffer_t<MapType>::draw(cref<camera_t> camera) const noexcept {
-		(draw<EntityTypes>(camera), ...);
+	inline void entity_buffer_t<MapType>::draw(offset_t offset) const noexcept {
+		(draw<EntityTypes>(offset), ...);
 	}
 
 	template<map_type_e MapType>
 	template<NonNullEntity... EntityTypes>
 		requires is_plurary<EntityTypes...>::value
-	inline void entity_buffer_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
-		(draw<EntityTypes>(camera, offset), ...);
+	inline void entity_buffer_t<MapType>::draw(offset_t offset, offset_t nudge) const noexcept {
+		(draw<EntityTypes>(offset, nudge), ...);
 	}
 
 	template<map_type_e MapType> inline void entity_buffer_t<MapType>::draw() const noexcept {
@@ -287,15 +284,15 @@ namespace necrowarp {
 		player_buffer.draw();
 	}
 
-	template<map_type_e MapType> inline void entity_buffer_t<MapType>::draw(cref<camera_t> camera) const noexcept {
-		draw<ALL_NON_PLAYER>(camera);
+	template<map_type_e MapType> inline void entity_buffer_t<MapType>::draw(offset_t offset) const noexcept {
+		draw<ALL_NON_PLAYER>(offset);
 
-		player_buffer.draw(camera);
+		player_buffer.draw(offset);
 	}
 
-	template<map_type_e MapType> inline void entity_buffer_t<MapType>::draw(cref<camera_t> camera, offset_t offset) const noexcept {
-		draw<ALL_NON_PLAYER>(camera, offset);
+	template<map_type_e MapType> inline void entity_buffer_t<MapType>::draw(offset_t offset, offset_t nudge) const noexcept {
+		draw<ALL_NON_PLAYER>(offset, nudge);
 
-		player_buffer.draw(camera, offset);
+		player_buffer.draw(offset, nudge);
 	}
 } // namespace necrowarp

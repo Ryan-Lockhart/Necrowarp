@@ -21,6 +21,7 @@
 #include <necrowarp/scorekeeper.hpp>
 #include <necrowarp/animation.hpp>
 #include <necrowarp/patronage.tpp>
+#include <necrowarp/unified_map_renderer.hpp>
 
 #include <magic_enum/magic_enum_all.hpp>
 
@@ -230,7 +231,7 @@ namespace necrowarp {
 					const offset_t pos{ x, y };
 
 					game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
-					fluid_map<MapType>[pos].recalculate_index(fluid_map<MapType>, pos, fluid_e::None);
+					fluid_map<MapType>[pos].recalculate_index(fluid_map<MapType>, pos, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
 				}
 			}
 
@@ -395,7 +396,7 @@ namespace necrowarp {
 					const offset_t position{ x, y };
 
 					game_map<MapType>[position].recalculate_index(game_map<MapType>, position, cell_e::Solid);
-					fluid_map<MapType>[position].recalculate_index(fluid_map<MapType>, position, fluid_e::None);
+					fluid_map<MapType>[position].recalculate_index(fluid_map<MapType>, position, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
 				}
 			}
 
@@ -701,7 +702,7 @@ namespace necrowarp {
 				globals::MaximumWaveSize
 			);
 
-			if (entity_registry<MapType>.dependent empty<ALL_NON_EVIL_NPCS>() && !game_stats.has_spawns()) {
+			if (entity_registry<MapType>.dependent empty<ALL_GOOD_NPCS>() && !game_stats.has_spawns()) {
 				game_stats.spawns_remaining = game_stats.wave_size;
 			}
 
@@ -709,7 +710,7 @@ namespace necrowarp {
 				if (!spawn_random<MapType>()) {
 					break;
 				}
-				
+
 				--game_stats.spawns_remaining;
 			}
 
@@ -720,8 +721,30 @@ namespace necrowarp {
 					}
 				}
 			}
-			
+
+			const usize thetwo_target{ object_registry<MapType>.dependent count<flesh_t>() / globals::FleshPerThetwoPopulation };
+
+			while (entity_registry<MapType>.dependent count<thetwo_t>() < thetwo_target) {
+				cauto maybe_spawn{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>) };
+
+				if (!maybe_spawn.has_value() || !entity_registry<MapType>.dependent add<true>(maybe_spawn.value(), thetwo_t{})) {
+					break;
+				}
+			} 
+
 			entity_registry<MapType>.update();
+
+			if (fluid_map_dirty) {
+				for (offset_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
+					for (offset_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
+						const offset_t pos{ x, y };
+
+						fluid_map<MapType>[pos].recalculate_index(fluid_map<MapType>, pos, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
+					}
+				}
+
+				fluid_map_dirty = false;
+			}
 
 			registry_access.unlock();
 
@@ -769,17 +792,12 @@ namespace necrowarp {
 					renderer.draw_fill_rect(rect_t{ offset_t{ 0, globals::window_size.h - excess_size.h - 1 }, extent_t{ globals::window_size.w, excess_size.h } }, color_t{ u8{ 0xC0 } });
 				}
 
-				game_map<MapType>.draw(game_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::Game>());
-				fluid_map<MapType>.draw(game_atlas, camera<MapType>, offset_t{}, globals::grid_origin<grid_type_e::Game>());
-
 				if (registry_access.try_lock()) {
-					object_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
-					entity_registry<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					unified_map_renderer_s<MapType>::draw(game_atlas, entity_registry<MapType>, object_registry<MapType>, camera<MapType>, offset_t::Zero, globals::grid_origin<grid_type_e::Game>());
 
 					registry_access.unlock();
 				} else if (buffer_access.try_lock()) {
-					object_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
-					entity_buffer<MapType>.draw(camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					unified_map_renderer_s<MapType>::draw(game_atlas, entity_buffer<MapType>, object_buffer<MapType>, camera<MapType>, offset_t::Zero, globals::grid_origin<grid_type_e::Game>());
 
 					buffer_access.unlock();
 				}

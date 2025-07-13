@@ -22,13 +22,17 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline usize count() const noexcept { return 1; }
 
-		template<NullEntity EntityType> inline usize count() const noexcept;
-
-		template<Entity... EntityTypes>
+		template<NonNullEntity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline usize count() const noexcept;
 
 		inline usize count() const noexcept;
+
+		template<NonNullEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline usize count(offset_t position) const noexcept;
+
+		inline usize count(offset_t position) const noexcept;
 
 		template<NonPlayerEntity EntityType> inline bool empty() const noexcept;
 
@@ -40,17 +44,15 @@ namespace necrowarp {
 
 		inline bool empty(offset_t position) const noexcept;
 
-		template<Entity... EntityTypes>
+		template<NonNullEntity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline bool empty() const noexcept;
 
-		template<Entity... EntityTypes>
+		template<NonNullEntity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline bool empty(offset_t position) const noexcept;
 
 		constexpr bool empty() const noexcept { return false; }
-
-		inline bool contains(offset_t position) const noexcept;
 
 		template<NonPlayerEntity EntityType> inline bool contains(offset_t position) const noexcept;
 
@@ -60,7 +62,7 @@ namespace necrowarp {
 			requires is_plurary<EntityTypes...>::value
 		inline bool contains(offset_t position) const noexcept;
 
-		template<NullEntity EntityType> inline bool contains(offset_t position) const noexcept;
+		inline bool contains(offset_t position) const noexcept;
 
 		template<distance_function_e Distance, NonNullEntity EntityType> inline bool nearby(offset_t position) const noexcept;
 
@@ -78,13 +80,13 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline void draw() const noexcept;
 
-		template<NonPlayerEntity EntityType> inline void draw(cref<camera_t> camera) const noexcept;
+		template<NonPlayerEntity EntityType> inline void draw(offset_t offset) const noexcept;
 
-		template<PlayerEntity EntityType> inline void draw(cref<camera_t> camera) const noexcept;
+		template<PlayerEntity EntityType> inline void draw(offset_t offset) const noexcept;
 
-		template<NonPlayerEntity EntityType> inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
+		template<NonPlayerEntity EntityType> inline void draw(offset_t offset, offset_t nudge) const noexcept;
 
-		template<PlayerEntity EntityType> inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
+		template<PlayerEntity EntityType> inline void draw(offset_t offset, offset_t nudge) const noexcept;
 
 		template<NonNullEntity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
@@ -92,16 +94,16 @@ namespace necrowarp {
 
 		template<NonNullEntity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
-		inline void draw(cref<camera_t> camera) const noexcept;
+		inline void draw(offset_t offset) const noexcept;
 
 		template<NonNullEntity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
+		inline void draw(offset_t offset, offset_t nudge) const noexcept;
 
 		inline void draw() const noexcept;
 
-		inline void draw(cref<camera_t> camera) const noexcept;
+		inline void draw(offset_t offset) const noexcept;
 
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept;
+		inline void draw(offset_t offset, offset_t nudge) const noexcept;
 	};
 } // namespace necrowarp

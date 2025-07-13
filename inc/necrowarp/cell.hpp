@@ -13,6 +13,8 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	template<map_type_e MapType> struct unified_map_renderer_s;
+
 	struct fluid_cell_t {
 		bool blood : 1 { false };
 		bool ichor : 1 { false };
@@ -322,27 +324,73 @@ namespace necrowarp {
 
 		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr void recalculate_index(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, fluid_e fluid) noexcept {
-			index = zone.dependent calculate_index<solver_e::Melded>(position, fluid);
+			index = zone.dependent calculate_index<solver_e::MarchingSquares>(position, fluid);
+		}
+
+		template<typename T, extent_t ZoneSize, extent_t ZoneBorder, typename Predicate>
+			requires std::is_invocable<Predicate, T>::value
+		inline constexpr void recalculate_index(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, rval<Predicate> predicate) noexcept {
+			index = zone.dependent calculate_index<solver_e::MarchingSquares>(position, std::forward<Predicate>(predicate));
+		}
+
+		inline constexpr u8 pool_index() const noexcept { return static_cast<u8>(characters::FluidTileOrigin + index); }
+
+		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr glyph_t pool_glyph(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+			const cardinal_t edge_state{ zone.edge_state(position) };
+
+			fluid_e constituents{ static_cast<fluid_e>(zone[position]) };
+
+			if (!edge_state.east) {
+				constituents += static_cast<fluid_e>(zone[position + offset_t::East]);
+			}
+
+			if (!edge_state.south) {
+				constituents += static_cast<fluid_e>(zone[position + offset_t::South]);
+			}
+
+			if (!edge_state.south && !edge_state.east) {
+				constituents += static_cast<fluid_e>(zone[position + offset_t::Southeast]);
+			}
+
+			return glyph_t{ pool_index(), to_color(constituents) };
+		}
+
+		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr void draw_pool(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
+			atlas.draw(pool_glyph(zone, position), position);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
-			atlas.draw(glyph_t{ characters::Floor, to_color(static_cast<fluid_e>(zone[position])) }, position);
+			draw_pool(atlas, zone, position);
+		}
+
+		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr void draw_pool(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
+			atlas.draw(pool_glyph(zone, position), position + offset);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
-			atlas.draw(glyph_t{ characters::Floor, to_color(static_cast<fluid_e>(zone[position])) }, position + offset);
+			draw_pool(atlas, zone, position, offset);
+		}
+
+		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
+		inline constexpr void draw_pool(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+			atlas.draw(pool_glyph(zone, position), position + offset, nudge);
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr void draw(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset, offset_t nudge) const noexcept {
-			atlas.draw(glyph_t{ characters::Floor, to_color(static_cast<fluid_e>(zone[position])) }, position + offset, nudge);
+			draw_pool(atlas, zone, position, offset, nudge);
 		}
 
 		struct hasher {
 			static constexpr usize operator()(fluid_cell_t cell) noexcept { return hash_combine(std::bit_cast<u8>(cell)); }
 		};
+
+		template<map_type_e MapType> friend struct unified_map_renderer_s;
 	};
 
 	static constexpr bool operator==(fluid_e fluid, fluid_cell_t cell) noexcept { return cell.contains(fluid); }
@@ -531,12 +579,18 @@ namespace necrowarp {
 
 		template<typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr void recalculate_index(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, cell_e trait) noexcept {
-			index = zone.dependent calculate_index<solver_e::Melded>(position, trait);
+			index = zone.dependent calculate_index<solver_e::MarchingSquares>(position, trait);
+		}
+
+		template<typename T, extent_t ZoneSize, extent_t ZoneBorder, typename Predicate>
+			requires std::is_invocable<Predicate, T>::value
+		inline constexpr void recalculate_index(cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, rval<Predicate> predicate) noexcept {
+			index = zone.dependent calculate_index<solver_e::MarchingSquares>(position, std::forward<Predicate>(predicate));
 		}
 
 		inline glyph_t floor_glyph() const noexcept { return glyph_t{ characters::Floor, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
 
-		inline glyph_t wall_glyph() const noexcept { return glyph_t{ index, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
+		inline glyph_t wall_glyph() const noexcept { return glyph_t{ static_cast<u8>(characters::CavernTileOrigin + index), color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
 
 		inline glyph_t patch_glyph(u8 idx) const noexcept { return glyph_t{ idx, color_t{ 0xFF, seen ? u8{ 0xFF } : u8{ 0x80 } } }; }
 
@@ -550,12 +604,14 @@ namespace necrowarp {
 
 			switch (index) {
 				case 4:
-				case 6: {
+				case 6:
+				case 7: {
 					is_left_patch = true;
 
 					break;
 				} case 8:
-				  case 9: {
+				  case 9:
+				  case 11: {
 					is_left_patch = false;
 
 					break;
@@ -571,22 +627,29 @@ namespace necrowarp {
 			}
 
 			const bool is_alt_patch{ index == 6 || index == 9 };
+			const bool is_cropped_patch{ index == 7 || index == 11 };
 
 			if (!is_left_patch) {
-				return !is_alt_patch ? characters::RightPatch : characters::AltRightPatch;
+				return !is_cropped_patch ? !is_alt_patch ? characters::RightPatch : characters::AltRightPatch : characters::CroppedRightPatch;
 			} else {
-				return !is_alt_patch ? characters::LeftPatch : characters::AltLeftPatch;
+				return !is_cropped_patch ? !is_alt_patch ? characters::LeftPatch : characters::AltLeftPatch : characters::CroppedLeftPatch;
 			}
 
 			return 0;
 		}
 
+		template<extent_t AtlasSize> inline constexpr void draw_floor(cref<atlas_t<AtlasSize>> atlas, offset_t position) const noexcept {
+			atlas.draw(floor_glyph(), position);
+		}
+
+		template<extent_t AtlasSize> inline constexpr void draw_wall(cref<atlas_t<AtlasSize>> atlas, offset_t position) const noexcept {
+			if (index != 0) {
+				atlas.draw(wall_glyph(), position);
+			}
+		}
+
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position) const noexcept {
-			if (!explored) {
-				return;
-			}
-
 			const u8 patch_character{ determine_patch(zone, position) };
 			
 			if (!patch_character) {
@@ -602,23 +665,25 @@ namespace necrowarp {
 				return;
 			}
 
-			atlas.draw(floor_glyph(), position);
+			draw_floor(atlas, position);
 
-			if (!solid) {
-				return;
-			}
-
-			atlas.draw(wall_glyph(), position);
+			draw_wall(atlas, position);
 
 			draw_patch(atlas, zone, position);
 		}
 
+		template<extent_t AtlasSize> inline constexpr void draw_floor(cref<atlas_t<AtlasSize>> atlas, offset_t position, offset_t offset) const noexcept {
+			atlas.draw(floor_glyph(), position + offset);
+		}
+
+		template<extent_t AtlasSize> inline constexpr void draw_wall(cref<atlas_t<AtlasSize>> atlas, offset_t position, offset_t offset) const noexcept {
+			if (index != 0) {
+				atlas.draw(wall_glyph(), position + offset);
+			}
+		}
+
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
 		inline constexpr void draw_patch(cref<atlas_t<AtlasSize>> atlas, cref<zone_t<T, ZoneSize, ZoneBorder>> zone, offset_t position, offset_t offset) const noexcept {
-			if (!explored) {
-				return;
-			}
-
 			const u8 patch_character{ determine_patch(zone, position) };
 			
 			if (!patch_character) {
@@ -634,15 +699,21 @@ namespace necrowarp {
 				return;
 			}
 
-			atlas.draw(floor_glyph(), position + offset);
+			draw_floor(atlas, position, offset);
 
-			if (!solid) {
-				return;
-			}
-
-			atlas.draw(wall_glyph(), position + offset);
+			draw_wall(atlas, position, offset);
 
 			draw_patch(atlas, zone, position, offset);
+		}
+
+		template<extent_t AtlasSize> inline constexpr void draw_floor(cref<atlas_t<AtlasSize>> atlas, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+			atlas.draw(floor_glyph(), position + offset, nudge);
+		}
+
+		template<extent_t AtlasSize> inline constexpr void draw_wall(cref<atlas_t<AtlasSize>> atlas, offset_t position, offset_t offset, offset_t nudge) const noexcept {
+			if (index != 0) {
+				atlas.draw(wall_glyph(), position + offset, nudge);
+			}
 		}
 
 		template<extent_t AtlasSize, typename T, extent_t ZoneSize, extent_t ZoneBorder>
@@ -666,13 +737,9 @@ namespace necrowarp {
 				return;
 			}
 
-			atlas.draw(floor_glyph(), position + offset, nudge);
+			draw_floor(atlas, position, offset, nudge);
 
-			if (!solid) {
-				return;
-			}
-
-			atlas.draw(wall_glyph(), position + offset, nudge);
+			draw_wall(atlas, position, offset, nudge);
 
 			draw_patch(atlas, zone, position, offset, nudge);
 		}
@@ -680,6 +747,8 @@ namespace necrowarp {
 		struct hasher {
 			static constexpr usize operator()(map_cell_t cell) noexcept { return hash_combine(std::bit_cast<u8>(cell)); }
 		};
+
+		template<map_type_e MapType> friend struct unified_map_renderer_s;
 	};
 } // namespace necrowarp
 

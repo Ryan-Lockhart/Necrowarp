@@ -26,6 +26,10 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t position{ target_position + offset };
 
+			if (!game_map<MapType>.dependent within<region_e::Interior>(position) || game_map<MapType>[position].solid || !entity_registry<MapType>.empty(position)) {
+				continue;
+			}
+
 			const bool no_blood{ fluid_map<MapType>[position] != fluid_e::Blood };
 
 			if (no_blood && player.bypass_invocations_enabled()) {
@@ -39,7 +43,7 @@ namespace necrowarp {
 			const bool has_blood{ fluid_map<MapType>[position].contains(fluid_e::Blood) };
 			const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-			if (!game_map<MapType>.dependent within<region_e::Interior>(position) || (!has_blood && (eligible_ladder != nullptr || !has_ladder))) {
+			if ((!has_blood && (eligible_ladder != nullptr || !has_ladder))) {
 				continue;
 			}
 
@@ -104,9 +108,13 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 				const offset_t position{ source_position + offset };
 
+				if (!game_map<MapType>.dependent within<region_e::Interior>(position) || game_map<MapType>[position].solid) {
+					continue;
+				}
+
 				const bool has_ladder{ object_registry<MapType>.dependent contains<ladder_t>(position) };
 
-				if (!game_map<MapType>.dependent within<region_e::Interior>(position) || eligible_ladder != nullptr || !has_ladder) {
+				if (!has_ladder || eligible_ladder != nullptr) {
 					continue;
 				}
 

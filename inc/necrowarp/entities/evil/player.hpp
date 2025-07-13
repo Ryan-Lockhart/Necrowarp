@@ -452,9 +452,7 @@ namespace necrowarp {
 
 		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + offset); }
 
-		inline void draw(cref<camera_t> camera) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset()); }
-
-		inline void draw(cref<camera_t> camera, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + camera.get_offset(), offset); }
+		inline void draw(offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(current_glyph(), position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Player; }
 

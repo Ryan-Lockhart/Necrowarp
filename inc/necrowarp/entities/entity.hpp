@@ -474,6 +474,8 @@ namespace necrowarp {
 
 	static constexpr runes_t to_colored_string(entity_group_e group) noexcept;
 
+	constexpr entity_e at(entity_group_e group, usize index) noexcept;
+
 	template<typename T> struct is_entity {
 		static constexpr bool value = false;
 	};

@@ -19,9 +19,9 @@ namespace necrowarp {
 	};
 
 	static constexpr cstr to_string(affliction_e affliction) noexcept;
-	
+
 	static constexpr color_t to_color(affliction_e affliction) noexcept;
-	
+
 	static constexpr runes_t to_colored_string(affliction_e affliction) noexcept;
 
 	template<affliction_e Affliction> const constexpr u8 defecation_threshold{};

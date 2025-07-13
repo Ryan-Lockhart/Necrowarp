@@ -8,7 +8,10 @@ namespace necrowarp::characters {
 
 	constexpr const u8 Floor{ 0x00 };
 
-	constexpr const u8 UnarmoredPlayer{ 0x10 };
+	constexpr const u8 CavernTileOrigin{ 0x00 };	
+	constexpr const u8 FluidTileOrigin{ 0x10 };
+
+	constexpr const u8 UnarmoredPlayer{ 0x20 };
 	constexpr const u8 ArmoredPlayer{ UnarmoredPlayer + 1 };
 
 	constexpr const u8 FreshSkeleton{ ArmoredPlayer + 1 };
@@ -36,16 +39,16 @@ namespace necrowarp::characters {
 	constexpr const u8 BattleMonk{ Skulker + 1 };
 	constexpr const u8 MistLady{ BattleMonk + 1 };
 	constexpr const u8 BannerBearer{ MistLady + 1 };
+	constexpr const u8 Paladin{ BannerBearer + 1 };
 
-	constexpr const u8 NeonatalThetwo{ BannerBearer + 1 };
+	constexpr const u8 NeonatalThetwo{ Paladin + 1 };
 	constexpr const u8 YoungThetwo{ NeonatalThetwo + 1 };
 	constexpr const u8 MatureThetwo{ YoungThetwo + 1 };
-	constexpr const u8 GrossThetwo{ MatureThetwo + 1 };
+	constexpr const u8 BulkyThetwo{ MatureThetwo + 1 };
+	constexpr const u8 GrossThetwo{ BulkyThetwo + 1 };
 	constexpr const u8 TitanicThetwo{ GrossThetwo + 1 };
 
-	constexpr const u8 Paladin{ TitanicThetwo + 1 };
-
-	constexpr const u8 FreshBones{ Paladin + 1 };
+	constexpr const u8 FreshBones{ TitanicThetwo + 1 };
 	constexpr const u8 AnimateBones{ FreshBones + 1 };
 	constexpr const u8 RottedBones{ AnimateBones + 1 };
 
@@ -65,4 +68,7 @@ namespace necrowarp::characters {
 
 	constexpr const u8 AltRightPatch{ LeftPatch + 1 };
 	constexpr const u8 AltLeftPatch{ AltRightPatch + 1 };
+
+	constexpr const u8 CroppedRightPatch{ AltLeftPatch + 1 };
+	constexpr const u8 CroppedLeftPatch{ CroppedRightPatch + 1 };
 } // namespace necrowarp::characters
