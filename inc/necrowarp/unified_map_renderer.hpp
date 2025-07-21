@@ -33,9 +33,9 @@ namespace necrowarp {
 					}
 
 					if constexpr (is_player<entity_type>::value) {
-						maybe_entity->draw();
+						maybe_entity->draw(offset_t::Zero, globals::SparseTileNudge);
 					} else {
-						maybe_entity->draw(position);
+						maybe_entity->draw(position, offset_t::Zero, globals::SparseTileNudge);
 					}
 				}
 			}, entity_enum);
@@ -62,7 +62,7 @@ namespace necrowarp {
 						return;
 					}
 
-					maybe_object->draw(position);
+					maybe_object->draw(position, offset_t::Zero, globals::SparseTileNudge);
 				}
 			}, object_enum);
 		}
@@ -89,9 +89,9 @@ namespace necrowarp {
 					}
 
 					if constexpr (is_player<entity_type>::value) {
-						maybe_entity->draw(offset);
+						maybe_entity->draw(offset, globals::SparseTileNudge);
 					} else {
-						maybe_entity->draw(position, offset);
+						maybe_entity->draw(position, offset, globals::SparseTileNudge);
 					}
 				}
 			}, entity_enum);
@@ -118,7 +118,7 @@ namespace necrowarp {
 						return;
 					}
 
-					maybe_object->draw(position, offset);
+					maybe_object->draw(position, offset, globals::SparseTileNudge);
 				}
 			}, object_enum);
 		}
@@ -145,9 +145,9 @@ namespace necrowarp {
 					}
 
 					if constexpr (is_player<entity_type>::value) {
-						maybe_entity->draw(offset, nudge);
+						maybe_entity->draw(offset, nudge + globals::SparseTileNudge);
 					} else {
-						maybe_entity->draw(position, offset, nudge);
+						maybe_entity->draw(position, offset, nudge + globals::SparseTileNudge);
 					}
 				}
 			}, entity_enum);
@@ -174,7 +174,7 @@ namespace necrowarp {
 						return;
 					}
 
-					maybe_object->draw(position, offset, nudge);
+					maybe_object->draw(position, offset, nudge + globals::SparseTileNudge);
 				}
 			}, object_enum);
 		}

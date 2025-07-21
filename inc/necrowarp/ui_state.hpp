@@ -94,11 +94,11 @@ namespace necrowarp {
 
 			if (phase.current_phase == phase_e::Playing) {
 				if (!draw_cursor) {
-					grid_cursor<MapType>.draw(grid_cursor_texture, camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					grid_cursor<MapType>.draw(grid_cursor_texture, camera<MapType>, globals::grid_origin<grid_type_e::Game>() + globals::SparseTileNudge);
 				}
 
 				if (draw_warp_cursor) {
-					warp_cursor<MapType>.draw(grid_cursor_texture, camera<MapType>, globals::grid_origin<grid_type_e::Game>());
+					warp_cursor<MapType>.draw(grid_cursor_texture, camera<MapType>, globals::grid_origin<grid_type_e::Game>() + globals::SparseTileNudge);
 				}
 			}
 
