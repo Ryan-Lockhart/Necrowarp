@@ -74,6 +74,8 @@ namespace necrowarp {
 		constexpr const glyph_t HealthyCerebrum{ characters::HealthyCerebrum, colors::White };
 		constexpr const glyph_t StrickenCerebrum{ characters::StrickenCerebrum, colors::White };
 
+		constexpr const glyph_t Crevice{ characters::Crevice, colors::White };
+
 		constexpr const glyph_t UpLadder{ characters::UpLadder, colors::White };
 		constexpr const glyph_t DownLadder{ characters::DownLadder, colors::White };
 

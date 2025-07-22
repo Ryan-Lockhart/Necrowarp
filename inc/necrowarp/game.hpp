@@ -269,6 +269,11 @@ namespace necrowarp {
 				}
 			}
 
+			object_registry<MapType>.dependent spawn<crevice_t>(
+				static_cast<usize>(globals::StartingCrevices),
+				static_cast<u32>(globals::MinimumCreviceDistance)
+			);
+
 			object_registry<MapType>.dependent spawn<ladder_t>(
 				static_cast<usize>(globals::StartingUpLadders),
 				static_cast<u32>(globals::MinimumLadderDistance),
@@ -443,6 +448,11 @@ namespace necrowarp {
 				}
 			}
 
+			object_registry<MapType>.dependent spawn<crevice_t>(
+				static_cast<usize>(globals::StartingCrevices),
+				static_cast<u32>(globals::MinimumCreviceDistance)
+			);
+
 			i16 num_up_ladders_needed{ globals::StartingUpLadders };
 
 			for (cauto [position, _] : ladder_positions) {
@@ -560,10 +570,20 @@ namespace necrowarp {
 			}
 		}
 
-		template<map_type_e MapType> static inline std::optional<offset_t> find_spawn_position() noexcept {
-			for (crauto [position, ladder] : object_registry_storage<ladder_t>) {
-				if (entity_registry<MapType>.dependent contains<ALL_NON_EVIL_NPCS>(position) || ladder.is_down_ladder() || ladder.has_shackle()) {
+		template<map_type_e MapType, object_e Target>
+			requires (Target == object_e::Ladder || Target == object_e::Crevice)
+		static inline std::optional<offset_t> find_spawn_position() noexcept {
+			using object_type = typename to_object_type<Target>::type;
+
+			for (crauto [position, object] : object_registry_storage<object_type>) {
+				if (!entity_registry<MapType>.empty(position)) {
 					continue;
+				}
+
+				if constexpr (Target == object_e::Ladder) {
+					if (object.is_down_ladder() || object.has_shackle()) {
+						continue;
+					}
 				}
 
 				return position;
@@ -572,8 +592,100 @@ namespace necrowarp {
 			return std::nullopt;
 		}
 
-		template<map_type_e MapType> static inline bool spawn_random() noexcept {
-			cauto maybe_spawn = find_spawn_position<MapType>();
+		template<map_type_e MapType, wave_size_e Size> static inline void spawn_good(offset_t position, u8 chance) noexcept {
+			if constexpr (Size == wave_size_e::Miniscule) {
+				if (chance < 96) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 99%
+				} else {
+					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 1%
+				}
+			} else if constexpr (Size == wave_size_e::Tiny) {
+				if (chance < 96) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 96%
+				} else if (chance < 98) {
+					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 2%
+				} else if (chance < 99) {
+					entity_registry<MapType>.dependent add<true>(position, ranger_t{}); // 1%
+				} else {
+					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 1%
+				}
+			} else if constexpr (Size == wave_size_e::Small) {
+				if (chance < 90) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 90%
+				} else if (chance < 96) {
+					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 6%
+				} else if (chance < 98) {
+					entity_registry<MapType>.dependent add<true>(position, ranger_t{}); // 2%
+				} else {
+					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 2%
+				}
+			} else if constexpr (Size == wave_size_e::Medium) {
+				if (chance < 80) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 80%
+				} else if (chance < 90) {
+					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 10%
+				} else if (chance < 94) {
+					entity_registry<MapType>.dependent add<true>(position, ranger_t{}); // 4%
+				} else if (chance < 98) {
+					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 4%
+				} else if (chance < 99) {
+					entity_registry<MapType>.dependent add<true>(position, battle_monk_t{}); // 1%
+				} else {
+					entity_registry<MapType>.dependent add<true>(position, berserker_t{}); // 1%
+				}
+			} else if constexpr (Size == wave_size_e::Large) {
+				if (chance < 50) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 50%
+				} else if (chance < 74) {
+					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 24%
+				} else if (chance < 84) {
+					entity_registry<MapType>.dependent add<true>(position, ranger_t{}); // 10%
+				} else if (chance < 94) {
+					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 10%
+				} else if (chance < 96) {
+					entity_registry<MapType>.dependent add<true>(position, battle_monk_t{}); // 2%
+				} else if (chance < 98) {
+					entity_registry<MapType>.dependent add<true>(position, berserker_t{}); // 2%
+				} else {
+					entity_registry<MapType>.dependent add<true>(position, paladin_t{}); // 2%
+				}
+			} else if constexpr (Size == wave_size_e::Huge) {
+				if (chance < 36) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 36%
+				} else if (chance < 72) {
+					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 36%
+				} else if (chance < 80) {
+					entity_registry<MapType>.dependent add<true>(position, ranger_t{}); // 8%
+				} else if (chance < 88) {
+					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 8%
+				} else if (chance < 92) {
+					entity_registry<MapType>.dependent add<true>(position, battle_monk_t{}); // 4%
+				} else if (chance < 96) {
+					entity_registry<MapType>.dependent add<true>(position, berserker_t{}); // 4%
+				} else {
+					entity_registry<MapType>.dependent add<true>(position, paladin_t{}); // 4%
+				}
+			} else if constexpr (Size == wave_size_e::Massive) {
+				if (chance < 12) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 12%
+				} else if (chance < 60) {
+					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 48%
+				} else if (chance < 72) {
+					entity_registry<MapType>.dependent add<true>(position, ranger_t{}); // 12%
+				} else if (chance < 84) {
+					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 12%
+				} else if (chance < 90) {
+					entity_registry<MapType>.dependent add<true>(position, battle_monk_t{}); // 6%
+				} else if (chance < 96) {
+					entity_registry<MapType>.dependent add<true>(position, berserker_t{}); // 6%
+				} else {
+					entity_registry<MapType>.dependent add<true>(position, paladin_t{}); // 4%
+				}
+			}
+		}
+
+		template<map_type_e MapType> static inline bool spawn_good() noexcept {
+			cauto maybe_spawn = find_spawn_position<MapType, object_e::Ladder>();
 
 			if (!maybe_spawn.has_value()) {
 				return false;
@@ -585,97 +697,25 @@ namespace necrowarp {
 				return entity_registry<MapType>.dependent add<true>(spawn_position, to_entity_type<globals::OopsAllEnum>::type{});
 			}
 
-			const u8 spawn_chance{ static_cast<u8>(globals::spawn_dis(random_engine)) };
+			magic_enum::enum_switch([&](auto val) {
+				constexpr wave_size_e cval{ val };
 
-			if (game_stats.wave_size <= globals::MassiveWaveSize && game_stats.wave_size > globals::HugeWaveSize) {
-				if (spawn_chance < 12) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, adventurer_t{}); // 12%
-				} else if (spawn_chance < 60) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, mercenary_t{}); // 48%
-				} else if (spawn_chance < 72) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, ranger_t{}); // 12%
-				} else if (spawn_chance < 84) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, skulker_t{}); // 12%
-				} else if (spawn_chance < 90) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, battle_monk_t{}); // 6%
-				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, berserker_t{}); // 6%
-				} else {
-					entity_registry<MapType>.dependent add<true>(spawn_position, paladin_t{}); // 4%
-				}
-			} else if (game_stats.wave_size <= globals::HugeWaveSize && game_stats.wave_size > globals::LargeWaveSize) {
-				if (spawn_chance < 36) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, adventurer_t{}); // 36%
-				} else if (spawn_chance < 72) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, mercenary_t{}); // 36%
-				} else if (spawn_chance < 80) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, ranger_t{}); // 8%
-				} else if (spawn_chance < 88) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, skulker_t{}); // 8%
-				} else if (spawn_chance < 92) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, battle_monk_t{}); // 4%
-				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, berserker_t{}); // 4%
-				} else {
-					entity_registry<MapType>.dependent add<true>(spawn_position, paladin_t{}); // 4%
-				}
-			} else if (game_stats.wave_size <= globals::LargeWaveSize && game_stats.wave_size > globals::MediumWaveSize) {
-				if (spawn_chance < 50) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, adventurer_t{}); // 50%
-				} else if (spawn_chance < 74) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, mercenary_t{}); // 24%
-				} else if (spawn_chance < 84) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, ranger_t{}); // 10%
-				} else if (spawn_chance < 94) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, skulker_t{}); // 10%
-				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, battle_monk_t{}); // 2%
-				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, berserker_t{}); // 2%
-				} else {
-					entity_registry<MapType>.dependent add<true>(spawn_position, paladin_t{}); // 2%
-				}
-			} else if (game_stats.wave_size <= globals::MediumWaveSize && game_stats.wave_size > globals::SmallWaveSize) {
-				if (spawn_chance < 80) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, adventurer_t{}); // 80%
-				} else if (spawn_chance < 90) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, mercenary_t{}); // 10%
-				} else if (spawn_chance < 94) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, ranger_t{}); // 4%
-				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, skulker_t{}); // 4%
-				} else if (spawn_chance < 99) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, battle_monk_t{}); // 1%
-				} else {
-					entity_registry<MapType>.dependent add<true>(spawn_position, berserker_t{}); // 1%
-				}
-			} else if (game_stats.wave_size <= globals::SmallWaveSize && game_stats.wave_size > globals::TinyWaveSize) {
-				if (spawn_chance < 90) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, adventurer_t{}); // 90%
-				} else if (spawn_chance < 96) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, mercenary_t{}); // 6%
-				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, ranger_t{}); // 2%
-				} else {
-					entity_registry<MapType>.dependent add<true>(spawn_position, skulker_t{}); // 2%
-				}
-			} else if (game_stats.wave_size <= globals::TinyWaveSize && game_stats.wave_size > globals::MinisculeWaveSize) {
-				if (spawn_chance < 96) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, adventurer_t{}); // 96%
-				} else if (spawn_chance < 98) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, mercenary_t{}); // 2%
-				} else if (spawn_chance < 99) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, ranger_t{}); // 1%
-				} else {
-					entity_registry<MapType>.dependent add<true>(spawn_position, skulker_t{}); // 1%
-				}
-			} else {
-				if (spawn_chance < 96) {
-					entity_registry<MapType>.dependent add<true>(spawn_position, adventurer_t{}); // 99%
-				} else {
-					entity_registry<MapType>.dependent add<true>(spawn_position, mercenary_t{}); // 1%
-				}
+				return spawn_good<MapType, cval>(spawn_position, game_stats.spawn_chance(random_engine));
+			}, game_stats.determine_wave_size());
+
+			return true;
+		}
+
+		template<map_type_e MapType> static inline bool spawn_neutral() noexcept {
+			cauto maybe_spawn = find_spawn_position<MapType, object_e::Crevice>();
+
+			if (!maybe_spawn.has_value()) {
+				return false;
 			}
+
+			const offset_t spawn_position{ maybe_spawn.value() };
+
+			entity_registry<MapType>.dependent add<true>(spawn_position, thetwo_t{});
 
 			return true;
 		}
@@ -696,18 +736,14 @@ namespace necrowarp {
 
 			processing_turn = true;
 
-			game_stats.wave_size = clamp(
-				static_cast<i16>(globals::StartingWaveSize + game_stats.total_kills() / globals::KillsPerPopulation),
-				globals::MinimumWaveSize,
-				globals::MaximumWaveSize
-			);
+			game_stats.update_wave_size();
 
 			if (entity_registry<MapType>.dependent empty<ALL_GOOD_NPCS>() && !game_stats.has_spawns()) {
 				game_stats.spawns_remaining = game_stats.wave_size;
 			}
 
 			while (game_stats.has_spawns()) {
-				if (!spawn_random<MapType>()) {
+				if (!spawn_good<MapType>()) {
 					break;
 				}
 
@@ -716,7 +752,7 @@ namespace necrowarp {
 
 			if (game_stats.has_reinforcements() && !game_stats.has_spawns()) {
 				for (i16 i{ 0 }; i < game_stats.current_reinforcements(); ++i) {
-					if (!spawn_random<MapType>()) {
+					if (!spawn_good<MapType>()) {
 						break;
 					}
 				}
@@ -725,9 +761,7 @@ namespace necrowarp {
 			const usize thetwo_target{ object_registry<MapType>.dependent count<flesh_t>() / globals::FleshPerThetwoPopulation };
 
 			while (entity_registry<MapType>.dependent count<thetwo_t>() < thetwo_target) {
-				cauto maybe_spawn{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>) };
-
-				if (!maybe_spawn.has_value() || !entity_registry<MapType>.dependent add<true>(maybe_spawn.value(), thetwo_t{})) {
+				if (!spawn_neutral<MapType>()) {
 					break;
 				}
 			} 

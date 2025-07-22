@@ -71,7 +71,7 @@ namespace necrowarp {
 	  private:
 		static inline timer_t timer{ interval };
 
-		static inline usize index{ 1 };
+		static inline usize index{ 0 };
 
 		static inline bool suspended{ false };
 	  public:

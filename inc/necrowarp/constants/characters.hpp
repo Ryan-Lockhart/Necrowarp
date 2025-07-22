@@ -57,7 +57,9 @@ namespace necrowarp::characters {
 	constexpr const u8 HealthyCerebrum{ Flesh + 1 };
 	constexpr const u8 StrickenCerebrum{ HealthyCerebrum + 1 };
 
-	constexpr const u8 UpLadder{ StrickenCerebrum + 1 };
+	constexpr const u8 Crevice{ StrickenCerebrum + 1 };
+
+	constexpr const u8 UpLadder{ Crevice + 1 };
 	constexpr const u8 DownLadder{ UpLadder + 1 };
 
 	constexpr const u8 EmptyPedestal{ DownLadder + 1 };

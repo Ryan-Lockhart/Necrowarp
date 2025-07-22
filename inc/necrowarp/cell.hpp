@@ -604,6 +604,7 @@ namespace necrowarp {
 
 			switch (index) {
 				case 4:
+				case 5:
 				case 6:
 				case 7: {
 					is_left_patch = true;
@@ -611,6 +612,7 @@ namespace necrowarp {
 					break;
 				} case 8:
 				  case 9:
+				  case 10:
 				  case 11: {
 					is_left_patch = false;
 
@@ -622,8 +624,17 @@ namespace necrowarp {
 
 			const u8 north_index{ zone[position + offset_t::North].index };
 
-			if (north_index == 1 || north_index == 2 || north_index == 6 || north_index == 9) {
-				return 0;
+			switch (north_index) {
+				case  1:
+				case  2:
+				case  5:
+				case  6:
+				case  9:
+				case 10: {
+					return 0;
+				} default: {
+					break;
+				}
 			}
 
 			const bool is_alt_patch{ index == 6 || index == 9 };

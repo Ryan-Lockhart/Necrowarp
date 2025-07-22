@@ -298,7 +298,7 @@ namespace necrowarp {
 		};
 		
 		constexpr const map_config_t FieldPreset{
-			.fill_percent = 0.4,
+			.fill_percent = 0.425,
 			.automata_iterations = 512,
 			.automata_threshold = 4,
 		};
@@ -317,28 +317,14 @@ namespace necrowarp {
 		constexpr f32 MinimumDepthMultiplier{ 1.0f };
 		constexpr f32 MaximumDepthMultiplier{ 10.0f };
 
-		constexpr u16 SpawnDistributionLow{ 0 };
-		constexpr u16 SpawnDistributionHigh{ 100 };
-
-		static inline std::uniform_int_distribution<u16> spawn_dis{ SpawnDistributionLow, SpawnDistributionHigh };
-
-		constexpr i16 MinisculeWaveSize{ 4 };
-		constexpr i16 TinyWaveSize{ 8 };
-		constexpr i16 SmallWaveSize{ 16 };
-		constexpr i16 MediumWaveSize{ 32 };
-		constexpr i16 LargeWaveSize{ 64 };
-		constexpr i16 HugeWaveSize{ 128 };
-		constexpr i16 MassiveWaveSize{ 256 };
-
-		constexpr i16 MinimumWaveSize{ 4 };
-		constexpr i16 MaximumWaveSize{ 256 };
-
-		constexpr i16 StartingWaveSize{ 4 };
-
 		constexpr i16 StartingBones{ 16 };
 
 		constexpr i16 MinimumBoneDistance{ 16 };
 
+		constexpr i16 StartingCrevices{ 4 };
+
+		constexpr i16 MinimumCreviceDistance{ 16 };
+	
 		constexpr i16 StartingUpLadders{ 8 };
 		constexpr i16 StartingDownLadders{ 4 };
 

@@ -339,7 +339,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance) noexcept {
-		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
 
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
@@ -350,14 +350,14 @@ namespace necrowarp {
 
 			add(maybe_position.value(), ObjectType{});
 
-			object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+			object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
 		}
 
 		return true;
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
-		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
 		
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
@@ -368,7 +368,7 @@ namespace necrowarp {
 
 			add(maybe_position.value(), ObjectType{ args... });
 
-			object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+			object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
 		}
 
 		return true;
@@ -419,7 +419,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void object_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_OBJECTS>(); }
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
-		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry<MapType>);
+		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
 	}
 
 	template<map_type_e MapType>

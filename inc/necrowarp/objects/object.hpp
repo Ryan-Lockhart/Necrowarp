@@ -17,6 +17,7 @@ namespace necrowarp {
 	struct metal_t;
 	struct cerebra_t;
 
+	struct crevice_t;
 	struct ladder_t;
 	struct portal_t;
 
@@ -29,6 +30,7 @@ namespace necrowarp {
 		cerebra_t
 
 	#define ALL_LOCOMOTION_OBJECTS \
+		crevice_t, \
 		ladder_t, \
 		portal_t
 
@@ -53,6 +55,7 @@ namespace necrowarp {
 		Metal,
 		Cerebra,
 
+		Crevice,
 		Ladder,
 		Portal,
 
@@ -73,6 +76,8 @@ namespace necrowarp {
 				return "metal";
 			} case object_e::Cerebra: {
 				return "cerebrum";
+			} case object_e::Crevice: {
+				return "crevice";
 			} case object_e::Ladder: {
 				return "ladder";
 			} case object_e::Portal: {
@@ -95,6 +100,8 @@ namespace necrowarp {
 				return "metal";
 			} case object_e::Cerebra: {
 				return "cerebra";
+			} case object_e::Crevice: {
+				return "crevices";
 			} case object_e::Ladder: {
 				return "ladders";
 			} case object_e::Portal: {
@@ -117,12 +124,14 @@ namespace necrowarp {
 				return mix(colors::Red, colors::Magenta);
 			} case object_e::Metal: {
 				return colors::metals::Iron;
+			} case object_e::Crevice: {
+				return mix(colors::materials::Oak, colors::dark::Grey);
 			} case object_e::Ladder: {
 				return colors::materials::Oak;
 			} case object_e::Portal: {
 				return colors::light::Green;
 			} case object_e::Arrow: {
-				return colors::materials::Oak;
+				return colors::materials::Willow;
 			}
 		}
 	}
@@ -131,7 +140,7 @@ namespace necrowarp {
 		return runes_t{ to_string<Plurality>(object), to_color(object) };
 	}
 
-	constexpr usize ObjectTypeCount{ static_cast<usize>(object_e::Arrow) + 1 };
+	constexpr usize ObjectTypeCount{ static_cast<usize>(object_e::Arrow) };
 
 	using object_group_t = u8;
 
@@ -143,7 +152,8 @@ namespace necrowarp {
 		Metal = Flesh << 1,
 		Cerebra = Metal << 1,
 
-		Ladder = Cerebra << 1,
+		Crevice = Cerebra << 1,
+		Ladder = Crevice << 1,
 		Portal = Ladder << 1,
 
 		Arrow = Portal << 1,

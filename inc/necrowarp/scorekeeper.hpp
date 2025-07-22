@@ -46,8 +46,8 @@ namespace necrowarp {
 
 		inline f32 current_wave_size_multiplier() const noexcept {
 			return map<f32>(static_cast<f32>(game_stats.wave_size),
-				globals::MinimumWaveSize,
-				globals::MaximumWaveSize,
+				game_stats_t::MinimumWaveSize,
+				game_stats_t::MaximumWaveSize,
 
 				globals::MinimumWaveSizeMultiplier,
 				globals::MaximumWaveSizeMultiplier

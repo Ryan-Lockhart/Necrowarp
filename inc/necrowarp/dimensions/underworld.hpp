@@ -80,6 +80,11 @@ namespace necrowarp {
 			}
 		}
 
+		object_registry<map_type>.dependent spawn<crevice_t>(
+			static_cast<usize>(globals::StartingCrevices),
+			static_cast<u32>(globals::MinimumCreviceDistance)
+		);
+
 		object_registry<map_type>.dependent spawn<ladder_t>(
 			static_cast<usize>(globals::StartingUpLadders),
 			static_cast<u32>(globals::MinimumLadderDistance),

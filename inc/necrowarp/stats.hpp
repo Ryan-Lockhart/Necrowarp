@@ -105,15 +105,66 @@ namespace necrowarp {
 		}
 	};
 
+	enum struct wave_size_e : u8 {
+		Miniscule,
+		Tiny,
+		Small,
+		Medium,
+		Large,
+		Huge,
+		Massive
+	};
+
 	struct game_stats_t {
+		template<wave_size_e Size> static constexpr i16 WaveSize{ 0 };
+	
+		template<> inline constexpr i16 WaveSize<wave_size_e::Miniscule>{ 4 };
+		template<> inline constexpr i16 WaveSize<wave_size_e::Tiny>{ 8 };
+		template<> inline constexpr i16 WaveSize<wave_size_e::Small>{ 16 };
+		template<> inline constexpr i16 WaveSize<wave_size_e::Medium>{ 32 };
+		template<> inline constexpr i16 WaveSize<wave_size_e::Large>{ 64 };
+		template<> inline constexpr i16 WaveSize<wave_size_e::Huge>{ 128 };
+		template<> inline constexpr i16 WaveSize<wave_size_e::Massive>{ 256 };
+	
+		static constexpr i16 MinimumWaveSize{ WaveSize<wave_size_e::Miniscule> };
+		static constexpr i16 MaximumWaveSize{ WaveSize<wave_size_e::Massive> };
+	
+		static constexpr i16 StartingWaveSize{ 4 };
+
+		static constexpr u16 SpawnDistributionLow{ 0 };
+		static constexpr u16 SpawnDistributionHigh{ 100 };
+
+		std::uniform_int_distribution<u16> spawn_dis{ SpawnDistributionLow, SpawnDistributionHigh };
+
+		template<RandomEngine Generator> inline u8 spawn_chance(ref<Generator> engine) { return static_cast<u8>(spawn_dis(engine)); };
+
 		cheats_t cheats{};
 
 		usize game_seed{};
 
 		usize game_depth{ 0 };
 
-		usize wave_size{ static_cast<usize>(globals::StartingWaveSize) };
-		usize spawns_remaining{ static_cast<usize>(globals::StartingWaveSize) };
+		usize wave_size{ static_cast<usize>(StartingWaveSize) };
+
+		inline wave_size_e determine_wave_size() const noexcept {
+			if (wave_size <= WaveSize<wave_size_e::Massive> && wave_size > WaveSize<wave_size_e::Huge>) {
+				return wave_size_e::Massive;
+			} else if (wave_size <= WaveSize<wave_size_e::Huge> && wave_size > WaveSize<wave_size_e::Large>) {
+				return wave_size_e::Huge;
+			} else if (wave_size <= WaveSize<wave_size_e::Large> && wave_size > WaveSize<wave_size_e::Medium>) {
+				return wave_size_e::Large;
+			} else if (wave_size <= WaveSize<wave_size_e::Medium> && wave_size > WaveSize<wave_size_e::Small>) {
+				return wave_size_e::Medium;
+			} else if (wave_size <= WaveSize<wave_size_e::Small> && wave_size > WaveSize<wave_size_e::Tiny>) {
+				return wave_size_e::Small;
+			} else if (wave_size <= WaveSize<wave_size_e::Tiny> && wave_size > WaveSize<wave_size_e::Miniscule>) {
+				return wave_size_e::Tiny;
+			} else {
+				return wave_size_e::Miniscule;
+			}
+		}
+
+		usize spawns_remaining{ static_cast<usize>(StartingWaveSize) };
 
 		inline usize has_spawns() const noexcept { return spawns_remaining > 0; }
 
@@ -121,6 +172,8 @@ namespace necrowarp {
 		i16	minion_kills{ 0 };
 
 		inline i16 total_kills() const noexcept { return player_kills + minion_kills; };
+
+		inline void update_wave_size() noexcept { wave_size = clamp(static_cast<i16>(StartingWaveSize + total_kills() / globals::KillsPerPopulation), MinimumWaveSize, MaximumWaveSize); }
 
 		inline i8 kills_until_next_energy_slot() const noexcept { return abs(minion_kills % globals::KillsPerEnergySlot - globals::KillsPerEnergySlot); }
 
@@ -136,8 +189,8 @@ namespace necrowarp {
 			game_seed = std::random_device{}();
 			random_engine.seed(game_seed);
 
-			wave_size = globals::StartingWaveSize;
-			spawns_remaining = globals::StartingWaveSize;
+			wave_size = StartingWaveSize;
+			spawns_remaining = StartingWaveSize;
 
 			player_kills = 0;
 			minion_kills = 0;

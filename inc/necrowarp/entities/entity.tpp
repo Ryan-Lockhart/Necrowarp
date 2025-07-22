@@ -83,14 +83,14 @@ namespace necrowarp {
 	}
 
 	constexpr entity_e at(entity_group_e group, usize index) noexcept {
-		if (index < 0 || index >= EntityTypeCount) {
+		if (index < 0 || index > EntityTypeCount) {
 			return entity_e::None;
 		}
 
 		usize i{ 0 };
 
-		for (usize j{ 1 }; j < EntityTypeCount; ++j) {
-			const entity_e as_entity{ static_cast<entity_e>(j) };
+		for (usize j{ 0 }; j < EntityTypeCount; ++j) {
+			const entity_e as_entity{ static_cast<entity_e>(j + 1) };
 
 			if (group == as_entity) {
 				if (i == index) {
