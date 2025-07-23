@@ -686,6 +686,14 @@ namespace necrowarp {
 
 	template<typename T> concept VigilantEntity = NonNullEntity<T> && is_vigilant<T>::value;
 
+	template<typename T> struct is_volumetric {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_volumetric_v = is_volumetric<T>::value;
+
+	template<typename T> concept VolumetricEntity = NonNullEntity<T> && is_volumetric<T>::value;
+
 	template<typename T> struct is_bleeder {
 		static constexpr bool value = false;
 		static constexpr fluid_e type = fluid_e::None;

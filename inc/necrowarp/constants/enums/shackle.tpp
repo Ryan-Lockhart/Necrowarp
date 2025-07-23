@@ -25,10 +25,10 @@ namespace necrowarp {
 				return "wriggling shackle";
 			} case shackle_e::Wretched: {
 				return "festering shackle";
-			} case shackle_e::Infernal: {
-				return "cackling shackle";
 			} case shackle_e::Cerebral: {
 				return "entrancing shackle";
+			} case shackle_e::Infernal: {
+				return "cackling shackle";
 			}
 		}
 	}

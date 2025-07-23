@@ -16,8 +16,8 @@ namespace necrowarp {
 		Galvanic,
 		Ravenous,
 		Wretched,
-		Infernal,
-		Cerebral
+		Cerebral,
+		Infernal
 	};
 
 	constexpr cstr to_string(shackle_e type) noexcept;

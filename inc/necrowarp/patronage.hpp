@@ -110,8 +110,8 @@ namespace necrowarp {
 	}
 
 	enum struct discount_e : u8 {
-		RandomWarp,				// warp to a random, preferrably safe, position within the interior of the map; if not free and out of energy can still be used dangerously
-		TargetWarp,				// warp to a specific position within the interior of the map
+		ChaoticWarp,			// warp to a random, preferrably safe, position within the interior of the map; if not free, out of energy, and in the presence of hostiles can still be used dangerously
+		PreciseWarp,			// warp to a specific position within the interior of the map for locomotion or consumption
 
 		Calcify,				// single target utility command; convert an open tile with bones into a temporary wall
 	 	Repulse,				// circular area of effect combat command
@@ -133,10 +133,10 @@ namespace necrowarp {
 
 	constexpr usize padding_size(discount_e discount) noexcept {
 		switch (discount) {
-			case discount_e::RandomWarp: {
-				return 12;
-			} case discount_e::TargetWarp: {
-				return 12;
+			case discount_e::ChaoticWarp: {
+				return 11;
+			} case discount_e::PreciseWarp: {
+				return 11;
 			} case discount_e::Calcify: {
 				return 16;
 			} case discount_e::Repulse: {
@@ -171,10 +171,10 @@ namespace necrowarp {
 
 	constexpr cstr to_string(discount_e discount) noexcept {
 		switch (discount) {
-			case discount_e::RandomWarp: {
-				return "Random Warp";
-			} case discount_e::TargetWarp: {
-				return "Target Warp";
+			case discount_e::ChaoticWarp: {
+				return "Chaotic Warp";
+			} case discount_e::PreciseWarp: {
+				return "Precise Warp";
 			} case discount_e::Calcify: {
 				return "Calcify";
 			} case discount_e::Repulse: {
@@ -276,8 +276,8 @@ namespace necrowarp {
 	struct patron_t {
 		disposition_e disposition{ disposition_e::Apathetic };
 
-		const discount_t random_warp{};
-		const discount_t target_warp{};
+		const discount_t chaotic_warp{};
+		const discount_t precise_warp{};
 
 		const discount_t calcify{};
 		const discount_t repulse{};
@@ -298,10 +298,10 @@ namespace necrowarp {
 
 		template<discount_e Discount> constexpr discount_t get_discount() const noexcept {
 			switch (Discount) {
-				case discount_e::RandomWarp: {
-					return random_warp;
-				} case discount_e::TargetWarp: {
-					return target_warp;
+				case discount_e::ChaoticWarp: {
+					return chaotic_warp;
+				} case discount_e::PreciseWarp: {
+					return precise_warp;
 				} case discount_e::Calcify: {
 					return calcify;
 				} case discount_e::Repulse: {
@@ -340,8 +340,8 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::None>{
 		.disposition = disposition_e::Apathetic,
 
-		.random_warp = discount_t{ 0, 1, 2 },
-		.target_warp = discount_t{ 0, 2, 4 },
+		.chaotic_warp = discount_t{ 0, 1, 2 },
+		.precise_warp = discount_t{ 0, 2, 4 },
 
 		.calcify = discount_t{ 0, 0, 0 },
 		.repulse = discount_t{ 0, 0, 0 },
@@ -364,8 +364,8 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Rathghul>{
 		.disposition = disposition_e::Apathetic,
 
-		.random_warp = discount_t{ 0, 0, 1 },
-		.target_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = discount_t{ 0, 0, 1 },
+		.precise_warp = discount_t{ 0, 0, 2 },
 
 		.calcify = discount_t{ 0, 0, 0 },
 		.repulse = discount_t{ 0, 0, 0 },
@@ -388,8 +388,8 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Akurakhaithan>{
 		.disposition = disposition_e::Apathetic,
 
-		.random_warp = discount_t{ 0, 0, 1 },
-		.target_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = discount_t{ 0, 0, 1 },
+		.precise_warp = discount_t{ 0, 0, 2 },
 
 		.calcify = discount_t{ 0, 0, 0 },
 		.repulse = discount_t{ 0, 0, 0 },
@@ -412,8 +412,8 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Merirfin>{
 		.disposition = disposition_e::Apathetic,
 
-		.random_warp = discount_t{ 0, 0, 1 },
-		.target_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = discount_t{ 0, 0, 1 },
+		.precise_warp = discount_t{ 0, 0, 2 },
 
 		.calcify = discount_t{ 0, 0, 0 },
 		.repulse = discount_t{ 0, 0, 0 },
@@ -436,8 +436,8 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Saeiligarkeuss>{
 		.disposition = disposition_e::Apathetic,
 
-		.random_warp = discount_t{ -1, 1, 2 },
-		.target_warp = discount_t{ -2, 2, 4 },
+		.chaotic_warp = discount_t{ -1, 1, 2 },
+		.precise_warp = discount_t{ -2, 2, 4 },
 
 		.calcify = discount_t{ 0, 0, 0 },
 		.repulse = discount_t{ 0, 0, 0 },

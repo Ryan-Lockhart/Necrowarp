@@ -7,25 +7,25 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct is_command<target_warp_t> {
+	template<> struct is_command<infernal_invocation_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_binary_command<target_warp_t> {
+	template<> struct is_binary_command<infernal_invocation_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct to_command_type<command_e::TargetWarp> {
-		using type = target_warp_t;
+	template<> struct to_command_type<command_e::InfernalInvocation> {
+		using type = infernal_invocation_t;
 	};
 
-	template<> struct to_command_enum<target_warp_t> {
-		static constexpr command_e value = command_e::TargetWarp;
+	template<> struct to_command_enum<infernal_invocation_t> {
+		static constexpr command_e value = command_e::InfernalInvocation;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, target_warp_t> {
+	template<NonNullEntity EntityType> struct entity_command_t<EntityType, infernal_invocation_t> {
 		using entity_type = EntityType;
-		using command_type = target_warp_t;
+		using command_type = infernal_invocation_t;
 
 		static constexpr entity_e entity_enum{ to_entity_enum<entity_type>::value };
 		static constexpr command_e command_enum{ to_command_enum<command_type>::value };

@@ -64,10 +64,10 @@ namespace necrowarp {
 			entity_e::Skulker,
 			entity_e::MistLady,
 			entity_e::BannerBearer,
-			entity_e::Thetwo,
 			entity_e::BattleMonk,
 			entity_e::Berserker,
 			entity_e::Paladin,
+			entity_e::Thetwo,
 		};
 		
 	private:

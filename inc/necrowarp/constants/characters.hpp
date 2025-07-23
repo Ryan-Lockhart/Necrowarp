@@ -62,10 +62,9 @@ namespace necrowarp::characters {
 	constexpr const u8 UpLadder{ Crevice + 1 };
 	constexpr const u8 DownLadder{ UpLadder + 1 };
 
-	constexpr const u8 EmptyPedestal{ DownLadder + 1 };
-	constexpr const u8 GrimoirePedestal{ EmptyPedestal + 1 };
+	constexpr const u8 Pedestal{ DownLadder + 1 };
 
-	constexpr const u8 RightPatch{ GrimoirePedestal + 1 };
+	constexpr const u8 RightPatch{ Pedestal + 1 };
 	constexpr const u8 LeftPatch{ RightPatch + 1 };
 
 	constexpr const u8 AltRightPatch{ LeftPatch + 1 };

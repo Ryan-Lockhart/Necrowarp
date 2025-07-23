@@ -75,12 +75,12 @@ namespace necrowarp {
 			entity_e::Berserker,
 			entity_e::BattleMonk,
 			entity_e::BannerBearer,
-			entity_e::Thetwo,
 			entity_e::Mercenary,
 			entity_e::MistLady,
 			entity_e::Skulker,
 			entity_e::Ranger,
 			entity_e::Adventurer,
+			entity_e::Thetwo,
 		};
 
 		static constexpr galvanisation_e default_galvanisation{ galvanisation_e::Twisted };

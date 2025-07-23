@@ -29,7 +29,7 @@ namespace necrowarp {
 					if (initiator.can_imbibe()) {
 						initiator.imbibe();
 						
-						fluid -= shares(is_thirsty<VictimType>::type, is_bleeder<InitiatorType>::type);
+						fluid -= shares(is_thirsty<InitiatorType>::type, is_bleeder<VictimType>::type);
 					}
 				}
 
@@ -81,21 +81,45 @@ namespace necrowarp {
 
 		if constexpr (!is_fodder<VictimType>::value) {
 			if constexpr (is_cleaver<InitiatorType>::value && is_armored<VictimType>::value) {
-				if (victim.dependent can_survive<InitiatorType>(damage)) {
-					victim.dependent receive_damage<InitiatorType>(damage);
+				if constexpr (is_volumetric<VictimType>::value) {
+					const f16 fluid_damage{ fluid_pool_volume(damage) };
 
-					try_bleed();
-
-					return false;
+					if (victim.dependent can_survive<InitiatorType>(fluid_damage)) {
+						victim.dependent receive_damage<InitiatorType>(fluid_damage);
+	
+						try_bleed();
+	
+						return false;
+					}
+				} else {
+					if (victim.dependent can_survive<InitiatorType>(damage)) {
+						victim.dependent receive_damage<InitiatorType>(damage);
+	
+						try_bleed();
+	
+						return false;
+					}
 				}
 			} else {
-				if (victim.can_survive(damage)) {
-					victim.receive_damage(damage);
+				if constexpr (is_volumetric<VictimType>::value) {
+					const f16 fluid_damage{ fluid_pool_volume(damage) };
 
-					try_bleed();
-
-					return false;
-				}
+					if (victim.can_survive(fluid_damage)) {
+						victim.receive_damage(fluid_damage);
+	
+						try_bleed();
+	
+						return false;
+					}
+				} else {
+					if (victim.can_survive(damage)) {
+						victim.receive_damage(damage);
+	
+						try_bleed();
+	
+						return false;
+					}
+				}				
 			}
 		}
 
@@ -173,20 +197,44 @@ namespace necrowarp {
 
 		if constexpr (!is_fodder<InitiatorType>::value) {
 			if constexpr (is_cleaver<VictimType>::value && is_armored<InitiatorType>::value) {
-				if (initiator.dependent can_survive<VictimType>(damage)) {
-					initiator.dependent receive_damage<VictimType>(damage);
+				if constexpr (is_volumetric<InitiatorType>::value) {
+					const f16 fluid_damage{ fluid_pool_volume(damage) };
 
-					try_bleed();
+					if (initiator.dependent can_survive<VictimType>(fluid_damage)) {
+						initiator.dependent receive_damage<VictimType>(fluid_damage);
 
-					return false;
+						try_bleed();
+
+						return false;
+					}
+				} else {
+					if (initiator.dependent can_survive<VictimType>(damage)) {
+						initiator.dependent receive_damage<VictimType>(damage);
+
+						try_bleed();
+
+						return false;
+					}
 				}
 			} else {
-				if (initiator.can_survive(damage)) {
-					initiator.receive_damage(damage);
+				if constexpr (is_volumetric<InitiatorType>::value) {
+					const f16 fluid_damage{ fluid_pool_volume(damage) };
 
-					try_bleed();
+					if (initiator.can_survive(fluid_damage)) {
+						initiator.receive_damage(fluid_damage);
 
-					return false;
+						try_bleed();
+
+						return false;
+					}
+				} else {
+					if (initiator.can_survive(damage)) {
+						initiator.receive_damage(damage);
+
+						try_bleed();
+
+						return false;
+					}
 				}
 			}
 		}
@@ -199,7 +247,6 @@ namespace necrowarp {
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<InitiatorType>::value && !std::is_same<InitiatorType, VictimType>::value)
 	inline bool reflect(offset_t source_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
-		
 		cauto try_bleed = [&] {
 			if constexpr (is_bleeder<InitiatorType>::value) {
 				if constexpr (is_bleeder<InitiatorType>::conditional) {
@@ -255,12 +302,46 @@ namespace necrowarp {
 		}
 
 		if constexpr (!is_fodder<InitiatorType>::value) {
-			if (initiator.can_survive(damage)) {
-				initiator.receive_damage(damage);
+			if constexpr (is_cleaver<VictimType>::value && is_armored<InitiatorType>::value) {
+				if constexpr (is_volumetric<InitiatorType>::value) {
+					const f16 fluid_damage{ fluid_pool_volume(damage) };
 
-				try_bleed();
+					if (initiator.dependent can_survive<VictimType>(fluid_damage)) {
+						initiator.dependent receive_damage<VictimType>(fluid_damage);
 
-				return false;
+						try_bleed();
+
+						return false;
+					}
+				} else {
+					if (initiator.dependent can_survive<VictimType>(damage)) {
+						initiator.dependent receive_damage<VictimType>(damage);
+
+						try_bleed();
+
+						return false;
+					}
+				}
+			} else {
+				if constexpr (is_volumetric<InitiatorType>::value) {
+					const f16 fluid_damage{ fluid_pool_volume(damage) };
+
+					if (initiator.can_survive(fluid_damage)) {
+						initiator.receive_damage(fluid_damage);
+
+						try_bleed();
+
+						return false;
+					}
+				} else {
+					if (initiator.can_survive(damage)) {
+						initiator.receive_damage(damage);
+
+						try_bleed();
+
+						return false;
+					}
+				}
 			}
 		}
 
@@ -326,27 +407,14 @@ namespace necrowarp {
 							entity_registry<MapType>.dependent remove<victim_type>(target_position);
 						}
 
-						switch (to_entity_enum<EntityType>::value) {
-							case entity_e::Player: {
-								++game_stats.player_kills;
-								++steam_stats::stats<steam_stat_e::PlayerKills>;
+						if constexpr (is_player<EntityType>::value) {
+							++game_stats.player_kills;
+							++steam_stats::stats<steam_stat_e::PlayerKills>;
 
-								draw_warp_cursor = false;
-								break;
-							} case entity_e::Skeleton:
-							case entity_e::Cultist:
-							case entity_e::Bloodhound:
-							case entity_e::AnimatedSuit:
-							case entity_e::Bonespur:
-							case entity_e::Wraith:
-							case entity_e::FleshGolem:
-							case entity_e::DeathKnight: {
-								++game_stats.minion_kills;
-								++steam_stats::stats<steam_stat_e::MinionKills>;
-								break;
-							} default: {
-								break;
-							}
+							draw_warp_cursor = false;
+						} else if constexpr (is_evil<EntityType>::value) {
+							++game_stats.minion_kills;
+							++steam_stats::stats<steam_stat_e::MinionKills>;
 						}
 					}
 
@@ -361,27 +429,14 @@ namespace necrowarp {
 							entity_registry<MapType>.dependent remove<EntityType>(source_position);
 						}
 
-						switch (victim_enum) {
-							case entity_e::Player: {
-								++game_stats.player_kills;
-								++steam_stats::stats<steam_stat_e::PlayerKills>;
-								break;
-							} case entity_e::Skeleton:
-							case entity_e::Cultist:
-							case entity_e::Bloodhound:
-							case entity_e::AnimatedSuit:
-							case entity_e::Bonespur:
-							case entity_e::Wraith:
-							case entity_e::Hemogheist:
-							case entity_e::DeathKnight:
-							case entity_e::FleshGolem:
-							case entity_e::Dreadwurm: {
-								++game_stats.minion_kills;
-								++steam_stats::stats<steam_stat_e::MinionKills>;
-								break;
-							} default: {
-								break;
-							}
+						if constexpr (is_player<victim_type>::value) {
+							++game_stats.player_kills;
+							++steam_stats::stats<steam_stat_e::PlayerKills>;
+
+							draw_warp_cursor = false;
+						} else if constexpr (is_evil<victim_type>::value) {
+							++game_stats.minion_kills;
+							++steam_stats::stats<steam_stat_e::MinionKills>;
 						}
 					}
 				}			

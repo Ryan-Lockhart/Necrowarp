@@ -12,8 +12,8 @@ namespace necrowarp {
 		enum struct track_e : track_base {
 			Introduction,
 			Locomotion,
-			RandomWarp,
-			TargetWarp,
+			ChaoticWarp,
+			PreciseWarp,
 			Interaction,
 			Catalysts,
 			Invocations,
@@ -31,10 +31,10 @@ namespace necrowarp {
 					return "introduction";
 				} case track_e::Locomotion: {
 					return "locomotion";
-				} case track_e::RandomWarp: {
-					return "random warp";
-				} case track_e::TargetWarp: {
-					return "target warp";
+				} case track_e::ChaoticWarp: {
+					return "chaotic warp";
+				} case track_e::PreciseWarp: {
+					return "precise warp";
 				} case track_e::Interaction: {
 					return "interaction";
 				} case track_e::Catalysts: {
@@ -63,9 +63,9 @@ namespace necrowarp {
 					return "one";
 				} case track_e::Locomotion: {
 					return "two";
-				} case track_e::RandomWarp: {
+				} case track_e::ChaoticWarp: {
 					return "three";
-				} case track_e::TargetWarp: {
+				} case track_e::PreciseWarp: {
 					return "four";
 				} case track_e::Interaction: {
 					return "five";

@@ -22,7 +22,7 @@ namespace necrowarp {
 		game_map<map_type>
 			.dependent set<region_e::Border>(closed_state)
 			.dependent generate<region_e::Interior>(
-				random_engine,
+				map_engine,
 				globals::map_config.fill_percent,
 				globals::map_config.automata_iterations,
 				globals::map_config.automata_threshold,

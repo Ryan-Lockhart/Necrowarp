@@ -11,15 +11,20 @@ namespace necrowarp {
 	namespace icons {
 		using namespace bleak::icons;
 
-		constexpr const glyph_t RandomWarp{ 0x00, colors::White };
-		constexpr const glyph_t TargetWarp{ 0x01, colors::White };
+		constexpr const glyph_t ChaoticWarp{ 0x00, colors::White };
+		constexpr const glyph_t PreciseWarp{ 0x01, colors::White };
 
 		constexpr const glyph_t CalciticInvocation{ 0x02, colors::White };
 		constexpr const glyph_t SpectralInvocation{ 0x03, colors::White };
 		constexpr const glyph_t SanguineInvocation{ 0x04, colors::White };
 		constexpr const glyph_t GalvanicInvocation{ 0x05, colors::White };
+		constexpr const glyph_t RavenousInvocation{ 0x06, colors::White };
+		constexpr const glyph_t WretchedInvocation{ 0x07, colors::White };
+		constexpr const glyph_t CerebralInvocation{ 0x08, colors::White };
+		constexpr const glyph_t InfernalInvocation{ 0x09, colors::White };
 
-		constexpr const glyph_t NecromanticAscendance{ 0x06, colors::White };
+		constexpr const glyph_t NecromanticAscendance{ 0x0A, colors::White };
+		constexpr const glyph_t CalamitousRetaliation{ 0x0B, colors::White };
 	} // namespace icons
 
 	namespace glyphs {
@@ -79,8 +84,7 @@ namespace necrowarp {
 		constexpr const glyph_t UpLadder{ characters::UpLadder, colors::White };
 		constexpr const glyph_t DownLadder{ characters::DownLadder, colors::White };
 
-		constexpr const glyph_t EmptyPedestal{ characters::EmptyPedestal, colors::White };
-		constexpr const glyph_t GrimoirePedestal{ characters::GrimoirePedestal, colors::White };
+		constexpr const glyph_t Pedestal{ characters::Pedestal, colors::White };
 
 		constexpr const glyph_t RightPatch{ characters::RightPatch, colors::White };
 		constexpr const glyph_t LeftPatch{ characters::LeftPatch, colors::White };

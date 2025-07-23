@@ -85,7 +85,7 @@ namespace necrowarp {
 			++pools_consumed;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
+				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(position, cultist_t{});
@@ -96,7 +96,7 @@ namespace necrowarp {
 			++pools_consumed;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
+				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(position, cultist_t{});
@@ -163,7 +163,7 @@ namespace necrowarp {
 		player.pay_cost(discount_e::SpectralInvocation);
 
 		if (!player.has_ascended()) {
-			if (pools_consumed == globals::MaximumCatalyst) {
+			if (pools_consumed >= globals::MaximumCatalyst) {
 				// summon max amount of cultists achievment placeholder : ?
 			} else if (pools_consumed > 1) {
 				// summon first squad of cultists achievment placeholder : ?
@@ -172,7 +172,7 @@ namespace necrowarp {
 			return;
 		}
 
-		if (!random_warp_t::execute<MapType>(source_position, true)) {
+		if (!chaotic_warp_t::execute<MapType>(source_position, true)) {
 			player.reinvigorate(pools_consumed);
 
 			return;
@@ -180,7 +180,7 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, wraith_t{ pools_consumed });
 
-		if (pools_consumed == globals::MaximumCatalyst) {
+		if (pools_consumed >= globals::MaximumCatalyst) {
 			// summon first wraith achievment placeholder : Intersticial
 		} else {
 			// summon wraith with max heatlh achievment placeholder : Summoned from Beyond

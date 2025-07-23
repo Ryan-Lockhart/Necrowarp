@@ -5,18 +5,27 @@
 
 #include <necrowarp/entity_command.hpp>
 
-#include <necrowarp/commands/unary/random_warp.hpp>
+#include <necrowarp/commands/unary/chaotic_warp.hpp>
+#include <necrowarp/commands/unary/repulse.hpp>
+#include <necrowarp/commands/unary/incorporealize.hpp>
 #include <necrowarp/commands/unary/necromantic_ascendance.hpp>
+#include <necrowarp/commands/unary/calamitous_retaliation.hpp>
 
 #include <necrowarp/commands/binary/consume.hpp>
 #include <necrowarp/commands/binary/descend.hpp>
 #include <necrowarp/commands/binary/plunge.hpp>
-#include <necrowarp/commands/binary/target_warp.hpp>
+#include <necrowarp/commands/binary/precise_warp.hpp>
 #include <necrowarp/commands/binary/consume_warp.hpp>
+#include <necrowarp/commands/binary/calcify.hpp>
+#include <necrowarp/commands/binary/annihilate.hpp>
 #include <necrowarp/commands/binary/calcitic_invocation.hpp>
 #include <necrowarp/commands/binary/spectral_invocation.hpp>
 #include <necrowarp/commands/binary/sanguine_invocation.hpp>
 #include <necrowarp/commands/binary/galvanic_invocation.hpp>
+#include <necrowarp/commands/binary/ravenous_invocation.hpp>
+#include <necrowarp/commands/binary/wretched_invocation.hpp>
+#include <necrowarp/commands/binary/cerebral_invocation.hpp>
+#include <necrowarp/commands/binary/infernal_invocation.hpp>
 
 #include <magic_enum/magic_enum_switch.hpp>
 
@@ -60,26 +69,25 @@ namespace necrowarp {
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, descend_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, plunge_t, true);
 
-	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, random_warp_t, true);
-	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, target_warp_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, chaotic_warp_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, precise_warp_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, consume_warp_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, calcify_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, repulse_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, annihilate_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, incorporealize_t, true);
 
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, calcitic_invocation_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, spectral_invocation_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, sanguine_invocation_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, galvanic_invocation_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, ravenous_invocation_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, wretched_invocation_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, cerebral_invocation_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, infernal_invocation_t, true);
 
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, necromantic_ascendance_t, true);
-
-	template<> inline constexpr glyph_t command_icons<command_e::RandomWarp>{ 0x00, colors::White };
-	template<> inline constexpr glyph_t command_icons<command_e::TargetWarp>{ 0x01, colors::White };
-
-	template<> inline constexpr glyph_t command_icons<command_e::CalciticInvocation>{ 0x10, colors::White };
-	template<> inline constexpr glyph_t command_icons<command_e::SpectralInvocation>{ 0x11, colors::White };
-	template<> inline constexpr glyph_t command_icons<command_e::SanguineInvocation>{ 0x20, colors::White };
-	template<> inline constexpr glyph_t command_icons<command_e::GalvanicInvocation>{ 0x21, colors::White };
-
-	template<> inline constexpr glyph_t command_icons<command_e::NecromanticAscendance>{ 0x30, colors::White };
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, calamitous_retaliation_t, true);
 
 	struct player_t {
 		command_pack_t command;
@@ -115,9 +123,9 @@ namespace necrowarp {
 			entity_e::MistLady,
 			entity_e::BannerBearer,
 			entity_e::BattleMonk,
-			entity_e::Thetwo,
 			entity_e::Berserker,
 			entity_e::Paladin,
+			entity_e::Thetwo,
 		};
 
 		static constexpr std::array<object_e, 5> ObjectPriorities{
@@ -128,15 +136,20 @@ namespace necrowarp {
 
 		template<discount_e Type> static constexpr i8 Cost{};
 
-		template<> constexpr i8 Cost<discount_e::RandomWarp>{ 2 };
-		template<> constexpr i8 Cost<discount_e::TargetWarp>{ 4 };
+		template<> constexpr i8 Cost<discount_e::ChaoticWarp>{ 2 };
+		template<> constexpr i8 Cost<discount_e::PreciseWarp>{ 4 };
 
 		template<> constexpr i8 Cost<discount_e::CalciticInvocation>{ 8 };
 		template<> constexpr i8 Cost<discount_e::SpectralInvocation>{ 8 };
 		template<> constexpr i8 Cost<discount_e::SanguineInvocation>{ 8 };
 		template<> constexpr i8 Cost<discount_e::GalvanicInvocation>{ 12 };
+		template<> constexpr i8 Cost<discount_e::RavenousInvocation>{ 12 };
+		template<> constexpr i8 Cost<discount_e::WretchedInvocation>{ 12 };
+		template<> constexpr i8 Cost<discount_e::CerebralInvocation>{ 16 };
+		template<> constexpr i8 Cost<discount_e::InfernalInvocation>{ 16 };
 
 		template<> constexpr i8 Cost<discount_e::NecromanticAscendance>{ 16 };
+		template<> constexpr i8 Cost<discount_e::CalamitousRetaliation>{ 16 };
 
 		static constexpr i8 BoneBoon{ 1 };
 
@@ -396,9 +409,9 @@ namespace necrowarp {
 
 		inline void receive_skull_boon() noexcept { set_energy(energy + BoneBoon); }
 
-		inline void receive_failed_warp_boon() noexcept { set_energy(energy + clamp<i8>(FailedWarpBoon, 0, get_cost(discount_e::RandomWarp))); }
+		inline void receive_failed_warp_boon() noexcept { set_energy(energy + clamp<i8>(FailedWarpBoon, 0, get_cost(discount_e::ChaoticWarp))); }
 
-		inline void receive_unsafe_warp_boon() noexcept { set_energy(energy + clamp<i8>(UnsafeWarpBoon, 0, get_cost(discount_e::RandomWarp))); }
+		inline void receive_unsafe_warp_boon() noexcept { set_energy(energy + clamp<i8>(UnsafeWarpBoon, 0, get_cost(discount_e::ChaoticWarp))); }
 
 		inline void max_out_energy() noexcept { energy = max_energy(); }
 

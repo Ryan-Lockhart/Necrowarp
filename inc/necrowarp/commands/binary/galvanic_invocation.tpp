@@ -90,7 +90,7 @@ namespace necrowarp {
 			aggregate_quality += static_cast<u8>(state) + 1;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
+				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(metal_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(target_position, animated_suit_t{ triflip(random_engine) ? galvanise(state) : state });
@@ -101,7 +101,7 @@ namespace necrowarp {
 			aggregate_quality += static_cast<u8>(galvanisation_e::Writhing) + 1;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
+				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(metal_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(target_position, animated_suit_t{ galvanisation_e::Writhing });
@@ -168,7 +168,7 @@ namespace necrowarp {
 		player.pay_cost(discount_e::GalvanicInvocation);
 
 		if (!player.has_ascended()) {
-			if (metal_consumed == globals::MaximumCatalyst) {
+			if (metal_consumed >= globals::MaximumCatalyst) {
 				// summon max amount of animated suits of armor achievment placeholder : Chosen of the Void
 			} else if (metal_consumed > 1) {
 				// summon first squad of animated suits of armor achievment placeholder : Anyone home?
@@ -177,7 +177,7 @@ namespace necrowarp {
 			return;
 		}
 
-		if (!random_warp_t::execute<MapType>(source_position, true)) {
+		if (!chaotic_warp_t::execute<MapType>(source_position, true)) {
 			player.bolster_armor(metal_consumed * 2);
 
 			return;
@@ -194,7 +194,7 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(target_position, death_knight_t{ metal_consumed, triflip(random_engine) ? galvanise(dk_quality) : dk_quality });
 
-		if (metal_consumed == globals::MaximumCatalyst) {
+		if (metal_consumed >= globals::MaximumCatalyst) {
 			// summon first death knight achievment placeholder : A Pale Gaze
 		} else {
 			// summon death knight with max heatlh achievment placeholder : Death Incarnate

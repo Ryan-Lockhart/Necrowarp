@@ -11,8 +11,11 @@ namespace necrowarp {
 
 	struct none_t;
 
-	struct random_warp_t;
+	struct chaotic_warp_t;
+	struct repulse_t;
+	struct incorporealize_t;
 	struct necromantic_ascendance_t;
+	struct calamitous_retaliation_t;
 	struct eviscerate_t;
 	struct metabolise_t;
 	struct shed_t;
@@ -28,12 +31,19 @@ namespace necrowarp {
 	struct loose_t;
 	struct retrieve_t;
 	struct batter_t;
-	struct target_warp_t;
+	struct precise_warp_t;
 	struct consume_warp_t;
+	struct calcify_t;
+	struct annihilate_t;
+
 	struct calcitic_invocation_t;
 	struct spectral_invocation_t;
 	struct sanguine_invocation_t;
 	struct galvanic_invocation_t;
+	struct ravenous_invocation_t;
+	struct wretched_invocation_t;
+	struct cerebral_invocation_t;
+	struct infernal_invocation_t;
 
 	struct lunge_t;
 
@@ -41,8 +51,11 @@ namespace necrowarp {
 		none_t
 
 	#define ALL_UNARY_COMMANDS \
-		random_warp_t, \
+		chaotic_warp_t, \
+		repulse_t, \
+		incorporealize_t, \
 		necromantic_ascendance_t, \
+		calamitous_retaliation_t, \
 		eviscerate_t, \
 		metabolise_t, \
 		shed_t, \
@@ -59,12 +72,18 @@ namespace necrowarp {
 		loose_t, \
 		retrieve_t, \
 		batter_t, \
-		target_warp_t, \
+		precise_warp_t, \
 		consume_warp_t, \
+		calcify_t, \
+		annihilate_t, \
 		calcitic_invocation_t, \
 		spectral_invocation_t, \
 		sanguine_invocation_t, \
-		galvanic_invocation_t
+		galvanic_invocation_t, \
+		ravenous_invocation_t, \
+		wretched_invocation_t, \
+		cerebral_invocation_t, \
+		infernal_invocation_t
 
 	#define ALL_TERNARY_COMMANDS \
 		lunge_t
@@ -86,14 +105,23 @@ namespace necrowarp {
 		descend_t, \
 		plunge_t, \
 		consume_t, \
-		random_warp_t, \
-		target_warp_t, \
+		chaotic_warp_t, \
+		precise_warp_t, \
 		consume_warp_t, \
+		calcify_t, \
+		repulse_t, \
+		annihilate_t, \
+		incorporealize_t, \
 		calcitic_invocation_t, \
 		spectral_invocation_t, \
 		sanguine_invocation_t, \
 		galvanic_invocation_t, \
-		necromantic_ascendance_t
+		ravenous_invocation_t, \
+		wretched_invocation_t, \
+		cerebral_invocation_t, \
+		infernal_invocation_t, \
+		necromantic_ascendance_t, \
+		calamitous_retaliation_t
 	
 	#define ALL_BLOODHOUND_COMMANDS \
 		lunge_t
@@ -135,8 +163,11 @@ namespace necrowarp {
 	enum struct command_e : u8 {
 		None = 0,
 
-		RandomWarp,
+		ChaoticWarp,
+		Repulse,
+		Incorporealize,
 		NecromanticAscendance,
+		CalamitousRetaliation,
 		Eviscerate,
 		Nock,
 		Meditate,
@@ -152,12 +183,18 @@ namespace necrowarp {
 		Retrieve,
 		Loose,
 		Batter,
-		TargetWarp,
+		PreciseWarp,
 		ConsumeWarp,
+		Calcify,
+		Annihilate,
 		CalciticInvocation,
 		SpectralInvocation,
 		SanguineInvocation,
 		GalvanicInvocation,
+		RavenousInvocation,
+		WretchedInvocation,
+		CerebralInvocation,
+		InfernalInvocation,
 
 		Lunge,
 	};
@@ -184,10 +221,16 @@ namespace necrowarp {
 		switch (command) {
 			case command_e::None: {
 				return "none";
-			} case command_e::RandomWarp: {
-				return "random warp";
+			} case command_e::ChaoticWarp: {
+				return "chaotic warp";
+			} case command_e::Repulse: {
+				return "repulse";
+			} case command_e::Incorporealize: {
+				return "incorporealize";
 			} case command_e::NecromanticAscendance: {
 				return "necromantic ascendance";
+			} case command_e::CalamitousRetaliation: {
+				return "calamitous retaliation";
 			} case command_e::Eviscerate: {
 				return "eviscerate";
 			} case command_e::Nock: {
@@ -216,10 +259,14 @@ namespace necrowarp {
 				return "loose";
 			} case command_e::Batter: {
 				return "batter";
-			} case command_e::TargetWarp: {
-				return "target warp";
+			} case command_e::PreciseWarp: {
+				return "precise warp";
 			} case command_e::ConsumeWarp: {
 				return "consume warp";
+			} case command_e::Calcify: {
+				return "calcify";
+			} case command_e::Annihilate: {
+				return "annihilate";
 			} case command_e::CalciticInvocation: {
 				return "calcitic invocation";
 			} case command_e::SpectralInvocation: {
@@ -228,6 +275,14 @@ namespace necrowarp {
 				return "sanguine invocation";
 			} case command_e::GalvanicInvocation: {
 				return "galvanic invocation";
+			} case command_e::RavenousInvocation: {
+				return "ravenous invocation";
+			} case command_e::WretchedInvocation: {
+				return "wretched invocation";
+			} case command_e::CerebralInvocation: {
+				return "cerebral invocation";
+			} case command_e::InfernalInvocation: {
+				return "infernal invocation";
 			} case command_e::Lunge: {
 				return "lunge";
 			}
@@ -297,6 +352,4 @@ namespace necrowarp {
 	template<Command T, command_e CommandType> struct is_command_type {
 		static constexpr bool value = to_command_enum<T>::value == CommandType;
 	};
-
-	template<command_e Command> inline constexpr glyph_t command_icons;
 } // namespace necrowarp

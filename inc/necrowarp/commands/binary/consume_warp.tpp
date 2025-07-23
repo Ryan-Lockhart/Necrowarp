@@ -17,7 +17,7 @@ namespace necrowarp {
 
 		const entity_e entity_target{ determine_target<EntityType>(entity_group) };
 
-		if (entity_target != entity_e::None && !player.can_perform(discount_e::TargetWarp)) {
+		if (entity_target != entity_e::None && !player.can_perform(discount_e::PreciseWarp)) {
 			player_turn_invalidated = true;
 
 			return;
@@ -35,7 +35,7 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-				player.pay_cost(discount_e::TargetWarp);
+				player.pay_cost(discount_e::PreciseWarp);
 				player.bolster_armor(armor_boon + player.max_armor() / 8);
 
 				draw_warp_cursor = false;
@@ -50,7 +50,7 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-				player.pay_cost(discount_e::TargetWarp);
+				player.pay_cost(discount_e::PreciseWarp);
 				player.bolster_armor(armor_boon + player.max_armor() / 4);
 
 				draw_warp_cursor = false;
@@ -71,7 +71,7 @@ namespace necrowarp {
 
 				const i8 boon{ state == decay_e::Fresh ? player_t::BoneBoon : i8{ 0 } };
 
-				if (!player.can_perform(discount_e::TargetWarp, boon)) {
+				if (!player.can_perform(discount_e::PreciseWarp, boon)) {
 					player_turn_invalidated = true;
 
 					return;
@@ -82,9 +82,9 @@ namespace necrowarp {
 
 				++steam_stats::stats<steam_stat_e::BonesConsumed>;
 
-				player.pay_cost(discount_e::TargetWarp, boon);
+				player.pay_cost(discount_e::PreciseWarp, boon);
 
-				random_warp_t::execute<MapType>(source_position, true);
+				chaotic_warp_t::execute<MapType>(source_position, true);
 
 				return;
 			} default: {

@@ -216,10 +216,10 @@ namespace necrowarp {
 		return false;
 	}
 
-	static inline f32 fluid_pool_volume() noexcept { return globals::fluid_pool_dis(random_engine); }
+	static inline f16 fluid_pool_volume() noexcept { return globals::fluid_pool_dis(random_engine); }
 
-	static inline f32 fluid_pool_volume(i8 count) noexcept { 
-		f32 amount{};
+	static inline f16 fluid_pool_volume(i8 count) noexcept { 
+		f16 amount{};
 
 		for (i8 i{ 0 }; i < count; ++i) {
 			amount += globals::fluid_pool_dis(random_engine);

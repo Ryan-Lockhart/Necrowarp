@@ -76,10 +76,10 @@ namespace necrowarp {
 			entity_e::BannerBearer,
 			entity_e::Adventurer,
 			entity_e::Mercenary,
-			entity_e::Thetwo,
 			entity_e::BattleMonk,
 			entity_e::Berserker,
 			entity_e::Paladin,
+			entity_e::Thetwo,
 		};
 
 		inline bloodhound_t() noexcept {}

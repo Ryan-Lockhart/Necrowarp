@@ -16,7 +16,7 @@ namespace necrowarp {
 		game_map<map_type>
 			.dependent set<region_e::Border>(closed_state)
 			.dependent generate<region_e::Interior>(
-				random_engine,
+				map_engine,
 				globals::CavernPreset.fill_percent,
 				globals::CavernPreset.automata_iterations,
 				globals::CavernPreset.automata_threshold,

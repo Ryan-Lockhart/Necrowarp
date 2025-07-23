@@ -11,7 +11,7 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_binary_command<eviscerate_t> {
+	template<> struct is_unary_command<eviscerate_t> {
 		static constexpr bool value = true;
 	};
 
@@ -35,7 +35,6 @@ namespace necrowarp {
 		static constexpr command_e command_enum{ to_command_enum<command_type>::value };
 
 		const offset_t source_position;
-		const offset_t target_position;
 
 		template<map_type_e MapType> inline void process() const noexcept;
 	};

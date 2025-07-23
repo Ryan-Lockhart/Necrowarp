@@ -78,9 +78,9 @@ namespace necrowarp {
 				player.command = command_pack_t{ command_e::None };
 
 				return true;
-			} else if (keyboard_s::is_key<input_e::Down>(bindings::RandomWarp)) {
-				player.command = command_pack_t{ command_e::RandomWarp, player.position };
-			} else if (keyboard_s::is_key<input_e::Down>(bindings::TargetWarp)) {
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::ChaoticWarp)) {
+				player.command = command_pack_t{ command_e::ChaoticWarp, player.position };
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::PreciseWarp)) {
 				const offset_t target_position{ grid_cursor<MapType>.get_position() };
 
 				const entity_group_e entities{ entity_registry<MapType>.at(target_position) };
@@ -92,10 +92,14 @@ namespace necrowarp {
 				player.command = command_pack_t{
 					player.can_consume(target_entity) || player.can_consume(target_object) ?
 						command_e::ConsumeWarp :
-						command_e::TargetWarp,
+						command_e::PreciseWarp,
 					player.position,
 					target_position
 				};
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::Repulse)) {
+				player.command = command_pack_t{ command_e::Repulse, player.position };
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::Incorporealize)) {
+				player.command = command_pack_t{ command_e::Incorporealize, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::CalciticInvocation)) {
 				player.command = command_pack_t{ command_e::CalciticInvocation, player.position, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::SpectralInvocation)) {
@@ -104,8 +108,18 @@ namespace necrowarp {
 				player.command = command_pack_t{ command_e::SanguineInvocation, player.position, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::GalvanicInvocation)) {
 				player.command = command_pack_t{ command_e::GalvanicInvocation, player.position, player.position };
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::RavenousInvocation)) {
+				player.command = command_pack_t{ command_e::RavenousInvocation, player.position, player.position };
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::WretchedInvocation)) {
+				player.command = command_pack_t{ command_e::WretchedInvocation, player.position, player.position };
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::CerebralInvocation)) {
+				player.command = command_pack_t{ command_e::CerebralInvocation, player.position, player.position };
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::InfernalInvocation)) {
+				player.command = command_pack_t{ command_e::InfernalInvocation, player.position, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::NecromanticAscendance)) {
 				player.command = command_pack_t{ command_e::NecromanticAscendance, player.position };
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::CalamitousRetaliation)) {
+				player.command = command_pack_t{ command_e::CalamitousRetaliation, player.position };
 			}
 
 			if (player.command.type != command_e::None) {
@@ -206,7 +220,7 @@ namespace necrowarp {
 			game_map<MapType>
 				.dependent set<region_e::Border>(closed_state)
 				.dependent generate<region_e::Interior>(
-					random_engine,
+					map_engine,
 					globals::map_config.fill_percent,
 					globals::map_config.automata_iterations,
 					globals::map_config.automata_threshold,
@@ -365,7 +379,7 @@ namespace necrowarp {
 			game_map<MapType>
 				.dependent set<region_e::Border>(closed_state)
 				.dependent generate<region_e::Interior>(
-					random_engine,
+					map_engine,
 					globals::map_config.fill_percent,
 					globals::map_config.automata_iterations,
 					globals::map_config.automata_threshold,

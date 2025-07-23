@@ -55,7 +55,6 @@ namespace necrowarp {
 	};
 
 	struct bonespur_t {
-		static constexpr i8 MaximumHealth{ 9 };
 		static constexpr i8 MaximumDamage{ 0 };
 
 		static constexpr i8 MinimumDamageReceived{ 1 };
@@ -65,28 +64,30 @@ namespace necrowarp {
 			entity_e::Berserker,
 			entity_e::BattleMonk,
 			entity_e::BannerBearer,
-			entity_e::Thetwo,
 			entity_e::Mercenary,
 			entity_e::MistLady,
 			entity_e::Skulker,
 			entity_e::Ranger,
 			entity_e::Adventurer,
+			entity_e::Thetwo,
 		};
 
 	private:
+		const i8 investiture;
 		i8 health;
+
 		fluid_e spatter;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 	
 	public:
-		inline bonespur_t(i8 health) noexcept : health{ health }, spatter{ fluid_e::None } {}
+		inline bonespur_t(i8 health) noexcept : investiture{ health }, health{ investiture }, spatter{ fluid_e::None } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 
 		inline bool has_health() const noexcept { return health > 0; }
 
-		constexpr i8 max_health() const noexcept { return MaximumHealth; }
+		inline i8 max_health() const noexcept { return investiture; }
 
 		inline i8 armor_boon() const noexcept { return health; }
 

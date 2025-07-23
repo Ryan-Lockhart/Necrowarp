@@ -16,9 +16,13 @@ namespace necrowarp {
 
 	constexpr usize default_seed{ 1337 };
 
-	constexpr bool use_fixed_seed{ false };
+	constexpr bool use_fixed_seed{ true };
 
-	static inline std::mt19937_64 random_engine{ use_fixed_seed ? default_seed : std::random_device{}() };
+	static inline usize random_seed{ std::random_device{}() };
+
+	static inline std::mt19937_64 random_engine{ use_fixed_seed ? default_seed : random_seed };
+
+	static inline std::mt19937_64 map_engine{ use_fixed_seed ? default_seed : random_seed };
 
 	struct api_state_s {
 		static constexpr u32 app_id{ 3631430 };
@@ -186,8 +190,12 @@ namespace necrowarp {
 		inline bool has_reinforcements() const noexcept { return current_reinforcements() > 0; }
 
 		inline void reset() noexcept {
-			game_seed = std::random_device{}();
+			game_depth = 0;
+
+			game_seed = use_fixed_seed ? default_seed : std::random_device{}();
+
 			random_engine.seed(game_seed);
+			map_engine.seed(game_seed);
 
 			wave_size = StartingWaveSize;
 			spawns_remaining = StartingWaveSize;

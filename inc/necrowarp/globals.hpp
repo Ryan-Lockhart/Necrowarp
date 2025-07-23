@@ -182,7 +182,7 @@ namespace necrowarp {
 			}
 		}
 		
-		static inline extent_t window_size{ Resolutions[resolution_e::Resolution1440x900] };
+		static inline extent_t window_size{ Resolutions[resolution_e::Resolution2560x1600] };
 
 		template<grid_type_e GridType> static constexpr extent_t cell_size;
 
@@ -231,7 +231,7 @@ namespace necrowarp {
 		static constexpr extent_t TilesetSize{ 16, 5 };
 		static constexpr extent_t AnimatedSize{ 16, 31 };
 
-		static constexpr extent_t IconsetSize{ 2, 4 };
+		static constexpr extent_t IconsetSize{ 2, 6 };
 
 		static constexpr distance_function_e DistanceFunction{ distance_function_e::Octile };
 
@@ -359,8 +359,8 @@ namespace necrowarp {
 
 		constexpr offset_t SparseTileNudge{ -32, -32 };
 
-		constexpr f32 FluidPoolMinimumVolume{ 4.5f };
-		constexpr f32 FluidPoolMaximumVolume{ 5.7f };
+		constexpr f16 FluidPoolMinimumVolume{ 4.5f };
+		constexpr f16 FluidPoolMaximumVolume{ 5.7f };
 
 		static inline std::uniform_real_distribution<f32> fluid_pool_dis{ FluidPoolMinimumVolume, FluidPoolMaximumVolume };
 

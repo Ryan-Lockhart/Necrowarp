@@ -122,8 +122,8 @@ namespace necrowarp {
 			template<> inline constexpr color_t Shackles<shackle_e::Galvanic>{ u8{  42 }, u8{  74 }, u8{ 110 } };
 			template<> inline constexpr color_t Shackles<shackle_e::Ravenous>{ u8{  72 }, u8{ 100 }, u8{  83 } };
 			template<> inline constexpr color_t Shackles<shackle_e::Wretched>{ u8{ 157 }, u8{  34 }, u8{  53 } };
-			template<> inline constexpr color_t Shackles<shackle_e::Infernal>{ u8{ 106 }, u8{  27 }, u8{  54 } };
 			template<> inline constexpr color_t Shackles<shackle_e::Cerebral>{ u8{ 255 }, u8{ 129 }, u8{ 234 } };
+			template<> inline constexpr color_t Shackles<shackle_e::Infernal>{ u8{ 106 }, u8{  27 }, u8{  54 } };
 		} // namespace metals
 	} // namespace colors
 } // namespace necrowarp

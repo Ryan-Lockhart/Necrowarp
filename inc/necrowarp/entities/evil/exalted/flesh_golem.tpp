@@ -27,7 +27,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void flesh_golem_t::killed(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, flesh_t{}, 256);
+		object_registry<MapType>.spill(position, flesh_t{});
 	}
 
 	template<map_type_e MapType> inline i8 flesh_golem_t::devoured(offset_t position) noexcept { return 1; }

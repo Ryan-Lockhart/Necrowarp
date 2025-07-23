@@ -5,8 +5,8 @@
 namespace necrowarp::tutorial {
 	using namespace bleak;
 
-	template<> struct subtrack_s<track_e::RandomWarp> {
-		static constexpr track_e current_track{ track_e::RandomWarp };
+	template<> struct subtrack_s<track_e::ChaoticWarp> {
+		static constexpr track_e current_track{ track_e::ChaoticWarp };
 
 		using subtrack_t = subtrack_s<current_track>;
 

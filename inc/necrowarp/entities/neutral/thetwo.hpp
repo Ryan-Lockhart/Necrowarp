@@ -94,7 +94,7 @@ namespace necrowarp {
 		static constexpr i8 MinimumDamage{ 1 };
 		static constexpr i8 MaximumDamage{ 8 };
 
-		static constexpr std::array<entity_e, 20> EntityPriorities{
+		static constexpr std::array<entity_e, 22> EntityPriorities{
 			entity_e::Player,
 			entity_e::Abomination,
 			entity_e::FleshGolem,
@@ -115,6 +115,8 @@ namespace necrowarp {
 			entity_e::Wraith,
 			entity_e::AnimatedSuit,
 			entity_e::DeathKnight,
+			entity_e::Draugaz,
+			entity_e::Dreadwurm,
 		};
 
 		static constexpr std::array<object_e, 1> ObjectPriorities{ object_e::Flesh };
@@ -294,9 +296,11 @@ namespace necrowarp {
 			if (!has_protein()) {
 				shedding = false;
 
+				const f32 percent_health{ clamp<f32>(static_cast<f32>(health) / max_health(), 0.1f, 1.0f) };
+
 				bulk = grow(bulk);
 
-				set_health(max_health());
+				set_health(max_health() * percent_health);
 			}
 		}
 

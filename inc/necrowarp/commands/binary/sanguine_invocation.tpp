@@ -84,7 +84,7 @@ namespace necrowarp {
 			++pools_consumed;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
+				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(target_position, bloodhound_t{});
@@ -94,7 +94,7 @@ namespace necrowarp {
 			++pools_consumed;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
+				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
 					entity_registry<MapType>.dependent add<true>(target_position, bloodhound_t{});
@@ -146,11 +146,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first bloody shackle achievment placeholder : Raw and Wriggling
+				// unshackle first bloody shackle achievment placeholder : ?
 			} else {
 				eligible_ladder->enshackle(shackle_e::Sanguine);
 
-				// bloody enshackle first ladder achievment placeholder : Don't Touch That
+				// bloody enshackle first ladder achievment placeholder : ?
 			}
 
 			eligible_ladder = nullptr;
@@ -161,7 +161,7 @@ namespace necrowarp {
 		player.pay_cost(discount_e::SanguineInvocation);
 
 		if (!player.has_ascended()) {
-			if (pools_consumed == globals::MaximumCatalyst) {
+			if (pools_consumed >= globals::MaximumCatalyst) {
 				// summon max amount of bloodhounds achievment placeholder : The Harrying
 			} else if (pools_consumed > 1) {
 				// summon first pack of bloodhounds achievment placeholder : Ankle-biter
@@ -170,18 +170,18 @@ namespace necrowarp {
 			return;
 		}
 
-		if (!random_warp_t::execute<MapType>(source_position, true)) {
+		if (!chaotic_warp_t::execute<MapType>(source_position, true)) {
 			player.reinvigorate(pools_consumed);
 
 			return;
 		}
 
-		entity_registry<MapType>.dependent add<true>(source_position, flesh_golem_t{ pools_consumed });
+		entity_registry<MapType>.dependent add<true>(source_position, hemogheist_t{ pools_consumed });
 
-		if (pools_consumed == globals::MaximumCatalyst) {
-			// summon flesh golem with max health achievment placeholder : Mountain of Flesh
+		if (pools_consumed >= globals::MaximumCatalyst) {
+			// summon hemogheist with max health achievment placeholder : ?
 		} else {
-			// summon first flesh golem achievment placeholder : The Shambling Horror
+			// summon first hemogheist achievment placeholder : ?
 		}
 	}
 } // namespace necrowarp

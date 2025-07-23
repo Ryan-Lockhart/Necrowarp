@@ -1,6 +1,6 @@
 #pragma once
 
-#include <necrowarp/commands/unary/random_warp.hpp>
+#include <necrowarp/commands/unary/chaotic_warp.hpp>
 
 #include <necrowarp/entity_command.hpp>
 
@@ -10,13 +10,13 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline bool random_warp_t::execute(offset_t position, bool free) noexcept {
-		if (!free && !player.can_perform(discount_e::RandomWarp)) {
+	template<map_type_e MapType> inline bool chaotic_warp_t::execute(offset_t position, bool free) noexcept {
+		if (!free && !player.can_perform(discount_e::ChaoticWarp)) {
 			return false;
 		}
 
 		if (!free) {
-			player.pay_cost(discount_e::RandomWarp);
+			player.pay_cost(discount_e::ChaoticWarp);
 		}
 		
 		cauto random_safe_position{ evil_goal_map<MapType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, 8) };
@@ -62,7 +62,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, random_warp_t>::process() const noexcept {
-		random_warp_t::execute<MapType>(source_position);
+	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, chaotic_warp_t>::process() const noexcept {
+		chaotic_warp_t::execute<MapType>(source_position);
 	}
 } // namespace necrowarp

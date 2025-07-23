@@ -77,10 +77,6 @@ namespace necrowarp {
 
 		static constexpr f32 HealthMultiplier{ 1.5f };
 
-		static constexpr i8 BaseMaximumHealth{ 9 };
-
-		static constexpr i8 MaximumHealth{ static_cast<i8>(BaseMaximumHealth * HealthMultiplier) };
-
 		static constexpr i8 MaximumDamage{ 3 };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
@@ -88,15 +84,16 @@ namespace necrowarp {
 			entity_e::Berserker,
 			entity_e::BattleMonk,
 			entity_e::BannerBearer,
-			entity_e::Thetwo,
 			entity_e::Mercenary,
 			entity_e::MistLady,
 			entity_e::Skulker,
 			entity_e::Ranger,
 			entity_e::Adventurer,
+			entity_e::Thetwo,
 		};
 
 	private:
+		const i8 investiture;
 		i8 health;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
@@ -117,18 +114,18 @@ namespace necrowarp {
 	
 	public:
 		inline death_knight_t(i8 health) noexcept :
-			idle_animation{ get_index(galvanisation_e::Twisted), random_engine, true }, state{ galvanisation_e::Twisted }, health{ static_cast<i8>(health * HealthMultiplier) }
+			idle_animation{ get_index(galvanisation_e::Twisted), random_engine, true }, state{ galvanisation_e::Twisted }, investiture{ static_cast<i8>(health * HealthMultiplier) }, health{ investiture }
 		{}
 
 		inline death_knight_t(i8 health, galvanisation_e state) noexcept :
-			idle_animation{ get_index(state), random_engine, true }, state{ state }, health{ static_cast<i8>(health * HealthMultiplier) }
+			idle_animation{ get_index(state), random_engine, true }, state{ state }, investiture{ static_cast<i8>(health * HealthMultiplier) }, health{ investiture }
 		{}
 		
 		inline i8 get_health() const noexcept { return health; }
 
 		inline bool has_health() const noexcept { return health > 0; }
 
-		constexpr i8 max_health() const noexcept { return MaximumHealth; }
+		inline i8 max_health() const noexcept { return investiture; }
 
 		inline i8 get_minimum_damage_received() const noexcept {
 			switch (state) {

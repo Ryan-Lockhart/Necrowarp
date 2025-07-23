@@ -58,8 +58,8 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t entity_glyphs<abomination_t>{ glyphs::Abomination };
 
 	struct abomination_t {
-		static constexpr i8 MaximumHealth{ 5 };
-		static constexpr i8 MaximumDamage{ 2 };
+		static constexpr i8 MaximumHealth{ 3 };
+		static constexpr i8 MaximumDamage{ 1 };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
 			entity_e::Adventurer,
@@ -68,10 +68,10 @@ namespace necrowarp {
 			entity_e::Skulker,
 			entity_e::MistLady,
 			entity_e::BannerBearer,
-			entity_e::Thetwo,
 			entity_e::BattleMonk,
 			entity_e::Berserker,
 			entity_e::Paladin,
+			entity_e::Thetwo,
 		};
 		
 	private:

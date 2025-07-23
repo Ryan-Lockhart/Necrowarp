@@ -6,15 +6,20 @@ namespace necrowarp {
 	constexpr cstr help_hidden_text{ " F1: Show Controls " };
 
 	constexpr cstr help_expanded_text{
-		" Movement:  WASD / Numpad \n\n\n"
-		" Random Warp:           Q\n\n"
-		" Target Warp:           E\n\n\n"
-		" Calcitic Invocation:   1\n\n"
-		" Spectral Invocation:   2\n\n"
-		" Sanguine Invocation:   3\n\n"
-		" Galvanic Invocation:   4\n\n\n"
-		" Necromantic Ascension: R\n\n\n"
-		" Ignore Objects:      Alt\n\n\n"
+		" Movement:   WASD / Numpad \n\n\n"
+		" Chaotic Warp:           Q \n\n"
+		" Precise Warp:           E \n\n\n"
+		" Calcitic Invocation:    1 \n\n"
+		" Spectral Invocation:    2 \n\n"
+		" Sanguine Invocation:    3 \n\n"
+		" Galvanic Invocation:    4 \n\n\n"
+		" Ravenous Invocation:    5 \n\n"
+		" Wretched Invocation:    6 \n\n"
+		" Cerebral Invocation:    7 \n\n"
+		" Infernal Invocation:    8 \n\n\n"
+		" Necromantic Ascendance: R \n\n"
+		" Calamitous Retaliation: F \n\n\n"
+		" Ignore Objects:       Alt \n\n\n"
 		" F1: Hide Controls "
 	};
 

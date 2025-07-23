@@ -53,7 +53,7 @@ namespace necrowarp {
 
 			colored_string.concatenate(to_colored_string<Patron>(cval));
 
-			if constexpr (cval == discount_e::TargetWarp || cval == discount_e::Incorporealize || cval == discount_e::InfernalInvocation) {
+			if constexpr (cval == discount_e::PreciseWarp || cval == discount_e::Incorporealize || cval == discount_e::InfernalInvocation) {
 				colored_string.concatenate(runes_t{ "\n" });
 			} if (cval == discount_e::CalamitousRetaliation) {
 				return;
@@ -1020,7 +1020,6 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullEntity EntityType, Command CommandType> inline bool entity_registry_t<MapType>::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
-		static constexpr entity_e entity_enum{ to_entity_enum<EntityType>::value };
 		static constexpr command_e command_enum{ to_command_enum<CommandType>::value };
 
 		if constexpr (is_null_command<CommandType>::value) {
@@ -1031,88 +1030,8 @@ namespace necrowarp {
 			return false;
 		}
 
-		if constexpr (is_npc_entity<EntityType>::value) {
-			switch (command_enum) {
-				case command_e::Descend:
-				case command_e::Plunge:
-				case command_e::Consume:
-				case command_e::RandomWarp:
-				case command_e::TargetWarp:
-				case command_e::ConsumeWarp:
-				case command_e::CalciticInvocation:
-				case command_e::SpectralInvocation:
-				case command_e::SanguineInvocation:
-				case command_e::GalvanicInvocation:
-				case command_e::NecromanticAscendance: {
-					return false;
-				} default: {
-					break;
-				}
-			}
-		}
-
-		if constexpr (entity_enum != entity_e::Bloodhound) {
-			switch (command_enum) {
-				case command_e::Lunge: {
-					return false;
-				} default: {
-					break;
-				}
-			}
-		}
-
-		if constexpr (entity_enum != entity_e::Wraith) {
-			switch (command_enum) {
-				case command_e::Eviscerate: {
-					return false;
-				} default: {
-					break;
-				}
-			}
-		}
-
-		if constexpr (entity_enum != entity_e::Ranger) {
-			switch (command_enum) {
-				case command_e::Nock:
-				case command_e::Retrieve:
-				case command_e::Loose: {
-					return false;
-				} default: {
-					break;
-				}
-			}
-		}
-
-		if constexpr (entity_enum != entity_e::BattleMonk) {
-			switch (command_enum) {
-				case command_e::Meditate:
-				case command_e::Batter: {
-					return false;
-				} default: {
-					break;
-				}
-			}
-		}
-
-		if constexpr (entity_enum != entity_e::Thetwo) {
-			switch (command_enum) {
-				case command_e::Metabolise:
-				case command_e::Shed: {
-					return false;
-				} default: {
-					break;
-				}
-			}
-		}
-
-		if constexpr (entity_enum != entity_e::FleshGolem && entity_enum != entity_e::Thetwo) {
-			switch (command_enum) {
-				case command_e::Devour: {
-					return false;
-				} default: {
-					break;
-				}
-			}
+		if constexpr (!is_entity_command_valid<EntityType, CommandType>::value) {
+			return false;
 		}
 
 		if constexpr (is_binary_command<CommandType>::value) {
@@ -1122,7 +1041,7 @@ namespace necrowarp {
 
 			switch (command_enum) {
 				case command_e::Move:
-				case command_e::TargetWarp: {
+				case command_e::PreciseWarp: {
 					if (game_map<MapType>[command.target_position].solid || contains(command.target_position)) {
 						return false;
 					}

@@ -70,33 +70,35 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t entity_glyphs<wraith_t>{ glyphs::Wraith };
 
 	struct wraith_t {
-		static constexpr i8 MaximumHealth{ 9 };
 		static constexpr i8 MaximumDamage{ 5 };
 
-		static constexpr std::array<entity_e, 8> EntityPriorities{
+		static constexpr std::array<entity_e, 10> EntityPriorities{
 			entity_e::Adventurer,
 			entity_e::Mercenary,
-			entity_e::Thetwo,
 			entity_e::Ranger,
 			entity_e::Skulker,
+			entity_e::MistLady,
+			entity_e::BannerBearer,
 			entity_e::BattleMonk,
 			entity_e::Berserker,
 			entity_e::Paladin,
+			entity_e::Thetwo,
 		};
 
 	private:
+		const i8 investiture;
 		i8 health;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 	
 	public:		
-		inline wraith_t(i8 health) noexcept : health{ health } {}
+		inline wraith_t(i8 health) noexcept : investiture{ health }, health{ investiture } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 
 		inline bool has_health() const noexcept { return health > 0; }
 
-		constexpr i8 max_health() const noexcept { return MaximumHealth; }
+		inline i8 max_health() const noexcept { return investiture; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
 

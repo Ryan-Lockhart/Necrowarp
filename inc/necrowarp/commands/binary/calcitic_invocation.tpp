@@ -86,7 +86,7 @@ namespace necrowarp {
 			++accumulated_skulls;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
+				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(accumulated_skulls);
 				} else {
 					entity_registry<MapType>.dependent add<true>(position, skeleton_t{ state });
@@ -96,7 +96,7 @@ namespace necrowarp {
 			++accumulated_skulls;
 
 			if (!is_exalted) {
-				if (source_position == target_position && !random_warp_t::execute<MapType>(source_position, true)) {
+				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(accumulated_skulls);
 				} else {
 					entity_registry<MapType>.dependent add<true>(target_position, skeleton_t{});
@@ -152,7 +152,7 @@ namespace necrowarp {
 			} else {
 				eligible_ladder->enshackle(shackle_e::Calcitic);
 
-				// spooky enshackle first ladder achievment placeholder : Bony Barrier
+				// spooky enshackle first ladder achievment placeholder : Barricade of Bone
 			}
 
 			eligible_ladder = nullptr;
@@ -163,16 +163,18 @@ namespace necrowarp {
 		player.pay_cost(discount_e::CalciticInvocation);
 
 		if (!player.has_ascended()) {
-			if (accumulated_skulls == globals::MaximumCatalyst) {
+			if (accumulated_skulls >= globals::MaximumCatalyst) {
 				// summon max amount of skeletons achievment placeholder : Next Stop: the Bone Zone
 			} else if (accumulated_skulls > 1) {
 				// summon first crew of skeletons achievment placeholder : Skeleton Crew
+			} else if (accumulated_skulls == 1) {
+				// summon a single skeleton achievment placeholder : Kind of a waste?
 			}
 
 			return;
 		}
 
-		if (!random_warp_t::execute<MapType>(source_position, true)) {
+		if (!chaotic_warp_t::execute<MapType>(source_position, true)) {
 			player.bolster_armor(accumulated_skulls);
 
 			return;
@@ -180,7 +182,7 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, bonespur_t{ accumulated_skulls });
 
-		if (accumulated_skulls == globals::MaximumCatalyst) {
+		if (accumulated_skulls >= globals::MaximumCatalyst) {
 			// summon bonespur with max health achievment placeholder : 28 (SELF-INFLICTED) STAB WOUNDS
 		} else if (accumulated_skulls > 1) {
 			// summon first bonespur achievment placeholder : Right to the Point

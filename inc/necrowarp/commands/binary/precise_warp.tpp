@@ -1,6 +1,6 @@
 #pragma once
 
-#include <necrowarp/commands/binary/target_warp.hpp>
+#include <necrowarp/commands/binary/precise_warp.hpp>
 
 #include <necrowarp/entity_command.hpp>
 
@@ -12,8 +12,8 @@
 namespace necrowarp {
 	extern player_t player;
 
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, target_warp_t>::process() const noexcept {
-		if (!player.can_perform(discount_e::TargetWarp)) {
+	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, precise_warp_t>::process() const noexcept {
+		if (!player.can_perform(discount_e::PreciseWarp)) {
 			player_turn_invalidated = true;
 
 			return;
@@ -21,7 +21,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::TargetWarps>;
 
-		player.pay_cost(discount_e::TargetWarp);
+		player.pay_cost(discount_e::PreciseWarp);
 
 		entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
