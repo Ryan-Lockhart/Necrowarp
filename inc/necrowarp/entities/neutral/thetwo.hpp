@@ -130,6 +130,12 @@ namespace necrowarp {
 		static constexpr i8 MetabolisedHealth{ 1 };
 
 		static constexpr i8 SkittishApproachDistance{ 4 };
+
+		static constexpr f16 HealthyThreshold{ 0.75f };
+		static constexpr f16 InjuredThreshold{ 0.35f };
+
+		static constexpr f16 HungryThreshold{ 0.50f };
+		static constexpr f16 StarvingThreshold{ 0.25f };
 		
 	private:
 		static constexpr i8 determine_health(bulk_e bulk) noexcept {

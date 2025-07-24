@@ -600,6 +600,12 @@ namespace necrowarp {
 					}
 				}
 
+				if constexpr (Target == object_e::Crevice) {
+					if (entity_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, ALL_NON_NEUTRAL>(position)) {
+						continue;
+					}
+				}
+
 				return position;
 			}
 

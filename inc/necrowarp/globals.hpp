@@ -344,7 +344,7 @@ namespace necrowarp {
 
 		constexpr i16 FloorsPerReinforcement{ 2 };
 
-		constexpr i16 FleshPerThetwoPopulation{ 32 };
+		constexpr i16 FleshPerThetwoPopulation{ 16 };
 
 		constexpr bool CheatsAllowed{ true };
 
@@ -354,10 +354,10 @@ namespace necrowarp {
 		constexpr bool EnableTribulationPortal{ true };
 		constexpr bool EnableAudiencePortal{ true };
 
-		constexpr offset_t CavernTileNudge{ 0, 0 };
-		constexpr offset_t FluidTileNudge{ 0, 0 };
+		constexpr offset_t CavernTileNudge{ 32, 32 };
+		constexpr offset_t FluidTileNudge{ 32, 32 };
 
-		constexpr offset_t SparseTileNudge{ -32, -32 };
+		constexpr offset_t SparseTileNudge{ 0, 0 };
 
 		constexpr f16 FluidPoolMinimumVolume{ 4.5f };
 		constexpr f16 FluidPoolMaximumVolume{ 5.7f };

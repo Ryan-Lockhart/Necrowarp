@@ -379,15 +379,18 @@ namespace necrowarp {
 		player.position = position;
 
 		if constexpr (is_non_good<EntityType>::value) {
-			good_goal_map<MapType>.add(position);
 			ranger_goal_map<MapType>.add(position);
 		}
 
-		if constexpr (is_non_evil<EntityType>::value) {
+		if constexpr (is_good<EntityType>::value) {
+			good_goal_map<MapType>.add(position);
+		}
+
+		if constexpr (is_evil<EntityType>::value) {
 			evil_goal_map<MapType>.add(position);
 		}
 
-		if constexpr (is_non_neutral<EntityType>::value) {
+		if constexpr (is_neutral<EntityType>::value) {
 			neutral_goal_map<MapType>.add(position);
 		}
 
@@ -411,18 +414,21 @@ namespace necrowarp {
 
 		if (inserted) {
 			if constexpr (is_non_good<EntityType>::value) {
-				good_goal_map<MapType>.add(position);
 				ranger_goal_map<MapType>.add(position);
 			}
-
-			if constexpr (is_non_evil<EntityType>::value) {
+	
+			if constexpr (is_good<EntityType>::value) {
+				good_goal_map<MapType>.add(position);
+			}
+	
+			if constexpr (is_evil<EntityType>::value) {
 				evil_goal_map<MapType>.add(position);
 			}
-
-			if constexpr (is_non_neutral<EntityType>::value) {
+	
+			if constexpr (is_neutral<EntityType>::value) {
 				neutral_goal_map<MapType>.add(position);
 			}
-
+	
 			if constexpr (is_vigilant<EntityType>::value) {
 				skulker_goal_map<MapType>.add(position);
 			}
@@ -450,18 +456,21 @@ namespace necrowarp {
 
 		if (inserted) {
 			if constexpr (is_non_good<EntityType>::value) {
-				good_goal_map<MapType>.add(position);
 				ranger_goal_map<MapType>.add(position);
 			}
 	
-			if constexpr (is_non_evil<EntityType>::value) {
+			if constexpr (is_good<EntityType>::value) {
+				good_goal_map<MapType>.add(position);
+			}
+	
+			if constexpr (is_evil<EntityType>::value) {
 				evil_goal_map<MapType>.add(position);
 			}
 	
-			if constexpr (is_non_neutral<EntityType>::value) {
+			if constexpr (is_neutral<EntityType>::value) {
 				neutral_goal_map<MapType>.add(position);
 			}
-
+	
 			if constexpr (is_vigilant<EntityType>::value) {
 				skulker_goal_map<MapType>.add(position);
 			}
@@ -488,15 +497,18 @@ namespace necrowarp {
 		}
 
 		if constexpr (is_non_good<EntityType>::value) {
-			good_goal_map<MapType>.remove(position);
 			ranger_goal_map<MapType>.remove(position);
 		}
 
-		if constexpr (is_non_evil<EntityType>::value) {
+		if constexpr (is_good<EntityType>::value) {
+			good_goal_map<MapType>.remove(position);
+		}
+
+		if constexpr (is_evil<EntityType>::value) {
 			evil_goal_map<MapType>.remove(position);
 		}
 
-		if constexpr (is_non_neutral<EntityType>::value) {
+		if constexpr (is_neutral<EntityType>::value) {
 			neutral_goal_map<MapType>.remove(position);
 		}
 
@@ -615,15 +627,18 @@ namespace necrowarp {
 		}
 
 		if constexpr (is_non_good<EntityType>::value) {
-			good_goal_map<MapType>.update(current, target);
 			ranger_goal_map<MapType>.update(current, target);
 		}
 
-		if constexpr (is_non_evil<EntityType>::value) {
+		if constexpr (is_good<EntityType>::value) {
+			good_goal_map<MapType>.update(current, target);
+		}
+
+		if constexpr (is_evil<EntityType>::value) {
 			evil_goal_map<MapType>.update(current, target);
 		}
 
-		if constexpr (is_non_neutral<EntityType>::value) {
+		if constexpr (is_neutral<EntityType>::value) {
 			neutral_goal_map<MapType>.update(current, target);
 		}
 
@@ -660,15 +675,18 @@ namespace necrowarp {
 		player.position = target;
 
 		if constexpr (is_non_good<EntityType>::value) {
-			good_goal_map<MapType>.update(current, target);
 			ranger_goal_map<MapType>.update(current, target);
 		}
 
-		if constexpr (is_non_evil<EntityType>::value) {
+		if constexpr (is_good<EntityType>::value) {
+			good_goal_map<MapType>.update(current, target);
+		}
+
+		if constexpr (is_evil<EntityType>::value) {
 			evil_goal_map<MapType>.update(current, target);
 		}
 
-		if constexpr (is_non_neutral<EntityType>::value) {
+		if constexpr (is_neutral<EntityType>::value) {
 			neutral_goal_map<MapType>.update(current, target);
 		}
 
