@@ -29,7 +29,7 @@ namespace necrowarp {
 					player.receive_failed_warp_boon();
 				}
 
-				draw_warp_cursor = false;
+				warped_from = std::nullopt;
 
 				return false;
 			}
@@ -45,7 +45,7 @@ namespace necrowarp {
 			steam_stats::stats<steam_stat_e::MetersWarped> += offset_t::distance<f32>(position, player.position);
 
 			warp_cursor<MapType>.set(player.position);
-			draw_warp_cursor = true;
+			warped_from = position;
 
 			return true;
 		}
@@ -57,7 +57,7 @@ namespace necrowarp {
 		steam_stats::stats<steam_stat_e::MetersWarped> += offset_t::distance<f32>(position, player.position);
 
 		warp_cursor<MapType>.set(player.position);
-		draw_warp_cursor = true;
+		warped_from = position;
 
 		return true;
 	}

@@ -536,6 +536,12 @@ namespace necrowarp {
 
 				buffer_access.unlock();
 			}
+
+			if (show_big_map) {
+				big_map<MapType>.update(button_e::Left);
+			} else {
+				minimap<MapType>.update(button_e::Left);
+			}
 		}
 
 		template<map_type_e MapType> static inline void draw(ref<renderer_t> renderer) noexcept {

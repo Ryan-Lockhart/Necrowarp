@@ -65,7 +65,7 @@ namespace necrowarp {
 				colors::Green
 			};
 
-			draw_cursor = any_hovered<MapType>() || !(((globals::map_bounds<MapType>() + extent_t{ 1, 1 }) * globals::cell_size<grid_type_e::Game>) + globals::grid_origin<grid_type_e::Game>()).within(ui_cursor.get_position());
+			draw_cursor = any_hovered<MapType>();
 
 			ui_cursor.update();
 
@@ -97,7 +97,7 @@ namespace necrowarp {
 					grid_cursor<MapType>.draw(grid_cursor_texture, camera<MapType>, globals::grid_origin<grid_type_e::Game>() + globals::SparseTileNudge);
 				}
 
-				if (draw_warp_cursor) {
+				if (warped_from.has_value()) {
 					warp_cursor<MapType>.draw(grid_cursor_texture, camera<MapType>, globals::grid_origin<grid_type_e::Game>() + globals::SparseTileNudge);
 				}
 			}
@@ -115,7 +115,7 @@ namespace necrowarp {
 			}, phase.current_phase);
 
 			title_label.draw(renderer);
-			//fps_label.draw(renderer);
+			fps_label.draw(renderer);
 
 			if (phase.current_phase != phase_e::Playing || draw_cursor) {
 				ui_cursor.draw(ui_cursor_texture);

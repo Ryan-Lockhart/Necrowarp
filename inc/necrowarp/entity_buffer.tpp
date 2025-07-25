@@ -14,7 +14,8 @@ namespace necrowarp {
 	template<map_type_e MapType> extern grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor;
 
 	extern bool draw_cursor;
-	extern bool draw_warp_cursor;
+
+	extern std::optional<offset_t> warped_from;
 
 	extern player_t player_buffer;
 

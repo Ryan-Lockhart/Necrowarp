@@ -20,7 +20,7 @@ namespace necrowarp {
 
 	namespace globals {
 		constexpr cstr GameName{ "Necrowarp" };
-		constexpr cstr GameVersion{ "0.1.2rc-1" };
+		constexpr cstr GameVersion{ "0.1.2rc-2" };
 		constexpr cstr GameAuthor{ "Ryan Lockhart" };
 
 		const std::string GameTitle{ std::format("{} v{} by {}", GameName, GameVersion, GameAuthor) };
@@ -182,7 +182,7 @@ namespace necrowarp {
 			}
 		}
 		
-		static inline extent_t window_size{ Resolutions[resolution_e::Resolution2560x1600] };
+		static inline extent_t window_size{ Resolutions[resolution_e::Resolution1920x1080] };
 
 		template<grid_type_e GridType> static constexpr extent_t cell_size;
 
@@ -235,20 +235,28 @@ namespace necrowarp {
 
 		static constexpr distance_function_e DistanceFunction{ distance_function_e::Octile };
 
+		constexpr extent_t RenderBorder{ 1, 1 };
+
 		template<map_type_e MapType> static constexpr extent_t MapSize;
 
-		template<> inline constexpr extent_t MapSize<map_type_e::Standard>{ 128, 128 };
-		template<> inline constexpr extent_t MapSize<map_type_e::Pocket>{ 64, 64 };
+		template<> inline constexpr extent_t MapSize<map_type_e::Standard>{ extent_t{ 128, 128 } + RenderBorder };
+		template<> inline constexpr extent_t MapSize<map_type_e::Pocket>{ extent_t{ 64, 64 } + RenderBorder };
 
-		template<map_type_e MapType> static constexpr offset_t MapOrigin{ offset_t::Zero };
-		template<map_type_e MapType> static constexpr offset_t MapExtent{ MapOrigin<MapType> + MapSize<MapType> - 1 };
+		template<map_type_e MapType> static constexpr offset_t MapOrigin{ RenderBorder };
+		template<map_type_e MapType> static constexpr offset_t MapExtent{ MapOrigin<MapType> + MapSize<MapType> - RenderBorder };
 
 		template<map_type_e MapType> static constexpr rect_t MapBounds{ MapOrigin<MapType>, MapSize<MapType> };
 
 		template<map_type_e MapType> static inline rect_t map_bounds() noexcept {
-			const extent_t excess{ max<offset_t::scalar_t>(grid_size<grid_type_e::Game>().w - MapSize<MapType>.w, 0), max<offset_t::scalar_t>(grid_size<grid_type_e::Game>().h - MapSize<MapType>.h, 0) };
+			const extent_t excess{
+				max<offset_t::scalar_t>(grid_size<grid_type_e::Game>().w - MapSize<MapType>.w, 0),
+				max<offset_t::scalar_t>(grid_size<grid_type_e::Game>().h - MapSize<MapType>.h, 0)
+			};
 
-			return rect_t{ offset_t{ excess.w / 2, excess.h / 2 }, extent_t{ grid_size<grid_type_e::Game>().w - excess.w - 1, grid_size<grid_type_e::Game>().h - excess.h - 1 } };
+			return rect_t{
+				offset_t{ excess.w / 2, excess.h / 2 },
+				extent_t{ grid_size<grid_type_e::Game>().w - excess.w, grid_size<grid_type_e::Game>().h - excess.h}
+			};
 		}
 
 		template<map_type_e MapType> static constexpr offset_t MapCenter{ MapSize<MapType> / 2 };
@@ -269,7 +277,8 @@ namespace necrowarp {
 			return offset_t{ offset_t::scalar_cast(position.x * GlyphToCellRatio), offset_t::scalar_cast(position.y * GlyphToCellRatio) };
 		}
 
-		template<map_type_e MapType> static inline extent_t camera_extent() noexcept { return MapSize<MapType> - globals::grid_size<grid_type_e::Game>(); }
+		template<map_type_e MapType> static inline extent_t camera_origin() noexcept { return RenderBorder; }
+		template<map_type_e MapType> static inline extent_t camera_extent() noexcept { return MapSize<MapType> - globals::grid_size<grid_type_e::Game>() - RenderBorder; }
 
 		template<map_type_e MapType> static inline offset_t::scalar_t camera_speed;
 
@@ -354,10 +363,10 @@ namespace necrowarp {
 		constexpr bool EnableTribulationPortal{ true };
 		constexpr bool EnableAudiencePortal{ true };
 
-		constexpr offset_t CavernTileNudge{ 32, 32 };
-		constexpr offset_t FluidTileNudge{ 32, 32 };
+		constexpr offset_t CavernTileNudge{ 0, 0 };
+		constexpr offset_t FluidTileNudge{ 0, 0 };
 
-		constexpr offset_t SparseTileNudge{ 0, 0 };
+		constexpr offset_t SparseTileNudge{ -32, -32 };
 
 		constexpr f16 FluidPoolMinimumVolume{ 4.5f };
 		constexpr f16 FluidPoolMaximumVolume{ 5.7f };

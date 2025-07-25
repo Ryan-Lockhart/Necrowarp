@@ -58,9 +58,10 @@ namespace necrowarp {
 	template<map_type_e MapType> static inline grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor{ colors::Magenta, game_map<MapType>.zone_origin, game_map<MapType>.zone_extent };
 
 	static inline bool draw_cursor{ true };
-	static inline bool draw_warp_cursor{ false };
 
-	template<map_type_e MapType> static inline camera_t camera{ globals::grid_size<grid_type_e::Game>(), extent_t::Zero, globals::camera_extent<MapType>() };
+	static inline std::optional<offset_t> warped_from{ std::nullopt };
+
+	template<map_type_e MapType> static inline camera_t camera{ globals::grid_size<grid_type_e::Game>(), globals::camera_origin<MapType>(), globals::camera_extent<MapType>() };
 
 	static inline bool camera_locked{ true };
 
@@ -72,10 +73,55 @@ namespace necrowarp {
 	static constexpr usize cursor_interval{ 125ULL };
 	static inline bleak::timer_t cursor_timer{ cursor_interval };
 
-	static constexpr usize epoch_interval{ 250ULL };
-	static inline bleak::timer_t epoch_timer{ epoch_interval };
+	enum struct timestep_e : u8 {
+		Slow,
+		Normal,
+		Fast,
+		Faster,
+		Ludicrous
+	};
 
-	static inline std::uniform_int_distribution<usize> epoch_interval_dis{ static_cast<usize>(epoch_interval * 0.10), static_cast<usize>(epoch_interval * 0.90) };
+	static constexpr bleak::lut_t<timestep_e, usize, magic_enum::enum_count<timestep_e>()> epoch_interval{
+		pair_t<timestep_e, usize>{ timestep_e::Slow, 325ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Normal, 250ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Fast, 125ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Faster, 50ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Ludicrous, 25ULL }
+	};
+
+	static inline timestep_e epoch_timestep{ timestep_e::Normal };
+
+	static inline bleak::timer_t epoch_timer{ epoch_interval[epoch_timestep] };
+
+	static inline std::uniform_int_distribution<usize> epoch_interval_dis{ static_cast<usize>(epoch_interval[epoch_timestep] * 0.10), static_cast<usize>(epoch_interval[epoch_timestep] * 0.90) };
+
+	static inline bool hasten_timestep() noexcept {
+		if (epoch_timestep == timestep_e::Ludicrous) {
+			return false;
+		}
+
+		epoch_timestep = static_cast<timestep_e>(static_cast<u8>(epoch_timestep) + 1);
+
+		epoch_timer.interval = epoch_interval[epoch_timestep];
+
+		epoch_interval_dis = std::uniform_int_distribution<usize>{ static_cast<usize>(epoch_interval[epoch_timestep] * 0.10), static_cast<usize>(epoch_interval[epoch_timestep] * 0.90) };
+
+		return true;
+	}
+
+	static inline bool harry_timestep() noexcept {
+		if (epoch_timestep == timestep_e::Slow) {
+			return false;
+		}
+
+		epoch_timestep = static_cast<timestep_e>(static_cast<u8>(epoch_timestep) - 1);
+
+		epoch_timer.interval = epoch_interval[epoch_timestep];
+
+		epoch_interval_dis = std::uniform_int_distribution<usize>{ static_cast<usize>(epoch_interval[epoch_timestep] * 0.10), static_cast<usize>(epoch_interval[epoch_timestep] * 0.90) };
+
+		return true;
+	}
 
 	template<RandomEngine Generator> static inline usize random_epoch_interval(ref<Generator> engine) noexcept { return epoch_interval_dis(engine); }
 	

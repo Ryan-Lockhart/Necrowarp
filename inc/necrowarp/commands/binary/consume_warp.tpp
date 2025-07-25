@@ -38,7 +38,7 @@ namespace necrowarp {
 				player.pay_cost(discount_e::PreciseWarp);
 				player.bolster_armor(armor_boon + player.max_armor() / 8);
 
-				draw_warp_cursor = false;
+							warped_from = std::nullopt;
 
 				return;
 			} case entity_e::Bonespur: {
@@ -53,7 +53,7 @@ namespace necrowarp {
 				player.pay_cost(discount_e::PreciseWarp);
 				player.bolster_armor(armor_boon + player.max_armor() / 4);
 
-				draw_warp_cursor = false;
+				warped_from = std::nullopt;
 
 				return;
 			} default: {

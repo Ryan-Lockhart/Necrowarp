@@ -153,7 +153,7 @@ namespace necrowarp {
 
 				player.command = command_pack_t{ command_type, player.position, target_position };
 
-				draw_warp_cursor = false;
+				warped_from = std::nullopt;
 
 				return true;
 			}
@@ -565,21 +565,35 @@ namespace necrowarp {
 				return;
 			}
 
-			if (input_timer.ready()) {
-				if (epoch_timer.ready() && !player_acted) {
-					player_acted = character_input<MapType>();
+			if (epoch_timer.ready() && !player_acted) {
+				player_acted = character_input<MapType>();
 
-					if (player_acted) {
-						epoch_timer.record();
-					}
+				if (player_acted) {
+					epoch_timer.record();
+
+					return;
 				}
+			}
 
-				if (player_acted || camera_input<MapType>()) {
+			if (input_timer.ready()) {
+				if (camera_input<MapType>()) {
 					input_timer.record();
+
+					return;
 				} else if (keyboard_s::is_key<input_e::Down>(keys::Alpha::M)) {
 					phase_state_t<phase_e::Playing>::show_big_map = !phase_state_t<phase_e::Playing>::show_big_map;
 
 					input_timer.record();
+
+					return;
+				} else if (keyboard_s::is_key<input_e::Down>(bindings::HastenTimestep) && hasten_timestep()) {
+					input_timer.record();
+
+					return;
+				} else if (keyboard_s::is_key<input_e::Down>(bindings::HarryTimestep) && harry_timestep()) {
+					input_timer.record();
+
+					return;
 				}
 			}
 		}

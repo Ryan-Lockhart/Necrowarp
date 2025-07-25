@@ -18,6 +18,8 @@
 namespace necrowarp {	
 	using namespace bleak;
 
+	static inline bool camera_overridden{ false };
+
 	template<typename T> struct is_entity_registry {
 		static constexpr bool value{ false };
 	};
@@ -37,7 +39,8 @@ namespace necrowarp {
 	template<map_type_e MapType> extern grid_cursor_t<globals::cell_size<grid_type_e::Game>> warp_cursor;
 
 	extern bool draw_cursor;
-	extern bool draw_warp_cursor;
+
+	extern std::optional<offset_t> warped_from;
 
 	static inline player_t player{};
 
@@ -66,6 +69,10 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> static inline bool update_camera() noexcept {
+		if (camera_overridden) {
+			return false;
+		}
+
 		bool force_width{ globals::MapSize<MapType>.w <= globals::grid_size<grid_type_e::Game>().w };
 		bool force_height{ globals::MapSize<MapType>.h <= globals::grid_size<grid_type_e::Game>().h };
 
@@ -99,6 +106,26 @@ namespace necrowarp {
 		}
 
 		return false;
+	}
+
+	template<map_type_e MapType> static inline bool update_camera(offset_t override) noexcept {
+		bool force_width{ globals::MapSize<MapType>.w <= globals::grid_size<grid_type_e::Game>().w };
+		bool force_height{ globals::MapSize<MapType>.h <= globals::grid_size<grid_type_e::Game>().h };
+
+		bool moved{ false };
+
+		if (force_width || force_height) {
+			moved = camera<MapType>.center_on(
+				force_width, globals::MapCenter<MapType>.x,
+				force_height, globals::MapCenter<MapType>.y
+			);
+
+			return moved;
+		}
+
+		moved = camera<MapType>.center_on(override);
+
+		return moved;
 	}
 
 	template<map_type_e MapType> static inline entity_registry_t<MapType> entity_registry{};

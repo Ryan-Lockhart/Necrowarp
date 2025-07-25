@@ -13,6 +13,8 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	extern bool camera_overridden;
+
 	template<map_type_e MapType, extent_t PixelSize = extent_t{ 1, 1 }> struct embedded_minimap_t {
 		embedded_box_t box;
 		extent_t padding;
@@ -28,6 +30,18 @@ namespace necrowarp {
 		constexpr extent_t external_size() const noexcept { return internal_size() + padding * 2; }
 
 		constexpr bool is_hovered(offset_t position) const noexcept { return mouse_s::is_inside(apply_padding(position), external_size()); }
+
+		constexpr void update(button_e button, offset_t position) noexcept {
+			if (!is_hovered(position) || !mouse_s::is_button<input_e::Pressed>(button)) {
+				camera_overridden = false;
+
+				return;
+			}
+
+			const offset_t mouse_pos{ mouse_s::get_position() };
+
+			camera_overridden = update_camera<MapType>((mouse_pos - position) / PixelSize);
+		}
 
 		template<typename Entities, typename Objects> constexpr void draw(ref<renderer_t> renderer, cref<Entities> entities, cref<Objects> objects, offset_t position) const noexcept {
 			renderer.draw_composite_rect(rect_t{ apply_padding(position), external_size() }, box.background, box.border.color, box.border.thickness * globals::cell_size<grid_type_e::UI>.w);
@@ -67,6 +81,15 @@ namespace necrowarp {
 				}
 			}
 
+			if (warped_from.has_value()) {
+				const color_t warp_color{ colors::light::Magenta, sine_wave.current_value() };
+
+				const offset_t origin{ position + warped_from.value() * PixelSize };
+				const offset_t current{ position + player.position * PixelSize };
+
+				renderer.draw_line(origin, current, warp_color);
+			}
+
 			renderer.draw_outline_rect(rect_t{ position + camera<MapType>.get_position() * PixelSize, camera<MapType>.get_size() * PixelSize }, colors::metals::Gold);
 		}
 	};
@@ -78,7 +101,11 @@ namespace necrowarp {
 		constexpr minimap_t(anchor_t anchor, embedded_box_t box, extent_t padding) noexcept : anchor_t{ anchor }, embedded_minimap_t<MapType, PixelSize>{ box, padding } {}
 
 		constexpr bool is_hovered() const noexcept {
-			return embedded_minimap_t<MapType, PixelSize>::is_hovered(anchor_t::get_offset(embedded_minimap_t<MapType, PixelSize>::external_size()));
+			return embedded_minimap_t<MapType, PixelSize>::is_hovered(get_offset(embedded_minimap_t<MapType, PixelSize>::external_size()));
+		}
+
+		constexpr void update(button_e button) noexcept {
+			return embedded_minimap_t<MapType, PixelSize>::update(button, get_offset(embedded_minimap_t<MapType, PixelSize>::external_size()));
 		}
 
 		template<typename Entities, typename Objects> constexpr void draw(ref<renderer_t> renderer, cref<Entities> entities, cref<Objects> objects) const noexcept {

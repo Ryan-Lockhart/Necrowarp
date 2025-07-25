@@ -27,6 +27,6 @@ namespace necrowarp {
 
 		steam_stats::stats<steam_stat_e::MetersWarped> += offset_t::distance<f32>(source_position, player.position);
 
-		draw_warp_cursor = false;		
+		warped_from = std::nullopt;		
 	}
 } // namespace necrowarp

@@ -116,6 +116,7 @@ namespace necrowarp {
 
 			template<shackle_e Shackle> static constexpr color_t Shackles;
 
+			template<> inline constexpr color_t Shackles<shackle_e::Unshackled>{ colors::light::Intrite };
 			template<> inline constexpr color_t Shackles<shackle_e::Calcitic>{ u8{ 255 }, u8{ 255 }, u8{ 240 } };
 			template<> inline constexpr color_t Shackles<shackle_e::Spectral>{ u8{  72 }, u8{ 100 }, u8{  83 } };
 			template<> inline constexpr color_t Shackles<shackle_e::Sanguine>{ u8{ 157 }, u8{  34 }, u8{  53 } };

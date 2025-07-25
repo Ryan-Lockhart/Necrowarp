@@ -257,8 +257,8 @@ namespace necrowarp {
 				return;
 			}
 
-			for (offset_t::scalar_t y{ max(offset_t::scalar_t{ 0 }, origin.y) }; y < min(game_map<MapType>.zone_size.h, camera_extent.h); ++y) {
-				for (offset_t::scalar_t x{ max(offset_t::scalar_t{ 0 }, origin.x) }; x < min(game_map<MapType>.zone_size.w, camera_extent.w); ++x) {
+			for (offset_t::scalar_t y{ max(offset_t::scalar_t{ 0 }, origin.y - 1) }; y < min(game_map<MapType>.zone_size.h, camera_extent.h + 1); ++y) {
+				for (offset_t::scalar_t x{ max(offset_t::scalar_t{ 0 }, origin.x - 1) }; x < min(game_map<MapType>.zone_size.w, camera_extent.w + 1); ++x) {
 					const offset_t position{ x, y };
 
 					draw(atlas, entities, objects, position, camera.get_offset());
@@ -274,8 +274,8 @@ namespace necrowarp {
 				return;
 			}
 
-			for (offset_t::scalar_t y{ max(offset_t::scalar_t{ 0 }, origin.y) }; y < min(game_map<MapType>.zone_size.h, camera_extent.h); ++y) {
-				for (offset_t::scalar_t x{ max(offset_t::scalar_t{ 0 }, origin.x) }; x < min(game_map<MapType>.zone_size.w, camera_extent.w); ++x) {
+			for (offset_t::scalar_t y{ max(offset_t::scalar_t{ 0 }, origin.y - 1) }; y < min(game_map<MapType>.zone_size.h, camera_extent.h + 1); ++y) {
+				for (offset_t::scalar_t x{ max(offset_t::scalar_t{ 0 }, origin.x - 1) }; x < min(game_map<MapType>.zone_size.w, camera_extent.w + 1); ++x) {
 					const offset_t position{ x, y };
 
 					draw(atlas, entities, objects, position, offset + camera.get_offset());
@@ -291,16 +291,16 @@ namespace necrowarp {
 				return;
 			}
 
-			for (offset_t::scalar_t y{ max(offset_t::scalar_t{ 0 }, origin.y) }; y < min(game_map<MapType>.zone_size.h, camera_extent.h); ++y) {
-				for (offset_t::scalar_t x{ max(offset_t::scalar_t{ 0 }, origin.x) }; x < min(game_map<MapType>.zone_size.w, camera_extent.w); ++x) {
+			for (offset_t::scalar_t y{ max(offset_t::scalar_t{ 0 }, origin.y - 1) }; y < min(game_map<MapType>.zone_size.h, camera_extent.h + 1); ++y) {
+				for (offset_t::scalar_t x{ max(offset_t::scalar_t{ 0 }, origin.x - 1) }; x < min(game_map<MapType>.zone_size.w, camera_extent.w + 1); ++x) {
 					const offset_t position{ x, y };
 
 					game_map<MapType>[position].draw_floor(atlas, position, offset + camera.get_offset(), nudge + globals::CavernTileNudge);
 				}
 			}
 
-			for (offset_t::scalar_t y{ max(offset_t::scalar_t{ 0 }, origin.y) }; y < min(game_map<MapType>.zone_size.h, camera_extent.h); ++y) {
-				for (offset_t::scalar_t x{ max(offset_t::scalar_t{ 0 }, origin.x) }; x < min(game_map<MapType>.zone_size.w, camera_extent.w); ++x) {
+			for (offset_t::scalar_t y{ max(offset_t::scalar_t{ 0 }, origin.y - 1) }; y < min(game_map<MapType>.zone_size.h, camera_extent.h + 1); ++y) {
+				for (offset_t::scalar_t x{ max(offset_t::scalar_t{ 0 }, origin.x - 1) }; x < min(game_map<MapType>.zone_size.w, camera_extent.w + 1); ++x) {
 					const offset_t position{ x, y };
 
 					draw(atlas, entities, objects, position, offset + camera.get_offset(), nudge);
