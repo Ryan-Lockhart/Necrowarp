@@ -208,7 +208,7 @@ namespace necrowarp {
 			glyph_t glyph{ entity_glyphs<skulker_t> };
 
 			if (!is_visible()) {
-				glyph.color.fade(is_imperceptible() ? 0.1f : 0.5f);
+				glyph.color.fade(stealth_wave.current_value() + (is_imperceptible() ? 0.1 : 0.25));
 			}
 
 			return glyph;

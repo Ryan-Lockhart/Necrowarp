@@ -56,7 +56,7 @@ namespace necrowarp {
 		const bool is_growing{ bulk != bulk_e::Titanic };
 
 		if (threat_nearby && (is_skittish || is_injured)) {
-			cauto flee_pos{ neutral_goal_map<MapType>.dependent ascend<region_e::Interior>(position, entity_registry<MapType>) };
+			cauto flee_pos{ non_neutral_goal_map<MapType>.dependent ascend<region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (flee_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, flee_pos.value() };
@@ -107,17 +107,17 @@ namespace necrowarp {
 			}
 		}
 
-		cauto descent_pos{ neutral_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
+		cauto descent_pos{ non_neutral_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 		if (!descent_pos.has_value()) {
 			return command_pack_t{ command_e::None };
 		}
 
 		if (is_skittish || is_injured) {
-			const i8 distance{ static_cast<i8>(std::round(neutral_goal_map<MapType>.at(descent_pos.value()))) };
+			const i8 distance{ static_cast<i8>(std::round(non_neutral_goal_map<MapType>.at(descent_pos.value()))) };
 
 			if (distance < SkittishApproachDistance) {
-				cauto flee_pos{ neutral_goal_map<MapType>.dependent ascend<region_e::Interior>(position, entity_registry<MapType>) };
+				cauto flee_pos{ non_neutral_goal_map<MapType>.dependent ascend<region_e::Interior>(position, entity_registry<MapType>) };
 
 				if (!flee_pos.has_value()) {
 					return command_pack_t{ command_e::None };

@@ -113,9 +113,9 @@ namespace necrowarp {
 		ChaoticWarp,			// warp to a random, preferrably safe, position within the interior of the map; if not free, out of energy, and in the presence of hostiles can still be used dangerously
 		PreciseWarp,			// warp to a specific position within the interior of the map for locomotion or consumption
 
+		Annihilate,				// linear area of effect combat command
+		Repulse,				// circular area of effect combat command
 		Calcify,				// single target utility command; convert an open tile with bones into a temporary wall
-	 	Repulse,				// circular area of effect combat command
-	 	Annihilate,				// linear area of effect combat command
 		Incorporealize,			// discard body temporarily and enter wraith-world becoming untargetable and undetectable
 
 		CalciticInvocation,		// domain of bones; patrons are Kalypdrot, Rathghul, and Ionna; minions are skeletons and bonespurs
@@ -137,12 +137,12 @@ namespace necrowarp {
 				return 11;
 			} case discount_e::PreciseWarp: {
 				return 11;
-			} case discount_e::Calcify: {
-				return 16;
-			} case discount_e::Repulse: {
-				return 16;
 			} case discount_e::Annihilate: {
 				return 13;
+			} case discount_e::Repulse: {
+				return 16;
+			} case discount_e::Calcify: {
+				return 16;
 			} case discount_e::Incorporealize: {
 				return 9;
 			} case discount_e::CalciticInvocation: {
@@ -175,12 +175,12 @@ namespace necrowarp {
 				return "Chaotic Warp";
 			} case discount_e::PreciseWarp: {
 				return "Precise Warp";
-			} case discount_e::Calcify: {
-				return "Calcify";
-			} case discount_e::Repulse: {
-				return "Repulse";
 			} case discount_e::Annihilate: {
 				return "Annihilate";
+			} case discount_e::Repulse: {
+				return "Repulse";
+			} case discount_e::Calcify: {
+				return "Calcify";
 			} case discount_e::Incorporealize: {
 				return "Incorporealize";
 			} case discount_e::CalciticInvocation: {
@@ -230,11 +230,11 @@ namespace necrowarp {
 
 		switch (type) {
 			case discount_type_e::Malus: {
-				return colored_string.concatenate(runes_t{ std::format("+{} ", abs(value)), colors::Red });
+				return colored_string.concatenate(runes_t{ std::format("+{:<2}", abs(value)), colors::Red });
 			} case discount_type_e::Placebo: {
 				return colored_string.concatenate(runes_t{ " 0 ", colors::Yellow });
 			} case discount_type_e::Boon: {
-				return colored_string.concatenate(runes_t{ std::format("-{} ", abs(value)), colors::Green });
+				return colored_string.concatenate(runes_t{ std::format("-{:<2}", abs(value)), colors::Green });
 			}
 		}
 	}
@@ -244,11 +244,11 @@ namespace necrowarp {
 
 		switch (type) {
 			case discount_type_e::Malus: {
-				return colored_string.concatenate(runes_t{ std::format("+{} ", abs(value)), colors::Red });
+				return colored_string.concatenate(runes_t{ std::format("+{:<2}", abs(value)), colors::Red });
 			} case discount_type_e::Placebo: {
-				return colored_string.concatenate(runes_t{ " 0 ", colors::Yellow });
+				return colored_string.concatenate(runes_t{ " 0  ", colors::Yellow });
 			} case discount_type_e::Boon: {
-				return colored_string.concatenate(runes_t{ std::format("-{} ", abs(value)), colors::Green });
+				return colored_string.concatenate(runes_t{ std::format("-{:<2}", abs(value)), colors::Green });
 			}
 		}
 	}
@@ -279,9 +279,9 @@ namespace necrowarp {
 		const discount_t chaotic_warp{};
 		const discount_t precise_warp{};
 
-		const discount_t calcify{};
-		const discount_t repulse{};
 		const discount_t annihilate{};
+		const discount_t repulse{};
+		const discount_t calcify{};
 		const discount_t incorporealize{};
 
 		const discount_t calcitic_invocation{};
@@ -302,12 +302,12 @@ namespace necrowarp {
 					return chaotic_warp;
 				} case discount_e::PreciseWarp: {
 					return precise_warp;
-				} case discount_e::Calcify: {
-					return calcify;
-				} case discount_e::Repulse: {
-					return repulse;
 				} case discount_e::Annihilate: {
 					return annihilate;
+				} case discount_e::Repulse: {
+					return repulse;
+				} case discount_e::Calcify: {
+					return calcify;
 				} case discount_e::Incorporealize: {
 					return incorporealize;
 				} case discount_e::CalciticInvocation: {
@@ -343,9 +343,9 @@ namespace necrowarp {
 		.chaotic_warp = discount_t{ 0, 1, 2 },
 		.precise_warp = discount_t{ 0, 2, 4 },
 
-		.calcify = discount_t{ 0, 0, 0 },
-		.repulse = discount_t{ 0, 0, 0 },
 		.annihilate = discount_t{ 0, 0, 0 },
+		.repulse = discount_t{ 0, 0, 0 },
+		.calcify = discount_t{ 0, 0, 0 },
 		.incorporealize = discount_t{ 0, 0, 0 },
 
 		.calcitic_invocation = discount_t{ 0, 0, 0 },
@@ -367,22 +367,22 @@ namespace necrowarp {
 		.chaotic_warp = discount_t{ 0, 0, 1 },
 		.precise_warp = discount_t{ 0, 0, 2 },
 
-		.calcify = discount_t{ 0, 0, 0 },
-		.repulse = discount_t{ 0, 0, 0 },
-		.annihilate = discount_t{ 0, 0, 0 },
-		.incorporealize = discount_t{ 0, 0, 0 },
+		.annihilate = discount_t{ -4, -2, 0 },
+		.repulse = discount_t{ 0, 4, 8 },
+		.calcify = discount_t{ 0, 2, 4 },
+		.incorporealize = discount_t{ -4, -2, 0 },
 
 		.calcitic_invocation = discount_t{ 0, 4, 6 },
 		.spectral_invocation = discount_t{ -6, -2, 2 },
 		.sanguine_invocation = discount_t{ -4, 0, 4 },
 		.galvanic_invocation = discount_t{ -4, 0, 4 },
-		.ravenous_invocation = discount_t{ 0, 0, 0 },
-		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.infernal_invocation = discount_t{ 0, 0, 0 },
-		.cerebral_invocation = discount_t{ 0, 0, 0 },
+		.ravenous_invocation = discount_t{ -6, -2, 2 },
+		.wretched_invocation = discount_t{ 0, 4, 6 },
+		.infernal_invocation = discount_t{ -6, -2, 2 },
+		.cerebral_invocation = discount_t{ -6, -2, 2 },
 
 		.necromantic_ascendance = discount_t{ -8, 0, 4 },
-		.calamitous_retaliation = discount_t{ 0, 0, 0 },
+		.calamitous_retaliation = discount_t{ 4, 8, 12 },
 	};
 
 	template<> inline patron_t patrons<patron_e::Akurakhaithan>{
@@ -391,22 +391,22 @@ namespace necrowarp {
 		.chaotic_warp = discount_t{ 0, 0, 1 },
 		.precise_warp = discount_t{ 0, 0, 2 },
 
-		.calcify = discount_t{ 0, 0, 0 },
-		.repulse = discount_t{ 0, 0, 0 },
-		.annihilate = discount_t{ 0, 0, 0 },
-		.incorporealize = discount_t{ 0, 0, 0 },
+		.annihilate = discount_t{ 0, 4, 8 },
+		.repulse = discount_t{ -4, -2, 0 },
+		.calcify = discount_t{ -4, -2, 0 },
+		.incorporealize = discount_t{ 0, 2, 4 },
 
 		.calcitic_invocation = discount_t{ -4, 0, 4 },
 		.spectral_invocation = discount_t{ 0, 4, 6 },
 		.sanguine_invocation = discount_t{ -6, -2, 2 },
 		.galvanic_invocation = discount_t{ -4, 0, 4 },
-		.ravenous_invocation = discount_t{ 0, 0, 0 },
-		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.infernal_invocation = discount_t{ 0, 0, 0 },
-		.cerebral_invocation = discount_t{ 0, 0, 0 },
+		.ravenous_invocation = discount_t{ -6, -2, 2 },
+		.wretched_invocation = discount_t{ -6, -2, 2 },
+		.infernal_invocation = discount_t{ -4, 0, 4 },
+		.cerebral_invocation = discount_t{ 0, 4, 6 },
 
 		.necromantic_ascendance = discount_t{ -4, 0, 8 },
-		.calamitous_retaliation = discount_t{ 0, 0, 0 },
+		.calamitous_retaliation = discount_t{ -4, 0, 4 },
 	};
 
 	template<> inline patron_t patrons<patron_e::Merirfin>{
@@ -415,22 +415,22 @@ namespace necrowarp {
 		.chaotic_warp = discount_t{ 0, 0, 1 },
 		.precise_warp = discount_t{ 0, 0, 2 },
 
-		.calcify = discount_t{ 0, 0, 0 },
-		.repulse = discount_t{ 0, 0, 0 },
-		.annihilate = discount_t{ 0, 0, 0 },
-		.incorporealize = discount_t{ 0, 0, 0 },
+		.annihilate = discount_t{ 0, 2, 4 },
+		.repulse = discount_t{ 0, 2, 4 },
+		.calcify = discount_t{ -4, -2, 0 },
+		.incorporealize = discount_t{ -8, -4, 0 },
 
 		.calcitic_invocation = discount_t{ -4, 0, 4 },
 		.spectral_invocation = discount_t{ -6, -2, 2 },
 		.sanguine_invocation = discount_t{ 0, 4, 6 },
 		.galvanic_invocation = discount_t{ -4, 0, 4 },
-		.ravenous_invocation = discount_t{ 0, 0, 0 },
-		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.infernal_invocation = discount_t{ 0, 0, 0 },
-		.cerebral_invocation = discount_t{ 0, 0, 0 },
+		.ravenous_invocation = discount_t{ -4, 0, 4 },
+		.wretched_invocation = discount_t{ -6, -2, 2 },
+		.infernal_invocation = discount_t{ -4, 0, 4 },
+		.cerebral_invocation = discount_t{ -6, -2, 2 },
 
 		.necromantic_ascendance = discount_t{ -6, 0, 6 },
-		.calamitous_retaliation = discount_t{ 0, 0, 0 },
+		.calamitous_retaliation = discount_t{ 0, 8, 16 },
 	};
 
 	template<> inline patron_t patrons<patron_e::Saeiligarkeuss>{
@@ -439,22 +439,22 @@ namespace necrowarp {
 		.chaotic_warp = discount_t{ -1, 1, 2 },
 		.precise_warp = discount_t{ -2, 2, 4 },
 
-		.calcify = discount_t{ 0, 0, 0 },
-		.repulse = discount_t{ 0, 0, 0 },
-		.annihilate = discount_t{ 0, 0, 0 },
-		.incorporealize = discount_t{ 0, 0, 0 },
+		.annihilate = discount_t{ -8, 0, 4 },
+		.repulse = discount_t{ -8, 0, 4 },
+		.calcify = discount_t{ -4, 0, 2 },
+		.incorporealize = discount_t{ -4, 0, 2 },
 
 		.calcitic_invocation = discount_t{ -8, 0, 4 },
 		.spectral_invocation = discount_t{ -8, 0, 4 },
 		.sanguine_invocation = discount_t{ -8, 0, 4 },
-		.galvanic_invocation = discount_t{ -6, 0, 6 },
-		.ravenous_invocation = discount_t{ 0, 0, 0 },
-		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.infernal_invocation = discount_t{ 0, 0, 0 },
-		.cerebral_invocation = discount_t{ 0, 0, 0 },
+		.galvanic_invocation = discount_t{ -12, 0, 6 },
+		.ravenous_invocation = discount_t{ -12, 0, 6 },
+		.wretched_invocation = discount_t{ -12, 0, 6 },
+		.infernal_invocation = discount_t{ -12, 4, 6 },
+		.cerebral_invocation = discount_t{ -12, 4, 6 },
 
-		.necromantic_ascendance = discount_t{ 0, 8, 16 },
-		.calamitous_retaliation = discount_t{ 0, 0, 0 },
+		.necromantic_ascendance = discount_t{ -8, 4, 12 },
+		.calamitous_retaliation = discount_t{ -16, 0, 16 },
 	};
 
 	constexpr discount_type_e get_discount_type(i8 value) {

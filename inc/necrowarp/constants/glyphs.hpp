@@ -14,17 +14,22 @@ namespace necrowarp {
 		constexpr const glyph_t ChaoticWarp{ 0x00, colors::White };
 		constexpr const glyph_t PreciseWarp{ 0x01, colors::White };
 
-		constexpr const glyph_t CalciticInvocation{ 0x02, colors::White };
-		constexpr const glyph_t SpectralInvocation{ 0x03, colors::White };
-		constexpr const glyph_t SanguineInvocation{ 0x04, colors::White };
-		constexpr const glyph_t GalvanicInvocation{ 0x05, colors::White };
-		constexpr const glyph_t RavenousInvocation{ 0x06, colors::White };
-		constexpr const glyph_t WretchedInvocation{ 0x07, colors::White };
-		constexpr const glyph_t CerebralInvocation{ 0x08, colors::White };
-		constexpr const glyph_t InfernalInvocation{ 0x09, colors::White };
+		constexpr const glyph_t Annihilate{ 0x02, colors::White };
+		constexpr const glyph_t Repulse{ 0x03, colors::White };
+		constexpr const glyph_t Calcify{ 0x04, colors::White };
+		constexpr const glyph_t Incorporealize{ 0x05, colors::White };
 
-		constexpr const glyph_t NecromanticAscendance{ 0x0A, colors::White };
-		constexpr const glyph_t CalamitousRetaliation{ 0x0B, colors::White };
+		constexpr const glyph_t CalciticInvocation{ 0x06, colors::White };
+		constexpr const glyph_t SpectralInvocation{ 0x07, colors::White };
+		constexpr const glyph_t SanguineInvocation{ 0x08, colors::White };
+		constexpr const glyph_t GalvanicInvocation{ 0x09, colors::White };
+		constexpr const glyph_t RavenousInvocation{ 0x0A, colors::White };
+		constexpr const glyph_t WretchedInvocation{ 0x0B, colors::White };
+		constexpr const glyph_t CerebralInvocation{ 0x0C, colors::White };
+		constexpr const glyph_t InfernalInvocation{ 0x0D, colors::White };
+
+		constexpr const glyph_t NecromanticAscendance{ 0x0E, colors::White };
+		constexpr const glyph_t CalamitousRetaliation{ 0x0F, colors::White };
 	} // namespace icons
 
 	namespace glyphs {

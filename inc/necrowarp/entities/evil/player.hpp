@@ -65,6 +65,11 @@ namespace necrowarp {
 
 	TYPE_TRAIT_VALUE(is_devourable, player_t, true);
 
+	template<> struct is_incorporeal<player_t>{
+		static constexpr bool value = true;
+		static constexpr bool conditional = true;
+	};
+
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, consume_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, descend_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, plunge_t, true);
@@ -72,10 +77,11 @@ namespace necrowarp {
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, chaotic_warp_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, precise_warp_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, consume_warp_t, true);
-	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, calcify_t, true);
-	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, repulse_t, true);
+
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, annihilate_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, repulse_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, incorporealize_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, calcify_t, true);
 
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, calcitic_invocation_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, spectral_invocation_t, true);
@@ -96,19 +102,24 @@ namespace necrowarp {
 		patron_e patron;
 
 		static constexpr i8 MinimumEnergy{ 4 };
-		static constexpr i8 MaximumEnergy{ 24 };
+		static constexpr i8 MaximumEnergy{ 32 };
+		static constexpr i8 StartingEnergy{ 3 };
 
 		static constexpr i8 MinimumArmor{ 2 };
-		static constexpr i8 MaximumArmor{ 12 };
+		static constexpr i8 MaximumArmor{ 16 };
+		static constexpr i8 StartingArmor{ 0 };
 
 		static constexpr i8 MinimumDivinity{ 3 };
-		static constexpr i8 MaximumDivinity{ 9 };
+		static constexpr i8 MaximumDivinity{ 12 };
+		static constexpr i8 StartingDivinity{ 0 };
 
 		static constexpr i8 DivinityErosionRate{ 1 };
 
-		static constexpr i8 StartingEnergy{ 3 };
-		static constexpr i8 StartingArmor{ 0 };
-		static constexpr i8 StartingDivinity{ 0 };
+		static constexpr i8 MinimumPhantasm{ 3 };
+		static constexpr i8 MaximumPhantasm{ 6 };
+		static constexpr i8 StartingPhantasm{ 0 };
+
+		static constexpr i8 PhantasmErosionRate{ 1 };
 
 		static constexpr i8 MaximumDamage{ 1 };
 		static constexpr i8 MinimumDamage{ 1 };
@@ -139,6 +150,11 @@ namespace necrowarp {
 		template<> constexpr i8 Cost<discount_e::ChaoticWarp>{ 2 };
 		template<> constexpr i8 Cost<discount_e::PreciseWarp>{ 4 };
 
+		template<> constexpr i8 Cost<discount_e::Annihilate>{ 8 };
+		template<> constexpr i8 Cost<discount_e::Repulse>{ 8 };
+		template<> constexpr i8 Cost<discount_e::Calcify>{ 4 };
+		template<> constexpr i8 Cost<discount_e::Incorporealize>{ 4 };
+
 		template<> constexpr i8 Cost<discount_e::CalciticInvocation>{ 8 };
 		template<> constexpr i8 Cost<discount_e::SpectralInvocation>{ 8 };
 		template<> constexpr i8 Cost<discount_e::SanguineInvocation>{ 8 };
@@ -164,6 +180,7 @@ namespace necrowarp {
 
 		i8 energy;
 		i8 armor;
+		i8 phantasm;
 		i8 divinity;
 
 		inline void set_energy(i8 value) noexcept {
@@ -182,6 +199,14 @@ namespace necrowarp {
 			}
 		}
 
+		inline void set_phantasm(i8 value) noexcept {
+			if (!game_stats.cheats.is_enabled() || !game_stats.cheats.phantasm.is_enabled()) {
+				phantasm = clamp<i8>(value, 0, max_phantasm());
+			} else {
+				phantasm = max<i8>(game_stats.cheats.phantasm.current_minimum(), value);
+			}
+		}
+
 		inline void set_divinity(i8 value) noexcept {
 			if (!game_stats.cheats.is_enabled() || !game_stats.cheats.divinity.is_enabled()) {
 				divinity = clamp<i8>(value, 0, max_divinity());
@@ -191,13 +216,45 @@ namespace necrowarp {
 		}
 
 	  public:
-	  	inline player_t() noexcept : command{}, position{}, patron{}, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+	  	inline player_t() noexcept :
+			command{}, 
+			position{},
+			patron{},
+			energy{ StartingEnergy },
+			armor{ StartingArmor },
+			phantasm{ StartingPhantasm },
+			divinity{ StartingDivinity }
+		{}
 
-	  	inline player_t(patron_e patron) noexcept : command{}, position{}, patron{ patron }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+	  	inline player_t(patron_e patron) noexcept :
+			command{},
+			position{},
+			patron{ patron },
+			energy{ StartingEnergy },
+			armor{ StartingArmor },
+			phantasm{ StartingPhantasm },
+			divinity{ StartingDivinity }
+		{}
 
-		inline player_t(offset_t position) noexcept : command{}, position{ position }, patron{}, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+		inline player_t(offset_t position) noexcept :
+			command{},
+			position{ position },
+			patron{},
+			energy{ StartingEnergy },
+			armor{ StartingArmor },
+			phantasm{ StartingPhantasm },
+			divinity{ StartingDivinity }
+		{}
 
-		inline player_t(offset_t position, patron_e patron) noexcept : command{}, position{ position }, patron{ patron }, energy{ StartingEnergy }, armor{ StartingArmor }, divinity{ StartingDivinity } {}
+		inline player_t(offset_t position, patron_e patron) noexcept :
+			command{},
+			position{ position },
+			patron{ patron },
+			energy{ StartingEnergy },
+			armor{ StartingArmor },
+			phantasm{ StartingPhantasm },
+			divinity{ StartingDivinity }
+		{}
 
 		inline player_t(cref<player_t> other) noexcept :
 			command{ other.command },
@@ -205,6 +262,7 @@ namespace necrowarp {
 			patron{ other.patron },
 			energy{ other.energy },
 			armor{ other.armor },
+			phantasm{ other.phantasm },
 			divinity{ other.divinity }
 		{}
 
@@ -214,6 +272,7 @@ namespace necrowarp {
 			patron{ std::move(other.patron) },
 			energy{ std::move(other.energy) },
 			armor{ std::move(other.armor) },
+			phantasm{ std::move(other.phantasm) },
 			divinity{ std::move(other.divinity) }
 		{}
 
@@ -229,6 +288,7 @@ namespace necrowarp {
 			patron = other.patron;
 			energy = other.energy;
 			armor = other.armor;
+			phantasm = other.phantasm;
 			divinity = other.divinity;
 
 			return *this;
@@ -244,9 +304,28 @@ namespace necrowarp {
 			patron = std::move(other.patron);
 			energy = std::move(other.energy);
 			armor = std::move(other.armor);
+			phantasm = std::move(other.phantasm);
 			divinity = std::move(other.divinity);
 
 			return *this;
+		}
+
+		inline void refresh() noexcept {
+			if (game_stats.cheats.energy.is_enabled()) {
+				set_energy(energy);
+			}
+
+			if (game_stats.cheats.armor.is_enabled()) {
+				set_armor(armor);
+			}
+
+			if (game_stats.cheats.phantasm.is_enabled()) {
+				set_phantasm(phantasm);
+			}
+
+			if (game_stats.cheats.divinity.is_enabled()) {
+				set_divinity(divinity);
+			}
 		}
 
 		inline void reset() noexcept { (*this) = player_t{}; }
@@ -260,6 +339,8 @@ namespace necrowarp {
 		inline i8 get_energy() const noexcept { return energy; }
 
 		inline i8 get_armor() const noexcept { return armor; }
+
+		inline i8 get_phantasm() const noexcept { return phantasm; }
 
 		inline i8 get_divinity() const noexcept { return divinity; }
 		
@@ -292,6 +373,8 @@ namespace necrowarp {
 
 		inline bool has_armor() const noexcept { return armor > 0; }
 
+		inline bool is_incorporeal() const noexcept { return phantasm > 0; }
+
 		inline bool has_ascended() const noexcept { return divinity > 0; }
 
 		inline bool bypass_invocations_enabled() const noexcept { return game_stats.cheats.is_enabled() && game_stats.cheats.bypass_invocations; }
@@ -317,7 +400,19 @@ namespace necrowarp {
 				return calculated_max;
 			}
 
-			return max<i8>(game_stats.cheats.energy.current_maximum(), calculated_max);
+			return max<i8>(game_stats.cheats.armor.current_maximum(), calculated_max);
+		}
+
+		inline i8 max_phantasm() const noexcept {
+			const i8 calculated_max{
+				clamp<i8>(MinimumPhantasm + game_stats.total_kills() / globals::KillsPerPhantasmTurn, MinimumPhantasm, MaximumPhantasm)
+			};
+
+			if (!game_stats.cheats.is_enabled() || !game_stats.cheats.phantasm.is_enabled()) {
+				return calculated_max;
+			}
+
+			return max<i8>(game_stats.cheats.phantasm.current_maximum(), calculated_max);
 		}
 
 		inline i8 max_divinity() const noexcept {
@@ -329,7 +424,7 @@ namespace necrowarp {
 				return calculated_max;
 			}
 
-			return max<i8>(game_stats.cheats.energy.current_maximum(), calculated_max);
+			return max<i8>(game_stats.cheats.divinity.current_maximum(), calculated_max);
 		}
 
 		inline bool no_hit_enabled() const noexcept { return game_stats.cheats.is_enabled() && game_stats.cheats.no_hit; }
@@ -417,11 +512,15 @@ namespace necrowarp {
 
 		inline void max_out_armor() noexcept { armor = max_armor(); }
 
+		inline void max_out_phantasm() noexcept { phantasm = max_phantasm(); }
+
 		inline void max_out_divinity() noexcept { divinity = max_divinity(); }
 
 		inline void zero_out_energy() noexcept { set_energy(0); }
 
 		inline void zero_out_armor() noexcept { set_armor(0); }
+
+		inline void zero_out_phantasm() noexcept { set_phantasm(0); }
 
 		inline void zero_out_divinity() noexcept { set_divinity(0); }
 
@@ -459,7 +558,14 @@ namespace necrowarp {
 
 		inline void erode_divinity() noexcept { set_divinity(divinity - DivinityErosionRate); }
 
-		inline glyph_t current_glyph() const noexcept { return !has_armor() ? glyphs::UnarmoredPlayer : glyphs::ArmoredPlayer; }
+		inline void erode_phantasm() noexcept { set_phantasm(phantasm - PhantasmErosionRate); }
+
+		inline glyph_t current_glyph() const noexcept {
+			return glyph_t{
+				has_armor() ? characters::ArmoredPlayer : characters::UnarmoredPlayer,
+				is_incorporeal() ? colors::White.faded(0.1 + stealth_wave.current_value()) : colors::White
+			};
+		}
 
 		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
 

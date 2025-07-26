@@ -32,7 +32,7 @@ namespace necrowarp {
 	static inline atlas_t<globals::TilesetSize> game_atlas{ renderer, "res/gfx/tiles/static_64x64.png" };
 	static inline atlas_t<globals::AnimatedSize> animated_atlas{ renderer, "res/gfx/tiles/animated_64x64.png" };
 
-	static inline atlas_t<globals::IconsetSize> icon_atlas{ renderer, "res/gfx/icons/icons_32x32.png" };
+	static inline atlas_t<globals::IconsetSize> icon_atlas{ renderer, "res/gfx/icons/icons_64x64.png" };
 
 	static inline texture_t ui_cursor_texture{ renderer, "res/gfx/sprites/cursor.png" };
 	static inline texture_t grid_cursor_texture{ renderer, "res/gfx/sprites/grid_cursor.png" };
@@ -131,6 +131,7 @@ namespace necrowarp {
 #endif
 
 	static inline wave_t sine_wave{ 1.0, 0.5, 1.0 };
+	static inline wave_t stealth_wave{ 0.125, 0.25, 1.0 };
 
 	static inline mixer_s mixer{};
 

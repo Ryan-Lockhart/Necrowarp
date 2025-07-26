@@ -11,6 +11,7 @@ namespace necrowarp {
 
 	struct none_t;
 
+	struct wander_t;
 	struct chaotic_warp_t;
 	struct repulse_t;
 	struct incorporealize_t;
@@ -51,6 +52,7 @@ namespace necrowarp {
 		none_t
 
 	#define ALL_UNARY_COMMANDS \
+		wander_t, \
 		chaotic_warp_t, \
 		repulse_t, \
 		incorporealize_t, \
@@ -98,6 +100,7 @@ namespace necrowarp {
 		ALL_NON_NULL_COMMANDS
 	
 	#define ALL_BASIC_COMMANDS \
+		wander_t, \
 		move_t, \
 		clash_t
 	
@@ -108,10 +111,10 @@ namespace necrowarp {
 		chaotic_warp_t, \
 		precise_warp_t, \
 		consume_warp_t, \
-		calcify_t, \
-		repulse_t, \
 		annihilate_t, \
+		repulse_t, \
 		incorporealize_t, \
+		calcify_t, \
 		calcitic_invocation_t, \
 		spectral_invocation_t, \
 		sanguine_invocation_t, \
@@ -163,6 +166,7 @@ namespace necrowarp {
 	enum struct command_e : u8 {
 		None = 0,
 
+		Wander,
 		ChaoticWarp,
 		Repulse,
 		Incorporealize,
@@ -221,6 +225,8 @@ namespace necrowarp {
 		switch (command) {
 			case command_e::None: {
 				return "none";
+			} case command_e::Wander: {
+				return "wander";
 			} case command_e::ChaoticWarp: {
 				return "chaotic warp";
 			} case command_e::Repulse: {

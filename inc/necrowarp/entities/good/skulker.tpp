@@ -26,13 +26,13 @@ namespace necrowarp {
 				if (concealment == concealment_e::Imperceptible) {
 					return entity_goal_map<MapType, player_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>);
 				} else {
-					return good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>);
+					return evil_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>);
 				}
 			}()
 		};
 
 		if (!descent_pos.has_value()) {
-			return command_pack_t{ command_e::None };
+			return command_pack_t{ command_e::Wander, position };
 		}
 
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };

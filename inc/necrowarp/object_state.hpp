@@ -69,6 +69,12 @@ namespace necrowarp {
 
 		template<NonNullObject ObjectType> inline bool remove(offset_t position) noexcept;
 
+		template<NonNullObject... ObjectTypes>
+			requires is_plurary<ObjectTypes...>::value
+		inline void remove(offset_t position) noexcept;
+
+		inline void remove(offset_t position) noexcept;
+
 		template<NonNullObject ObjectType> inline void clear() noexcept;
 
 		template<NonNullObject... ObjectTypes>

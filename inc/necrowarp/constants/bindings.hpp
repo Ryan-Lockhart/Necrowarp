@@ -78,9 +78,9 @@ namespace necrowarp::bindings {
 	constexpr const sdl::key ChaoticWarp{ keys::Alpha::Q };
 	constexpr const sdl::key PreciseWarp{ keys::Alpha::E };
 
-	constexpr const sdl::key Calcify{ keys::Alpha::Z };
+	constexpr const sdl::key Annihilate{ keys::Alpha::Z };
 	constexpr const sdl::key Repulse{ keys::Alpha::X };
-	constexpr const sdl::key Annihilate{ keys::Alpha::C };
+	constexpr const sdl::key Calcify{ keys::Alpha::C };
 	constexpr const sdl::key Incorporealize{ keys::Alpha::V };
 
 	constexpr const sdl::key NecromanticAscendance{ keys::Alpha::R };

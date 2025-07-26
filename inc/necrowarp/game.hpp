@@ -90,14 +90,18 @@ namespace necrowarp {
 				const object_e target_object{ determine_target<player_t>(objects) };
 
 				player.command = command_pack_t{
-					player.can_consume(target_entity) || player.can_consume(target_object) ?
+					player.can_consume(target_entity) || (!ignore_objects && player.can_consume(target_object)) ?
 						command_e::ConsumeWarp :
 						command_e::PreciseWarp,
 					player.position,
 					target_position
 				};
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::Annihilate)) {
+				player.command = command_pack_t{ command_e::Annihilate, player.position, grid_cursor<MapType>.get_position() };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::Repulse)) {
 				player.command = command_pack_t{ command_e::Repulse, player.position };
+			} else if (keyboard_s::is_key<input_e::Down>(bindings::Calcify)) {
+				player.command = command_pack_t{ command_e::Calcify, player.position, grid_cursor<MapType>.get_position() };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::Incorporealize)) {
 				player.command = command_pack_t{ command_e::Incorporealize, player.position };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::CalciticInvocation)) {
@@ -145,7 +149,7 @@ namespace necrowarp {
 			if (direction != offset_t::Zero) {
 				const offset_t target_position{ player.position + direction };
 
-				if (!game_map<MapType>.dependent within<region_e::Interior>(target_position) || game_map<MapType>[target_position].solid) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(target_position) || (game_map<MapType>[target_position].solid && !player.is_incorporeal())) {
 					return false;
 				}
 
@@ -207,6 +211,13 @@ namespace necrowarp {
 			game_stats.cheats.no_hit = true;
 			game_stats.cheats.free_costs = true;
 			game_stats.cheats.bypass_invocations = true;
+
+			// game_stats.cheats.energy.enable(player_t::MaximumEnergy, player_t::MaximumEnergy);
+			// game_stats.cheats.armor.enable(player_t::MaximumArmor, player_t::MaximumArmor);
+			// game_stats.cheats.divinity.enable(player_t::MaximumDivinity, player_t::MaximumDivinity);
+			// game_stats.cheats.phantasm.enable(player_t::MinimumPhantasm, player_t::MaximumPhantasm);
+
+			player.refresh();
 
 			scorekeeper.reset();
 

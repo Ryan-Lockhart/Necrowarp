@@ -48,6 +48,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void game_s::update() noexcept {
 		sine_wave.update<wave_e::Sine>(Clock::elapsed());
+		stealth_wave.update<wave_e::Sine>(Clock::elapsed());
 
 		animation_controller.tick<MapType>();
 

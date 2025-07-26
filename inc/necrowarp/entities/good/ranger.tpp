@@ -21,7 +21,7 @@ namespace necrowarp {
 			}
 
 			if (game_map<MapType>.linear_blockage(position, maybe_position.value(), cell_e::Solid, ranger_t::MaximumRange)) {
-				cauto approach_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
+				cauto approach_pos{ non_good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 				if (!approach_pos.has_value()) {
 					return command_pack_t{ command_e::None };
@@ -68,7 +68,7 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Clash, position, current_position };
 			}
 
-			cauto descent_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
+			cauto descent_pos{ non_good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!descent_pos.has_value()) {
 				return command_pack_t{ command_e::None };
@@ -92,30 +92,30 @@ namespace necrowarp {
 				cauto descent_pos{ object_goal_map<MapType, arrow_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 				if (!descent_pos.has_value()) {
-					return command_pack_t{ command_e::None };
+					return command_pack_t{ command_e::Wander, position };
 				}
 
 				return command_pack_t{ command_e::Move, position, descent_pos.value() };
 			}
 
-			cauto approach_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
+			cauto approach_pos{ non_good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!approach_pos.has_value()) {
-				return command_pack_t{ command_e::None };
+				return command_pack_t{ command_e::Wander, position };
 			}
 
 			return command_pack_t{ command_e::Move, position, approach_pos.value() };
 		} else if (current_distance < OptimalRange) {
-			cauto retreat_pos{ good_goal_map<MapType>.dependent ascend<region_e::Interior>(position, entity_registry<MapType>) };
+			cauto retreat_pos{ non_good_goal_map<MapType>.dependent ascend<region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (!retreat_pos.has_value()) {
-				return command_pack_t{ command_e::None };
+				return command_pack_t{ command_e::Wander, position };
 			}
 
 			return command_pack_t{ command_e::Move, position, retreat_pos.value() };
 		}
 
-		return command_pack_t{ command_e::None };
+		return command_pack_t{ command_e::Wander, position };
 	}
 
 	template<map_type_e MapType> inline void ranger_t::killed(offset_t position) noexcept {

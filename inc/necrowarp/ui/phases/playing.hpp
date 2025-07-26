@@ -12,6 +12,9 @@ namespace necrowarp {
 	constexpr color_t ActiveDivinityColor{ colors::metals::Gold };
 	constexpr color_t InactiveDivinityColor{ ActiveDivinityColor, u8{ 0x80 } };
 
+	constexpr color_t ActivePhantasmColor{ mix(colors::Blue, colors::metals::Silver) };
+	constexpr color_t InactivePhantasmColor{ ActivePhantasmColor, u8{ 0x80 } };
+
 	constexpr cstr depth_hidden_text{ "Depth: 000" };
 
 	constexpr cstr depth_expanded_text{
@@ -35,12 +38,13 @@ namespace necrowarp {
 	};
 
 	template<> struct phase_state_t<phase_e::Playing> {
-		static inline status_bar_t<3> player_statuses{
+		static inline status_bar_t<4> player_statuses{
 			anchor_t{ offset_t{ 1, 1 }, cardinal_e::Northwest},
-			std::array<status_t, 3>{
-				status_t{ runes_t{ "  energy: ", colors::Magenta }, player_t::MaximumEnergy, ActiveEnergyColor, InactiveEnergyColor },
-				status_t{ runes_t{ "   armor: ", colors::Marble }, player_t::MaximumArmor, ActiveArmorColor, InactiveArmorColor },
-				status_t{ runes_t{ "divinity: ", colors::metals::Gold }, player_t::MaximumDivinity, ActiveDivinityColor, InactiveDivinityColor }
+			std::array<status_t, 4>{
+				status_t{ runes_t{ "  energy: ", ActiveEnergyColor }, player_t::MaximumEnergy, ActiveEnergyColor, InactiveEnergyColor },
+				status_t{ runes_t{ "   armor: ", ActiveArmorColor }, player_t::MaximumArmor, ActiveArmorColor, InactiveArmorColor },
+				status_t{ runes_t{ "phantasm: ", ActivePhantasmColor }, player_t::MaximumPhantasm, ActivePhantasmColor, InactivePhantasmColor },
+				status_t{ runes_t{ "divinity: ", ActiveDivinityColor }, player_t::MaximumDivinity, ActiveDivinityColor, InactiveDivinityColor }
 			},
 			embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 			extent_t{ 1, 1 }
@@ -149,49 +153,133 @@ namespace necrowarp {
 		static inline bool show_depth{ false };
 		static inline bool show_favor{ false };
 
-		static constexpr offset_t chaotic_warp_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 7 }; }
-		static constexpr offset_t precise_warp_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 6 }; }
+		template<discount_e Command> static constexpr offset_t icon_position();
 
-		static constexpr offset_t calcitic_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 4 }; }
-		static constexpr offset_t spectral_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 3 }; }
-		static constexpr offset_t sanguine_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 2 }; }
-		static constexpr offset_t galvanic_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 - 1 }; }
-		static constexpr offset_t ravenous_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 1 }; }
-		static constexpr offset_t wretched_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 2 }; }
-		static constexpr offset_t cerebral_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 3 }; }
-		static constexpr offset_t infernal_invocation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 4 }; }
+		template<> inline constexpr offset_t icon_position<discount_e::SpectralInvocation>() {
+			return offset_t{
+				globals::grid_size<grid_type_e::Icon>().w * 0.5 - 1,
+				globals::grid_size<grid_type_e::Icon>().h - 1
+			};
+		}
 
-		static constexpr offset_t necromantic_ascendance_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 6 }; }
-		static constexpr offset_t calamitous_retaliation_icon_position() { return offset_t{ 0, globals::grid_size<grid_type_e::Icon>().h / 2 + 7 }; }
+		template<> inline constexpr offset_t icon_position<discount_e::CalciticInvocation>() {
+			return icon_position<discount_e::SpectralInvocation>() - offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::Incorporealize>() {
+			return icon_position<discount_e::CalciticInvocation>() - offset_t{ 2, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::Calcify>() {
+			return icon_position<discount_e::Incorporealize>() - offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::Repulse>() {
+			return icon_position<discount_e::Calcify>() - offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::Annihilate>() {
+			return icon_position<discount_e::Repulse>() - offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::PreciseWarp>() {
+			return icon_position<discount_e::Annihilate>() - offset_t{ 2, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::ChaoticWarp>() {
+			return icon_position<discount_e::PreciseWarp>() - offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::SanguineInvocation>() {
+			return icon_position<discount_e::SpectralInvocation>() + offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::GalvanicInvocation>() {
+			return icon_position<discount_e::SanguineInvocation>() + offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::RavenousInvocation>() {
+			return icon_position<discount_e::GalvanicInvocation>() + offset_t{ 2, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::WretchedInvocation>() {
+			return icon_position<discount_e::RavenousInvocation>() + offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::CerebralInvocation>() {
+			return icon_position<discount_e::WretchedInvocation>() + offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::InfernalInvocation>() {
+			return icon_position<discount_e::CerebralInvocation>() + offset_t{ 1, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::NecromanticAscendance>() {
+			return icon_position<discount_e::InfernalInvocation>() + offset_t{ 2, 0 };
+		}
+
+		template<> inline constexpr offset_t icon_position<discount_e::CalamitousRetaliation>() {
+			return icon_position<discount_e::NecromanticAscendance>() + offset_t{ 1, 0 };
+		}
 
 		static constexpr bool any_icon_hovered() noexcept {
-			if (mouse_s::is_inside(chaotic_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(precise_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(calcitic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(spectral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(sanguine_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(galvanic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(ravenous_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(wretched_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(cerebral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(infernal_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
-			} else if (mouse_s::is_inside(calamitous_retaliation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-				return true;
+			bool hovered{ false };
+
+			magic_enum::enum_for_each<discount_e>([&](auto val) {
+				constexpr discount_e cval{ val };
+
+				if (mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+					hovered = true;
+				}
+			});
+
+			return hovered;
+		}
+
+		static constexpr std::optional<discount_e> get_hovered_icon() noexcept {
+			std::optional<discount_e> hovered{ std::nullopt };
+
+			magic_enum::enum_for_each<discount_e>([&](auto val) {
+				constexpr discount_e cval{ val };
+
+				if (mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+					hovered = cval;
+				}
+			});
+
+			return hovered;
+		}
+
+		static constexpr void update_command() noexcept {
+			const std::optional<discount_e> command{ get_hovered_icon() };
+
+			if (!command.has_value()) {
+				return;
 			}
 
-			return false;
+			magic_enum::enum_switch([&](auto val) {
+				constexpr discount_e cval{ val };
+
+				command_label.text = runes_t{ to_string(cval) };
+				command_label.text
+					.concatenate(runes_t{ " ["})
+					.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(cval) ? colors::Green : colors::Red })
+					.concatenate(runes_t{ "/" })
+					.concatenate(runes_t{ std::format("{}", player.get_cost(cval)) })
+					.concatenate(runes_t{ "]" });
+				
+				command_label.position = (icon_position<cval>() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+			}, command.value());
+
+			command_label.position.y = mouse_s::get_position().y / globals::cell_size<grid_type_e::UI>.h;
+		}
+
+		static constexpr void draw_commands() noexcept {
+			magic_enum::enum_for_each<discount_e>([&](auto val) {
+				constexpr discount_e cval{ val };
+
+				icon_atlas.draw(glyph_t{ static_cast<u16>(cval), player.can_perform(cval) ? colors::White : colors::dark::Grey }, icon_position<cval>());
+			});
 		}
 
 		template<map_type_e MapType> static inline bool any_hovered() noexcept {
@@ -213,11 +301,15 @@ namespace necrowarp {
 			player_statuses[1].current_value = player.get_armor();
 			player_statuses[1].max_value = player.max_armor();
 
-			player_statuses[2].current_value = player.get_divinity();
-			player_statuses[2].max_value = player.max_divinity();
+			player_statuses[2].current_value = player.get_phantasm();
+			player_statuses[2].max_value = player.max_phantasm();
+
+			player_statuses[3].current_value = player.get_divinity();
+			player_statuses[3].max_value = player.max_divinity();
 
 			const i8 kills_energy{ game_stats.kills_until_next_energy_slot() };
 			const i8 kills_armor{ game_stats.kills_until_next_armor_slot() };
+			const i8 kills_phantasm{ game_stats.kills_until_next_phantasm_turn() };
 			const i8 kills_divinity{ game_stats.kills_until_next_divinity_turn() };
 
 			show_advancement = player_statuses.is_hovered() || advancement_label.is_hovered();
@@ -230,10 +322,12 @@ namespace necrowarp {
 					std::format(
 						"[{}/{}]{}\n\n"
 						"[{}/{}]{}\n\n"
+						"[{}/{}]{}\n\n"
 						"[{}/{}]{}",
 
 						player.get_energy(), player.max_energy(), player.max_energy() >= player_t::MaximumEnergy ? "" : std::format(" (+1 energy slot in {} minion kill{})", kills_energy == 0 ? globals::KillsPerEnergySlot : kills_energy, kills_energy == 1 ? "" : "s"),
 						player.get_armor(), player.max_armor(), player.max_armor() >= player_t::MaximumArmor ? "" : std::format(" (+1 armor slot in {} player kill{})", kills_armor == 0 ? globals::KillsPerArmorSlot : kills_armor, kills_armor == 1 ? "" : "s"),
+						player.get_phantasm(), player.max_phantasm(), player.max_phantasm() >= player_t::MaximumPhantasm ? "" : std::format(" (+1 phantasm turn in {} total kill{})", kills_phantasm == 0 ? globals::KillsPerPhantasmTurn : kills_phantasm, kills_phantasm == 1 ? "" : "s"),
 						player.get_divinity(), player.max_divinity(), player.max_divinity() >= player_t::MaximumDivinity ? "" : std::format(" (+1 divinity turn in {} total kill{})", kills_divinity == 0 ? globals::KillsPerDivinityTurn : kills_divinity, kills_divinity == 1 ? "" : "s")
 					)
 				};
@@ -242,131 +336,7 @@ namespace necrowarp {
 			show_command = any_icon_hovered();
 
 			if (show_command) {
-				const offset_t mouse_pos{ mouse_s::get_position() };
-
-				if (mouse_s::is_inside(chaotic_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::ChaoticWarp) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::ChaoticWarp) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::ChaoticWarp)) })
-						.concatenate(runes_t{ "]" });
-					
-					command_label.position = (chaotic_warp_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(precise_warp_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::PreciseWarp) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::PreciseWarp) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::PreciseWarp)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (precise_warp_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(calcitic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::CalciticInvocation) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::CalciticInvocation) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::CalciticInvocation)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (calcitic_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(spectral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::SpectralInvocation) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::SpectralInvocation) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::SpectralInvocation)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (spectral_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(sanguine_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::SanguineInvocation) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::SanguineInvocation) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::SanguineInvocation)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (sanguine_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(galvanic_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::GalvanicInvocation) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::GalvanicInvocation) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::GalvanicInvocation)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (galvanic_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(ravenous_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::RavenousInvocation) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::RavenousInvocation) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::RavenousInvocation)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (ravenous_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(wretched_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::WretchedInvocation) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::WretchedInvocation) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::WretchedInvocation)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (wretched_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(cerebral_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::CerebralInvocation) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::CerebralInvocation) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::CerebralInvocation)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (cerebral_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(infernal_invocation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::InfernalInvocation) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::InfernalInvocation) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::InfernalInvocation)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (infernal_invocation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(necromantic_ascendance_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::NecromanticAscendance) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::NecromanticAscendance) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::NecromanticAscendance)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (necromantic_ascendance_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				} else if (mouse_s::is_inside(calamitous_retaliation_icon_position() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
-					command_label.text = runes_t{ to_string(command_e::CalamitousRetaliation) };
-					command_label.text
-						.concatenate(runes_t{ " ["})
-						.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(discount_e::CalamitousRetaliation) ? colors::Green : colors::Red })
-						.concatenate(runes_t{ "/" })
-						.concatenate(runes_t{ std::format("{}", player.get_cost(discount_e::CalamitousRetaliation)) })
-						.concatenate(runes_t{ "]" });
-					
-						command_label.position = (calamitous_retaliation_icon_position() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
-				}
-
-				command_label.position.y = mouse_pos.y / globals::cell_size<grid_type_e::UI>.h;
+				update_command();
 			}
 
 			show_depth = show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered();
@@ -551,21 +521,7 @@ namespace necrowarp {
 				advancement_label.draw(renderer);
 			}
 
-			icon_atlas.draw(glyph_t{ icons::ChaoticWarp.index, player.can_perform(discount_e::ChaoticWarp) ? colors::White : colors::dark::Grey }, chaotic_warp_icon_position());
-			icon_atlas.draw(glyph_t{ icons::PreciseWarp.index, player.can_perform(discount_e::PreciseWarp) ? colors::White : colors::dark::Grey }, precise_warp_icon_position());
-
-			icon_atlas.draw(glyph_t{ icons::CalciticInvocation.index, player.can_perform(discount_e::CalciticInvocation) ? colors::White : colors::dark::Grey }, calcitic_invocation_icon_position());
-			icon_atlas.draw(glyph_t{ icons::SpectralInvocation.index, player.can_perform(discount_e::SpectralInvocation) ? colors::White : colors::dark::Grey }, spectral_invocation_icon_position());
-			icon_atlas.draw(glyph_t{ icons::SanguineInvocation.index, player.can_perform(discount_e::SanguineInvocation) ? colors::White : colors::dark::Grey }, sanguine_invocation_icon_position());
-			icon_atlas.draw(glyph_t{ icons::GalvanicInvocation.index, player.can_perform(discount_e::GalvanicInvocation) ? colors::White : colors::dark::Grey }, galvanic_invocation_icon_position());
-
-			icon_atlas.draw(glyph_t{ icons::RavenousInvocation.index, player.can_perform(discount_e::RavenousInvocation) ? colors::White : colors::dark::Grey }, ravenous_invocation_icon_position());
-			icon_atlas.draw(glyph_t{ icons::WretchedInvocation.index, player.can_perform(discount_e::WretchedInvocation) ? colors::White : colors::dark::Grey }, wretched_invocation_icon_position());
-			icon_atlas.draw(glyph_t{ icons::CerebralInvocation.index, player.can_perform(discount_e::CerebralInvocation) ? colors::White : colors::dark::Grey }, cerebral_invocation_icon_position());
-			icon_atlas.draw(glyph_t{ icons::InfernalInvocation.index, player.can_perform(discount_e::InfernalInvocation) ? colors::White : colors::dark::Grey }, infernal_invocation_icon_position());
-
-			icon_atlas.draw(glyph_t{ icons::NecromanticAscendance.index, player.can_perform(discount_e::NecromanticAscendance) ? colors::White : colors::dark::Grey }, necromantic_ascendance_icon_position());
-			icon_atlas.draw(glyph_t{ icons::CalamitousRetaliation.index, player.can_perform(discount_e::CalamitousRetaliation) ? colors::White : colors::dark::Grey }, calamitous_retaliation_icon_position());
+			draw_commands();
 
 			if (show_command) {
 				command_label.draw(renderer);

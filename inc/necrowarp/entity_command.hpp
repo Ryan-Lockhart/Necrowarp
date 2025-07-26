@@ -13,6 +13,10 @@ namespace necrowarp {
 		static constexpr bool value = false;
 	};
 
+	template<NonNullEntity EntityType> struct is_entity_command_valid<EntityType, wander_t> {
+		static constexpr bool value = true;
+	};
+
 	template<NonNullEntity EntityType> struct is_entity_command_valid<EntityType, move_t> {
 		static constexpr bool value = true;
 	};

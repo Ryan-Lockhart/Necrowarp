@@ -33,7 +33,8 @@ namespace necrowarp {
 	enum struct attribute_e : u8 {
 		Energy,
 		Armor,
-		Divinity
+		Divinity,
+		Phantasm
 	};
 
 	template<attribute_e Type> struct attribute_t {
@@ -89,6 +90,7 @@ namespace necrowarp {
 	  	attribute_t<attribute_e::Energy> energy;
 	  	attribute_t<attribute_e::Armor> armor;
 	  	attribute_t<attribute_e::Divinity> divinity;
+	  	attribute_t<attribute_e::Phantasm> phantasm;
 
 		bool no_hit;
 		bool free_costs;
@@ -184,6 +186,8 @@ namespace necrowarp {
 		inline i8 kills_until_next_armor_slot() const noexcept { return abs(player_kills % globals::KillsPerArmorSlot - globals::KillsPerArmorSlot); }
 
 		inline i8 kills_until_next_divinity_turn() const noexcept { return abs(total_kills() % globals::KillsPerDivinityTurn - globals::KillsPerDivinityTurn); }
+		
+		inline i8 kills_until_next_phantasm_turn() const noexcept { return abs(total_kills() % globals::KillsPerPhantasmTurn - globals::KillsPerPhantasmTurn); }
 
 		inline i16 current_reinforcements() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerReinforcement, globals::MinimumReinforcements, globals::MaximumReinforcements); }
 		

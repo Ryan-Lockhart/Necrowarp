@@ -95,6 +95,12 @@ namespace necrowarp {
 
 		template<NonPlayerEntity EntityType> inline bool remove(offset_t position) noexcept;
 
+		template<NonPlayerEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline void remove(offset_t position) noexcept;
+
+		inline void remove(offset_t position) noexcept;
+
 		template<PlayerEntity EntityType> inline void clear() noexcept;
 
 		template<NonPlayerEntity EntityType> inline void clear() noexcept;
@@ -161,15 +167,7 @@ namespace necrowarp {
 
 		inline void recalculate_goal_map() noexcept;
 
-		inline void recalculate_evil_goal_map() noexcept;
-
-		inline void recalculate_good_goal_map() noexcept;
-
-		inline void recalculate_neutral_goal_map() noexcept;
-
 		inline void recalculate_alignment_goal_maps() noexcept;
-
-		inline void recalculate_ranger_goal_map() noexcept;
 
 		inline void recalculate_skulker_goal_map() noexcept;
 
@@ -185,17 +183,7 @@ namespace necrowarp {
 
 		inline void reset_goal_map() noexcept;
 
-		inline void reset_evil_goal_map() noexcept;
-
-		inline void reset_good_goal_map() noexcept;
-
-		inline void reset_neutral_goal_map() noexcept;
-
 		inline void reset_alignment_goal_maps() noexcept;
-
-		inline void reset_ranger_goal_map() noexcept;
-
-		inline void reset_skulker_goal_map() noexcept;
 
 		inline void reset_specialist_goal_maps() noexcept;
 
@@ -206,7 +194,7 @@ namespace necrowarp {
 		inline bool is_deceased(offset_t position) const noexcept;
 
 		inline bool is_concussed(offset_t position) const noexcept;
-		
+
 		inline bool is_afflicted(offset_t position) const noexcept;
 
 		inline std::optional<affliction_e> get_affliction(offset_t position) const noexcept;

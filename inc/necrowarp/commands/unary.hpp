@@ -1,6 +1,7 @@
 #pragma once
 
 // IWYU pragma: begin_exports
+#include <necrowarp/commands/unary/wander.hpp>
 #include <necrowarp/commands/unary/chaotic_warp.hpp>
 #include <necrowarp/commands/unary/repulse.hpp>
 #include <necrowarp/commands/unary/incorporealize.hpp>

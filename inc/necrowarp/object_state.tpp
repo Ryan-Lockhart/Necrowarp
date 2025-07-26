@@ -294,6 +294,17 @@ namespace necrowarp {
 		return true;
 	}
 
+	template<map_type_e MapType>
+	template<NonNullObject... ObjectTypes>
+		requires is_plurary<ObjectTypes...>::value
+	inline void object_registry_t<MapType>::remove(offset_t position) noexcept {
+		(remove<ObjectTypes>(position), ...);
+	}
+
+	template<map_type_e MapType> inline void object_registry_t<MapType>::remove(offset_t position) noexcept {
+		remove<ALL_OBJECTS>(position);
+	}
+
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::clear() noexcept {
 		object_registry_storage<ObjectType>.clear();
 		reset_goal_map<ObjectType>();

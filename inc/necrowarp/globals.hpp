@@ -188,7 +188,7 @@ namespace necrowarp {
 
 		template<> inline constexpr extent_t cell_size<grid_type_e::UI>{ 8, 8 };
 		template<> inline constexpr extent_t cell_size<grid_type_e::Game>{ 64, 64 };
-		template<> inline constexpr extent_t cell_size<grid_type_e::Icon>{ 32, 32 };
+		template<> inline constexpr extent_t cell_size<grid_type_e::Icon>{ 64, 64 };
 
 		template<grid_type_e GridType> inline extent_t grid_overflow() noexcept { return window_size % cell_size<GridType>; }
 
@@ -231,7 +231,7 @@ namespace necrowarp {
 		static constexpr extent_t TilesetSize{ 16, 5 };
 		static constexpr extent_t AnimatedSize{ 16, 31 };
 
-		static constexpr extent_t IconsetSize{ 2, 6 };
+		static constexpr extent_t IconsetSize{ 4, 4 };
 
 		static constexpr distance_function_e DistanceFunction{ distance_function_e::Octile };
 
@@ -330,9 +330,9 @@ namespace necrowarp {
 
 		constexpr i16 MinimumBoneDistance{ 16 };
 
-		constexpr i16 StartingCrevices{ 4 };
+		constexpr i16 StartingCrevices{ 2 };
 
-		constexpr i16 MinimumCreviceDistance{ 16 };
+		constexpr i16 MinimumCreviceDistance{ 32 };
 	
 		constexpr i16 StartingUpLadders{ 8 };
 		constexpr i16 StartingDownLadders{ 4 };
@@ -342,18 +342,19 @@ namespace necrowarp {
 		constexpr f32 MinimumWaveSizeMultiplier{ 0.5f };
 		constexpr f32 MaximumWaveSizeMultiplier{ 4.0f };
 
-		constexpr i16 KillsPerPopulation{ 8 };
+		constexpr i16 KillsPerPopulation{ 4 };
 
 		constexpr i16 KillsPerEnergySlot{ 16 };
 		constexpr i16 KillsPerArmorSlot{ 8 };
 		constexpr i16 KillsPerDivinityTurn{ 64 };
+		constexpr i16 KillsPerPhantasmTurn{ 32 };
 
 		constexpr i16 MinimumReinforcements{ 0 };
 		constexpr i16 MaximumReinforcements{ 8 };
 
 		constexpr i16 FloorsPerReinforcement{ 2 };
 
-		constexpr i16 FleshPerThetwoPopulation{ 16 };
+		constexpr i16 FleshPerThetwoPopulation{ 32 };
 
 		constexpr bool CheatsAllowed{ true };
 
