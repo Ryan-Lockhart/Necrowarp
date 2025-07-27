@@ -28,32 +28,26 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void adventurer_t::killed(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, bones_t{});
-		object_registry<MapType>.spill(position, flesh_t{});
-		object_registry<MapType>.spill(position, cerebra_t{ entity_e::Adventurer });
+	template<map_type_e MapType, death_e Death> inline death_info_t<Death> adventurer_t::die(offset_t position) noexcept {
+		++steam_stats::stats<steam_stat_e::AdventurersSlain>;
+
+		if constexpr (Death == death_e::Killed) {
+			object_registry<MapType>.spill(position, bones_t{});
+			object_registry<MapType>.spill(position, flesh_t{});
+			object_registry<MapType>.spill(position, cerebra_t{ entity_e::Adventurer });
+		} else if constexpr (Death == death_e::Devoured) {
+			object_registry<MapType>.spill(position, bones_t{});
+			object_registry<MapType>.spill(position, cerebra_t{ entity_e::Adventurer });
+		}
 
 		player.receive_death_boon<adventurer_t>();
 
-		++steam_stats::stats<steam_stat_e::AdventurersSlain>;
-
 		scorekeeper.add(entity_e::Adventurer);
 
-		death_sounds<adventurer_t>.delay(random_epoch_interval(random_engine), random_engine);
-	}
-
-	template<map_type_e MapType> inline i8 adventurer_t::devoured(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, bones_t{});
-		object_registry<MapType>.spill(position, cerebra_t{ entity_e::Adventurer });
-
-		player.receive_death_boon<adventurer_t>();
-
-		++steam_stats::stats<steam_stat_e::AdventurersSlain>;
-
-		scorekeeper.add(entity_e::Adventurer);
-
-		death_sounds<adventurer_t>.delay(random_epoch_interval(random_engine), random_engine);
-
-		return 1;
+		if constexpr (Death == death_e::Devoured) {
+			return death_info_t<Death>{ true, ProteinValue };
+		} else {
+			return death_info_t<Death>{ true };
+		}
 	}
 } // namespace necrowarp

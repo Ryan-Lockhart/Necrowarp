@@ -806,6 +806,20 @@ namespace necrowarp {
 		template<affliction_e Affliction> inline bool has_affliction() const noexcept;
 	};
 
+	template<death_e Death> struct death_info_t{
+		const bool perished;
+
+		constexpr death_info_t(bool perished) : perished{ perished } {}
+	};
+
+	template<> struct death_info_t<death_e::Devoured>{
+		const bool devoured;
+		const i8 protein;
+
+		constexpr death_info_t(bool devoured) : devoured{ devoured }, protein{ 0 } {}
+		constexpr death_info_t(bool devoured, i8 protein) : devoured{ devoured }, protein{ protein } {}
+	};
+
 	namespace globals {
 		template<entity_e Entity>
 			requires (Entity != entity_e::None && is_non_evil<typename to_entity_type<Entity>::type>::value)

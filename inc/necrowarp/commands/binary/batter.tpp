@@ -74,9 +74,9 @@ namespace necrowarp {
 				try_bleed();
 
 				if constexpr (is_player<entity_type>::value) {
-					target.dependent killed<MapType>();
+					target.dependent die<MapType, death_e::Killed>();
 				} else {
-					target.dependent killed<MapType>(target_position);
+					target.dependent die<MapType, death_e::Killed>(target_position);
 				}
 
 				if constexpr (is_npc_entity<entity_type>::value) {

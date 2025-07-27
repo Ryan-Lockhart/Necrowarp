@@ -973,9 +973,11 @@ namespace necrowarp {
 		freshly_phantasm = false;
 
 		if (game_map<MapType>[player.position].solid && !player.is_incorporeal()) {
-			player.killed<MapType>();
+			const death_info_t<death_e::Crushed> info{ player.die<MapType, death_e::Crushed>() };
 
-			return;
+			if (info.perished) {
+				return;
+			}
 		}
 
 		if (camera_locked) {
@@ -994,8 +996,46 @@ namespace necrowarp {
 		steam_stats::store();
 	}
 
+	template<map_type_e MapType>
+	template<PlayerEntity EntityType, typename Function>
+		requires std::is_invocable<Function, cref<EntityType>>::value
+	inline void entity_registry_t<MapType>::execute(rval<Function> func) const noexcept {
+		for (crauto [_, entity] : entity_registry_storage<EntityType>) {
+			func(entity);
+		}
+	}
+
+	template<map_type_e MapType>
+	template<PlayerEntity EntityType, typename Function>
+		requires std::is_invocable<Function, ref<EntityType>>::value
+	inline void entity_registry_t<MapType>::execute(rval<Function> func) noexcept {
+		for (rauto [_, entity] : entity_registry_storage<EntityType>) {
+			func(entity);
+		}
+	}
+
+	template<map_type_e MapType>
+	template<NonPlayerEntity EntityType, typename Function>
+		requires std::is_invocable<Function, offset_t, cref<EntityType>>::value
+	inline void entity_registry_t<MapType>::execute(rval<Function> func) const noexcept {
+		for (crauto [position, entity] : entity_registry_storage<EntityType>) {
+			func(position, entity);
+		}
+	}
+
+	template<map_type_e MapType>
+	template<NonPlayerEntity EntityType, typename Function>
+		requires std::is_invocable<Function, offset_t, ref<EntityType>>::value
+	inline void entity_registry_t<MapType>::execute(rval<Function> func) noexcept {
+		for (rauto [position, entity] : entity_registry_storage<EntityType>) {
+			func(position, entity);
+		}
+	}
+
 	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::advance() noexcept {
-		for (crauto [_, entity] : entity_registry_storage<EntityType>) { entity.idle_animation.advance(); }
+		for (crauto [_, entity] : entity_registry_storage<EntityType>) {
+			entity.idle_animation.advance();
+		}
 	}
 
 	template<map_type_e MapType>
@@ -1008,7 +1048,9 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::advance() noexcept { advance<ALL_ANIMATED_ENTITIES>(); }
 
 	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::retreat() noexcept {
-		for (crauto [_, entity] : entity_registry_storage<EntityType>) { entity.idle_animation.retreat(); }
+		for (crauto [_, entity] : entity_registry_storage<EntityType>) {
+			entity.idle_animation.retreat();
+		}
 	}
 
 	template<map_type_e MapType>

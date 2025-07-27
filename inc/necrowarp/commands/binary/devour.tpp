@@ -52,19 +52,23 @@ namespace necrowarp {
 							return;
 						}
 
-						const i8 calories{ target.dependent devoured<MapType>() };
+						const death_info_t<death_e::Devoured> info{ target.dependent die<MapType, death_e::Devoured>() };
 
-						if (!calories) {
+						if (!info.devoured) {
 							return;
 						}
 
-						devourer.fatten(calories);
+						devourer.fatten(info.protein);
 					} else {
-						const i8 calories{ target.dependent devoured<MapType>(target_position) };
+						const death_info_t<death_e::Devoured> info{ target.dependent die<MapType, death_e::Devoured>(target_position) };
+
+						if (!info.devoured) {
+							return;
+						}
 
 						entity_registry<MapType>.dependent remove<entity_type>(target_position);
 
-						devourer.fatten(calories);
+						devourer.fatten(info.protein);
 					}
 				}
 			}, target_entity);

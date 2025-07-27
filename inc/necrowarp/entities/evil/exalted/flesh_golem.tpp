@@ -26,9 +26,15 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void flesh_golem_t::killed(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, flesh_t{});
-	}
+	template<map_type_e MapType, death_e Death> inline death_info_t<Death> flesh_golem_t::die(offset_t position) noexcept {
+		if constexpr (Death == death_e::Killed) {
+			object_registry<MapType>.spill(position, flesh_t{});
+		}
 
-	template<map_type_e MapType> inline i8 flesh_golem_t::devoured(offset_t position) noexcept { return 1; }
+		if constexpr (Death == death_e::Devoured) {
+			return death_info_t<Death>{ true, static_cast<i8>(investiture * ProteinRatio) };
+		} else {
+			return death_info_t<Death>{ true };
+		}
+	}
 } // namespace necrowarp

@@ -118,84 +118,54 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Wander, position };
 	}
 
-	template<map_type_e MapType> inline void ranger_t::killed(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, bones_t{});
-		object_registry<MapType>.spill(position, flesh_t{});
-		object_registry<MapType>.spill(position, cerebra_t{ entity_e::Ranger });
+	template<map_type_e MapType, death_e Death> inline death_info_t<Death> ranger_t::die(offset_t position) noexcept {
+		++steam_stats::stats<steam_stat_e::RangersSlain>;
 
-		if (has_ammunition()) {
-			i8 dropped_ammunition{ get_ammunition() };
+		if constexpr (Death != death_e::Crushed || Death != death_e::Eradicated) {
+			object_registry<MapType>.spill(position, bones_t{});
+			object_registry<MapType>.spill(position, cerebra_t{ entity_e::Ranger });
 
-			if (nocked) {
-				++dropped_ammunition;
-			}
+			if (has_ammunition()) {
+				i8 dropped_ammunition{ get_ammunition() };
 
-			if (object_registry<MapType>.dependent contains<arrow_t>(position)) {
-				ptr<arrow_t> maybe_arrow{ object_registry<MapType>.dependent at<arrow_t>(position) };
+				if (nocked) {
+					++dropped_ammunition;
+				}
 
-				if (maybe_arrow != nullptr) {
-					const i8 stack_capacity{ static_cast<i8>(arrow_t::MaximumArrows - maybe_arrow->stack_size()) };
+				if (object_registry<MapType>.dependent contains<arrow_t>(position)) {
+					ptr<arrow_t> maybe_arrow{ object_registry<MapType>.dependent at<arrow_t>(position) };
 
-					if (dropped_ammunition <= stack_capacity) {
-						(*maybe_arrow) += dropped_ammunition;
-						dropped_ammunition = 0;
-					} else {
-						(*maybe_arrow) += stack_capacity;
-						dropped_ammunition -= stack_capacity;
+					if (maybe_arrow != nullptr) {
+						const i8 stack_capacity{ static_cast<i8>(arrow_t::MaximumArrows - maybe_arrow->stack_size()) };
+
+						if (dropped_ammunition <= stack_capacity) {
+							(*maybe_arrow) += dropped_ammunition;
+							dropped_ammunition = 0;
+						} else {
+							(*maybe_arrow) += stack_capacity;
+							dropped_ammunition -= stack_capacity;
+						}
 					}
 				}
-			}
 
-			if (dropped_ammunition > 0) {
-				object_registry<MapType>.spill(position, arrow_t{ dropped_ammunition });
+				if (dropped_ammunition > 0) {
+					object_registry<MapType>.spill(position, arrow_t{ dropped_ammunition });
+				}
 			}
 		}
 
-		player.receive_death_boon<ranger_t>();
-
-		++steam_stats::stats<steam_stat_e::RangersSlain>;
-
-		scorekeeper.add(entity_e::Ranger);
-	}
-
-	template<map_type_e MapType> inline i8 ranger_t::devoured(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, bones_t{});
-		object_registry<MapType>.spill(position, cerebra_t{ entity_e::Ranger });
-
-		if (has_ammunition()) {
-			i8 dropped_ammunition{ get_ammunition() };
-
-			if (nocked) {
-				++dropped_ammunition;
-			}
-
-			if (object_registry<MapType>.dependent contains<arrow_t>(position)) {
-				ptr<arrow_t> maybe_arrow{ object_registry<MapType>.dependent at<arrow_t>(position) };
-
-				if (maybe_arrow != nullptr) {
-					const i8 stack_capacity{ static_cast<i8>(arrow_t::MaximumArrows - maybe_arrow->stack_size()) };
-
-					if (dropped_ammunition <= stack_capacity) {
-						(*maybe_arrow) += dropped_ammunition;
-						dropped_ammunition = 0;
-					} else {
-						(*maybe_arrow) += stack_capacity;
-						dropped_ammunition -= stack_capacity;
-					}
-				}
-			}
-
-			if (dropped_ammunition > 0) {
-				object_registry<MapType>.spill(position, arrow_t{ dropped_ammunition });
-			}
+		if constexpr (Death != death_e::Devoured) {
+			object_registry<MapType>.spill(position, flesh_t{});
 		}
 
-		player.receive_death_boon<ranger_t>();
+		player.receive_death_boon<skulker_t>();
 
-		++steam_stats::stats<steam_stat_e::RangersSlain>;
+		scorekeeper.add(entity_e::Skulker);
 
-		scorekeeper.add(entity_e::Ranger);
-
-		return 1;
+		if constexpr (Death == death_e::Devoured) {
+			return death_info_t<Death>{ true, ProteinValue };
+		} else {
+			return death_info_t<Death>{ true };
+		}
 	}
 } // namespace necrowarp

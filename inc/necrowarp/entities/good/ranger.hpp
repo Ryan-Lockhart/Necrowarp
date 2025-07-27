@@ -115,6 +115,8 @@ namespace necrowarp {
 
 		static constexpr i8 DeathBoon{ 2 };
 
+		static constexpr i8 ProteinValue{ 1 };
+
 		static inline bool in_range(offset_t origin, offset_t target) noexcept {
 			return between<f32>(offset_t::distance<distance_function_e::Octile>(origin, target), ranger_t::MinimumRange, ranger_t::MaximumRange);
 		}
@@ -197,9 +199,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void killed(offset_t position) noexcept;
-
-		template<map_type_e MapType> inline i8 devoured(offset_t position) noexcept;
+		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
 			return std::format("{} [{}/{} ({})]",

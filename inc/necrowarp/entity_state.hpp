@@ -143,6 +143,22 @@ namespace necrowarp {
 
 		inline void update() noexcept;
 
+		template<PlayerEntity EntityType, typename Function>
+			requires std::is_invocable<Function, cref<EntityType>>::value
+		inline void execute(rval<Function> func) const noexcept;
+
+		template<PlayerEntity EntityType, typename Function>
+			requires std::is_invocable<Function, ref<EntityType>>::value
+		inline void execute(rval<Function> func) noexcept;
+
+		template<NonPlayerEntity EntityType, typename Function>
+			requires std::is_invocable<Function, offset_t, cref<EntityType>>::value
+		inline void execute(rval<Function> func) const noexcept;
+
+		template<NonPlayerEntity EntityType, typename Function>
+			requires std::is_invocable<Function, offset_t, ref<EntityType>>::value
+		inline void execute(rval<Function> func) noexcept;
+
 		template<AnimatedEntity EntityType> inline void advance() noexcept;
 
 		template<AnimatedEntity... EntityTypes>

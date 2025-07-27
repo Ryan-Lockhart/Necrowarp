@@ -26,7 +26,11 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void animated_suit_t::killed(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, metal_t{ state });
+	template<map_type_e MapType, death_e Death> inline death_info_t<Death> animated_suit_t::die(offset_t position) noexcept {
+		if constexpr (Death != death_e::Crushed || Death != death_e::Eradicated) {
+			object_registry<MapType>.spill(position, metal_t{ state });
+		}
+
+		return death_info_t<Death>{ true };
 	}
 } // namespace necrowarp

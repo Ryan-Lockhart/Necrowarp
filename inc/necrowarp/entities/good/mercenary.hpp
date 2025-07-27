@@ -81,6 +81,8 @@ namespace necrowarp {
 		};
 
 		static constexpr i8 DeathBoon{ 2 };
+
+		static constexpr i8 ProteinValue{ 1 };
 		
 	private:
 		i8 health;
@@ -126,9 +128,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void killed(offset_t position) noexcept;
-
-		template<map_type_e MapType> inline i8 devoured(offset_t position) noexcept;
+		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::Mercenary), get_health(), max_health()); }
 

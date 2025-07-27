@@ -97,6 +97,8 @@ namespace necrowarp {
 
 		static constexpr i8 DeathBoon{ 1 };
 
+		static constexpr i8 ProteinValue{ 1 };
+
 		inline adventurer_t() noexcept {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
@@ -109,9 +111,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void killed(offset_t position) noexcept;
-
-		template<map_type_e MapType> inline i8 devoured(offset_t position) noexcept;
+		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
 		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<adventurer_t>, position); }
 

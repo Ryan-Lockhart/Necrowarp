@@ -151,6 +151,8 @@ namespace necrowarp {
 
 		static constexpr i8 DeathBoon{ 3 };
 
+		static constexpr i8 ProteinValue{ 1 };
+
 	private:
 		static inline std::uniform_int_distribution<u16> zeal_dis{ static_cast<u16>(zeal_e::Downtrodden), static_cast<u16>(zeal_e::Ascendant) };
 
@@ -271,9 +273,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void killed(offset_t position) noexcept;
-
-		template<map_type_e MapType> inline i8 devoured(offset_t position) noexcept;
+		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
 			return std::format("{} ({}) [{}/{}]",

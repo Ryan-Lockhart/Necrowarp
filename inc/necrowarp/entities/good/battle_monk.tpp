@@ -32,28 +32,26 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void battle_monk_t::killed(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, bones_t{});
-		object_registry<MapType>.spill(position, flesh_t{});
-		object_registry<MapType>.spill(position, cerebra_t{ entity_e::BattleMonk });
+	template<map_type_e MapType, death_e Death> inline death_info_t<Death> battle_monk_t::die(offset_t position) noexcept {
+		++steam_stats::stats<steam_stat_e::BattleMonksSlain>;
+
+		if constexpr (Death == death_e::Killed) {
+			object_registry<MapType>.spill(position, bones_t{});
+			object_registry<MapType>.spill(position, flesh_t{});
+			object_registry<MapType>.spill(position, cerebra_t{ entity_e::BattleMonk });
+		} else if constexpr (Death == death_e::Devoured) {
+			object_registry<MapType>.spill(position, bones_t{});
+			object_registry<MapType>.spill(position, cerebra_t{ entity_e::BattleMonk });
+		}
 
 		player.receive_death_boon<battle_monk_t>();
 
-		++steam_stats::stats<steam_stat_e::BattleMonksSlain>;
-
-		scorekeeper.add(entity_e::BattleMonk);
-	}
-
-	template<map_type_e MapType> inline i8 battle_monk_t::devoured(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, bones_t{});
-		object_registry<MapType>.spill(position, cerebra_t{ entity_e::BattleMonk });
-
-		player.receive_death_boon<battle_monk_t>();
-
-		++steam_stats::stats<steam_stat_e::BattleMonksSlain>;
-
 		scorekeeper.add(entity_e::BattleMonk);
 
-		return 1;
+		if constexpr (Death == death_e::Devoured) {
+			return death_info_t<Death>{ true, ProteinValue };
+		} else {
+			return death_info_t<Death>{ true };
+		}
 	}
 } // namespace necrowarp

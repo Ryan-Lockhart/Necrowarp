@@ -54,7 +54,7 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t entity_glyphs<flesh_golem_t>{ glyphs::FleshGolem };
 
 	struct flesh_golem_t {
-		static constexpr f32 HealthMultiplier{ 2.0f };
+		static constexpr f16 HealthMultiplier{ 2.0f };
 
 		static constexpr i8 MaximumDamage{ 3 };
 
@@ -70,6 +70,8 @@ namespace necrowarp {
 			entity_e::Paladin,
 			entity_e::Thetwo,
 		};
+
+		static constexpr f16 ProteinRatio{ 0.25f };
 
 	private:
 		const i8 investiture;
@@ -96,9 +98,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void killed(offset_t position) noexcept;
-
-		template<map_type_e MapType> inline i8 devoured(offset_t position) noexcept;
+		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept { return std::format("{} [{}/{}]", necrowarp::to_string(entity_e::FleshGolem), get_protein(), max_protein()); }
 

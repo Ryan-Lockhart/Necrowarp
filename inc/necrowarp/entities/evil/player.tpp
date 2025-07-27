@@ -1,5 +1,6 @@
 #pragma once
 
+#include "necrowarp/entities/entity.hpp"
 #include <necrowarp/entities/evil/player.hpp>
 
 #include <necrowarp/entity_state.hpp>
@@ -78,41 +79,27 @@ namespace necrowarp {
 
 	inline bool player_t::can_receive_divine_intervention() const noexcept { return !divine_intervention_invoked; }
 
-	template<map_type_e MapType> inline void player_t::killed() noexcept {
-		if (no_hit_enabled() || has_ascended()) {
-			return;
+	template<map_type_e MapType, death_e Death> inline death_info_t<Death> player_t::die() noexcept {
+		if constexpr (Death == death_e::Killed) {
+			if (no_hit_enabled() || has_ascended()) {
+				return death_info_t<Death>{ false };
+			} else if (can_receive_divine_intervention() && player_t::intervention(get_patron_disposition(patron), random_engine)) {
+				divine_intervention_invoked = true;
+
+				intervention_sound.delay(random_epoch_interval(random_engine));
+
+				return death_info_t<Death>{ false };
+			}
 		}
-
-		if (can_receive_divine_intervention() && player_t::intervention(get_patron_disposition(patron), random_engine)) {
-			divine_intervention_invoked = true;
-
-			intervention_sound.delay(random_epoch_interval(random_engine));
-
-			return;
-		}
-
-		phase.transition(phase_e::GameOver);
-
-		++steam_stats::stats<steam_stat_e::PlayerDeaths>;
-	}
-
-	template<map_type_e MapType> inline i8 player_t::devoured() noexcept {
-		if (no_hit_enabled() || has_ascended()) {
-			return 0;
-		}
-
-		if (can_receive_divine_intervention() && player_t::intervention(get_patron_disposition(patron), random_engine)) {
-			divine_intervention_invoked = true;
-
-			intervention_sound.delay(random_epoch_interval(random_engine));
-
-			return 0;
-		}
-
-		phase.transition(phase_e::GameOver);
 
 		++steam_stats::stats<steam_stat_e::PlayerDeaths>;
 
-		return 0;
+		phase.transition(phase_e::GameOver);
+
+		if constexpr (Death == death_e::Devoured) {
+			return death_info_t<Death>{ true, ProteinValue };
+		} else {
+			return death_info_t<Death>{ true };
+		}
 	}
 } // namespace necrowarp

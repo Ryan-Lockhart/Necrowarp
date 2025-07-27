@@ -172,6 +172,8 @@ namespace necrowarp {
 		static constexpr i8 UnsafeWarpBoon{ 1 };
 		static constexpr i8 FailedWarpBoon{ 2 };
 
+		static constexpr i8 ProteinValue{ 1 };
+
 	  private:
 		static inline std::bernoulli_distribution apathetic_intervention_dis{ 0.01 };
 		static inline std::bernoulli_distribution cooperative_intervention_dis{ 0.10 };
@@ -476,13 +478,25 @@ namespace necrowarp {
 
 		inline bool can_perform(discount_e type) const noexcept {
 			return magic_enum::enum_switch([&, this](auto val) -> bool {
-				return free_costs_enabled() || energy >= get_cost(val);
+				constexpr discount_e cval{ val };
+
+				if constexpr (cval == discount_e::CalamitousRetaliation) {
+					return free_costs_enabled() || (has_ascended() && energy >= get_cost(val));
+				} else {
+					return free_costs_enabled() || energy >= get_cost(val);
+				}
 			}, type);
 		}
 
 		inline bool can_perform(discount_e type, i8 discount) const noexcept {
 			return magic_enum::enum_switch([&, this](auto val) -> bool {
-				return free_costs_enabled() || energy >= get_cost(val) - discount;
+				constexpr discount_e cval{ val };
+
+				if constexpr (cval == discount_e::CalamitousRetaliation) {
+					return free_costs_enabled() || (has_ascended() && energy >= get_cost(val) - discount);
+				} else {
+					return free_costs_enabled() || energy >= get_cost(val) - discount;
+				}
 			}, type);
 		}
 
@@ -536,9 +550,7 @@ namespace necrowarp {
 
 		inline bool can_receive_divine_intervention() const noexcept;
 
-		template<map_type_e MapType> inline void killed() noexcept;
-
-		template<map_type_e MapType> inline i8 devoured() noexcept;
+		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die() noexcept;
 
 		template<RandomEngine Generator> static inline bool intervention(disposition_e disposition, ref<Generator> engine) noexcept {
 			switch (disposition) {

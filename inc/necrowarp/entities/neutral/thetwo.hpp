@@ -334,13 +334,11 @@ namespace necrowarp {
 
 		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
 
-		inline u8 get_droppings() const noexcept { return static_cast<u8>(bulk) + 1; }
+		inline i8 get_droppings() const noexcept { return static_cast<i8>(bulk) + 1; }
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
-		template<map_type_e MapType> inline void killed(offset_t position) noexcept;
-
-		template<map_type_e MapType> inline i8 devoured(offset_t position) noexcept;
+		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
 			return std::format("{} [{}/{}] ({}, [{}/{}])",

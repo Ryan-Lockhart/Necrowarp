@@ -26,5 +26,7 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void hemogheist_t::killed(offset_t position) noexcept {}
+	template<map_type_e MapType, death_e Death> inline death_info_t<Death> hemogheist_t::die(offset_t position) noexcept {
+		return death_info_t<Death>{ true };
+	}
 } // namespace necrowarp

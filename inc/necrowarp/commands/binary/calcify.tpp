@@ -49,9 +49,9 @@ namespace necrowarp {
 					}
 
 					if constexpr (is_player<entity_type>::value) {
-						entity->dependent killed<MapType>();
+						entity->dependent die<MapType, death_e::Crushed>();
 					} else {
-						entity->dependent killed<MapType>(target_position);
+						entity->dependent die<MapType, death_e::Crushed>(target_position);
 
 						entity_registry<MapType>.dependent remove<entity_type>(target_position);
 					}

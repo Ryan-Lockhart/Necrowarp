@@ -18,28 +18,26 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void mist_lady_t::killed(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, bones_t{});
-		object_registry<MapType>.spill(position, flesh_t{});
-		object_registry<MapType>.spill(position, cerebra_t{ entity_e::MistLady });
+	template<map_type_e MapType, death_e Death> inline death_info_t<Death> mist_lady_t::die(offset_t position) noexcept {
+		++steam_stats::stats<steam_stat_e::MistLadiesSlain>;
+
+		if constexpr (Death == death_e::Killed) {
+			object_registry<MapType>.spill(position, bones_t{});
+			object_registry<MapType>.spill(position, flesh_t{});
+			object_registry<MapType>.spill(position, cerebra_t{ entity_e::MistLady });
+		} else if constexpr (Death == death_e::Devoured) {
+			object_registry<MapType>.spill(position, bones_t{});
+			object_registry<MapType>.spill(position, cerebra_t{ entity_e::MistLady });
+		}
 
 		player.receive_death_boon<mist_lady_t>();
 
-		++steam_stats::stats<steam_stat_e::MistLadiesSlain>;
-
-		scorekeeper.add(entity_e::MistLady);
-	}
-
-	template<map_type_e MapType> inline i8 mist_lady_t::devoured(offset_t position) noexcept {
-		object_registry<MapType>.spill(position, bones_t{});
-		object_registry<MapType>.spill(position, cerebra_t{ entity_e::MistLady });
-
-		player.receive_death_boon<mist_lady_t>();
-
-		++steam_stats::stats<steam_stat_e::MistLadiesSlain>;
-
 		scorekeeper.add(entity_e::MistLady);
 
-		return 1;
+		if constexpr (Death == death_e::Devoured) {
+			return death_info_t<Death>{ true, ProteinValue };
+		} else {
+			return death_info_t<Death>{ true };
+		}
 	}
 } // namespace necrowarp

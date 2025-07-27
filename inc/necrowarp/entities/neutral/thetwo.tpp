@@ -132,30 +132,26 @@ namespace necrowarp {
 		return command_pack_t{ command_e::Move, position, descent_pos.value() };
 	}
 
-	template<map_type_e MapType> inline void thetwo_t::killed(offset_t position) noexcept {
+	template<map_type_e MapType, death_e Death> inline death_info_t<Death> thetwo_t::die(offset_t position) noexcept {
 		++steam_stats::stats<steam_stat_e::ThetwoSlain>;
 
-		const u8 droppings{ get_droppings() };
+		const i8 droppings{ get_droppings() };
 
-		object_registry<MapType>.spill(position, bones_t{}, droppings);
-		object_registry<MapType>.spill(position, flesh_t{}, droppings * 2);
-
-		player.receive_death_boon<thetwo_t>(droppings);
-
-		scorekeeper.add(entity_e::Thetwo, droppings);
-	}
-
-	template<map_type_e MapType> inline i8 thetwo_t::devoured(offset_t position) noexcept {
-		++steam_stats::stats<steam_stat_e::ThetwoSlain>;
-
-		const u8 droppings{ get_droppings() };
-
-		object_registry<MapType>.spill(position, bones_t{}, droppings);
+		if constexpr (Death == death_e::Killed) {
+			object_registry<MapType>.spill(position, bones_t{}, droppings);
+			object_registry<MapType>.spill(position, flesh_t{}, droppings * 2);
+		} else if constexpr (Death == death_e::Devoured) {
+			object_registry<MapType>.spill(position, bones_t{}, droppings);
+		}
 
 		player.receive_death_boon<thetwo_t>(droppings);
 
 		scorekeeper.add(entity_e::Thetwo, droppings);
 
-		return droppings * 2;
+		if constexpr (Death == death_e::Devoured) {
+			return death_info_t<Death>{ true, droppings };
+		} else {
+			return death_info_t<Death>{ true };
+		}
 	}
 } // namespace necrowarp
