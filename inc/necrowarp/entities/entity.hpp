@@ -797,12 +797,6 @@ namespace necrowarp {
 		requires (!globals::has_animation<EntityType>::value && !globals::has_variants<EntityType>::value)
 	inline constexpr glyph_t entity_glyphs;
 
-	template<NonNullEntity EntityType> static inline constexpr bool has_death_sound{ false };
-
-	template<NonNullEntity EntityType> static inline constexpr usize num_death_sounds{ 0 };
-
-	template<NonNullEntity EntityType> static inline clip_pool_t<num_death_sounds<EntityType>> death_sounds;
-
 	template<NonNullEntity EntityType> struct entity_t {
 		offset_t position;
 		ptr<EntityType> entity;
