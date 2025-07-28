@@ -437,12 +437,14 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		inline void receive_damage(i8 damage_amount) noexcept {
-			if (no_hit_enabled() || has_ascended()) {
-				return;
+		inline bool receive_damage(i8 damage_amount) noexcept {
+			if (no_hit_enabled() || has_ascended() || damage_amount <= 0) {
+				return false;
 			}
 			
 			set_armor(armor - damage_amount);
+
+			return true;
 		}
 
 		inline bool free_costs_enabled() const noexcept { return game_stats.cheats.is_enabled() && game_stats.cheats.free_costs; }
@@ -538,9 +540,9 @@ namespace necrowarp {
 
 		inline void zero_out_divinity() noexcept { set_divinity(0); }
 
-		template<NonNullEntity EntityType> inline bool will_perish() const noexcept;
+		template<CombatantEntity EntityType> inline bool will_perish() const noexcept;
 
-		template<NonNullEntity EntityType> inline void receive_damage() noexcept;
+		template<CombatantEntity EntityType> inline bool receive_damage() noexcept;
 
 		template<NonNullEntity EntityType> inline void receive_death_boon() noexcept;
 

@@ -69,6 +69,8 @@ namespace necrowarp {
 			entity_e::Paladin,
 			entity_e::Thetwo,
 		};
+
+		static constexpr f16 LeashRange{ 2 };
 		
 	private:
 		i8 health;
@@ -86,7 +88,15 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
+		inline bool receive_damage(i8 damage_amount) noexcept {
+			if (damage_amount <= 0) {
+				return false;
+			}
+
+			set_health(health - damage_amount);
+
+			return true;
+		}
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

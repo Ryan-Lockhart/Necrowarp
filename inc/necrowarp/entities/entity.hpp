@@ -598,6 +598,22 @@ namespace necrowarp {
 
 	template<typename T> concept CombatantEntity = NonNullEntity<T> && is_combatant<T>::value;
 
+	template<typename T> struct is_holy {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_holy_v = is_holy<T>::value;
+
+	template<typename T> concept HolyEntity = NonNullEntity<T> && is_holy<T>::value;
+
+	template<typename T> struct is_unholy {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_unholy_v = is_unholy<T>::value;
+
+	template<typename T> concept UnholyEntity = NonNullEntity<T> && is_unholy<T>::value;
+
 	template<typename T> struct is_docile {
 		static constexpr bool value = false;
 	};

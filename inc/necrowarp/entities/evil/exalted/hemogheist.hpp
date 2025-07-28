@@ -79,7 +79,7 @@ namespace necrowarp {
 	struct hemogheist_t {
 		keyframe_t idle_animation;
 
-		static constexpr f16 ThirstRetention{ 1.00f };
+		static constexpr f16 ThirstRetention{ 0.33f };
 
 		static constexpr i8 MaximumDamage{ 5 };
 
@@ -135,7 +135,15 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		inline void receive_damage(f16 damage_amount) noexcept { set_volume(volume - damage_amount); }
+		inline bool receive_damage(f16 damage_amount) noexcept {
+			if (damage_amount <= 0.0f) {
+				return false;
+			}
+
+			set_volume(volume - damage_amount);
+
+			return true;
+		}
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 

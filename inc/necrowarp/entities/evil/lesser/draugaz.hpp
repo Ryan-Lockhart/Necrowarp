@@ -36,19 +36,19 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_unholy<draugaz_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_combatant<draugaz_t> {
 		static constexpr bool value = true;
 	};
 
 	template<> struct is_bleeder<draugaz_t> {
 		static constexpr bool value = true;
-		static constexpr fluid_e type = fluid_e::IchorousFilth;
+		static constexpr fluid_e type = fluid_e::Filth;
 
 		static constexpr bool conditional = false;
-	};
-
-	template<> struct is_vigilant<draugaz_t> {
-		static constexpr bool value = true;
 	};
 
 	template<> inline constexpr glyph_t entity_glyphs<draugaz_t>{ glyphs::Draugaz };
@@ -72,11 +72,12 @@ namespace necrowarp {
 		
 	private:
 		i8 health;
+		bool seared;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 
 	public:
-		inline draugaz_t() noexcept : health{ MaximumHealth } {}
+		inline draugaz_t() noexcept : health{ MaximumHealth }, seared{ false } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -84,13 +85,41 @@ namespace necrowarp {
 
 		constexpr i8 max_health() const noexcept { return MaximumHealth; }
 
+		inline bool is_seared() const noexcept { return seared; }
+
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
+		inline bool receive_damage(i8 damage_amount) noexcept {
+			if (damage_amount <= 0) {
+				return false;
+			}
+
+			set_health(health - damage_amount);
+
+			return true;
+		}
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
+		inline void regenerate() noexcept {
+			if (health >= max_health() || seared) {
+				return;
+			}
+
+			set_health(health + 1);
+		}
+
+		inline void regenerate(i8 amount) noexcept {
+			if (health >= max_health() || seared) {
+				return;
+			}
+
+			set_health(health + amount);
+		}
+
+		inline void sear() noexcept { seared = true; }
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 

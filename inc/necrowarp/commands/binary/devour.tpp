@@ -25,7 +25,15 @@ namespace necrowarp {
 		const entity_e target_entity{ determine_target<EntityType>(entity_registry<MapType>.at(target_position)) };
 
 		if (!devourer.can_devour(target_object) && !devourer.can_devour(target_entity)) {
-			return;
+			if (target_entity == entity_e::Thetwo) {
+				ptr<thetwo_t> maybe_thetwo{ entity_registry<MapType>.dependent at<thetwo_t>(target_position) };
+
+				if (maybe_thetwo == nullptr || !devourer.can_devour(maybe_thetwo->get_bulk())) {
+					return;
+				}
+			} else {
+				return;
+			}
 		}
 
 		if (target_object == object_e::Flesh) {

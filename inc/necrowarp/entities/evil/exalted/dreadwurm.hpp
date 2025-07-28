@@ -92,7 +92,15 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
+		inline bool receive_damage(i8 damage_amount) noexcept {
+			if (damage_amount <= 0) {
+				return false;
+			}
+
+			set_health(health - damage_amount);
+
+			return true;
+		}
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 

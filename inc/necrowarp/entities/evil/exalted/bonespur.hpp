@@ -101,7 +101,17 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - filter_damage(damage_amount)); }
+		inline bool receive_damage(i8 damage_amount) noexcept {
+			const i8 actual_damage{ filter_damage(damage_amount) };
+			
+			if (actual_damage <= 0) {
+				return false;
+			}
+
+			set_health(health - actual_damage);
+
+			return true;
+		}
 
 		inline void enspatter(fluid_e with) noexcept {
 			spatter += with;

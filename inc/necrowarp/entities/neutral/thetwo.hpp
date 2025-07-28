@@ -121,6 +121,9 @@ namespace necrowarp {
 
 		static constexpr std::array<object_e, 1> ObjectPriorities{ object_e::Flesh };
 
+		inline i8 protein_value() const noexcept { return static_cast<i8>(bulk); }
+		static constexpr f16 ProteinRatio{ 0.33f };
+
 		static constexpr i8 DeathBoon{ 1 };
 
 		static constexpr i8 SheddingTurns{ 8 };
@@ -178,7 +181,9 @@ namespace necrowarp {
 		template<RandomEngine Generator> inline thetwo_t(ref<Generator> engine) noexcept :
 			bulk{ random_bulk(engine) }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false }
 		{}
-		
+
+		inline bulk_e get_bulk() const noexcept { return bulk; }
+
 		inline i8 get_health() const noexcept { return health; }
 
 		inline bool has_health() const noexcept { return health > 0; }
@@ -208,15 +213,15 @@ namespace necrowarp {
 		constexpr i8 max_protein() const noexcept {
 			switch (bulk) {
 				case bulk_e::Neonatal: {
-					return MaximumProtein >> 4;
+					return MaximumProtein >> 5;
 				} case bulk_e::Young: {
-					return MaximumProtein >> 3;
+					return MaximumProtein >> 4;
 				} case bulk_e::Mature: {
-					return MaximumProtein >> 2;
+					return MaximumProtein >> 3;
 				} case bulk_e::Bulky: {
-					return MaximumProtein >> 1;
+					return MaximumProtein >> 2;
 				} case bulk_e::Gross: {
-					return MaximumProtein;
+					return MaximumProtein >> 1;
 				} case bulk_e::Titanic: {
 					return MaximumProtein;
 				}
@@ -266,6 +271,8 @@ namespace necrowarp {
 		inline bool can_devour(entity_e entity) const noexcept;
 
 		inline bool can_devour(object_e object) const noexcept { return protein < max_protein() && object == object_e::Flesh; }
+
+		inline bool can_devour(bulk_e bulk) const noexcept { return static_cast<u8>(this->bulk) > static_cast<u8>(bulk); }
 
 		inline void fatten() noexcept { set_protein(protein + 1); }
 
@@ -332,9 +339,15 @@ namespace necrowarp {
 
 		inline i8 get_damage(entity_e target) const noexcept { return get_damage(); }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
+		inline bool receive_damage(i8 damage_amount) noexcept {
+			if (damage_amount <= 0) {
+				return false;
+			}
 
-		inline i8 get_droppings() const noexcept { return static_cast<i8>(bulk) + 1; }
+			set_health(health - damage_amount);
+
+			return true;
+		}
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 

@@ -51,6 +51,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_holy<banner_bearer_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<banner_bearer_t>{ glyphs::BannerBearer };
 
 	struct banner_bearer_t {
@@ -97,7 +101,15 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
 
-		inline void receive_damage(i8 damage_amount) noexcept { set_health(health - damage_amount); }
+		inline bool receive_damage(i8 damage_amount) noexcept {
+			if (damage_amount <= 0) {
+				return false;
+			}
+
+			set_health(health - damage_amount);
+
+			return true;
+		}
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

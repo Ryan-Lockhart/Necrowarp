@@ -1,5 +1,6 @@
 #pragma once
 
+#include "necrowarp/entities/entity.hpp"
 #include <necrowarp/commands/unary/wander.hpp>
 
 #include <necrowarp/entity_command.hpp>
@@ -49,10 +50,30 @@ namespace necrowarp {
 				while (tries < 8) {
 					const offset_t maybe_pos{ source_position + neighbourhood_offsets<distance_function_e::Chebyshev>[wander_dis(random_engine)] };
 
-					if (!game_map<MapType>.dependent within<region_e::Interior>(maybe_pos) || game_map<MapType>[maybe_pos].solid || !entity_registry<MapType>.empty(maybe_pos)) {
+					if (!game_map<MapType>.dependent within<region_e::Interior>(maybe_pos) || !entity_registry<MapType>.empty(maybe_pos)) {
 						++tries;
 
 						continue;
+					}
+
+					if (game_map<MapType>[maybe_pos].solid) {
+						if constexpr (!is_incorporeal<EntityType>::value) {
+							++tries;
+
+							continue;
+						} else {
+							if constexpr (is_incorporeal<EntityType>::conditional) {
+								cptr<EntityType> entity{ entity_registry<MapType>.dependent at<EntityType>(source_position) };
+
+								if (entity == nullptr) {
+									return std::nullopt;
+								} else if (!entity->is_incorporeal()) {
+									++tries;
+
+									continue;
+								}
+							}
+						}
 					}
 
 					return maybe_pos;

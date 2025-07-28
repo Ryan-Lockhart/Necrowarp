@@ -194,12 +194,14 @@ namespace necrowarp {
 
 		constexpr i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
-		inline void receive_damage(i8 damage_amount) noexcept {
+		inline bool receive_damage(i8 damage_amount) noexcept {
 			if (damage_amount <= 0) {
-				return;
+				return false;
 			}
 
 			destabilize();
+
+			return true;
 		}
 
 		inline void harmonize() noexcept { set_qi(qi + 1); }

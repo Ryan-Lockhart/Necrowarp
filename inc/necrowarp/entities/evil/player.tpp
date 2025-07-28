@@ -1,13 +1,12 @@
 #pragma once
 
-#include "necrowarp/entities/entity.hpp"
 #include <necrowarp/entities/evil/player.hpp>
 
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> inline bool player_t::will_perish() const noexcept {
+	template<CombatantEntity EntityType> inline bool player_t::will_perish() const noexcept {
 		if (has_ascended() || no_hit_enabled()) {
 			return false;
 		}
@@ -15,12 +14,14 @@ namespace necrowarp {
 		return armor < EntityType::MaximumDamage;
 	}
 
-	template<NonNullEntity EntityType> inline void player_t::receive_damage() noexcept {
+	template<CombatantEntity EntityType> inline bool player_t::receive_damage() noexcept {
 		if (has_ascended() || no_hit_enabled()) {
-			return;
+			return false;
 		}
 
 		set_armor(armor - EntityType::MaximumDamage);
+
+		return true;
 	}
 
 	template<NonNullEntity EntityType> inline void player_t::receive_death_boon() noexcept { set_energy(energy + EntityType::DeathBoon); }

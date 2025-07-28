@@ -10,36 +10,50 @@ namespace necrowarp {
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };
 
-			if (!entity_registry<MapType>.dependent contains<ALL_NON_EVIL>(current_position)) {
+			if (entity_registry<MapType>.dependent empty<ALL_NON_EVIL>(current_position)) {
 				continue;
 			}
 
 			return command_pack_t{ command_e::Clash, position, current_position };
 		}
 
-		cauto descent_pos{ non_evil_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
+		if (cauto good_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; good_pos.has_value()) {
+			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
+				const offset_t current_position{ good_pos.value() + offset };
 
-		if (!descent_pos.has_value()) {
-			return command_pack_t{ command_e::Wander, position };
-		}
+				if (entity_registry<MapType>.dependent empty<ALL_NON_EVIL>(current_position)) {
+					continue;
+				}
 
-		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
-			const offset_t current_position{ position + offset };
-
-			if (!entity_registry<MapType>.dependent contains<ALL_NON_EVIL>(current_position)) {
-				continue;
+				return command_pack_t{ command_e::Lunge, position, good_pos.value(), current_position };
 			}
 
-			return command_pack_t{ command_e::Lunge, position, descent_pos.value(), current_position };
+			if (cauto further_good_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; further_good_pos.has_value()) {
+				return command_pack_t{ command_e::Move, position, further_good_pos.value() };
+			}
+
+			return command_pack_t{ command_e::Move, position, good_pos.value() };
 		}
 
-		cauto further_descent_pos{ non_evil_goal_map<MapType>.dependent descend<region_e::Interior>(descent_pos.value(), entity_registry<MapType>) };
+		if (cauto neutral_pos{ neutral_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; neutral_pos.has_value()) {
+			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
+				const offset_t current_position{ neutral_pos.value() + offset };
 
-		if (!further_descent_pos.has_value()) {
-			return command_pack_t{ command_e::Move, position, descent_pos.value() };
+				if (entity_registry<MapType>.dependent empty<ALL_NON_EVIL>(current_position)) {
+					continue;
+				}
+
+				return command_pack_t{ command_e::Lunge, position, neutral_pos.value(), current_position };
+			}
+
+			if (cauto further_neutral_pos{ neutral_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; further_neutral_pos.has_value()) {
+				return command_pack_t{ command_e::Move, position, further_neutral_pos.value() };
+			}
+
+			return command_pack_t{ command_e::Move, position, neutral_pos.value() };
 		}
 
-		return command_pack_t{ command_e::Move, position, further_descent_pos.value() };
+		return command_pack_t{ command_e::Wander, position };
 	}
 
 	template<map_type_e MapType, death_e Death> inline death_info_t<Death> bloodhound_t::die(offset_t position) noexcept {

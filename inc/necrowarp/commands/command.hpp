@@ -17,6 +17,7 @@ namespace necrowarp {
 	struct incorporealize_t;
 	struct necromantic_ascendance_t;
 	struct calamitous_retaliation_t;
+	struct mitose_t;
 	struct eviscerate_t;
 	struct metabolise_t;
 	struct shed_t;
@@ -58,6 +59,7 @@ namespace necrowarp {
 		incorporealize_t, \
 		necromantic_ascendance_t, \
 		calamitous_retaliation_t, \
+		mitose_t, \
 		eviscerate_t, \
 		metabolise_t, \
 		shed_t, \
@@ -98,12 +100,12 @@ namespace necrowarp {
 	#define ALL_COMMANDS \
 		ALL_NULL_COMMANDS, \
 		ALL_NON_NULL_COMMANDS
-	
+
 	#define ALL_BASIC_COMMANDS \
 		wander_t, \
 		move_t, \
 		clash_t
-	
+
 	#define ALL_NECRO_COMMANDS \
 		descend_t, \
 		plunge_t, \
@@ -125,27 +127,30 @@ namespace necrowarp {
 		infernal_invocation_t, \
 		necromantic_ascendance_t, \
 		calamitous_retaliation_t
-	
+
 	#define ALL_BLOODHOUND_COMMANDS \
 		lunge_t
-	
+
+	#define ALL_ABOMINATION_COMMANDS \
+		mitose_t, \
+		devour_t
+
 	#define ALL_WRAITH_COMMANDS \
 		eviscerate_t
-	
+
 	#define ALL_FLESH_GOLEM_COMMANDS \
-		metabolise_t, \
 		devour_t
-	
+
 	#define ALL_THETWO_COMMANDS \
 		metabolise_t, \
 		shed_t, \
 		devour_t
-	
+
 	#define ALL_RANGER_COMMANDS \
 		nock_t, \
 		retrieve_t, \
 		loose_t
-	
+
 	#define ALL_BATTLE_MONK_COMMANDS \
 		meditate_t, \
 		batter_t
@@ -153,6 +158,7 @@ namespace necrowarp {
 	#define ALL_NPC_COMMANDS \
 		ALL_BASIC_COMMANDS, \
 		ALL_BLOODHOUND_COMMANDS, \
+		ALL_ABOMINATION_COMMANDS, \
 		ALL_WRAITH_COMMANDS, \
 		ALL_FLESH_GOLEM_COMMANDS, \
 		ALL_THETWO_COMMANDS, \
@@ -172,6 +178,7 @@ namespace necrowarp {
 		Incorporealize,
 		NecromanticAscendance,
 		CalamitousRetaliation,
+		Mitose,
 		Eviscerate,
 		Nock,
 		Meditate,
@@ -237,6 +244,8 @@ namespace necrowarp {
 				return "necromantic ascendance";
 			} case command_e::CalamitousRetaliation: {
 				return "calamitous retaliation";
+			} case command_e::Mitose: {
+				return "mitose";
 			} case command_e::Eviscerate: {
 				return "eviscerate";
 			} case command_e::Nock: {

@@ -14,7 +14,7 @@
 namespace necrowarp {
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<InitiatorType>::value && !std::is_same<InitiatorType, VictimType>::value)
-	inline bool instigate(offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+	inline bool instigate(offset_t source_position, offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		cauto try_bleed = [&] {
 			if constexpr (is_bleeder_v<VictimType>) {
 				if constexpr (is_bleeder<VictimType>::conditional) {
@@ -65,10 +65,20 @@ namespace necrowarp {
 			}
 		}
 
-		const i8 damage{ initiator.get_damage(to_entity_enum<VictimType>::value) };
+		i8 damage{ initiator.get_damage(to_entity_enum<VictimType>::value) };
+
+		if constexpr (is_good<InitiatorType>::value) {
+			if (entity_goal_map<MapType, banner_bearer_t>.at(source_position) <= banner_bearer_t::EffectRadius) {
+				damage = min<i8>(damage * banner_bearer_t::EffectDamageMultiplier, 1);
+			}
+		}
 
 		if (damage <= 0) {
 			return false;
+		}
+
+		if constexpr (is_holy<InitiatorType>::value && is_unholy<VictimType>::value) {
+			victim.sear();
 		}
 
 		if constexpr (is_berker<InitiatorType>::value) {
@@ -85,17 +95,17 @@ namespace necrowarp {
 					const f16 fluid_damage{ fluid_pool_volume(damage) };
 
 					if (victim.dependent can_survive<InitiatorType>(fluid_damage)) {
-						victim.dependent receive_damage<InitiatorType>(fluid_damage);
-	
-						try_bleed();
+						if (victim.dependent receive_damage<InitiatorType>(fluid_damage)) {	
+							try_bleed();
+						}
 	
 						return false;
 					}
 				} else {
 					if (victim.dependent can_survive<InitiatorType>(damage)) {
-						victim.dependent receive_damage<InitiatorType>(damage);
-	
-						try_bleed();
+						if (victim.dependent receive_damage<InitiatorType>(damage)) {	
+							try_bleed();
+						}
 	
 						return false;
 					}
@@ -105,17 +115,17 @@ namespace necrowarp {
 					const f16 fluid_damage{ fluid_pool_volume(damage) };
 
 					if (victim.can_survive(fluid_damage)) {
-						victim.receive_damage(fluid_damage);
-	
-						try_bleed();
+						if (victim.receive_damage(fluid_damage)) {	
+							try_bleed();
+						}
 	
 						return false;
 					}
 				} else {
 					if (victim.can_survive(damage)) {
-						victim.receive_damage(damage);
-	
-						try_bleed();
+						if (victim.receive_damage(damage)) {	
+							try_bleed();
+						}
 	
 						return false;
 					}
@@ -130,7 +140,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<VictimType>::value && !std::is_same<InitiatorType, VictimType>::value)
-	inline bool retaliate(offset_t source_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+	inline bool retaliate(offset_t source_position, offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		cauto try_bleed = [&] {
 			if constexpr (is_bleeder_v<InitiatorType>) {
 				if constexpr (is_bleeder<InitiatorType>::conditional) {
@@ -181,7 +191,13 @@ namespace necrowarp {
 			}
 		}
 
-		const i8 damage{ victim.get_damage(to_entity_enum<InitiatorType>::value) };
+		i8 damage{ victim.get_damage(to_entity_enum<InitiatorType>::value) };
+
+		if constexpr (is_good<VictimType>::value) {
+			if (entity_goal_map<MapType, banner_bearer_t>.at(source_position) <= banner_bearer_t::EffectRadius) {
+				damage = min<i8>(damage * banner_bearer_t::EffectDamageMultiplier, 1);
+			}
+		}
 
 		if (damage <= 0) {
 			return false;
@@ -246,7 +262,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
 		requires (!is_docile<InitiatorType>::value && !std::is_same<InitiatorType, VictimType>::value)
-	inline bool reflect(offset_t source_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
+	inline bool reflect(offset_t source_position, offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		cauto try_bleed = [&] {
 			if constexpr (is_bleeder<InitiatorType>::value) {
 				if constexpr (is_bleeder<InitiatorType>::conditional) {
@@ -287,7 +303,13 @@ namespace necrowarp {
 			}
 		}
 
-		const i8 damage{ initiator.get_damage(to_entity_enum<VictimType>::value) };
+		i8 damage{ initiator.get_damage(to_entity_enum<VictimType>::value) };
+
+		if constexpr (is_good<InitiatorType>::value) {
+			if (entity_goal_map<MapType, banner_bearer_t>.at(source_position) <= banner_bearer_t::EffectRadius) {
+				damage = min<i8>(damage * banner_bearer_t::EffectDamageMultiplier, 1);
+			}
+		}
 
 		if (damage <= 0) {
 			return false;
@@ -380,15 +402,15 @@ namespace necrowarp {
 
 					ref<victim_type> victim{ *victim_ptr };
 
-					const bool target_killed{ instigate<MapType>(target_position, initiator, victim) };
+					const bool target_killed{ instigate<MapType>(source_position, target_position, initiator, victim) };
 
 					const bool source_killed{
 						[&]() -> bool {
 							if constexpr (!is_docile<victim_type>::value) {
 								if constexpr (cval == entity_e::Bonespur) {
-									return reflect<MapType>(source_position, initiator, victim);
+									return reflect<MapType>(source_position, target_position, initiator, victim);
 								} else {
-									return retaliate<MapType>(source_position, initiator, victim);
+									return retaliate<MapType>(source_position, target_position, initiator, victim);
 								}
 							}
 
@@ -443,6 +465,4 @@ namespace necrowarp {
 			}, victim_enum);
 		}
 	}
-
-	template void entity_command_t<dreadwurm_t, clash_t>::process<map_type_e::Pocket>() const noexcept;
 } // namespace necrowarp

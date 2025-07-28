@@ -62,15 +62,27 @@ namespace necrowarp {
 				const i8 damage{ static_cast<i8>(initiator.get_damage(cval) * (critical_strike ? 2 : 1)) };
 
 				if constexpr (!is_fodder<entity_type>::value) {
-					if (target.can_survive(damage)) {
-						target.receive_damage(damage);
-						
-						try_bleed();
+					if constexpr (is_volumetric<entity_type>::value) {
+						const f16 fluid_damage{ fluid_pool_volume(damage) };
 
-						return;
+						if (target.can_survive(fluid_damage)) {
+							if (target.receive_damage(fluid_damage)) {
+								try_bleed();
+							}
+
+							return;
+						}
+					} else {
+						if (target.can_survive(damage)) {
+							if (target.receive_damage(damage)) {
+								try_bleed();
+							}
+
+							return;
+						}
 					}
 				}
-						
+
 				try_bleed();
 
 				if constexpr (is_player<entity_type>::value) {

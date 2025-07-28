@@ -7,6 +7,7 @@
 #include <necrowarp/commands/unary/incorporealize.tpp>
 #include <necrowarp/commands/unary/necromantic_ascendance.tpp>
 #include <necrowarp/commands/unary/calamitous_retaliation.tpp>
+#include <necrowarp/commands/unary/mitose.tpp>
 #include <necrowarp/commands/unary/eviscerate.tpp>
 #include <necrowarp/commands/unary/metabolise.tpp>
 #include <necrowarp/commands/unary/shed.tpp>

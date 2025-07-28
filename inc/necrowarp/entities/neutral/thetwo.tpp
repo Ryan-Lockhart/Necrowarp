@@ -135,18 +135,20 @@ namespace necrowarp {
 	template<map_type_e MapType, death_e Death> inline death_info_t<Death> thetwo_t::die(offset_t position) noexcept {
 		++steam_stats::stats<steam_stat_e::ThetwoSlain>;
 
-		const i8 droppings{ get_droppings() };
+		const i8 droppings{ static_cast<i8>(protein_value() + protein * ProteinRatio) };
 
-		if constexpr (Death == death_e::Killed) {
-			object_registry<MapType>.spill(position, bones_t{}, droppings);
-			object_registry<MapType>.spill(position, flesh_t{}, droppings * 2);
-		} else if constexpr (Death == death_e::Devoured) {
-			object_registry<MapType>.spill(position, bones_t{}, droppings);
+		if (bulk != bulk_e::Neonatal) {
+			if constexpr (Death == death_e::Killed) {
+				object_registry<MapType>.spill(position, bones_t{});
+				object_registry<MapType>.spill(position, flesh_t{}, droppings);
+			} else if constexpr (Death == death_e::Devoured) {
+				object_registry<MapType>.spill(position, bones_t{});
+			}
+
+			player.receive_death_boon<thetwo_t>(droppings);
+
+			scorekeeper.add(entity_e::Thetwo, droppings);
 		}
-
-		player.receive_death_boon<thetwo_t>(droppings);
-
-		scorekeeper.add(entity_e::Thetwo, droppings);
 
 		if constexpr (Death == death_e::Devoured) {
 			return death_info_t<Death>{ true, droppings };

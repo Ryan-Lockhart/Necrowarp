@@ -157,7 +157,7 @@ namespace necrowarp {
 
 	  public:
 
-		inline skulker_t() noexcept : concealment{ concealment_e::Shrouded } {}
+		inline skulker_t() noexcept : concealment{ concealment_e::Visible } {}
 
 		inline skulker_t(concealment_e concealment) noexcept : concealment{ concealment } {}
 
