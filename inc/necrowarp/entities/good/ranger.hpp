@@ -92,9 +92,9 @@ namespace necrowarp {
 
 		static constexpr i8 QuiverCapacity{ 8 };
 
-		static constexpr i8 MinimumRange{ 2 };
-		static constexpr i8 OptimalRange{ 4 };
-		static constexpr i8 MaximumRange{ 6 };
+		static constexpr i8 MinimumRange{ 4 };
+		static constexpr i8 OptimalRange{ 6 };
+		static constexpr i8 MaximumRange{ 8 };
 
 		static constexpr std::array<entity_e, 14> EntityPriorities{
 			entity_e::Player,

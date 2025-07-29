@@ -9,7 +9,7 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline command_pack_t ranger_t::think(offset_t position) const noexcept {
-		const f32 current_distance{ std::ceil(ranger_goal_map<MapType>.at(position)) };
+		const f32 current_distance{ std::ceil(non_good_goal_map<MapType>.average(position)) };
 
 		const bool in_range{ ranger_t::in_range(current_distance) };
 

@@ -8,6 +8,10 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	template<> struct globals::has_unique_descriptor<banner_bearer_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<banner_bearer_t> {
 		static constexpr bool value = true;
 	};
@@ -36,15 +40,15 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_fodder<banner_bearer_t> {
-		static constexpr bool value = true;
-	};
-
 	template<> struct is_bleeder<banner_bearer_t> {
 		static constexpr bool value = true;
 		static constexpr fluid_e type = fluid_e::Blood;
 
 		static constexpr bool conditional = false;
+	};
+
+	template<> struct is_armored<banner_bearer_t> {
+		static constexpr bool value = true;
 	};
 
 	template<> struct is_devourable<banner_bearer_t> {
@@ -63,6 +67,8 @@ namespace necrowarp {
 
 		static constexpr i8 MaximumHealth{ 4 };
 		static constexpr i8 MaximumDamage{ 2 };
+
+		static constexpr i8 MaximumDamageReceived{ 1 };
 
 		static constexpr std::array<entity_e, 14> EntityPriorities{
 			entity_e::Player,
@@ -99,14 +105,46 @@ namespace necrowarp {
 
 		constexpr i8 max_health() const noexcept { return MaximumHealth; }
 
-		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
+		constexpr i8 get_minimum_damage_received() const noexcept { return MaximumDamageReceived; }
+
+		inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(get_minimum_damage_received(), damage_amount); }
+
+		inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage(damage_amount); }
 
 		inline bool receive_damage(i8 damage_amount) noexcept {
-			if (damage_amount <= 0) {
+			const i8 actual_damage{ filter_damage(damage_amount) };
+			
+			if (actual_damage <= 0) {
 				return false;
 			}
 
-			set_health(health - damage_amount);
+			set_health(health - actual_damage);
+
+			return true;
+		}
+
+		template<CombatantEntity Attacker> constexpr i8 get_minimum_damage_received() const noexcept {
+			const i8 min_damage{ get_minimum_damage_received() };
+
+			if constexpr (is_cleaver<Attacker>::value) {
+				return max<i8>(static_cast<i8>(min_damage * 2), 1);
+			} else {
+				return min_damage;
+			}
+		}
+
+		template<CombatantEntity Attacker> inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(get_minimum_damage_received<Attacker>(), damage_amount); }
+
+		template<CombatantEntity Attacker> inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage<Attacker>(damage_amount); }
+
+		template<CombatantEntity Attacker> inline bool receive_damage(i8 damage_amount) noexcept {
+			const i8 actual_damage{ filter_damage<Attacker>(damage_amount) };
+			
+			if (actual_damage <= 0) {
+				return false;
+			}
+
+			set_health(health - actual_damage);
 
 			return true;
 		}

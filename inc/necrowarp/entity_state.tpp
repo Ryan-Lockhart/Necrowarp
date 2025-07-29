@@ -1158,7 +1158,6 @@ namespace necrowarp {
 		neutral_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
 		neutral_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
 
-
 		non_evil_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
 		non_evil_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
 
@@ -1210,7 +1209,6 @@ namespace necrowarp {
 		neutral_goal_map<MapType, false>.reset();
 		neutral_goal_map<MapType, true>.reset();
 
-
 		non_evil_goal_map<MapType, false>.reset();
 		non_evil_goal_map<MapType, true>.reset();
 
@@ -1222,8 +1220,8 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_specialist_goal_maps() noexcept {
-		ranger_goal_map<MapType>.reset();
 		skulker_goal_map<MapType>.reset();
+		ranger_goal_map<MapType>.reset();
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_unique_goal_maps() noexcept {

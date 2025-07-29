@@ -55,6 +55,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_encouragable<adventurer_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<adventurer_t>{ glyphs::Adventurer };
 
 	struct adventurer_t {

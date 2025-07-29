@@ -9,7 +9,7 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline command_pack_t skulker_t::think(offset_t position) const noexcept {
-		concealment = skulker_t::determine_concealment(skulker_goal_map<MapType>.at(position));
+		concealment = skulker_t::determine_concealment(skulker_goal_map<MapType>[position]);
 
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };

@@ -59,6 +59,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_encouragable<paladin_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_holy<paladin_t> {
 		static constexpr bool value = true;
 	};

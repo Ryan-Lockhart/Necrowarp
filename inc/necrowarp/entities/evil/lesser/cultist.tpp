@@ -17,7 +17,7 @@ namespace necrowarp {
 			return command_pack_t{ command_e::Clash, position, current_position };
 		}
 
-		if (cauto player_pos{ entity_goal_map<MapType, player_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; player_pos.has_value() && entity_goal_map<MapType, player_t>.at(player_pos.value()) > LeashRange) {
+		if (cauto player_pos{ entity_goal_map<MapType, player_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; player_pos.has_value() && entity_goal_map<MapType, player_t>[player_pos.value()] > LeashRange) {
 			return command_pack_t{ command_e::Move, position, player_pos.value() };
 		}
 

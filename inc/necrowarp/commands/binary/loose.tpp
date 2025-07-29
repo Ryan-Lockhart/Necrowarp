@@ -40,7 +40,7 @@ namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, loose_t>::process() const noexcept {
 		ptr<ranger_t> maybe_ranger{ entity_registry<MapType>.dependent at<ranger_t>(source_position) };
 
-		if (maybe_ranger == nullptr || !ranger_t::in_range(source_position, target_position) || !maybe_ranger->can_loose()) {
+		if (maybe_ranger == nullptr || !std::ceil(non_good_goal_map<MapType>.average(target_position)) || !maybe_ranger->can_loose()) {
 			return;
 		}
 

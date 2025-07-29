@@ -114,7 +114,13 @@ namespace necrowarp {
 		}
 
 		if (is_skittish || is_injured) {
-			const i8 distance{ static_cast<i8>(std::round(non_neutral_goal_map<MapType>.at(descent_pos.value()))) };
+			cauto maybe_distance{ non_neutral_goal_map<MapType>.at(descent_pos.value()) };
+
+			if (!maybe_distance.has_value()) {
+
+			}
+
+			const i8 distance{ static_cast<i8>(std::floor(maybe_distance.value())) };
 
 			if (distance < SkittishApproachDistance) {
 				cauto flee_pos{ non_neutral_goal_map<MapType>.dependent ascend<region_e::Interior>(position, entity_registry<MapType>) };

@@ -137,14 +137,14 @@ namespace necrowarp {
 	}
 
 	namespace globals {
-		static constexpr entity_e OopsAllEnum{ entity_e::Berserker };
+		static constexpr entity_e OopsAllEnum{ entity_e::Ranger };
 
-		template<> inline constexpr bool OopsAll<OopsAllEnum>{ false };
+		template<> inline constexpr bool OopsAll<OopsAllEnum>{ true };
 		
 		template<NonNullEntity... Entities> static constexpr usize OopsAllCount{ (OopsAll<to_entity_enum<Entities>::value> + ...) };
 
-		static_assert(OopsAllCount<ALL_NON_EVIL_NPCS> <= 1, "cannot force multiple enemy types!");
+		static_assert(OopsAllCount<ALL_GOOD_NPCS> <= 1, "cannot force multiple enemy types!");
 
-		static constexpr bool OopsAllEnabled{ OopsAllCount<ALL_NON_EVIL_NPCS> == 1 };
+		static constexpr bool OopsAllEnabled{ OopsAllCount<ALL_GOOD_NPCS> == 1 };
 	}
 } // namespace necrowarp

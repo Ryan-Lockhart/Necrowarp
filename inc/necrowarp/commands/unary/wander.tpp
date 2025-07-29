@@ -1,6 +1,5 @@
 #pragma once
 
-#include "necrowarp/entities/entity.hpp"
 #include <necrowarp/commands/unary/wander.hpp>
 
 #include <necrowarp/entity_command.hpp>
@@ -21,7 +20,7 @@ namespace necrowarp {
 				return;
 			}
 
-		 	if (entity_goal_map<MapType, mist_lady_t>.at(source_position) <= mist_lady_t::EffectRadius) {
+		 	if (entity_goal_map<MapType, mist_lady_t>[source_position] <= mist_lady_t::EffectRadius) {
 		 		entity->soothe();
 		 	}
 		}

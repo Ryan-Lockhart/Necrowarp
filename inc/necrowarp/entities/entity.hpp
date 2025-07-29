@@ -751,6 +751,14 @@ namespace necrowarp {
 
 	template<typename T> concept IncorporealEntity = NonNullEntity<T> && is_bleeder_v<T>;
 
+	template<typename T> struct is_encouragable {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_encouragable_v = is_encouragable<T>::value;
+
+	template<typename T> concept EncouragableEntity = NonNullEntity<T> && is_encouragable<T>::value;
+
 	template<typename T> struct is_afflictable {
 		static constexpr bool value = false;
 	};
