@@ -124,8 +124,8 @@ namespace necrowarp {
 		GalvanicInvocation,		// domain of metal; patrons are Thuljanor, Praethornyn, and Exar; minions are animated suits of armor and death knights
 		RavenousInvocation,		// domain of flesh; patrons are Tselgwedixxikog, Sketzuum, and Praethornyn; minions are abominations and flesh golems
 	 	WretchedInvocation,		// domain of filth; patrons are Ionna, Kalypdrot, and Rathghul; minions are draugr and dreadwurms
-		CerebralInvocation,		// domain of cerebra; patrons are Rathghul, Akurakhaithan, and Saeiligarkeuss; minions are chromalesia and isosceline
-		InfernalInvocation,		// domain of ectoplasm; patrons are Saeiligarkeuss, the Moslager, and Akurakhaithan; minions are hamr and furtive horrors
+		CerebralInvocation,		// domain of cerebra; patrons are Rathghul, Akurakhaithan, and Saeiligarkeuss; minions are hamr and furtive horrors
+		InfernalInvocation,		// domain of ectoplasm; patrons are Saeiligarkeuss, the Moslager, and Akurakhaithan; minions are chromalesia and isosceline
 
 		NecromanticAscendance,	// expend massive amount of energy for invulnerability and empowered invocations
 		CalamitousRetaliation, 	// kill all entities on the map, regardless of allegiance
