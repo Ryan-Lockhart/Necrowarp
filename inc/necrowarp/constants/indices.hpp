@@ -26,22 +26,24 @@ namespace necrowarp::indices {
 	constexpr const u8 WrigglingMetal{ ShimmeringMetal + 1 };
 	constexpr const u8 WrithingMetal{ WrigglingMetal + 1 };
 
-	constexpr const u8 Arrow{ WrithingMetal + 1 };
-
-	constexpr const u8 CalciticShackle{ Arrow + 1 };
+	constexpr const u8 CalciticShackle{ WrithingMetal + 1 };
 	constexpr const u8 SpectralShackle{ CalciticShackle + 1 };
 	constexpr const u8 SanguineShackle{ SpectralShackle + 1 };
 	constexpr const u8 GalvanicShackle{ SanguineShackle + 1 };
 	constexpr const u8 RavenousShackle{ GalvanicShackle + 1 };
 	constexpr const u8 WretchedShackle{ RavenousShackle + 1 };
-	constexpr const u8 InfernalShackle{ WretchedShackle + 1 };
-	constexpr const u8 CerebralShackle{ InfernalShackle + 1 };
+	constexpr const u8 CerebralShackle{ WretchedShackle + 1 };
+	constexpr const u8 InfernalShackle{ CerebralShackle + 1 };
 
-	constexpr const u8 CalmPortal{ CerebralShackle + 1 };
+	constexpr const u8 CalmPortal{ InfernalShackle + 1 };
 	constexpr const u8 VocalPortal{ CalmPortal + 1 };
 	constexpr const u8 TurbulentPortal{ VocalPortal + 1 };
 	constexpr const u8 InsightfulPortal{ TurbulentPortal + 1 };
 	constexpr const u8 CollapsingPortal{ InsightfulPortal + 1 };
 	constexpr const u8 YawningPortal{ CollapsingPortal + 1 };
 	constexpr const u8 EchoingPortal{ YawningPortal + 1 };
+
+	constexpr const u8 Pedestal{ EchoingPortal + 1 };
+
+	constexpr const u8 Arrow{ Pedestal + 1 };
 } // namespace necrowarp::indices

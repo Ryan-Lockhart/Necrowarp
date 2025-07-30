@@ -30,7 +30,7 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Move, position, approach_pos.value() };
 			}
 
-			const entity_e target { determine_target<ranger_t>(entity_registry<MapType>.at(maybe_position.value())) };
+			const entity_e target{ determine_target<ranger_t>(entity_registry<MapType>.at(maybe_position.value())) };
 
 			if (target == entity_e::None) {
 				return command_pack_t{ command_e::None };

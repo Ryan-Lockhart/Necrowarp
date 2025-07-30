@@ -28,8 +28,8 @@ namespace necrowarp {
 	struct abomination_t;
 	// wretched domain (filth): a lesser minion that grapples enemies
 	struct draugaz_t;
-	// cerebral domain (cerebra): a lesser minion that explodes on death
- // struct furtive_horror_t;
+	// cerebral domain (cerebra): a lesser minion that controls the mind of its host
+ // struct hamaz_t;
 	// infernal domain (ectoplasm): a lesser minion that spreads ectoplasm
  // struct chromalese_t;
 
@@ -47,8 +47,8 @@ namespace necrowarp {
 	struct flesh_golem_t;
 	// wretched domain (filth): an exalted minion that spreads filth to vicitms
 	struct dreadwurm_t;
-	// cerebral domain (cerebra): a lesser minion that controls the mind of its host
- // struct hamaz_t;
+	// cerebral domain (cerebra): a lesser minion that explodes on death
+ // struct furtive_horror_t;
 	// infernal domain (ectoplasm): an exalted minion that kills instantaneously
  // struct isoscol_t;
 

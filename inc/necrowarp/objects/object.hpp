@@ -21,6 +21,8 @@ namespace necrowarp {
 	struct ladder_t;
 	struct portal_t;
 
+	struct pedestal_t;
+
 	struct arrow_t;
 
 	#define ALL_CATALYST_OBJECTS \
@@ -34,6 +36,9 @@ namespace necrowarp {
 		ladder_t, \
 		portal_t
 
+	#define ALL_CONSTRUCT_OBJECTS \
+		pedestal_t
+
 	#define ALL_DEBRIS_OBJECTS \
 		arrow_t
 
@@ -45,6 +50,7 @@ namespace necrowarp {
 	#define ALL_OBJECTS \
 		ALL_CATALYST_OBJECTS, \
 		ALL_LOCOMOTION_OBJECTS, \
+		ALL_CONSTRUCT_OBJECTS, \
 		ALL_DEBRIS_OBJECTS
 
 	enum struct object_e : u8 {
@@ -58,6 +64,8 @@ namespace necrowarp {
 		Crevice,
 		Ladder,
 		Portal,
+
+		Pedestal,
 
 		Arrow,
 	};
@@ -82,6 +90,8 @@ namespace necrowarp {
 				return "ladder";
 			} case object_e::Portal: {
 				return "portal";
+			} case object_e::Pedestal: {
+				return "pedestal";
 			} case object_e::Arrow: {
 				return "arrow";
 			}
@@ -106,6 +116,8 @@ namespace necrowarp {
 				return "ladders";
 			} case object_e::Portal: {
 				return "portals";
+			} case object_e::Pedestal: {
+				return "pedestals";
 			} case object_e::Arrow: {
 				return "arrows";
 			}
@@ -130,6 +142,8 @@ namespace necrowarp {
 				return colors::materials::Oak;
 			} case object_e::Portal: {
 				return colors::light::Green;
+			} case object_e::Pedestal: {
+				return mix(colors::dark::Blue, colors::Grey);
 			} case object_e::Arrow: {
 				return colors::materials::Willow;
 			}
@@ -142,7 +156,7 @@ namespace necrowarp {
 
 	constexpr usize ObjectTypeCount{ static_cast<usize>(object_e::Arrow) };
 
-	using object_group_t = u8;
+	using object_group_t = u16;
 
 	enum struct object_group_e : object_group_t {
 		None = 0,
@@ -156,7 +170,9 @@ namespace necrowarp {
 		Ladder = Crevice << 1,
 		Portal = Ladder << 1,
 
-		Arrow = Portal << 1,
+		Pedestal = Portal << 1,
+
+		Arrow = Pedestal << 1,
 	};
 
 	constexpr object_group_e operator+(object_group_e lhs, object_group_e rhs) noexcept { return static_cast<object_group_e>(static_cast<object_group_t>(lhs) | static_cast<object_group_t>(rhs)); }
@@ -226,6 +242,14 @@ namespace necrowarp {
 	template<typename T> concept NullObject = Object<T> && is_null_object<T>::value;
 
 	template<typename T> concept NonNullObject = Object<T> && !is_null_object<T>::value;
+
+	template<typename T> struct is_blocking {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_blocking_v = is_blocking<T>::value;
+
+	template<typename T> concept BlockingObject = NonNullObject<T> && is_blocking<T>::value;
 
 	template<> struct is_null_object<std::nullptr_t> {
 		static constexpr bool value = true;

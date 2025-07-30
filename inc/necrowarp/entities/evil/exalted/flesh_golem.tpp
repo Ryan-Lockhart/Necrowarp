@@ -52,16 +52,16 @@ namespace necrowarp {
 			}
 		}
 
+		if (cauto flesh_pos{ object_goal_map<MapType, flesh_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; flesh_pos.has_value() && is_injured()) {
+			return command_pack_t{ command_e::Move, position, flesh_pos.value() };
+		}
+
 		if (cauto good_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; good_pos.has_value()) {
 			return command_pack_t{ command_e::Move, position, good_pos.value() };
 		}
 
 		if (cauto neutral_pos{ neutral_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; neutral_pos.has_value()) {
 			return command_pack_t{ command_e::Move, position, neutral_pos.value() };
-		}
-
-		if (cauto flesh_pos{ object_goal_map<MapType, flesh_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; flesh_pos.has_value()) {
-			return command_pack_t{ command_e::Move, position, flesh_pos.value() };
 		}
 
 		return command_pack_t{ command_e::Wander, position };

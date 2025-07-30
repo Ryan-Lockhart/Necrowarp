@@ -229,8 +229,8 @@ namespace necrowarp {
 		GalvanicInvocations,
 		RavenousInvocations,
 		WretchedInvocations,
-		InfernalInvocations,
 		CerebralInvocations,
+		InfernalInvocations,
 
 		NecromanticAscensions,
 		CalamitousRetaliations,
@@ -291,8 +291,8 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::GalvanicInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::RavenousInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::WretchedInvocations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::InfernalInvocations> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::CerebralInvocations> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::InfernalInvocations> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::NecromanticAscensions> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::CalamitousRetaliations> { using type = i32; };
@@ -365,10 +365,10 @@ namespace necrowarp {
 				return "ravenous_invocations";
 			} case steam_stat_e::WretchedInvocations: {
 				return "wretched_invocations";
-			} case steam_stat_e::InfernalInvocations: {
-				return "infernal_invocations";
 			} case steam_stat_e::CerebralInvocations: {
 				return "cerebral_invocations";
+			} case steam_stat_e::InfernalInvocations: {
+				return "infernal_invocations";
 			} case steam_stat_e::NecromanticAscensions: {
 				return "necromantic_ascensions";
 			} case steam_stat_e::CalamitousRetaliations: {
@@ -463,10 +463,10 @@ namespace necrowarp {
 				return "Ravenous Invocations";
 			} case steam_stat_e::WretchedInvocations: {
 				return "Wretched Invocations";
-			} case steam_stat_e::InfernalInvocations: {
-				return "Infernal Invocations";
 			} case steam_stat_e::CerebralInvocations: {
 				return "Cerebral Invocations";
+			} case steam_stat_e::InfernalInvocations: {
+				return "Infernal Invocations";
 			} case steam_stat_e::NecromanticAscensions: {
 				return "Necromantic Ascensions";
 			} case steam_stat_e::CalamitousRetaliations: {

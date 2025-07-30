@@ -85,6 +85,8 @@ namespace necrowarp {
 		static constexpr i8 ProteinValue{ 1 };
 		static constexpr f16 ProteinRatio{ 0.33f };
 
+		static constexpr f16 InjuryThreshold{ 0.5f };
+
 	private:
 		const i8 investiture;
 		i8 protein;
@@ -99,6 +101,8 @@ namespace necrowarp {
 		inline bool has_protein() const noexcept { return protein > 0; }
 
 		inline i8 max_protein() const noexcept { return investiture; }
+
+		inline bool is_injured() const noexcept { return protein < max_protein() * InjuryThreshold; }
 
 		constexpr bool can_devour(entity_e entity) const noexcept;
 

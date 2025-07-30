@@ -84,10 +84,10 @@ namespace necrowarp {
 					return indices::RavenousShackle;
 				} case shackle_e::Wretched: {
 					return indices::WretchedShackle;
-				} case shackle_e::Infernal: {
-					return indices::InfernalShackle;
 				} case shackle_e::Cerebral: {
 					return indices::CerebralShackle;
+				} case shackle_e::Infernal: {
+					return indices::InfernalShackle;
 				} case shackle_e::Unshackled: {
 					return 0;
 				}				
