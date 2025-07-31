@@ -6,6 +6,8 @@
 
 #include <necrowarp/entities/entity.hpp>
 
+#include <necrowarp/constants/enums/grimoire.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -346,7 +348,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_unary_command_v = is_unary_command<T>::value;
 
-	template<typename T> concept UnaryCommand = Command<T> && is_unary_command<T>::value;
+	template<typename T> concept UnaryCommand = NonNullCommand<T> && is_unary_command<T>::value;
 
 	template<typename T> struct is_binary_command {
 		static constexpr bool value = false;
@@ -354,7 +356,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_binary_command_v = is_binary_command<T>::value;
 
-	template<typename T> concept BinaryCommand = Command<T> && is_binary_command<T>::value;
+	template<typename T> concept BinaryCommand = NonNullCommand<T> && is_binary_command<T>::value;
 
 	template<typename T> struct is_ternary_command {
 		static constexpr bool value = false;
@@ -362,7 +364,19 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_ternary_command_v = is_ternary_command<T>::value;
 
-	template<typename T> concept TernaryCommand = Command<T> && is_ternary_command<T>::value;
+	template<typename T> concept TernaryCommand = NonNullCommand<T> && is_ternary_command<T>::value;
+
+	template<typename T> struct is_grimoire {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_grimoire_v = is_grimoire<T>::value;
+
+	template<typename T> concept GrimoireCommand = NonNullCommand<T> && is_grimoire<T>::value;
+
+	template<GrimoireCommand Command> struct to_grimoire_enum {
+		static constexpr grimoire_e value{};
+	};
 
 	template<Command T, command_e CommandType> struct is_command_type {
 		static constexpr bool value = to_command_enum<T>::value == CommandType;

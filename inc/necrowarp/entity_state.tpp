@@ -138,7 +138,6 @@ namespace necrowarp {
 
 	template<NonPlayerEntity EntityType, NonNullCommand CommandType> static inline std::queue<entity_command_t<EntityType, CommandType>> entity_commands{};
 
-	static inline sparse_t<bool> newborns{};
 	static inline sparse_t<bool> deceased{};
 
 	static inline sparse_t<bool> concussed{};
@@ -168,7 +167,7 @@ namespace necrowarp {
 
 	static inline volatile std::atomic<bool> freshly_divine{ false };
 
-	static inline volatile std::atomic<bool> freshly_phantasm{ false };
+	static inline volatile std::atomic<bool> freshly_incorporeal{ false };
 
 	static inline volatile std::atomic<bool> divine_intervention_invoked{ false };
 
@@ -502,8 +501,6 @@ namespace necrowarp {
 			entity_goal_map<MapType, EntityType, false>.add(position);
 			entity_goal_map<MapType, EntityType, true>.add(position);
 
-			newborns.add(position);
-
 			if constexpr (is_afflictable<EntityType>::value) {
 				afflicted.add(position, affliction_e::Stable);
 			}
@@ -561,8 +558,6 @@ namespace necrowarp {
 			entity_goal_map<MapType, EntityType, false>.add(position);
 			entity_goal_map<MapType, EntityType, true>.add(position);
 
-			newborns.add(position);
-
 			if constexpr (is_afflictable<EntityType>::value) {
 				afflicted.add(position, affliction_e::Stable);
 			}
@@ -618,8 +613,6 @@ namespace necrowarp {
 
 		entity_goal_map<MapType, EntityType, false>.remove(position);
 		entity_goal_map<MapType, EntityType, true>.remove(position);
-
-		newborns.remove(position);
 
 		if constexpr (is_concussable<EntityType>::value) {
 			concussed.remove(position);
@@ -777,10 +770,6 @@ namespace necrowarp {
 		entity_goal_map<MapType, EntityType, false>.update(current, target);
 		entity_goal_map<MapType, EntityType, true>.update(current, target);
 
-		if (newborns.contains(current)) {
-			newborns.update(current, target);
-		}
-
 		if constexpr (is_concussable<EntityType>::value) {
 			if (concussed.contains(current)) {
 				concussed.update(current, target);
@@ -920,11 +909,6 @@ namespace necrowarp {
 		}
 
 		for (crauto [position, entity] : entity_registry_storage<EntityType>) {
-			if (newborns.contains(position)) {
-				newborns.remove(position);
-				continue;
-			}
-
 			if (concussed.contains(position)) {
 				concussed.remove(position);
 				continue;
@@ -1014,11 +998,11 @@ namespace necrowarp {
 
 		freshly_divine = false;
 
-		if (!freshly_phantasm && player.is_incorporeal()) {
+		if (!freshly_incorporeal && player.is_incorporeal()) {
 			player.erode_phantasm();
 		}
 
-		freshly_phantasm = false;
+		freshly_incorporeal = false;
 
 		if (game_map<MapType>[player.position].solid && !player.is_incorporeal()) {
 			const death_info_t<death_e::Crushed> info{ player.die<MapType, death_e::Crushed>() };
@@ -1036,14 +1020,14 @@ namespace necrowarp {
 			return;
 		}
 
-		for (rauto [position, draugaz] : entity_registry_storage<draugaz_t>) {
+		for (rauto [_, draugaz] : entity_registry_storage<draugaz_t>) {
 			draugaz.regenerate();
 		}
 
-		update<ALL_NON_PLAYER>();
-
 		entity_registry<MapType>.recalculate_goal_map();
 		object_registry<MapType>.recalculate_goal_map();
+
+		update<ALL_NON_PLAYER>();
 
 		steam_stats::store();
 	}
@@ -1368,8 +1352,6 @@ namespace necrowarp {
 
 		return true;
 	}
-
-	template<map_type_e MapType> inline bool entity_registry_t<MapType>::is_newborn(offset_t position) const noexcept { return newborns.contains(position); }
 
 	template<map_type_e MapType> inline bool entity_registry_t<MapType>::is_concussed(offset_t position) const noexcept { return concussed.contains(position); }
 	

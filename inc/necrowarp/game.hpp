@@ -371,7 +371,6 @@ namespace necrowarp {
 			entity_registry<MapType>.dependent clear<ALL_NON_PLAYER>();
 			entity_registry<MapType>.dependent reset_goal_map<player_t>();
 
-			newborns.clear();
 			deceased.clear();
 			concussed.clear();
 			afflicted.clear();
@@ -797,6 +796,8 @@ namespace necrowarp {
 
 			processing_turn = true;
 
+			entity_registry<MapType>.update();
+
 			game_stats.update_wave_size();
 
 			if (entity_registry<MapType>.dependent empty<ALL_GOOD_NPCS>() && !game_stats.has_spawns()) {
@@ -825,9 +826,7 @@ namespace necrowarp {
 				if (!spawn_neutral<MapType>()) {
 					break;
 				}
-			} 
-
-			entity_registry<MapType>.update();
+			}
 
 			if (fluid_map_dirty) {
 				for (offset_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {

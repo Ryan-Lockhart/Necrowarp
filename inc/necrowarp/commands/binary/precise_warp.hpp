@@ -15,6 +15,14 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_grimoire<precise_warp_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct to_grimoire_enum<precise_warp_t> {
+		static constexpr grimoire_e value = grimoire_e::PreciseWarp;
+	};
+
 	template<> struct to_command_type<command_e::PreciseWarp> {
 		using type = precise_warp_t;
 	};

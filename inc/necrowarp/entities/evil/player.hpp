@@ -483,7 +483,7 @@ namespace necrowarp {
 				constexpr discount_e cval{ val };
 
 				if constexpr (cval == discount_e::CalamitousRetaliation) {
-					return free_costs_enabled() || (has_ascended() && energy >= get_cost(val));
+					return has_ascended() && (free_costs_enabled() || energy >= get_cost(val));
 				} else {
 					return free_costs_enabled() || energy >= get_cost(val);
 				}
@@ -495,7 +495,7 @@ namespace necrowarp {
 				constexpr discount_e cval{ val };
 
 				if constexpr (cval == discount_e::CalamitousRetaliation) {
-					return free_costs_enabled() || (has_ascended() && energy >= get_cost(val) - discount);
+					return has_ascended() && (free_costs_enabled() || energy >= get_cost(val) - discount);
 				} else {
 					return free_costs_enabled() || energy >= get_cost(val) - discount;
 				}

@@ -135,7 +135,7 @@ namespace necrowarp {
 		static constexpr i16 MinimumWaveSize{ WaveSize<wave_size_e::Miniscule> };
 		static constexpr i16 MaximumWaveSize{ WaveSize<wave_size_e::Massive> };
 	
-		static constexpr i16 StartingWaveSize{ 4 };
+		static constexpr i16 StartingWaveSize{ 64 };
 
 		static constexpr u16 SpawnDistributionLow{ 0 };
 		static constexpr u16 SpawnDistributionHigh{ 100 };

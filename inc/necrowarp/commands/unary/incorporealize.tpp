@@ -18,7 +18,7 @@ namespace necrowarp {
 		}
 
 		player.max_out_phantasm();
-		freshly_phantasm = true;
+		freshly_incorporeal = true;
 
 		++steam_stats::stats<steam_stat_e::Incorporealizations>;
 

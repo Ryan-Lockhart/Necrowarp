@@ -83,12 +83,46 @@ namespace necrowarp {
 				const i8 damage{ ranger.get_damage(cval) };
 
 				if constexpr (!is_fodder<entity_type>::value) {
-					if (target.can_survive(damage)) {
-						target.receive_damage(damage);
+					if constexpr (is_cleaver<EntityType>::value && is_armored<entity_type>::value) {
+						if constexpr (is_volumetric<entity_type>::value) {
+							const f16 fluid_damage{ fluid_pool_volume(damage) };
 
-						try_bleed();
+							if (target.dependent can_survive<EntityType>(fluid_damage)) {
+								if (target.dependent receive_damage<EntityType>(fluid_damage)) {	
+									try_bleed();
+								}
 
-						return;
+								return;
+							}
+						} else {
+							if (target.dependent can_survive<EntityType>(damage)) {
+								if (target.dependent receive_damage<EntityType>(damage)) {	
+									try_bleed();
+								}
+
+								return;
+							}
+						}
+					} else {
+						if constexpr (is_volumetric<entity_type>::value) {
+							const f16 fluid_damage{ fluid_pool_volume(damage) };
+
+							if (target.can_survive(fluid_damage)) {
+								if (target.receive_damage(fluid_damage)) {	
+									try_bleed();
+								}
+
+								return;
+							}
+						} else {
+							if (target.can_survive(damage)) {
+								if (target.receive_damage(damage)) {	
+									try_bleed();
+								}
+
+								return;
+							}
+						}
 					}
 				}
 

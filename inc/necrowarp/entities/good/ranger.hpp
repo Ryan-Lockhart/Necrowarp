@@ -93,7 +93,6 @@ namespace necrowarp {
 		static constexpr i8 QuiverCapacity{ 8 };
 
 		static constexpr i8 MinimumRange{ 4 };
-		static constexpr i8 OptimalRange{ 6 };
 		static constexpr i8 MaximumRange{ 8 };
 
 		static constexpr std::array<entity_e, 14> EntityPriorities{
@@ -112,6 +111,8 @@ namespace necrowarp {
 			entity_e::Dreadwurm,
 			entity_e::Thetwo,
 		};
+
+		static constexpr f16 LeashRange{ 4 };
 
 		static constexpr i8 DeathBoon{ 2 };
 

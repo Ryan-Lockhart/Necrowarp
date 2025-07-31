@@ -205,8 +205,6 @@ namespace necrowarp {
 
 		inline void reset_unique_goal_maps() noexcept;
 
-		inline bool is_newborn(offset_t position) const noexcept;
-
 		inline bool is_deceased(offset_t position) const noexcept;
 
 		inline bool is_concussed(offset_t position) const noexcept;

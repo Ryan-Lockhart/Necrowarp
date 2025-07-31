@@ -265,7 +265,7 @@ namespace necrowarp {
 					.concatenate(runes_t{ " ["})
 					.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(cval) ? colors::Green : colors::Red })
 					.concatenate(runes_t{ "/" })
-					.concatenate(runes_t{ std::format("{}", player.get_cost(cval)) })
+					.concatenate(runes_t{ std::format("{}", player.get_cost(cval)), colors::Yellow })
 					.concatenate(runes_t{ "]" });
 				
 				command_label.position = (icon_position<cval>() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };

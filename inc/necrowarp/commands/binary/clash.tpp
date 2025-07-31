@@ -129,7 +129,7 @@ namespace necrowarp {
 	
 						return false;
 					}
-				}				
+				}
 			}
 		}
 

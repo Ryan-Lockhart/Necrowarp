@@ -229,7 +229,7 @@ namespace necrowarp {
 		static constexpr extent_t GlyphsetSize{ 16, 16 };
 
 		static constexpr extent_t TilesetSize{ 16, 5 };
-		static constexpr extent_t AnimatedSize{ 16, 31 };
+		static constexpr extent_t AnimatedSize{ 16, 32 };
 
 		static constexpr extent_t IconsetSize{ 4, 4 };
 

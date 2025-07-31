@@ -15,6 +15,14 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_grimoire<infernal_invocation_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct to_grimoire_enum<infernal_invocation_t> {
+		static constexpr grimoire_e value = grimoire_e::InfernalInvocation;
+	};
+
 	template<> struct to_command_type<command_e::InfernalInvocation> {
 		using type = infernal_invocation_t;
 	};
