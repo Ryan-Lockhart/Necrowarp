@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, spectral_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::SpectralInvocation) || !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Ichor))) {
+		if (!player.can_perform(grimoire_e::SpectralInvocation) || (!player.bypass_invocations_enabled() && !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Ichor))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -160,7 +160,9 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::SpectralInvocations>;
 
-		player.pay_cost(discount_e::SpectralInvocation);
+		player.pay_cost(grimoire_e::SpectralInvocation);
+
+		literature::use(grimoire_e::SpectralInvocation);
 
 		if (!player.has_ascended()) {
 			if (pools_consumed >= globals::MaximumCatalyst) {

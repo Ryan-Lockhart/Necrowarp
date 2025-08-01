@@ -21,6 +21,7 @@
 #include <necrowarp/scorekeeper.hpp>
 #include <necrowarp/animation.hpp>
 #include <necrowarp/patronage.tpp>
+#include <necrowarp/literature.hpp>
 #include <necrowarp/unified_map_renderer.hpp>
 
 #include <magic_enum/magic_enum_all.hpp>
@@ -200,6 +201,8 @@ namespace necrowarp {
 			entity_registry<MapType>.clear();
 			object_registry<MapType>.clear();
 
+			literature::reset();
+
 			reset_patrons();
 
 			player.patron = desired_patron;
@@ -207,6 +210,8 @@ namespace necrowarp {
 			game_stats.reset();
 
 			game_stats.cheats.activate();
+
+			literature::acquire();
 
 			game_stats.cheats.no_hit = true;
 			game_stats.cheats.free_costs = true;

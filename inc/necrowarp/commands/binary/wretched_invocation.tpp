@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, wretched_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::WretchedInvocation) || !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Filth))) {
+		if (!player.can_perform(grimoire_e::WretchedInvocation) || (!player.bypass_invocations_enabled() && !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Filth))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -158,7 +158,9 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::WretchedInvocations>;
 
-		player.pay_cost(discount_e::WretchedInvocation);
+		player.pay_cost(grimoire_e::WretchedInvocation);
+
+		literature::use(grimoire_e::WretchedInvocation);
 
 		if (!player.has_ascended()) {
 			if (pools_consumed >= globals::MaximumCatalyst) {

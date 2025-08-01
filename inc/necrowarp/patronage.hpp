@@ -6,6 +6,8 @@
 
 #include <necrowarp/game_state.hpp>
 
+#include <necrowarp/constants/enums/grimoire.tpp>
+
 namespace necrowarp {
 	enum struct patron_e : u8 {
 		None,
@@ -109,100 +111,40 @@ namespace necrowarp {
 		}
 	}
 
-	enum struct discount_e : u8 {
-		ChaoticWarp,			// warp to a random, preferrably safe, position within the interior of the map; if not free, out of energy, and in the presence of hostiles can still be used dangerously
-		PreciseWarp,			// warp to a specific position within the interior of the map for locomotion or consumption
-
-		Annihilate,				// linear area of effect combat command
-		Repulse,				// circular area of effect combat command
-		Calcify,				// single target utility command; convert an open tile with bones into a temporary wall
-		Incorporealize,			// discard body temporarily and enter wraith-world becoming untargetable and undetectable
-
-		CalciticInvocation,		// domain of bones; patrons are Kalypdrot, Rathghul, and Ionna; minions are skeletons and bonespurs
-		SpectralInvocation,		// domain of ichor; patrons are Akurakhaithan, Rathghul, and Saeiligarkeuss; minions are cultists and wraithes
-		SanguineInvocation,		// domain of blood; patrons are Viedskavn, Merirfin, and Neolithia; minions are bloodhounds and hemogheist
-		GalvanicInvocation,		// domain of metal; patrons are Thuljanor, Praethornyn, and Exar; minions are animated suits of armor and death knights
-		RavenousInvocation,		// domain of flesh; patrons are Tselgwedixxikog, Sketzuum, and Praethornyn; minions are abominations and flesh golems
-	 	WretchedInvocation,		// domain of filth; patrons are Ionna, Kalypdrot, and Rathghul; minions are draugr and dreadwurms
-		CerebralInvocation,		// domain of cerebra; patrons are Rathghul, Akurakhaithan, and Saeiligarkeuss; minions are hamr and furtive horrors
-		InfernalInvocation,		// domain of ectoplasm; patrons are Saeiligarkeuss, the Moslager, and Akurakhaithan; minions are chromalesia and isosceline
-
-		NecromanticAscendance,	// expend massive amount of energy for invulnerability and empowered invocations
-		CalamitousRetaliation, 	// kill all entities on the map, regardless of allegiance
-	};
-
-	constexpr usize padding_size(discount_e discount) noexcept {
-		switch (discount) {
-			case discount_e::ChaoticWarp: {
+	constexpr usize padding_size(grimoire_e grimoire) noexcept {
+		switch (grimoire) {
+			case grimoire_e::ChaoticWarp: {
 				return 11;
-			} case discount_e::PreciseWarp: {
+			} case grimoire_e::PreciseWarp: {
 				return 11;
-			} case discount_e::Annihilate: {
+			} case grimoire_e::Annihilate: {
 				return 13;
-			} case discount_e::Repulse: {
+			} case grimoire_e::Repulse: {
 				return 16;
-			} case discount_e::Calcify: {
+			} case grimoire_e::Calcify: {
 				return 16;
-			} case discount_e::Incorporealize: {
+			} case grimoire_e::Incorporealize: {
 				return 9;
-			} case discount_e::CalciticInvocation: {
+			} case grimoire_e::CalciticInvocation: {
 				return 4;
-			} case discount_e::SpectralInvocation: {
+			} case grimoire_e::SpectralInvocation: {
 				return 4;
-			} case discount_e::SanguineInvocation: {
+			} case grimoire_e::SanguineInvocation: {
 				return 4;
-			} case discount_e::GalvanicInvocation: {
+			} case grimoire_e::GalvanicInvocation: {
 				return 4;
-			} case discount_e::RavenousInvocation: {
+			} case grimoire_e::RavenousInvocation: {
 				return 4;
-			} case discount_e::WretchedInvocation: {
+			} case grimoire_e::WretchedInvocation: {
 				return 4;
-			} case discount_e::CerebralInvocation: {
+			} case grimoire_e::CerebralInvocation: {
 				return 4;
-			} case discount_e::InfernalInvocation: {
+			} case grimoire_e::InfernalInvocation: {
 				return 4;
-			} case discount_e::NecromanticAscendance: {
+			} case grimoire_e::NecromanticAscendance: {
 				return 1;
-			} case discount_e::CalamitousRetaliation: {
+			} case grimoire_e::CalamitousRetaliation: {
 				return 1;
-			}
-		}
-	}
-
-	constexpr cstr to_string(discount_e discount) noexcept {
-		switch (discount) {
-			case discount_e::ChaoticWarp: {
-				return "Chaotic Warp";
-			} case discount_e::PreciseWarp: {
-				return "Precise Warp";
-			} case discount_e::Annihilate: {
-				return "Annihilate";
-			} case discount_e::Repulse: {
-				return "Repulse";
-			} case discount_e::Calcify: {
-				return "Calcify";
-			} case discount_e::Incorporealize: {
-				return "Incorporealize";
-			} case discount_e::CalciticInvocation: {
-				return "Calcitic Invocation";
-			} case discount_e::SpectralInvocation: {
-				return "Spectral Invocation";
-			} case discount_e::SanguineInvocation: {
-				return "Sanguine Invocation";
-			} case discount_e::GalvanicInvocation: {
-				return "Galvanic Invocation";
-			} case discount_e::RavenousInvocation: {
-				return "Ravenous Invocation";
-			} case discount_e::WretchedInvocation: {
-				return "Wretched Invocation";
-			} case discount_e::CerebralInvocation: {
-				return "Cerebral Invocation";
-			} case discount_e::InfernalInvocation: {
-				return "Infernal Invocation";
-			} case discount_e::NecromanticAscendance: {
-				return "Necromantic Ascendance";
-			} case discount_e::CalamitousRetaliation: {
-				return "Calamitous Retaliation";
 			}
 		}
 	}
@@ -239,8 +181,8 @@ namespace necrowarp {
 		}
 	}
 
-	constexpr runes_t to_colored_string(discount_e discount, i8 value, discount_type_e type) noexcept {
-		runes_t colored_string{ std::format("{}:{}", to_string(discount), std::string(padding_size(discount), ' ')) };
+	constexpr runes_t to_colored_string(grimoire_e grimoire, i8 value, discount_type_e type) noexcept {
+		runes_t colored_string{ std::format("{}:{}", to_string(grimoire), std::string(padding_size(grimoire), ' ')) };
 
 		switch (type) {
 			case discount_type_e::Malus: {
@@ -296,39 +238,39 @@ namespace necrowarp {
 		const discount_t necromantic_ascendance{};
 		const discount_t calamitous_retaliation{};
 
-		template<discount_e Discount> constexpr discount_t get_discount() const noexcept {
+		template<grimoire_e Discount> constexpr discount_t get_discount() const noexcept {
 			switch (Discount) {
-				case discount_e::ChaoticWarp: {
+				case grimoire_e::ChaoticWarp: {
 					return chaotic_warp;
-				} case discount_e::PreciseWarp: {
+				} case grimoire_e::PreciseWarp: {
 					return precise_warp;
-				} case discount_e::Annihilate: {
+				} case grimoire_e::Annihilate: {
 					return annihilate;
-				} case discount_e::Repulse: {
+				} case grimoire_e::Repulse: {
 					return repulse;
-				} case discount_e::Calcify: {
+				} case grimoire_e::Calcify: {
 					return calcify;
-				} case discount_e::Incorporealize: {
+				} case grimoire_e::Incorporealize: {
 					return incorporealize;
-				} case discount_e::CalciticInvocation: {
+				} case grimoire_e::CalciticInvocation: {
 					return calcitic_invocation;
-				} case discount_e::SpectralInvocation: {
+				} case grimoire_e::SpectralInvocation: {
 					return spectral_invocation;
-				} case discount_e::SanguineInvocation: {
+				} case grimoire_e::SanguineInvocation: {
 					return sanguine_invocation;
-				} case discount_e::GalvanicInvocation: {
+				} case grimoire_e::GalvanicInvocation: {
 					return galvanic_invocation;
-				} case discount_e::RavenousInvocation: {
+				} case grimoire_e::RavenousInvocation: {
 					return ravenous_invocation;
-				} case discount_e::WretchedInvocation: {
+				} case grimoire_e::WretchedInvocation: {
 					return wretched_invocation;
-				} case discount_e::CerebralInvocation: {
+				} case grimoire_e::CerebralInvocation: {
 					return cerebral_invocation;
-				} case discount_e::InfernalInvocation: {
+				} case grimoire_e::InfernalInvocation: {
 					return infernal_invocation;
-				} case discount_e::NecromanticAscendance: {
+				} case grimoire_e::NecromanticAscendance: {
 					return necromantic_ascendance;
-				} case discount_e::CalamitousRetaliation: {
+				} case grimoire_e::CalamitousRetaliation: {
 					return calamitous_retaliation;
 				}
 			}
@@ -453,19 +395,19 @@ namespace necrowarp {
 		.cerebral_invocation = discount_t{ -12, 4, 6 },
 		.infernal_invocation = discount_t{ -12, 4, 6 },
 
-		.necromantic_ascendance = discount_t{ -8, 4, 12 },
-		.calamitous_retaliation = discount_t{ -16, 0, 16 },
+		.necromantic_ascendance = discount_t{ -4, 4, 16 },
+		.calamitous_retaliation = discount_t{ -8, 0, 12 },
 	};
 
 	constexpr discount_type_e get_discount_type(i8 value) {
 		return value == 0 ? discount_type_e::Placebo : value < 0 ? discount_type_e::Malus : discount_type_e::Boon;
 	}
 
-	template<patron_e Patron> constexpr runes_t to_colored_string(discount_e discount) noexcept {
+	template<patron_e Patron> constexpr runes_t to_colored_string(grimoire_e grimoire) noexcept {
 		runes_t colored_string{};
 
 		magic_enum::enum_switch([&](auto val) -> void {
-			constexpr discount_e discount_cval{ val };
+			constexpr grimoire_e discount_cval{ val };
 			
 			cauto discount_info{ patrons<Patron>.dependent get_discount<discount_cval>() };
 
@@ -478,7 +420,7 @@ namespace necrowarp {
 			colored_string.concatenate(runes_t{ " | " });
 
 			colored_string.concatenate(to_colored_string(discount_info.positive, get_discount_type(discount_info.positive)));
-		}, discount);
+		}, grimoire);
 
 		return colored_string;
 	}

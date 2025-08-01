@@ -57,5 +57,16 @@ namespace necrowarp {
 			error_log.add("could not find open position for return portal!");
 			terminate_prematurely();
 		}
+
+		const std::optional<grimoire_e> boon{ literature::random_unacquired_spell(random_engine) };
+
+		if (boon.has_value()) {
+			cauto pedestal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
+
+			if (!pedestal_pos.has_value() || !object_registry<map_type>.add(pedestal_pos.value(), pedestal_t{ boon.value() })) {
+				error_log.add("could not find open position for pedestal!");
+				terminate_prematurely();
+			}
+		}
 	}
 } // namespace necrowarp

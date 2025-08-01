@@ -153,82 +153,82 @@ namespace necrowarp {
 		static inline bool show_depth{ false };
 		static inline bool show_favor{ false };
 
-		template<discount_e Command> static constexpr offset_t icon_position();
+		template<grimoire_e Command> static constexpr offset_t icon_position();
 
-		template<> inline constexpr offset_t icon_position<discount_e::SpectralInvocation>() {
+		template<> inline constexpr offset_t icon_position<grimoire_e::SpectralInvocation>() {
 			return offset_t{
 				globals::grid_size<grid_type_e::Icon>().w * 0.5 - 1,
 				globals::grid_size<grid_type_e::Icon>().h - 1
 			};
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::CalciticInvocation>() {
-			return icon_position<discount_e::SpectralInvocation>() - offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::CalciticInvocation>() {
+			return icon_position<grimoire_e::SpectralInvocation>() - offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::Incorporealize>() {
-			return icon_position<discount_e::CalciticInvocation>() - offset_t{ 2, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::Incorporealize>() {
+			return icon_position<grimoire_e::CalciticInvocation>() - offset_t{ 2, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::Calcify>() {
-			return icon_position<discount_e::Incorporealize>() - offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::Calcify>() {
+			return icon_position<grimoire_e::Incorporealize>() - offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::Repulse>() {
-			return icon_position<discount_e::Calcify>() - offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::Repulse>() {
+			return icon_position<grimoire_e::Calcify>() - offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::Annihilate>() {
-			return icon_position<discount_e::Repulse>() - offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::Annihilate>() {
+			return icon_position<grimoire_e::Repulse>() - offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::PreciseWarp>() {
-			return icon_position<discount_e::Annihilate>() - offset_t{ 2, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::PreciseWarp>() {
+			return icon_position<grimoire_e::Annihilate>() - offset_t{ 2, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::ChaoticWarp>() {
-			return icon_position<discount_e::PreciseWarp>() - offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::ChaoticWarp>() {
+			return icon_position<grimoire_e::PreciseWarp>() - offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::SanguineInvocation>() {
-			return icon_position<discount_e::SpectralInvocation>() + offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::SanguineInvocation>() {
+			return icon_position<grimoire_e::SpectralInvocation>() + offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::GalvanicInvocation>() {
-			return icon_position<discount_e::SanguineInvocation>() + offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::GalvanicInvocation>() {
+			return icon_position<grimoire_e::SanguineInvocation>() + offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::RavenousInvocation>() {
-			return icon_position<discount_e::GalvanicInvocation>() + offset_t{ 2, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::RavenousInvocation>() {
+			return icon_position<grimoire_e::GalvanicInvocation>() + offset_t{ 2, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::WretchedInvocation>() {
-			return icon_position<discount_e::RavenousInvocation>() + offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::WretchedInvocation>() {
+			return icon_position<grimoire_e::RavenousInvocation>() + offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::CerebralInvocation>() {
-			return icon_position<discount_e::WretchedInvocation>() + offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::CerebralInvocation>() {
+			return icon_position<grimoire_e::WretchedInvocation>() + offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::InfernalInvocation>() {
-			return icon_position<discount_e::CerebralInvocation>() + offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::InfernalInvocation>() {
+			return icon_position<grimoire_e::CerebralInvocation>() + offset_t{ 1, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::NecromanticAscendance>() {
-			return icon_position<discount_e::InfernalInvocation>() + offset_t{ 2, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::NecromanticAscendance>() {
+			return icon_position<grimoire_e::InfernalInvocation>() + offset_t{ 2, 0 };
 		}
 
-		template<> inline constexpr offset_t icon_position<discount_e::CalamitousRetaliation>() {
-			return icon_position<discount_e::NecromanticAscendance>() + offset_t{ 1, 0 };
+		template<> inline constexpr offset_t icon_position<grimoire_e::CalamitousRetaliation>() {
+			return icon_position<grimoire_e::NecromanticAscendance>() + offset_t{ 1, 0 };
 		}
 
 		static constexpr bool any_icon_hovered() noexcept {
 			bool hovered{ false };
 
-			magic_enum::enum_for_each<discount_e>([&](auto val) {
-				constexpr discount_e cval{ val };
+			magic_enum::enum_for_each<grimoire_e>([&](auto val) {
+				constexpr grimoire_e cval{ val };
 
-				if (mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				if (grimoire_s<cval>::can_use() && mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 					hovered = true;
 				}
 			});
@@ -236,13 +236,13 @@ namespace necrowarp {
 			return hovered;
 		}
 
-		static constexpr std::optional<discount_e> get_hovered_icon() noexcept {
-			std::optional<discount_e> hovered{ std::nullopt };
+		static constexpr std::optional<grimoire_e> get_hovered_icon() noexcept {
+			std::optional<grimoire_e> hovered{ std::nullopt };
 
-			magic_enum::enum_for_each<discount_e>([&](auto val) {
-				constexpr discount_e cval{ val };
+			magic_enum::enum_for_each<grimoire_e>([&](auto val) {
+				constexpr grimoire_e cval{ val };
 
-				if (mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				if (grimoire_s<cval>::can_use() && mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 					hovered = cval;
 				}
 			});
@@ -251,14 +251,14 @@ namespace necrowarp {
 		}
 
 		static constexpr void update_command() noexcept {
-			const std::optional<discount_e> command{ get_hovered_icon() };
+			const std::optional<grimoire_e> command{ get_hovered_icon() };
 
 			if (!command.has_value()) {
 				return;
 			}
 
 			magic_enum::enum_switch([&](auto val) {
-				constexpr discount_e cval{ val };
+				constexpr grimoire_e cval{ val };
 
 				command_label.text = runes_t{ to_string(cval) };
 				command_label.text
@@ -266,19 +266,21 @@ namespace necrowarp {
 					.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(cval) ? colors::Green : colors::Red })
 					.concatenate(runes_t{ "/" })
 					.concatenate(runes_t{ std::format("{}", player.get_cost(cval)), colors::Yellow })
-					.concatenate(runes_t{ "]" });
+					.concatenate(runes_t{ std::format("] (uses: {})", grimoire_s<cval>::get_uses()) });
 				
-				command_label.position = (icon_position<cval>() + offset_t{ 1, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI> + offset_t{ 2, 0 };
+				const extent_t label_size{ text::calculate_size(command_label.text) };
+				
+				command_label.position = ((icon_position<cval>() + offset_t{ 0, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI>) + offset_t{ (globals::cell_size<grid_type_e::Icon>.w / globals::cell_size<grid_type_e::UI>.w / 2), 0 } - offset_t{ label_size.w / 2, -2 };
 			}, command.value());
-
-			command_label.position.y = mouse_s::get_position().y / globals::cell_size<grid_type_e::UI>.h;
 		}
 
 		static constexpr void draw_commands() noexcept {
-			magic_enum::enum_for_each<discount_e>([&](auto val) {
-				constexpr discount_e cval{ val };
+			magic_enum::enum_for_each<grimoire_e>([&](auto val) {
+				constexpr grimoire_e cval{ val };
 
-				icon_atlas.draw(glyph_t{ static_cast<u16>(cval), player.can_perform(cval) ? colors::White : colors::dark::Grey }, icon_position<cval>());
+				if (grimoire_s<cval>::can_use()) {
+					icon_atlas.draw(glyph_t{ static_cast<u16>(cval), player.can_perform(cval) ? colors::White : colors::dark::Grey }, icon_position<cval>());
+				}
 			});
 		}
 
@@ -378,14 +380,14 @@ namespace necrowarp {
 
 				favor_expanded_label.text.concatenate(runes_t{ "\n\n\n", colors::White });
 
-				magic_enum::enum_for_each<discount_e>([&](auto val) -> void {
-					constexpr discount_e cval{ val };
+				magic_enum::enum_for_each<grimoire_e>([&](auto val) -> void {
+					constexpr grimoire_e cval{ val };
 					const i8 value{ player.get_discount(cval) };
 					const discount_type_e type{ player.get_discount_type(value) };
 
 					favor_expanded_label.text.concatenate(to_colored_string(cval, value, type));
 
-					if constexpr (cval == discount_e::PreciseWarp || cval == discount_e::Incorporealize || cval == discount_e::InfernalInvocation || cval == discount_e::CalamitousRetaliation) {
+					if constexpr (cval == grimoire_e::PreciseWarp || cval == grimoire_e::Incorporealize || cval == grimoire_e::InfernalInvocation || cval == grimoire_e::CalamitousRetaliation) {
 						favor_expanded_label.text.concatenate(runes_t{ "\n\n\n" });
 					} else {
 						favor_expanded_label.text.concatenate(runes_t{ "\n\n" });

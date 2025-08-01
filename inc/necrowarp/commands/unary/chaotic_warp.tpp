@@ -11,14 +11,18 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline bool chaotic_warp_t::execute(offset_t position, bool free) noexcept {
-		if (!free && !player.can_perform(discount_e::ChaoticWarp)) {
+		if (!free && !player.can_perform(grimoire_e::ChaoticWarp)) {
+			player_turn_invalidated = true;
+
 			return false;
 		}
 
 		if (!free) {
-			player.pay_cost(discount_e::ChaoticWarp);
+			player.pay_cost(grimoire_e::ChaoticWarp);
+
+			literature::use(grimoire_e::ChaoticWarp);
 		}
-		
+
 		cauto random_safe_position{ evil_goal_map<MapType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, 8) };
 
 		if (!random_safe_position.has_value()) {
@@ -40,7 +44,7 @@ namespace necrowarp {
 
 			entity_registry<MapType>.dependent update<player_t>(position, random_unsafe_position.value());
 
-			++steam_stats::stats<steam_stat_e::RandomWarps>;
+			++steam_stats::stats<steam_stat_e::ChaoticWarps>;
 
 			steam_stats::stats<steam_stat_e::MetersWarped> += offset_t::distance<f32>(position, player.position);
 
@@ -52,7 +56,7 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent update<player_t>(position, random_safe_position.value());
 
-		++steam_stats::stats<steam_stat_e::RandomWarps>;
+		++steam_stats::stats<steam_stat_e::ChaoticWarps>;
 
 		steam_stats::stats<steam_stat_e::MetersWarped> += offset_t::distance<f32>(position, player.position);
 

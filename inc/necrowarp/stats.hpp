@@ -135,7 +135,7 @@ namespace necrowarp {
 		static constexpr i16 MinimumWaveSize{ WaveSize<wave_size_e::Miniscule> };
 		static constexpr i16 MaximumWaveSize{ WaveSize<wave_size_e::Massive> };
 	
-		static constexpr i16 StartingWaveSize{ 64 };
+		static constexpr i16 StartingWaveSize{ 4 };
 
 		static constexpr u16 SpawnDistributionLow{ 0 };
 		static constexpr u16 SpawnDistributionHigh{ 100 };
@@ -215,8 +215,8 @@ namespace necrowarp {
 
 		PlayerDeaths,
 
-		RandomWarps,
-		TargetWarps,
+		ChaoticWarps,
+		PreciseWarps,
 
 		Calcifications,
 		Repulsions,
@@ -277,8 +277,8 @@ namespace necrowarp {
 
 	template<> struct to_stat_type<steam_stat_e::PlayerDeaths> { using type = i32; };
 
-	template<> struct to_stat_type<steam_stat_e::RandomWarps> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::TargetWarps> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::ChaoticWarps> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::PreciseWarps> { using type = i32; };
 
 	template<> struct to_stat_type<steam_stat_e::Calcifications> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::Repulsions> { using type = i32; };
@@ -341,10 +341,10 @@ namespace necrowarp {
 				return "minion_kills";
 			} case steam_stat_e::PlayerDeaths: {
 				return "player_deaths";
-			} case steam_stat_e::RandomWarps: {
-				return "random_warps";
-			} case steam_stat_e::TargetWarps: {
-				return "target_warps";
+			} case steam_stat_e::ChaoticWarps: {
+				return "chaotic_warps";
+			} case steam_stat_e::PreciseWarps: {
+				return "precise_warps";
 			} case steam_stat_e::Calcifications: {
 				return "calcifications";
 			} case steam_stat_e::Repulsions: {
@@ -439,10 +439,10 @@ namespace necrowarp {
 				return "Minion Kills";
 			} case steam_stat_e::PlayerDeaths: {
 				return "Player Deaths";
-			} case steam_stat_e::RandomWarps: {
-				return "Random Warps";
-			} case steam_stat_e::TargetWarps: {
-				return "Target Warps";
+			} case steam_stat_e::ChaoticWarps: {
+				return "Chaotic Warps";
+			} case steam_stat_e::PreciseWarps: {
+				return "Precise Warps";
 			} case steam_stat_e::Calcifications: {
 				return "Calcifications";
 			} case steam_stat_e::Repulsions: {

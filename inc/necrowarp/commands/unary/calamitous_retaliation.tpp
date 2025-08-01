@@ -11,15 +11,11 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calamitous_retaliation_t>::process() const noexcept {
-		if (!player.can_perform(discount_e::CalamitousRetaliation)) {
+		if (!player.can_perform(grimoire_e::CalamitousRetaliation)) {
 			player_turn_invalidated = true;
 
 			return;
 		}
-
-		++steam_stats::stats<steam_stat_e::CalamitousRetaliations>;
-
-		player.pay_cost(discount_e::CalamitousRetaliation);
 
 		magic_enum::enum_for_each<entity_e>([](auto val) {
 			constexpr entity_e cval{ val };
@@ -35,8 +31,14 @@ namespace necrowarp {
 			}
 		});
 
-		++steam_stats::stats<steam_stat_e::MetersMoved>;
+		++steam_stats::stats<steam_stat_e::CalamitousRetaliations>;
+
+		player.pay_cost(grimoire_e::CalamitousRetaliation);
+
+		literature::use(grimoire_e::CalamitousRetaliation);
 
 		descent_flag = true;
+
+		++steam_stats::stats<steam_stat_e::MetersMoved>;
 	}
 } // namespace necrowarp

@@ -43,6 +43,9 @@ namespace necrowarp {
 	template struct entity_command_t<thetwo_t, devour_t>;
 	template void entity_command_t<thetwo_t, devour_t>::process<map_type_e::Pocket>() const noexcept;
 
+	template struct entity_command_t<player_t, retrieve_t>;
+	template void entity_command_t<player_t, retrieve_t>::process<map_type_e::Pocket>() const noexcept;
+
 	template struct entity_command_t<ranger_t, retrieve_t>;
 	template void entity_command_t<ranger_t, retrieve_t>::process<map_type_e::Pocket>() const noexcept;
 

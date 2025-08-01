@@ -12,7 +12,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calcitic_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::CalciticInvocation) || object_registry<MapType>.dependent empty<bones_t>())) {
+		if (!player.can_perform(grimoire_e::CalciticInvocation) || (!player.bypass_invocations_enabled() && !object_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, bones_t>(target_position))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -160,7 +160,9 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::CalciticInvocations>;
 
-		player.pay_cost(discount_e::CalciticInvocation);
+		player.pay_cost(grimoire_e::CalciticInvocation);
+
+		literature::use(grimoire_e::CalciticInvocation);
 
 		if (!player.has_ascended()) {
 			if (accumulated_skulls >= globals::MaximumCatalyst) {

@@ -14,6 +14,7 @@
 #include <necrowarp/commands/binary/consume.hpp>
 #include <necrowarp/commands/binary/descend.hpp>
 #include <necrowarp/commands/binary/plunge.hpp>
+#include <necrowarp/commands/binary/retrieve.hpp>
 #include <necrowarp/commands/binary/precise_warp.hpp>
 #include <necrowarp/commands/binary/consume_warp.hpp>
 #include <necrowarp/commands/binary/calcify.hpp>
@@ -32,6 +33,7 @@
 #include <necrowarp/game_state.hpp>
 
 #include <necrowarp/patronage.hpp>
+#include <necrowarp/literature.hpp>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -73,6 +75,7 @@ namespace necrowarp {
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, consume_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, descend_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, plunge_t, true);
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, retrieve_t, true);
 
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, chaotic_warp_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, precise_warp_t, true);
@@ -139,33 +142,34 @@ namespace necrowarp {
 			entity_e::Thetwo,
 		};
 
-		static constexpr std::array<object_e, 5> ObjectPriorities{
+		static constexpr std::array<object_e, 4> ObjectPriorities{
 			object_e::Portal,
 			object_e::Ladder,
+			object_e::Pedestal,
 			object_e::Bones,
 		};
 
-		template<discount_e Type> static constexpr i8 Cost{};
+		template<grimoire_e Type> static constexpr i8 Cost{};
 
-		template<> constexpr i8 Cost<discount_e::ChaoticWarp>{ 2 };
-		template<> constexpr i8 Cost<discount_e::PreciseWarp>{ 4 };
+		template<> constexpr i8 Cost<grimoire_e::ChaoticWarp>{ 2 };
+		template<> constexpr i8 Cost<grimoire_e::PreciseWarp>{ 4 };
 
-		template<> constexpr i8 Cost<discount_e::Annihilate>{ 8 };
-		template<> constexpr i8 Cost<discount_e::Repulse>{ 8 };
-		template<> constexpr i8 Cost<discount_e::Calcify>{ 4 };
-		template<> constexpr i8 Cost<discount_e::Incorporealize>{ 4 };
+		template<> constexpr i8 Cost<grimoire_e::Annihilate>{ 8 };
+		template<> constexpr i8 Cost<grimoire_e::Repulse>{ 8 };
+		template<> constexpr i8 Cost<grimoire_e::Calcify>{ 4 };
+		template<> constexpr i8 Cost<grimoire_e::Incorporealize>{ 4 };
 
-		template<> constexpr i8 Cost<discount_e::CalciticInvocation>{ 8 };
-		template<> constexpr i8 Cost<discount_e::SpectralInvocation>{ 8 };
-		template<> constexpr i8 Cost<discount_e::SanguineInvocation>{ 8 };
-		template<> constexpr i8 Cost<discount_e::GalvanicInvocation>{ 12 };
-		template<> constexpr i8 Cost<discount_e::RavenousInvocation>{ 12 };
-		template<> constexpr i8 Cost<discount_e::WretchedInvocation>{ 12 };
-		template<> constexpr i8 Cost<discount_e::CerebralInvocation>{ 16 };
-		template<> constexpr i8 Cost<discount_e::InfernalInvocation>{ 16 };
+		template<> constexpr i8 Cost<grimoire_e::CalciticInvocation>{ 8 };
+		template<> constexpr i8 Cost<grimoire_e::SpectralInvocation>{ 8 };
+		template<> constexpr i8 Cost<grimoire_e::SanguineInvocation>{ 8 };
+		template<> constexpr i8 Cost<grimoire_e::GalvanicInvocation>{ 12 };
+		template<> constexpr i8 Cost<grimoire_e::RavenousInvocation>{ 12 };
+		template<> constexpr i8 Cost<grimoire_e::WretchedInvocation>{ 12 };
+		template<> constexpr i8 Cost<grimoire_e::CerebralInvocation>{ 16 };
+		template<> constexpr i8 Cost<grimoire_e::InfernalInvocation>{ 16 };
 
-		template<> constexpr i8 Cost<discount_e::NecromanticAscendance>{ 16 };
-		template<> constexpr i8 Cost<discount_e::CalamitousRetaliation>{ 16 };
+		template<> constexpr i8 Cost<grimoire_e::NecromanticAscendance>{ 16 };
+		template<> constexpr i8 Cost<grimoire_e::CalamitousRetaliation>{ 24 };
 
 		static constexpr i8 BoneBoon{ 1 };
 
@@ -346,7 +350,7 @@ namespace necrowarp {
 
 		inline i8 get_divinity() const noexcept { return divinity; }
 		
-		inline i8 get_discount(discount_e type) const noexcept {
+		inline i8 get_discount(grimoire_e type) const noexcept {
 			return magic_enum::enum_switch([&, type](auto patron_val) -> i8 {
 				constexpr patron_e patron_cval{ patron_val };
 
@@ -354,14 +358,14 @@ namespace necrowarp {
 				const disposition_e disposition{ current_patron.disposition };
 
 				return magic_enum::enum_switch([&](auto type_val) -> i8 {
-					constexpr discount_e type_cval{ type_val };
+					constexpr grimoire_e type_cval{ type_val };
 
 					return current_patron.get_discount<type_cval>().current(disposition);
 				}, type);
 			}, patron);
 		}
 
-		inline discount_type_e get_discount_type(discount_e discount) const noexcept {
+		inline discount_type_e get_discount_type(grimoire_e discount) const noexcept {
 			const i8 discount_value{ get_discount(discount) };
 
 			return discount_value == 0 ? discount_type_e::Placebo : discount_value < 0 ? discount_type_e::Malus : discount_type_e::Boon;
@@ -449,9 +453,9 @@ namespace necrowarp {
 
 		inline bool free_costs_enabled() const noexcept { return game_stats.cheats.is_enabled() && game_stats.cheats.free_costs; }
 
-		inline i8 get_cost(discount_e type) const noexcept {
+		inline i8 get_cost(grimoire_e type) const noexcept {
 			return magic_enum::enum_switch([&, this](auto val) -> i8 {
-				constexpr discount_e cval{ val };
+				constexpr grimoire_e cval{ val };
 
 				return Cost<cval> - get_discount(val);
 			}, type);
@@ -478,31 +482,43 @@ namespace necrowarp {
 			}
 		}
 
-		inline bool can_perform(discount_e type) const noexcept {
+		inline bool can_perform(grimoire_e type) const noexcept {
 			return magic_enum::enum_switch([&, this](auto val) -> bool {
-				constexpr discount_e cval{ val };
+				constexpr grimoire_e cval{ val };
 
-				if constexpr (cval == discount_e::CalamitousRetaliation) {
-					return has_ascended() && (free_costs_enabled() || energy >= get_cost(val));
+				if (!grimoire_s<cval>::can_use()) {
+					return false;
+				}
+
+				const bool sufficient_energy{ free_costs_enabled() || energy >= get_cost(val) };
+
+				if constexpr (cval == grimoire_e::CalamitousRetaliation) {
+					return has_ascended() && sufficient_energy;
 				} else {
-					return free_costs_enabled() || energy >= get_cost(val);
+					return sufficient_energy;
 				}
 			}, type);
 		}
 
-		inline bool can_perform(discount_e type, i8 discount) const noexcept {
+		inline bool can_perform(grimoire_e type, i8 discount) const noexcept {
 			return magic_enum::enum_switch([&, this](auto val) -> bool {
-				constexpr discount_e cval{ val };
+				constexpr grimoire_e cval{ val };
 
-				if constexpr (cval == discount_e::CalamitousRetaliation) {
-					return has_ascended() && (free_costs_enabled() || energy >= get_cost(val) - discount);
+				if (!grimoire_s<cval>::can_use()) {
+					return false;
+				}
+
+				const bool sufficient_energy{ free_costs_enabled() || energy >= get_cost(val) - discount };
+
+				if constexpr (cval == grimoire_e::CalamitousRetaliation) {
+					return has_ascended() && sufficient_energy;
 				} else {
-					return free_costs_enabled() || energy >= get_cost(val) - discount;
+					return sufficient_energy;
 				}
 			}, type);
 		}
 
-		inline void pay_cost(discount_e type) noexcept {
+		inline void pay_cost(grimoire_e type) noexcept {
 			if (free_costs_enabled()) {
 				return;
 			}
@@ -510,7 +526,7 @@ namespace necrowarp {
 			set_energy(energy - get_cost(type));
 		}
 
-		inline void pay_cost(discount_e type, i8 discount) noexcept {
+		inline void pay_cost(grimoire_e type, i8 discount) noexcept {
 			if (free_costs_enabled()) {
 				return;
 			}
@@ -520,9 +536,9 @@ namespace necrowarp {
 
 		inline void receive_skull_boon() noexcept { set_energy(energy + BoneBoon); }
 
-		inline void receive_failed_warp_boon() noexcept { set_energy(energy + clamp<i8>(FailedWarpBoon, 0, get_cost(discount_e::ChaoticWarp))); }
+		inline void receive_failed_warp_boon() noexcept { set_energy(energy + clamp<i8>(FailedWarpBoon, 0, get_cost(grimoire_e::ChaoticWarp))); }
 
-		inline void receive_unsafe_warp_boon() noexcept { set_energy(energy + clamp<i8>(UnsafeWarpBoon, 0, get_cost(discount_e::ChaoticWarp))); }
+		inline void receive_unsafe_warp_boon() noexcept { set_energy(energy + clamp<i8>(UnsafeWarpBoon, 0, get_cost(grimoire_e::ChaoticWarp))); }
 
 		inline void max_out_energy() noexcept { energy = max_energy(); }
 

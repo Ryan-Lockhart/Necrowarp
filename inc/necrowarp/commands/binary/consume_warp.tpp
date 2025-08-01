@@ -17,13 +17,11 @@ namespace necrowarp {
 
 		const entity_e entity_target{ determine_target<EntityType>(entity_group) };
 
-		if (entity_target != entity_e::None && !player.can_perform(discount_e::PreciseWarp)) {
+		if (entity_target != entity_e::None && !player.can_perform(grimoire_e::PreciseWarp)) {
 			player_turn_invalidated = true;
 
 			return;
 		}
-
-		++steam_stats::stats<steam_stat_e::TargetWarps>;
 
 		switch (entity_target) {
 			case entity_e::Skeleton: {
@@ -35,10 +33,15 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-				player.pay_cost(discount_e::PreciseWarp);
+				++steam_stats::stats<steam_stat_e::PreciseWarps>;
+
+				player.pay_cost(grimoire_e::PreciseWarp);
+
+				literature::use(grimoire_e::PreciseWarp);
+
 				player.bolster_armor(armor_boon + player.max_armor() / 8);
 
-							warped_from = std::nullopt;
+				warped_from = std::nullopt;
 
 				return;
 			} case entity_e::Bonespur: {
@@ -50,7 +53,12 @@ namespace necrowarp {
 
 				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-				player.pay_cost(discount_e::PreciseWarp);
+				++steam_stats::stats<steam_stat_e::PreciseWarps>;
+
+				player.pay_cost(grimoire_e::PreciseWarp);
+
+				literature::use(grimoire_e::PreciseWarp);
+
 				player.bolster_armor(armor_boon + player.max_armor() / 4);
 
 				warped_from = std::nullopt;
@@ -71,18 +79,23 @@ namespace necrowarp {
 
 				const i8 boon{ state == decay_e::Fresh ? player_t::BoneBoon : i8{ 0 } };
 
-				if (!player.can_perform(discount_e::PreciseWarp, boon)) {
+				if (!player.can_perform(grimoire_e::PreciseWarp, boon)) {
 					player_turn_invalidated = true;
 
 					return;
 				}
 
 				object_registry<MapType>.dependent remove<bones_t>(target_position);
-				entity_registry<MapType>.add(target_position, skeleton_t{ state });
 
 				++steam_stats::stats<steam_stat_e::BonesConsumed>;
 
-				player.pay_cost(discount_e::PreciseWarp, boon);
+				entity_registry<MapType>.add(target_position, skeleton_t{ state });
+
+				++steam_stats::stats<steam_stat_e::PreciseWarps>;
+
+				player.pay_cost(grimoire_e::PreciseWarp, boon);
+
+				literature::use(grimoire_e::PreciseWarp);
 
 				chaotic_warp_t::execute<MapType>(source_position, true);
 

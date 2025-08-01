@@ -64,12 +64,14 @@ namespace necrowarp {
 		}
 		
 		switch (object_target) {
-			case object_e::Bones: {
-				return command_e::Consume;
+			case object_e::Portal: {
+				return command_e::Plunge;
 			} case object_e::Ladder: {
 				return command_e::Descend;
-			} case object_e::Portal: {
-				return command_e::Plunge;
+			} case object_e::Pedestal: {
+				return command_e::Retrieve;
+			} case object_e::Bones: {
+				return command_e::Consume;
 			} default: {
 				break;
 			}

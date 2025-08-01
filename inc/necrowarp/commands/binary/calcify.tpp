@@ -13,7 +13,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calcify_t>::process() const noexcept {
-		if ((!game_map<MapType>[target_position].solid && object_registry<MapType>.dependent empty<bones_t>(target_position)) || !player.can_perform(discount_e::Calcify)) {
+		if (!player.can_perform(grimoire_e::Calcify) || (!game_map<MapType>[target_position].solid && object_registry<MapType>.dependent empty<bones_t>(target_position))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -71,6 +71,8 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::Calcifications>;
 
-		player.pay_cost(discount_e::Calcify);
+		player.pay_cost(grimoire_e::Calcify);
+
+		literature::use(grimoire_e::Calcify);
 	}
 } // namespace necrowarp

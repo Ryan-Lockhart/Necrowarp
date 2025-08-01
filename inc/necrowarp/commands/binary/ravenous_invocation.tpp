@@ -12,7 +12,7 @@
 
 namespace necrowarp {
 	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, ravenous_invocation_t>::process() const noexcept {
-		if (!player.bypass_invocations_enabled() && (!player.can_perform(discount_e::RavenousInvocation) || object_registry<MapType>.dependent empty<flesh_t>())) {
+		if (!player.can_perform(grimoire_e::RavenousInvocation) || (!player.bypass_invocations_enabled() && !object_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, flesh_t>(target_position))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -156,7 +156,9 @@ namespace necrowarp {
 
 		++steam_stats::stats<steam_stat_e::RavenousInvocations>;
 
-		player.pay_cost(discount_e::RavenousInvocation);
+		player.pay_cost(grimoire_e::RavenousInvocation);
+
+		literature::use(grimoire_e::RavenousInvocation);
 
 		if (!player.has_ascended()) {
 			if (accumulated_flesh >= globals::MaximumCatalyst) {

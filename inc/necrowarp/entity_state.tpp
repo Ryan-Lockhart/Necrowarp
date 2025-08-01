@@ -49,16 +49,16 @@ namespace necrowarp {
 	template<patron_e Patron> constexpr runes_t to_colored_string() noexcept {
 		runes_t colored_string{};
 
-		magic_enum::enum_for_each<discount_e>([&](auto val) -> void {
-			constexpr discount_e cval{ val };
+		magic_enum::enum_for_each<grimoire_e>([&](auto val) -> void {
+			constexpr grimoire_e cval{ val };
 
 			colored_string.concatenate({ std::format("{}:{}", to_string(cval), std::string(padding_size(cval), ' ')) });
 
 			colored_string.concatenate(to_colored_string<Patron>(cval));
 
-			if constexpr (cval == discount_e::PreciseWarp || cval == discount_e::Incorporealize || cval == discount_e::InfernalInvocation) {
+			if constexpr (cval == grimoire_e::PreciseWarp || cval == grimoire_e::Incorporealize || cval == grimoire_e::InfernalInvocation) {
 				colored_string.concatenate(runes_t{ "\n" });
-			} if (cval == discount_e::CalamitousRetaliation) {
+			} if (cval == grimoire_e::CalamitousRetaliation) {
 				return;
 			} else {
 				colored_string.concatenate(runes_t{ "\n\n" });
@@ -1309,7 +1309,7 @@ namespace necrowarp {
 
 					break;
 				} case command_e::Retrieve: {
-					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<arrow_t>(command.target_position)) {
+					if (object_registry<MapType>.empty(command.target_position)) {
 						return false;
 					}
 
