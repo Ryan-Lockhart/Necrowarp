@@ -207,15 +207,15 @@ namespace necrowarp {
 
 			player.patron = desired_patron;
 
+			literature::receive_dowry(player.patron);
+
 			game_stats.reset();
 
-			game_stats.cheats.activate();
+			// game_stats.cheats.activate();
 
-			literature::acquire();
-
-			game_stats.cheats.no_hit = true;
-			game_stats.cheats.free_costs = true;
-			game_stats.cheats.bypass_invocations = true;
+			// game_stats.cheats.no_hit = true;
+			// game_stats.cheats.free_costs = true;
+			// game_stats.cheats.bypass_invocations = true;
 
 			// game_stats.cheats.energy.enable(player_t::MaximumEnergy, player_t::MaximumEnergy);
 			// game_stats.cheats.armor.enable(player_t::MaximumArmor, player_t::MaximumArmor);

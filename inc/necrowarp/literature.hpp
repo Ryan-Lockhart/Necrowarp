@@ -7,6 +7,8 @@
 #include <magic_enum/magic_enum_switch.hpp>
 #include <magic_enum/magic_enum_utility.hpp>
 
+#include <necrowarp/patronage.hpp>
+
 #include <necrowarp/constants/enums/grimoire.tpp>
 
 namespace necrowarp {
@@ -57,6 +59,33 @@ namespace necrowarp {
 
 	template<> inline constexpr bool grimoire_s<grimoire_e::CerebralInvocation>::Locked{ true };
 	template<> inline constexpr bool grimoire_s<grimoire_e::InfernalInvocation>::Locked{ true };
+
+	template<patron_e Patron> static constexpr std::array<grimoire_e, 2> patron_dowry{};
+
+	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::None>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::PreciseWarp,
+	};
+
+	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Rathghul>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::CalciticInvocation,
+	};
+
+	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Akurakhaithan>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::SpectralInvocation,
+	};
+
+	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Merirfin>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::SanguineInvocation,
+	};
+
+	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Saeiligarkeuss>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::NecromanticAscendance,
+	};
 
 	namespace literature {
 		static inline u32 get_uses(grimoire_e grimoire) noexcept {
@@ -129,6 +158,16 @@ namespace necrowarp {
 
 				grimoire_s<cval>::reset();
 			});
+		}
+
+		static inline void receive_dowry(patron_e patron) noexcept {
+			magic_enum::enum_switch([&](auto val) -> void {
+				constexpr patron_e cval{ val };
+
+				for (cauto grimoire : patron_dowry<cval>) {
+					acquire(grimoire);
+				}
+			}, patron);
 		}
 
 		template<RandomEngine Generator> static inline std::optional<grimoire_e> random_unacquired_grimoire(ref<Generator> engine) noexcept {

@@ -18,6 +18,10 @@ namespace necrowarp {
 	template<> struct globals::has_animation<death_knight_t> {
 		static constexpr bool value = true;
 	};
+
+	template<> struct globals::has_variants<death_knight_t> {
+		static constexpr bool value = true;
+	};
 	
 	template<> struct is_entity<death_knight_t> {
 		static constexpr bool value = true;

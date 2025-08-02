@@ -18,7 +18,11 @@ namespace necrowarp {
 	template<> struct globals::has_animation<animated_suit_t> {
 		static constexpr bool value = true;
 	};
-	
+
+	template<> struct globals::has_variants<animated_suit_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<animated_suit_t> {
 		static constexpr bool value = true;
 	};

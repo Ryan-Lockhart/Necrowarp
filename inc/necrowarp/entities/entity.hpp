@@ -28,10 +28,10 @@ namespace necrowarp {
 	struct abomination_t;
 	// wretched domain (filth): a lesser minion that grapples enemies
 	struct draugaz_t;
-	// cerebral domain (cerebra): a lesser minion that controls the mind of its host
- // struct hamaz_t;
+	// cerebral domain (cerebra): a lesser minion that projects the mind of its progenitor
+	struct hamaz_t;
 	// infernal domain (ectoplasm): a lesser minion that spreads ectoplasm
- // struct chromalese_t;
+	struct chromalese_t;
 
 	// exalted minions
 
@@ -93,6 +93,8 @@ namespace necrowarp {
 		animated_suit_t, \
 		abomination_t, \
 		draugaz_t, \
+		hamaz_t, \
+		chromalese_t, \
 		bonespur_t, \
 		wraith_t, \
 		hemogheist_t, \
@@ -155,6 +157,8 @@ namespace necrowarp {
 
 	#define ALL_ANIMATED_ENTITIES \
 		animated_suit_t, \
+		hamaz_t, \
+		chromalese_t, \
 		hemogheist_t, \
 		death_knight_t
 	
@@ -162,6 +166,7 @@ namespace necrowarp {
 		player_t, \
 		cultist_t, \
 		bloodhound_t, \
+		chromalese_t, \
 		wraith_t, \
 		hemogheist_t, \
 		death_knight_t
@@ -181,8 +186,8 @@ namespace necrowarp {
 		AnimatedSuit,
 		Abomination,
 		Draugaz,
-	 // Hamaz,
-	 // Chromalese,
+		Hamaz,
+		Chromalese,
 
 		Bonespur,
 		Wraith,
@@ -226,11 +231,11 @@ namespace necrowarp {
 				return "abomination";
 			} case entity_e::Draugaz: {
 				return "draugaz";
-			}/* case entity_e::Hamaz: {
+			} case entity_e::Hamaz: {
 				return "hamaz";
 			} case entity_e::Chromalese: {
 				return "chromalese";
-			}*/ case entity_e::Bonespur: {
+			} case entity_e::Bonespur: {
 				return "bonespur";
 			} case entity_e::Wraith: {
 				return "wraith";
@@ -288,11 +293,11 @@ namespace necrowarp {
 				return "abominations";
 			} case entity_e::Draugaz: {
 				return "draugr";
-			}/* case entity_e::Hamaz: {
+			} case entity_e::Hamaz: {
 				return "hamr";
 			} case entity_e::Chromalese: {
 				return "chromalesia";
-			}*/ case entity_e::Bonespur: {
+			} case entity_e::Bonespur: {
 				return "bonespurs";
 			} case entity_e::Wraith: {
 				return "wraithes";
@@ -350,11 +355,11 @@ namespace necrowarp {
 				return colors::dark::Orange;
 			} case entity_e::Draugaz: {
 				return mix(colors::Orange, colors::Green);
-			}/* case entity_e::Hamaz: {
-				return colors::materials::light::Ectoplasm;
+			} case entity_e::Hamaz: {
+				return mix(colors::materials::Fluids<fluid_e::Ectoplasm>, colors::materials::Fluids<fluid_e::Ichor>);
 			} case entity_e::Chromalese: {
-				return colors::materials::dark::Ectoplasm;
-			}*/ case entity_e::Bonespur: {
+				return mix(colors::materials::Fluids<fluid_e::Ectoplasm>, colors::materials::Fluids<fluid_e::Blood>);
+			} case entity_e::Bonespur: {
 				return colors::Marble;
 			} case entity_e::Wraith: {
 				return colors::light::Green;
@@ -421,10 +426,10 @@ namespace necrowarp {
 		AnimatedSuit = Bloodhound << 1,
 		Abomination = AnimatedSuit << 1,
 		Draugaz = Abomination << 1,
-	 // Hamaz = Draugaz << 1,
-	 // Chromalese = Hamaz << 1,
+		Hamaz = Draugaz << 1,
+		Chromalese = Hamaz << 1,
 
-		Bonespur = Draugaz << 1, // Chromalese << 1,
+		Bonespur = Chromalese << 1,
 		Wraith = Bonespur << 1,
 		Hemogheist = Wraith << 1,
 		DeathKnight = Hemogheist << 1,
@@ -645,6 +650,14 @@ namespace necrowarp {
 	template<typename T> constexpr bool is_elusive_v = is_elusive<T>::value;
 
 	template<typename T> concept ElusiveEntity = NonNullEntity<T> && is_elusive<T>::value;
+
+	template<typename T> struct is_inevadable {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_inevadable_v = is_inevadable<T>::value;
+
+	template<typename T> concept InevadableEntity = NonNullEntity<T> && is_inevadable<T>::value;
 
 	template<typename T> struct is_fast {
 		static constexpr bool value = false;

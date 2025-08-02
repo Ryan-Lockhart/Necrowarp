@@ -7,4 +7,6 @@
 #include <necrowarp/entities/evil/lesser/animated_suit.tpp>
 #include <necrowarp/entities/evil/lesser/abomination.tpp>
 #include <necrowarp/entities/evil/lesser/draugaz.tpp>
+#include <necrowarp/entities/evil/lesser/hamaz.tpp>
+#include <necrowarp/entities/evil/lesser/chromalese.tpp>
 // IWYU pragma: end_exports

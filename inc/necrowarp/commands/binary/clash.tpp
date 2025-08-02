@@ -53,7 +53,7 @@ namespace necrowarp {
 			}
 		}
 
-		if constexpr (is_elusive<VictimType>::value) {
+		if constexpr (is_elusive<VictimType>::value && !is_inevadable<InitiatorType>::value) {
 			if constexpr (VictimType::HasStaticDodge) {
 				if (VictimType::dodge(random_engine)) {
 					return false;
@@ -179,7 +179,7 @@ namespace necrowarp {
 			}
 		}
 
-		if constexpr (is_elusive<InitiatorType>::value) {
+		if constexpr (is_elusive<InitiatorType>::value && !is_inevadable<VictimType>::value) {
 			if constexpr (InitiatorType::HasStaticDodge) {
 				if (InitiatorType::dodge(random_engine)) {
 					return false;
@@ -291,7 +291,7 @@ namespace necrowarp {
 			}
 		}
 
-		if constexpr (is_elusive<InitiatorType>::value) {
+		if constexpr (is_elusive<InitiatorType>::value && !is_inevadable<VictimType>::value) {
 			if constexpr (InitiatorType::HasStaticDodge) {
 				if (InitiatorType::dodge(random_engine)) {
 					return false;
