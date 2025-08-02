@@ -146,11 +146,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first bloody shackle achievment placeholder : ?
+				// unshackle first bloody shackle achievment placeholder : Vivisection
 			} else {
 				eligible_ladder->enshackle(shackle_e::Sanguine);
 
-				// bloody enshackle first ladder achievment placeholder : ?
+				// bloody enshackle first ladder achievment placeholder : Bloodbindings
 			}
 
 			eligible_ladder = nullptr;
@@ -163,10 +163,12 @@ namespace necrowarp {
 		literature::use(grimoire_e::SanguineInvocation);
 
 		if (!player.has_ascended()) {
-			if (pools_consumed >= globals::MaximumCatalyst) {
-				// summon max amount of bloodhounds achievment placeholder : The Harrying
-			} else if (pools_consumed > 1) {
+			if (pools_consumed > 1) {
 				// summon first pack of bloodhounds achievment placeholder : Ankle-biter
+
+				if (pools_consumed >= globals::MaximumCatalyst) {
+					// summon max amount of bloodhounds achievment placeholder : The Harrying
+				}
 			}
 
 			return;
@@ -180,10 +182,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, hemogheist_t{ pools_consumed });
 
+		// summon first hemogheist achievment placeholder : Eternal Thirst
+
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			// summon hemogheist with max health achievment placeholder : ?
-		} else {
-			// summon first hemogheist achievment placeholder : ?
+			// summon hemogheist with max health achievment placeholder : Phantom of the Operating Theater
 		}
 	}
 } // namespace necrowarp

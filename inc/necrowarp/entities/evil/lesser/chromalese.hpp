@@ -63,6 +63,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_concussable<chromalese_t> {
+		static constexpr bool value = false;
+	};
+
 	struct chromalese_t {
 		keyframe_t idle_animation;
 

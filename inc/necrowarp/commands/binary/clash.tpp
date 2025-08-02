@@ -53,6 +53,14 @@ namespace necrowarp {
 			}
 		}
 
+		if constexpr (is_good<InitiatorType>::value) {
+			if (entity_goal_map<MapType, furtive_horror_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(source_position) <= furtive_horror_t::EffectRadius) {
+				if (furtive_horror_t::fumble(random_engine)) {
+					return false;
+				}
+			}
+		}
+
 		if constexpr (is_elusive<VictimType>::value && !is_inevadable<InitiatorType>::value) {
 			if constexpr (VictimType::HasStaticDodge) {
 				if (VictimType::dodge(random_engine)) {
@@ -179,6 +187,14 @@ namespace necrowarp {
 			}
 		}
 
+		if constexpr (is_good<VictimType>::value) {
+			if (entity_goal_map<MapType, furtive_horror_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(source_position) <= furtive_horror_t::EffectRadius) {
+				if (furtive_horror_t::fumble(random_engine)) {
+					return false;
+				}
+			}
+		}
+
 		if constexpr (is_elusive<InitiatorType>::value && !is_inevadable<VictimType>::value) {
 			if constexpr (InitiatorType::HasStaticDodge) {
 				if (InitiatorType::dodge(random_engine)) {
@@ -288,6 +304,14 @@ namespace necrowarp {
 		if constexpr (is_clumsy<InitiatorType>::value) {
 			if (InitiatorType::fumble(random_engine)) {
 				return false;
+			}
+		}
+
+		if constexpr (is_good<InitiatorType>::value) {
+			if (entity_goal_map<MapType, furtive_horror_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(source_position) <= furtive_horror_t::EffectRadius) {
+				if (furtive_horror_t::fumble(random_engine)) {
+					return false;
+				}
 			}
 		}
 

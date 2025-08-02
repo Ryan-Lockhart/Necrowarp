@@ -35,14 +35,14 @@ namespace necrowarp {
 			const std::optional<offset_t> maybe_position{ entity_registry<MapType>.dependent nearest<distance_function_e::Chebyshev, ALL_NON_GOOD>(position) };
 
 			if (!maybe_position.has_value()) {
-				return command_pack_t{ command_e::None };
+				return command_pack_t{ command_e::Wander };
 			}
 
 			if (game_map<MapType>.linear_blockage(position, maybe_position.value(), cell_e::Solid, ranger_t::MaximumRange)) {
 				cauto approach_pos{ non_good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 				if (!approach_pos.has_value()) {
-					return command_pack_t{ command_e::None };
+					return command_pack_t{ command_e::Wander };
 				}
 
 				return command_pack_t{ command_e::Move, position, approach_pos.value() };
@@ -51,7 +51,7 @@ namespace necrowarp {
 			const entity_e target{ determine_target<ranger_t>(entity_registry<MapType>.at(maybe_position.value())) };
 
 			if (target == entity_e::None) {
-				return command_pack_t{ command_e::None };
+				return command_pack_t{ command_e::Wander };
 			}
 
 			return command_pack_t{ command_e::Loose, position, maybe_position.value() };

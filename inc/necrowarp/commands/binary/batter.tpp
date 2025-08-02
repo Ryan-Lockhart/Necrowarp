@@ -19,6 +19,12 @@ namespace necrowarp {
 
 		ref<battle_monk_t> initiator{ *maybe_monk };
 
+		if (entity_goal_map<MapType, furtive_horror_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(source_position) <= furtive_horror_t::EffectRadius) {
+			if (furtive_horror_t::fumble(random_engine)) {
+				return;
+			}
+		}
+
 		const entity_e target{ determine_target<battle_monk_t>(entity_registry<MapType>.at(target_position)) };
 		
 		magic_enum::enum_switch([&](auto val) -> void {

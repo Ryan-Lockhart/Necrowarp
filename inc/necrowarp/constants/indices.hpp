@@ -32,9 +32,9 @@ namespace necrowarp::indices {
 	constexpr const u8 WrithingKnight{ WrigglingKnight + 1 };
 
 	constexpr const u8 FurtiveHorror{ WrithingKnight + 1 };
-	constexpr const u8 Isoscol{ FurtiveHorror + 1 };
+	constexpr const u8 Isoscel{ FurtiveHorror + 1 };
 
-	constexpr const u8 Berserker{ Isoscol + 1 };
+	constexpr const u8 Berserker{ Isoscel + 1 };
 
 	constexpr const u8 TwistedMetal{ Berserker + 1 };
 	constexpr const u8 ShimmeringMetal{ TwistedMetal + 1 };

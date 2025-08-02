@@ -47,10 +47,10 @@ namespace necrowarp {
 	struct flesh_golem_t;
 	// wretched domain (filth): an exalted minion that spreads filth to vicitms
 	struct dreadwurm_t;
-	// cerebral domain (cerebra): a lesser minion that explodes on death
- // struct furtive_horror_t;
-	// infernal domain (ectoplasm): an exalted minion that kills instantaneously
- // struct isoscol_t;
+	// cerebral domain (cerebra): an exalted minion that causes nearby enemies to fumble their attacks
+	struct furtive_horror_t;
+	// infernal domain (ectoplasm): an exalted minion that kills instantaneously and warps to the nearest enemy
+	struct isoscel_t;
 
 	// do-gooders
 
@@ -100,7 +100,9 @@ namespace necrowarp {
 		hemogheist_t, \
 		death_knight_t, \
 		flesh_golem_t, \
-		dreadwurm_t
+		dreadwurm_t, \
+		furtive_horror_t, \
+		isoscel_t
 	
 	#define ALL_EVIL \
 		player_t, \
@@ -160,7 +162,9 @@ namespace necrowarp {
 		hamaz_t, \
 		chromalese_t, \
 		hemogheist_t, \
-		death_knight_t
+		death_knight_t, \
+		furtive_horror_t, \
+		isoscel_t
 	
 	#define ALL_VIGILANT_ENTITIES \
 		player_t, \
@@ -169,7 +173,8 @@ namespace necrowarp {
 		chromalese_t, \
 		wraith_t, \
 		hemogheist_t, \
-		death_knight_t
+		death_knight_t, \
+		isoscel_t
 
 	#define ALL_ENTITIES \
 		player_t, \
@@ -195,8 +200,8 @@ namespace necrowarp {
 		DeathKnight,
 		FleshGolem,
 		Dreadwurm,
-	 // FurtiveHorror,
-	 // Isoscol,
+		FurtiveHorror,
+		Isoscel,
 
 		Adventurer,
 		Mercenary,
@@ -247,11 +252,11 @@ namespace necrowarp {
 				return "flesh golem";
 			} case entity_e::Dreadwurm: {
 				return "dreadwurm";
-			}/* case entity_e::FurtiveHorror: {
+			} case entity_e::FurtiveHorror: {
 				return "furtive horror";
-			} case entity_e::Isoscol: {
-				return "isoscol";
-			}*/ case entity_e::Adventurer: {
+			} case entity_e::Isoscel: {
+				return "isoscel";
+			} case entity_e::Adventurer: {
 				return "adventurer";
 			} case entity_e::Mercenary: {
 				return "mercenary";
@@ -309,11 +314,11 @@ namespace necrowarp {
 				return "flesh golems";
 			} case entity_e::Dreadwurm: {
 				return "dreadwurms";
-			}/* case entity_e::FurtiveHorror: {
+			} case entity_e::FurtiveHorror: {
 				return "furtive horrors";
-			} case entity_e::Isoscol: {
-				return "isoscoline";
-			}*/ case entity_e::Adventurer: {
+			} case entity_e::Isoscel: {
+				return "isosceline";
+			} case entity_e::Adventurer: {
 				return "adventurers";
 			} case entity_e::Mercenary: {
 				return "mercenaries";
@@ -371,11 +376,11 @@ namespace necrowarp {
 				return mix(colors::Orange, colors::materials::Fluids<fluid_e::Blood>);
 			} case entity_e::Dreadwurm: {
 				return mix(colors::Orange, colors::light::Grey);
-			}/* case entity_e::FurtiveHorror: {
+			} case entity_e::FurtiveHorror: {
 				return mix(colors::Blue, colors::light::Grey);
-			} case entity_e::Isoscol: {
+			} case entity_e::Isoscel: {
 				return mix(colors::Green, colors::light::Grey);
-			}*/ case entity_e::Adventurer: {
+			} case entity_e::Adventurer: {
 				return colors::metals::Bronze;
 			} case entity_e::Mercenary: {
 				return colors::dark::Yellow;
@@ -435,10 +440,10 @@ namespace necrowarp {
 		DeathKnight = Hemogheist << 1,
 		FleshGolem = DeathKnight << 1,
 		Dreadwurm = FleshGolem << 1,
-	 // FurtiveHorror = Dreadwurm << 1,
-	 // Isoscol = FurtiveHorror << 1,
+		FurtiveHorror = Dreadwurm << 1,
+		Isoscel = FurtiveHorror << 1,
 
-		Adventurer = Dreadwurm << 1, // Isoscol << 1,
+		Adventurer = Isoscel << 1,
 		Mercenary = Adventurer << 1,
 		Ranger = Mercenary << 1,
 		Skulker = Ranger << 1,
@@ -699,6 +704,14 @@ namespace necrowarp {
 
 	template<typename T> concept CleaverEntity = NonNullEntity<T> && is_cleaver<T>::value;
 
+	template<typename T> struct is_primeval {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_primeval_v = is_primeval<T>::value;
+
+	template<typename T> concept PrimevalEntity = NonNullEntity<T> && is_primeval<T>::value;
+
 	template<typename T> struct is_sneaky {
 		static constexpr bool value = false;
 	};
@@ -779,6 +792,14 @@ namespace necrowarp {
 	template<typename T> constexpr bool is_afflictable_v = is_afflictable<T>::value;
 
 	template<typename T> concept AfflicatableEntity = NonNullEntity<T> && is_afflictable<T>::value;
+
+	template<typename T> struct is_abominable {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_abominable_v = is_abominable<T>::value;
+
+	template<typename T> concept AbominableEntity = NonNullEntity<T> && is_abominable<T>::value;
 
 	template<typename T> struct is_concussable {
 		static constexpr bool value = true;

@@ -87,7 +87,7 @@ namespace necrowarp {
 			entity_e::Thetwo,
 		};
 
-		static constexpr f16 LeashRange{ 2 };
+		static constexpr f16 LeashRange{ 4 };
 
 		static constexpr i8 DeathBoon{ 2 };
 

@@ -71,7 +71,7 @@ namespace necrowarp {
 		template<> inline constexpr i8 MaximumHealth<entity_e::BannerBearer>{ 2 };
 		template<> inline constexpr i8 MaximumHealth<entity_e::BattleMonk>{ 3 };
 		template<> inline constexpr i8 MaximumHealth<entity_e::Berserker>{ 3 };
-		template<> inline constexpr i8 MaximumHealth<entity_e::Paladin>{ 6 };
+		template<> inline constexpr i8 MaximumHealth<entity_e::Paladin>{ 5 };
 
 		template<entity_e Entity> static constexpr i8 MaximumDamage{ 0 };
 
@@ -83,7 +83,10 @@ namespace necrowarp {
 		template<> inline constexpr i8 MaximumDamage<entity_e::BannerBearer>{ 2 };
 		template<> inline constexpr i8 MaximumDamage<entity_e::BattleMonk>{ 2 };
 		template<> inline constexpr i8 MaximumDamage<entity_e::Berserker>{ 2 };
-		template<> inline constexpr i8 MaximumDamage<entity_e::Paladin>{ 4 };
+		template<> inline constexpr i8 MaximumDamage<entity_e::Paladin>{ 3 };
+
+		static constexpr f16 EnhancedHealthMultiplier{ 2.0f };
+		static constexpr f16 EnhancedDamageMultiplier{ 1.5f };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
 			entity_e::Adventurer,
@@ -98,12 +101,24 @@ namespace necrowarp {
 			entity_e::Thetwo,
 		};
 
+	private:
+		static inline std::uniform_int_distribution<usize> entity_dis{ static_cast<usize>(entity_e::Adventurer), static_cast<usize>(entity_e::Paladin) };
+
+		template<RandomEngine Generator> static inline entity_e determine_entity(ref<Generator> engine) noexcept { return static_cast<entity_e>(entity_dis(engine)); }
+
+		static inline std::bernoulli_distribution reincarnation_dis{ 0.01 };
+
+		const i8 investiture;
+		i8 health;
+
+		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
+
 		static constexpr i8 determine_health(entity_e entity, bool enhanced) noexcept {
 			return magic_enum::enum_switch([&](auto val) -> i8 {
 				constexpr entity_e cval{ val };
 
 				if (enhanced) {
-					return MaximumHealth<cval> * 2;
+					return static_cast<i8>(MaximumHealth<cval> * EnhancedHealthMultiplier);
 				}
 
 				return MaximumHealth<cval>;
@@ -115,20 +130,12 @@ namespace necrowarp {
 				constexpr entity_e cval{ val };
 
 				if (enhanced) {
-					return MaximumDamage<cval> * 2;
+					return static_cast<i8>(MaximumDamage<cval> * EnhancedDamageMultiplier);
 				}
 
 				return MaximumDamage<cval>;
 			}, entity);
 		}
-
-	private:
-		static inline std::bernoulli_distribution reincarnation_dis{ 0.01 };
-
-		const i8 investiture;
-		i8 health;
-
-		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 
 		static constexpr u8 determine_index(entity_e entity) noexcept {
 			switch (entity) {
@@ -164,6 +171,14 @@ namespace necrowarp {
 			investiture{ determine_health(entity, enhanced) }, 
 			health{ investiture }
 		{}
+
+		template<RandomEngine Generator> inline hamaz_t(ref<Generator> engine) noexcept :
+			idle_animation{ random_engine, true },
+			entity{ determine_entity(engine) },
+			enhanced{ true },
+			investiture{ determine_health(entity, enhanced) }, 
+			health{ investiture }
+		{ idle_animation.index = determine_index(entity); }
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -198,7 +213,10 @@ namespace necrowarp {
 		inline runes_t to_colored_string() const noexcept {
 			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Hamaz) };
 
-			colored_string.concatenate(runes_t{ std::format(" [{}/{}]", get_health(), max_health()) });
+			colored_string
+				.concatenate(runes_t{ " (" })
+				.concatenate(necrowarp::to_colored_string(entity))
+				.concatenate(runes_t{ std::format("{}) [{}/{}]", enhanced ? " | enhanced" : "", get_health(), max_health()) });
 			
 			return colored_string;
 		}

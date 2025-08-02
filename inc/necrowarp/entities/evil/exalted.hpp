@@ -7,4 +7,6 @@
 #include <necrowarp/entities/evil/exalted/death_knight.hpp>
 #include <necrowarp/entities/evil/exalted/flesh_golem.hpp>
 #include <necrowarp/entities/evil/exalted/dreadwurm.hpp>
+#include <necrowarp/entities/evil/exalted/furtive_horror.hpp>
+#include <necrowarp/entities/evil/exalted/isoscel.hpp>
 // IWYU pragma: end_exports

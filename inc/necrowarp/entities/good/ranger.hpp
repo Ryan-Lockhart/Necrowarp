@@ -184,7 +184,7 @@ namespace necrowarp {
 
 		inline bool can_loose() const noexcept { return nocked; }
 		
-		template<map_type_e MapType> inline bool loose(offset_t position) noexcept;
+		template<map_type_e MapType> inline bool loose(offset_t source_position, offset_t target_position) noexcept;
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 

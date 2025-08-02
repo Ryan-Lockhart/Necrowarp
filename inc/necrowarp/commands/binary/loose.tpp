@@ -10,19 +10,21 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<map_type_e MapType> inline bool ranger_t::loose(offset_t position) noexcept {
+	template<map_type_e MapType> inline bool ranger_t::loose(offset_t source_position, offset_t target_position) noexcept {
 		if (!can_loose()) {
 			return false;
 		}
 
 		nocked = false;
 
-		const bool missed{ ranger_t::fumble(random_engine) };
+		const bool haunted{ entity_goal_map<MapType, furtive_horror_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(source_position) <= furtive_horror_t::EffectRadius };
+
+		const bool missed{ ranger_t::fumble(random_engine) || (haunted && furtive_horror_t::fumble(random_engine)) };
 		const bool snapped{ missed && arrow_t::snap(random_engine) };
 
 		if (!snapped) {
-			if (object_registry<MapType>.dependent contains<arrow_t>(position)) {
-				ptr<arrow_t> maybe_arrow{ object_registry<MapType>.dependent at<arrow_t>(position) };
+			if (object_registry<MapType>.dependent contains<arrow_t>(target_position)) {
+				ptr<arrow_t> maybe_arrow{ object_registry<MapType>.dependent at<arrow_t>(target_position) };
 
 				if (maybe_arrow != nullptr && !maybe_arrow->is_full()) {
 					++(*maybe_arrow);
@@ -31,7 +33,7 @@ namespace necrowarp {
 				return missed;
 			}
 
-			object_registry<MapType>.spill(position, arrow_t{});
+			object_registry<MapType>.spill(target_position, arrow_t{});
 		}
 
 		return missed;
@@ -47,7 +49,7 @@ namespace necrowarp {
 		ref<ranger_t> ranger{ *maybe_ranger };
 
 		const entity_e target{ determine_target<ranger_t>(entity_registry<MapType>.at(target_position)) };
-		
+
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr entity_e cval{ val };
 
@@ -76,7 +78,7 @@ namespace necrowarp {
 					}
 				};
 
-				if (!ranger.loose<MapType>(target_position)) {
+				if (!ranger.loose<MapType>(source_position, target_position)) {
 					return;
 				}
 

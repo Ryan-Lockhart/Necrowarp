@@ -165,10 +165,12 @@ namespace necrowarp {
 		literature::use(grimoire_e::SpectralInvocation);
 
 		if (!player.has_ascended()) {
-			if (pools_consumed >= globals::MaximumCatalyst) {
-				// summon max amount of cultists achievment placeholder : ?
-			} else if (pools_consumed > 1) {
-				// summon first squad of cultists achievment placeholder : ?
+			if (pools_consumed > 1) {
+				// summon first squad of cultists achievment placeholder : Enshrined Depravity
+
+				if (pools_consumed >= globals::MaximumCatalyst) {
+					// summon max amount of cultists achievment placeholder : Sycophantic Symposium
+				}
 			}
 
 			return;
@@ -182,10 +184,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, wraith_t{ pools_consumed });
 
+		// summon wraith with max heatlh achievment placeholder : Summoned from Beyond
+
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			// summon first wraith achievment placeholder : Intersticial
-		} else {
-			// summon wraith with max heatlh achievment placeholder : Summoned from Beyond
+			// summon first wraith achievment placeholder : Intersticial Interloper
 		}
 	}
 } // namespace necrowarp

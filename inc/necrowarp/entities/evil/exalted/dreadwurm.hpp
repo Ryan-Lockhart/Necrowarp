@@ -53,6 +53,10 @@ namespace necrowarp {
 		static constexpr bool value = false;
 	};
 
+	template<> struct is_abominable<dreadwurm_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> inline constexpr glyph_t entity_glyphs<dreadwurm_t>{ glyphs::Dreadwurm };
 
 	struct dreadwurm_t {

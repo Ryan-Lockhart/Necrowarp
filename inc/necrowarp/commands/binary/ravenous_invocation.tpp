@@ -161,10 +161,12 @@ namespace necrowarp {
 		literature::use(grimoire_e::RavenousInvocation);
 
 		if (!player.has_ascended()) {
-			if (accumulated_flesh >= globals::MaximumCatalyst) {
-				// summon max amount of abominations achievment placeholder : Abominable Multiplicity
-			} else if (accumulated_flesh > 1) {
+			if (accumulated_flesh > 1) {
 				// summon first mob of abominations achievment placeholder : A Mob of Meat
+
+				if (accumulated_flesh >= globals::MaximumCatalyst) {
+					// summon max amount of abominations achievment placeholder : Abominable Multiplicity
+				}
 			}
 
 			return;
@@ -178,10 +180,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, flesh_golem_t{ accumulated_flesh });
 
+		// summon first flesh golem achievment placeholder : The Shambling Horror
+
 		if (accumulated_flesh >= globals::MaximumCatalyst) {
 			// summon flesh golem with max health achievment placeholder : Mountain of Flesh
-		} else if (accumulated_flesh > 1) {
-			// summon first flesh golem achievment placeholder : The Shambling Horror
 		}
 	}
 } // namespace necrowarp

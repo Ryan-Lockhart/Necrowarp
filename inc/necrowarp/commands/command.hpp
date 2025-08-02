@@ -50,6 +50,7 @@ namespace necrowarp {
 	struct infernal_invocation_t;
 
 	struct lunge_t;
+	struct eradicate_t;
 
 	#define ALL_NULL_COMMANDS \
 		none_t
@@ -92,7 +93,8 @@ namespace necrowarp {
 		infernal_invocation_t
 
 	#define ALL_TERNARY_COMMANDS \
-		lunge_t
+		lunge_t, \
+		eradicate_t
 
 	#define ALL_NON_NULL_COMMANDS \
 		ALL_UNARY_COMMANDS, \
@@ -156,6 +158,9 @@ namespace necrowarp {
 	#define ALL_BATTLE_MONK_COMMANDS \
 		meditate_t, \
 		batter_t
+
+	#define ALL_ISOSCEL_COMMANDS \
+		eradicate_t
 	
 	#define ALL_NPC_COMMANDS \
 		ALL_BASIC_COMMANDS, \
@@ -165,7 +170,8 @@ namespace necrowarp {
 		ALL_FLESH_GOLEM_COMMANDS, \
 		ALL_THETWO_COMMANDS, \
 		ALL_RANGER_COMMANDS, \
-		ALL_BATTLE_MONK_COMMANDS
+		ALL_BATTLE_MONK_COMMANDS, \
+		ALL_ISOSCEL_COMMANDS
 	
 	#define ALL_PLAYER_COMMANDS \
 		ALL_BASIC_COMMANDS, \
@@ -210,6 +216,7 @@ namespace necrowarp {
 		InfernalInvocation,
 
 		Lunge,
+		Eradicate,
 	};
 
 	struct command_pack_t {
@@ -302,6 +309,8 @@ namespace necrowarp {
 				return "infernal invocation";
 			} case command_e::Lunge: {
 				return "lunge";
+			} case command_e::Eradicate: {
+				return "eradicate";
 			}
 		}
 	}

@@ -53,7 +53,7 @@ namespace necrowarp {
 			}
 		}
 
-		if constexpr (is_elusive<VictimType>::value) {
+		if constexpr (is_elusive<VictimType>::value && !is_inevadable<InitiatorType>::value) {
 			if constexpr (VictimType::HasStaticDodge) {
 				if (VictimType::dodge(random_engine)) {
 					return false;
@@ -194,10 +194,18 @@ namespace necrowarp {
 						const bool target_killed{ brutalize<MapType>(position, initiator, victim, remaining_damage) };
 
 						if (target_killed) {
-							if constexpr (is_player<victim_type>::value) {
-								victim.dependent die<MapType, death_e::Killed>();
+							if constexpr (is_primeval<EntityType>::value) {
+								if constexpr (is_player<victim_type>::value) {
+									victim.dependent die<MapType, death_e::Eradicated>();
+								} else {
+									victim.dependent die<MapType, death_e::Eradicated>(position);
+								}
 							} else {
-								victim.dependent die<MapType, death_e::Killed>(position);
+								if constexpr (is_player<victim_type>::value) {
+									victim.dependent die<MapType, death_e::Killed>();
+								} else {
+									victim.dependent die<MapType, death_e::Killed>(position);
+								}
 							}
 
 							if constexpr (is_npc_entity<victim_type>::value) {

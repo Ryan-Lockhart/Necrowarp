@@ -165,12 +165,14 @@ namespace necrowarp {
 		literature::use(grimoire_e::CalciticInvocation);
 
 		if (!player.has_ascended()) {
-			if (accumulated_skulls >= globals::MaximumCatalyst) {
-				// summon max amount of skeletons achievment placeholder : Next Stop: the Bone Zone
+			  if (accumulated_skulls == 1) {
+				// summon a single skeleton achievment placeholder : Kind of a waste?
 			} else if (accumulated_skulls > 1) {
 				// summon first crew of skeletons achievment placeholder : Skeleton Crew
-			} else if (accumulated_skulls == 1) {
-				// summon a single skeleton achievment placeholder : Kind of a waste?
+
+				if (accumulated_skulls >= globals::MaximumCatalyst) {
+					// summon max amount of skeletons achievment placeholder : Next Stop: the Bone Zone
+				}
 			}
 
 			return;
@@ -184,10 +186,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, bonespur_t{ accumulated_skulls });
 
+		// summon first bonespur achievment placeholder : Right to the Point
+
 		if (accumulated_skulls >= globals::MaximumCatalyst) {
-			// summon bonespur with max health achievment placeholder : 28 (SELF-INFLICTED) STAB WOUNDS
-		} else if (accumulated_skulls > 1) {
-			// summon first bonespur achievment placeholder : Right to the Point
+			// summon bonespur with max health achievment placeholder : 28 STAB WOUNDS (SELF-INFLICTED)
 		}
 	}
 } // namespace necrowarp

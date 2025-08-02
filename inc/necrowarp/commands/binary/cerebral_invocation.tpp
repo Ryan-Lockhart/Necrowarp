@@ -37,7 +37,7 @@ namespace necrowarp {
 				++accumulated_cerebra;
 
 				if (!is_exalted) {
-					// entity_registry<MapType>.dependent add<true>(position, hamaz_t{ random_engine });
+					entity_registry<MapType>.dependent add<true>(position, hamaz_t{ random_engine });
 				}
 			}
 
@@ -48,13 +48,13 @@ namespace necrowarp {
 			}
 
 			if (has_cerebra) {
-				// const entity_e possessed{ object_registry<MapType>.dependent at<cerebra_t>(position)->entity };
+				const entity_e possessed{ object_registry<MapType>.dependent at<cerebra_t>(position)->entity };
 
 				object_registry<MapType>.dependent remove<cerebra_t>(position);
 				++accumulated_cerebra;
 
 				if (!is_exalted) {
-					// entity_registry<MapType>.dependent add<true>(position, hamaz_t{ possessed });
+					entity_registry<MapType>.dependent add<true>(position, hamaz_t{ possessed });
 				}
 			}
 
@@ -68,7 +68,7 @@ namespace necrowarp {
 						}
 						break;
 					} default: {
-						if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_e::Ravenous) {
+						if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_e::Cerebral) {
 							eligible_ladder = nullptr;
 						}
 						break;
@@ -80,7 +80,7 @@ namespace necrowarp {
 		if (object_registry<MapType>.dependent contains<cerebra_t>(target_position)) {
 			const offset_t position{ target_position };
 
-			// const entity_e possessed{ object_registry<MapType>.dependent at<cerebra_t>(position)->entity };
+			const entity_e possessed{ object_registry<MapType>.dependent at<cerebra_t>(position)->entity };
 
 			object_registry<MapType>.dependent remove<cerebra_t>(position);
 			++accumulated_cerebra;
@@ -89,7 +89,7 @@ namespace necrowarp {
 				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(accumulated_cerebra);
 				} else {
-					// entity_registry<MapType>.dependent add<true>(position, hamaz_t{ possessed });
+					entity_registry<MapType>.dependent add<true>(position, hamaz_t{ possessed });
 				}
 			}
 		} else if (player.bypass_invocations_enabled()) {
@@ -99,12 +99,12 @@ namespace necrowarp {
 				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.bolster_armor(accumulated_cerebra);
 				} else {
-					// entity_registry<MapType>.dependent add<true>(target_position, hamaz_t{ random_engine });
+					entity_registry<MapType>.dependent add<true>(target_position, hamaz_t{ random_engine });
 				}
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::BonesConsumed> += accumulated_cerebra;
+		steam_stats::stats<steam_stat_e::CerebraConsumed> += accumulated_cerebra;
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -130,7 +130,7 @@ namespace necrowarp {
 							}
 							break;
 						} default: {
-							if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_e::Ravenous) {
+							if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_e::Cerebral) {
 								eligible_ladder = nullptr;
 							}
 							break;
@@ -148,27 +148,29 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first entrancing shackle achievment placeholder : ?
+				// unshackle first entrancing shackle achievment placeholder : Free the Mind
 			} else {
-				eligible_ladder->enshackle(shackle_e::Ravenous);
+				eligible_ladder->enshackle(shackle_e::Cerebral);
 
-				// entrancing enshackle first ladder achievment placeholder : ?
+				// entrancing enshackle first ladder achievment placeholder : Spellbound
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::RavenousInvocations>;
+		++steam_stats::stats<steam_stat_e::CerebralInvocations>;
 
 		player.pay_cost(grimoire_e::CerebralInvocation);
 
 		literature::use(grimoire_e::CerebralInvocation);
 
 		if (!player.has_ascended()) {
-			if (accumulated_cerebra >= globals::MaximumCatalyst) {
-				// summon max amount of hamr achievment placeholder : ?
-			} else if (accumulated_cerebra > 1) {
-				// summon first group of hamr achievment placeholder : ?
+			if (accumulated_cerebra > 1) {
+				// summon first group of hamr achievment placeholder : The Mind's Eye
+
+				if (accumulated_cerebra >= globals::MaximumCatalyst) {
+					// summon max amount of hamr achievment placeholder : Refraction of the Soul
+				}
 			}
 
 			return;
@@ -180,14 +182,12 @@ namespace necrowarp {
 			return;
 		}
 
-		// entity_registry<MapType>.dependent add<true>(source_position, furtive_horror_t{ accumulated_cerebra });
+		entity_registry<MapType>.dependent add<true>(source_position, furtive_horror_t{ accumulated_cerebra });
 
-		if (accumulated_cerebra > 1) {
-			// summon first furtive horror achievment placeholder : ?
+		// summon first furtive horror achievment placeholder : ?
 
-			if (accumulated_cerebra >= globals::MaximumCatalyst) {
-				// summon furtive horror with max health achievment placeholder : ?
-			}
+		if (accumulated_cerebra >= globals::MaximumCatalyst) {
+			// summon furtive horror with max health achievment placeholder : ?
 		}
 	}
 } // namespace necrowarp

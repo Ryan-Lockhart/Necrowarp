@@ -163,10 +163,12 @@ namespace necrowarp {
 		literature::use(grimoire_e::WretchedInvocation);
 
 		if (!player.has_ascended()) {
-			if (pools_consumed >= globals::MaximumCatalyst) {
-				// summon max amount of draugr achievment placeholder : The Grave Legion
-			} else if (pools_consumed > 1) {
+			if (pools_consumed > 1) {
 				// summon first pack of draugr achievment placeholder : Desiccate and Decayed
+
+				if (pools_consumed >= globals::MaximumCatalyst) {
+					// summon max amount of draugr achievment placeholder : The Grave Legion
+				}
 			}
 
 			return;
@@ -180,10 +182,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, dreadwurm_t{ pools_consumed });
 
+		// summon first dreadwurm achievment placeholder : Eldritch Chimera
+
 		if (pools_consumed >= globals::MaximumCatalyst) {
 			// summon dreadwurm with max health achievment placeholder : Dread Incarnate
-		} else {
-			// summon first dreadwurm achievment placeholder : Eldritch Chimera
 		}
 	}
 } // namespace necrowarp

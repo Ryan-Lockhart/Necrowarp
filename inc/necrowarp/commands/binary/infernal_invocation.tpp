@@ -36,7 +36,7 @@ namespace necrowarp {
 				++pools_consumed;
 
 				if (!is_exalted) {
-					// entity_registry<MapType>.dependent add<true>(position, chromalese_t{});
+					entity_registry<MapType>.dependent add<true>(position, chromalese_t{});
 				}
 			}
 
@@ -54,7 +54,7 @@ namespace necrowarp {
 				++pools_consumed;
 
 				if (!is_exalted) {
-					// entity_registry<MapType>.dependent add<true>(position, chromalese_t{});
+					entity_registry<MapType>.dependent add<true>(position, chromalese_t{});
 				}
 			}
 
@@ -87,7 +87,7 @@ namespace necrowarp {
 				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
-					// entity_registry<MapType>.dependent add<true>(target_position, chromalese_t{});
+					entity_registry<MapType>.dependent add<true>(target_position, chromalese_t{});
 				}
 			}
 		} else if (player.bypass_invocations_enabled()) {
@@ -97,7 +97,7 @@ namespace necrowarp {
 				if (source_position == target_position && !chaotic_warp_t::execute<MapType>(source_position, true)) {
 					player.reinvigorate(pools_consumed);
 				} else {
-					// entity_registry<MapType>.dependent add<true>(target_position, chromalese_t{});
+					entity_registry<MapType>.dependent add<true>(target_position, chromalese_t{});
 				}
 			}
 		}
@@ -146,27 +146,29 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first cackling shackle achievment placeholder : ?
+				// unshackle first cackling shackle achievment placeholder : Diquietude Dispelled
 			} else {
 				eligible_ladder->enshackle(shackle_e::Infernal);
 
-				// cackling enshackle first ladder achievment placeholder : ?
+				// cackling enshackle first ladder achievment placeholder : Infernal Irreverance
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::WretchedInvocations>;
+		++steam_stats::stats<steam_stat_e::InfernalInvocations>;
 
 		player.pay_cost(grimoire_e::InfernalInvocation);
 
 		literature::use(grimoire_e::InfernalInvocation);
 
 		if (!player.has_ascended()) {
-			if (pools_consumed >= globals::MaximumCatalyst) {
-				// summon max amount of chromalesia achievment placeholder : ?
-			} else if (pools_consumed > 1) {
-				// summon first spectrum of chromalesia achievment placeholder : ?
+			if (pools_consumed > 1) {
+				// summon first spectrum of chromalesia achievment placeholder : Living Color
+
+				if (pools_consumed >= globals::MaximumCatalyst) {
+					// summon max amount of chromalesia achievment placeholder : Death Fog
+				}
 			}
 
 			return;
@@ -178,12 +180,12 @@ namespace necrowarp {
 			return;
 		}
 
-		// entity_registry<MapType>.dependent add<true>(source_position, isoscol_t{ pools_consumed });
+		entity_registry<MapType>.dependent add<true>(source_position, isoscel_t{ pools_consumed });
+
+		// summon first isoscel achievment placeholder : Euclidean Solecism
 
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			// summon isoscol with max health achievment placeholder : Angular Annihilation
-		} else {
-			// summon first isoscol achievment placeholder : The Shape of Death
+			// summon isoscel with max health achievment placeholder : Angular Annihilation
 		}
 	}
 } // namespace necrowarp
