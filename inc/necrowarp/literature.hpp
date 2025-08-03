@@ -54,7 +54,6 @@ namespace necrowarp {
 		static inline void reset() noexcept { uses = 0; acquired = false; }
 	};
 
-	template<> inline constexpr bool grimoire_s<grimoire_e::Annihilate>::Locked{ true };
 	template<> inline constexpr bool grimoire_s<grimoire_e::Repulse>::Locked{ true };
 
 	template<patron_e Patron> static constexpr std::array<grimoire_e, 2> patron_dowry{};
@@ -222,7 +221,7 @@ namespace necrowarp {
 
 			static constexpr usize max_tries{
 				(static_cast<usize>(grimoire_e::CalamitousRetaliation) - static_cast<usize>(grimoire_e::NecromanticAscendance) + 1) +
-				(static_cast<usize>(grimoire_e::Incorporealize) - static_cast<usize>(grimoire_e::ChaoticWarp) + 1) * 2
+				(static_cast<usize>(grimoire_e::Incorporealize) - static_cast<usize>(grimoire_e::ChaoticWarp) + 1)
 			};
 
 			for (usize tries{ 0 }; tries < max_tries; ++tries) {

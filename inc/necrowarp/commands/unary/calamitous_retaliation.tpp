@@ -27,6 +27,9 @@ namespace necrowarp {
 					entity.dependent die<MapType, death_e::Eradicated>(position);
 
 					entity_registry<MapType>.dependent remove<entity_type>(position);
+					
+					++game_stats.player_kills;
+					++steam_stats::stats<steam_stat_e::PlayerKills>;
 				});
 			}
 		});

@@ -53,7 +53,7 @@ namespace necrowarp {
 
 	TYPE_TRAIT_VALUE(is_evil, player_t, true);
 
-	TYPE_TRAIT_VALUE(is_non_player_entity, player_t, false);
+	TYPE_TRAIT_VALUE(is_non_player, player_t, false);
 
 	TYPE_TRAIT_VALUE(is_player, player_t, true);
 
@@ -64,6 +64,8 @@ namespace necrowarp {
 	TYPE_TRAIT_VALUE(is_cleaver, player_t, true);
 
 	TYPE_TRAIT_VALUE(is_vigilant, player_t, true);
+
+	TYPE_TRAIT_VALUE(is_inevadable, player_t, true);
 
 	TYPE_TRAIT_VALUE(is_devourable, player_t, true);
 

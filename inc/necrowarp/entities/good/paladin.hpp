@@ -136,11 +136,15 @@ namespace necrowarp {
 		static constexpr i8 MiddlingDamage{ 4 };
 		static constexpr i8 MaximumDamage{ 6 };
 
-		static constexpr std::array<entity_e, 14> EntityPriorities{
+		static constexpr std::array<entity_e, 18> EntityPriorities{
 			entity_e::Player,
 			entity_e::DeathKnight,
 			entity_e::AnimatedSuit,
+			entity_e::Isoscel,
+			entity_e::FurtiveHorror,
 			entity_e::Dreadwurm,
+			entity_e::Chromalese,
+			entity_e::Hamaz,
 			entity_e::Draugaz,
 			entity_e::FleshGolem,
 			entity_e::Abomination,
@@ -164,7 +168,29 @@ namespace necrowarp {
 	private:
 		static inline std::uniform_int_distribution<u16> zeal_dis{ static_cast<u16>(zeal_e::Downtrodden), static_cast<u16>(zeal_e::Ascendant) };
 
+		static inline std::uniform_int_distribution<u16> scaled_zeal_dis{ 0, 100 };
+
 		template<RandomEngine Generator> static inline zeal_e random_zeal(ref<Generator> generator) noexcept { return static_cast<zeal_e>(zeal_dis(generator)); }
+
+		template<RandomEngine Generator> static inline zeal_e random_scaled_zeal(ref<Generator> generator) noexcept {
+			const u16 chance{ scaled_zeal_dis(generator) };
+
+			if (chance < 5) {
+				return zeal_e::Downtrodden;
+			} else if (chance < 15) {
+				return zeal_e::Vengeant;
+			} else if (chance < 35) {
+				return zeal_e::Fallen;
+			} else if (chance < 65) {
+				return zeal_e::Alacritous;
+			} else if (chance < 85) {
+				return zeal_e::Righteous;
+			} else if (chance < 95) {
+				return zeal_e::Zealous;
+			} else {
+				return zeal_e::Ascendant;
+			}
+		}
 
 		static constexpr i8 determine_health(zeal_e zeal) noexcept {
 			switch (zeal) {
@@ -194,9 +220,9 @@ namespace necrowarp {
 		inline paladin_t(zeal_e zeal) noexcept : zeal{ zeal }, health{ determine_health(zeal) } {}
 
 		template<RandomEngine Generator> inline paladin_t(ref<Generator> generator) noexcept :
-			zeal{ random_zeal(generator) }, health{ determine_health(zeal) }
+			zeal{ random_scaled_zeal(generator) }, health{ determine_health(zeal) }
 		{}
-		
+
 		inline i8 get_health() const noexcept { return health; }
 
 		inline bool has_health() const noexcept { return health > 0; }

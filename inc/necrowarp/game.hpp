@@ -706,7 +706,7 @@ namespace necrowarp {
 				} else if (chance < 98) {
 					entity_registry<MapType>.dependent add<true>(position, berserker_t{}); // 2%
 				} else {
-					entity_registry<MapType>.dependent add<true>(position, paladin_t{}); // 2%
+					entity_registry<MapType>.dependent add<true>(position, paladin_t{ random_engine }); // 2%
 				}
 			} else if constexpr (Size == wave_size_e::Huge) {
 				if (chance < 32) {
@@ -726,7 +726,7 @@ namespace necrowarp {
 				} else if (chance < 96) {
 					entity_registry<MapType>.dependent add<true>(position, berserker_t{}); // 4%
 				} else {
-					entity_registry<MapType>.dependent add<true>(position, paladin_t{}); // 4%
+					entity_registry<MapType>.dependent add<true>(position, paladin_t{ random_engine }); // 4%
 				}
 			} else if constexpr (Size == wave_size_e::Massive) {
 				if (chance < 8) {
@@ -746,7 +746,7 @@ namespace necrowarp {
 				} else if (chance < 96) {
 					entity_registry<MapType>.dependent add<true>(position, berserker_t{}); // 6%
 				} else {
-					entity_registry<MapType>.dependent add<true>(position, paladin_t{}); // 4%
+					entity_registry<MapType>.dependent add<true>(position, paladin_t{ random_engine }); // 4%
 				}
 			}
 		}

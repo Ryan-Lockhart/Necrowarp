@@ -576,13 +576,13 @@ namespace necrowarp {
 
 	template<typename T> concept NonNeutralEntity = NonNullEntity<T> && is_non_neutral<T>::value;
 
-	template<typename T> struct is_non_player_entity {
+	template<typename T> struct is_non_player {
 		static constexpr bool value = true;
 	};
 
-	template<typename T> constexpr bool is_non_player_v = is_non_player_entity<T>::value;
+	template<typename T> constexpr bool is_non_player_v = is_non_player<T>::value;
 
-	template<typename T> concept NonPlayerEntity = NonNullEntity<T> && is_non_player_entity<T>::value;
+	template<typename T> concept NonPlayerEntity = NonNullEntity<T> && is_non_player<T>::value;
 
 	template<typename T> concept NPCEntity = NonNullEntity<T> && NonPlayerEntity<T>;
 
@@ -857,6 +857,8 @@ namespace necrowarp {
 
 		template<affliction_e Affliction> inline bool has_affliction() const noexcept;
 	};
+
+	struct omni_entity_t;
 
 	template<death_e Death> struct death_info_t{
 		const bool perished;

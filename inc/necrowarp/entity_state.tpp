@@ -14,6 +14,7 @@
 #include <bleak/sparse.hpp>
 
 #include <necrowarp/entity_buffer.hpp>
+#include <variant>
 
 namespace necrowarp {	
 	using namespace bleak;
@@ -1321,7 +1322,7 @@ namespace necrowarp {
 
 					break;
 				} case command_e::Annihilate: {
-					if (empty(command.source_position) || !empty(command.target_position) || command.source_position == command.target_position || game_map<MapType>.linear_blockage(command.source_position, command.target_position, cell_e::Solid)) {
+					if (empty(command.source_position) || !empty(command.target_position) || command.source_position == command.target_position || (!player.is_incorporeal() && game_map<MapType>.linear_blockage(command.source_position, command.target_position, cell_e::Solid))) {
 						return false;
 					}
 
@@ -1447,3 +1448,57 @@ namespace necrowarp {
 
 #include <necrowarp/entities.tpp>
 #include <necrowarp/commands.tpp>
+
+namespace necrowarp {
+	struct omni_entity_t {
+	  private:
+		std::variant<ALL_NON_PLAYER> value;
+
+	  public:
+		template<NonPlayerEntity EntityType> inline bool is() const noexcept { return std::holds_alternative<EntityType>(value); }
+
+		template<entity_e Entity> inline bool is() const noexcept {
+			using entity_type = typename to_entity_type<Entity>::type;
+
+			if constexpr (Entity != entity_e::None && Entity != entity_e::Player) {
+				return std::holds_alternative<entity_type>(value);
+			} else {
+				return false;
+			}
+		}
+
+		inline bool is(entity_e entity) const noexcept {
+			return magic_enum::enum_switch([&](auto val) -> bool {
+				constexpr entity_e cval{ val };
+
+				return is<cval>();
+			}, entity);
+		}
+
+		template<NonPlayerEntity EntityType> ptr<EntityType> get_if() noexcept {
+			if (!is<EntityType>()) {
+				return nullptr;
+			}
+
+			return std::get_if<EntityType>(value);
+		}
+
+		template<NonPlayerEntity EntityType> cptr<EntityType> get_if() const noexcept {
+			if (!is<EntityType>()) {
+				return nullptr;
+			}
+
+			return std::get_if<EntityType>(value);
+		}
+
+		inline operator entity_e() const noexcept { return static_cast<entity_e>(static_cast<usize>(to_entity_enum<skeleton_t>::value) + value.index()); }
+	};
+
+	template<map_type_e MapType> inline std::optional<omni_entity_t> entity_registry_t<MapType>::extract(offset_t position) noexcept {
+		return std::nullopt;
+	}
+
+	template<map_type_e MapType> inline std::optional<omni_entity_t> entity_registry_t<MapType>::displace(offset_t position, rval<omni_entity_t> other) noexcept {
+		return std::nullopt;
+	}
+}

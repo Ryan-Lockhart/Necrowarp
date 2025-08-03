@@ -110,12 +110,12 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr i8 QiPoint{ 3 };
-		static constexpr i8 MaximumQi{ 8 };
+		static constexpr i8 QiPoint{ 2 };
+		static constexpr i8 MaximumQi{ 6 };
 
 		static constexpr i8 StartingTranquility{ QiPoint + 1 };
 
-		static constexpr std::array<entity_e, 14> EntityPriorities{
+		static constexpr std::array<entity_e, 18> EntityPriorities{
 			entity_e::Player,
 			entity_e::Skeleton,
 			entity_e::Cultist,
@@ -123,12 +123,16 @@ namespace necrowarp {
 			entity_e::AnimatedSuit,
 			entity_e::Abomination,
 			entity_e::Draugaz,
+			entity_e::Hamaz,
+			entity_e::Chromalese,
 			entity_e::Bonespur,
 			entity_e::Wraith,
 			entity_e::Hemogheist,
 			entity_e::DeathKnight,
 			entity_e::FleshGolem,
 			entity_e::Dreadwurm,
+			entity_e::FurtiveHorror,
+			entity_e::Isoscel,
 			entity_e::Thetwo,
 		};
 
@@ -139,9 +143,13 @@ namespace necrowarp {
 	  private:
 		template<tranquility_e Tranquility> static inline i8 dodge_threshold;
 
-		template<> inline i8 dodge_threshold<tranquility_e::Distraught>{ 10 };
-		template<> inline i8 dodge_threshold<tranquility_e::Focused>{ 40 };
-		template<> inline i8 dodge_threshold<tranquility_e::Zen>{ 70 };
+		template<> inline i8 dodge_threshold<tranquility_e::Distraught>{ 33 };
+		template<> inline i8 dodge_threshold<tranquility_e::Focused>{ 66 };
+		template<> inline i8 dodge_threshold<tranquility_e::Zen>{ 99 };
+
+		static inline std::bernoulli_distribution breach_dis{ 0.10 };
+
+		template<RandomEngine Generator> static inline bool breach(ref<Generator> generator) noexcept { return breach_dis(generator); }
 
 		static inline std::uniform_int_distribution<i16> dodge_dis{ 0, 100 };
 
@@ -163,6 +171,8 @@ namespace necrowarp {
 		inline bool is_focused() const noexcept { return qi > QiPoint && qi < MaximumQi; }
 
 		inline bool is_zen() const noexcept { return qi >= MaximumQi; }
+
+		inline bool at_gate() const noexcept { return qi == QiPoint || qi == MaximumQi - 1; }
 
 		inline tranquility_e get_tranquility() const noexcept {
 			if (is_distraught()) {
@@ -204,9 +214,21 @@ namespace necrowarp {
 			return true;
 		}
 
-		inline void harmonize() noexcept { set_qi(qi + 1); }
+		inline void harmonize() noexcept {
+			if (at_gate() && !breach(random_engine)) {
+				return;
+			}
 
-		inline void harmonize(i8 amount) noexcept { set_qi(qi + amount); }
+			set_qi(qi + 1);
+		}
+
+		inline void harmonize(i8 amount) noexcept {
+			if (at_gate() && !breach(random_engine)) {
+				return;
+			}
+
+			set_qi(qi + amount);
+		}
 
 		inline void destabilize() noexcept { set_qi(qi - 1); }
 
