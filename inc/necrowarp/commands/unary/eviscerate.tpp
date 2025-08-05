@@ -164,8 +164,10 @@ namespace necrowarp {
 		i8 remaining_damage = initiator.get_damage();
 
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
-			if (remaining_damage <= 0) {
-				break;
+			if constexpr (!is_primeval<EntityType>::value) {
+				if (remaining_damage <= 0) {
+					break;
+				}
 			}
 
 			cauto position{ source_position + offset };
@@ -191,7 +193,7 @@ namespace necrowarp {
 
 						ref<victim_type> victim{ *victim_ptr };
 
-						const bool target_killed{ brutalize<MapType>(position, initiator, victim, remaining_damage) };
+						const bool target_killed{ is_primeval<EntityType>::value || brutalize<MapType>(position, initiator, victim, remaining_damage) };
 
 						if (target_killed) {
 							if constexpr (is_primeval<EntityType>::value) {

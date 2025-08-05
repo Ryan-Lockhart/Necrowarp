@@ -5,6 +5,7 @@
 
 #include <necrowarp/entity_command.hpp>
 
+#include <necrowarp/commands/unary/eviscerate.hpp>
 #include <necrowarp/commands/binary/eradicate.hpp>
 
 #include <necrowarp/game_state.hpp>
@@ -58,6 +59,10 @@ namespace necrowarp {
 
 	template<> struct is_concussable<isoscel_t> {
 		static constexpr bool value = false;
+	};
+
+	template<> struct is_entity_command_valid<isoscel_t, eviscerate_t> {
+		static constexpr bool value = true;
 	};
 
 	template<> struct is_entity_command_valid<isoscel_t, eradicate_t> {

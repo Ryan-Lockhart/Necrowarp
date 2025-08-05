@@ -911,7 +911,6 @@ namespace necrowarp {
 
 		for (crauto [position, entity] : entity_registry_storage<EntityType>) {
 			if (concussed.contains(position)) {
-				concussed.remove(position);
 				continue;
 			}
 
@@ -985,6 +984,8 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::update() noexcept {
+		concussed.clear();
+
 		update<player_t>();
 
 		if (player_turn_invalidated) {

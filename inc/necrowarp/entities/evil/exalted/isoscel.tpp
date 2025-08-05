@@ -18,7 +18,7 @@ namespace necrowarp {
 		}
 
 		if (cauto victim_pos{ entity_registry<MapType>.dependent nearest<distance_function_e::Chebyshev, ALL_GOOD>(position) }; victim_pos.has_value()) {
-			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
+			for (cauto offset : shuffled_offsets<distance_function_e::Chebyshev>(random_engine)) {
 				cauto current_pos{ victim_pos.value() + offset };
 
 				if (!game_map<MapType>.dependent within<region_e::Interior>(current_pos) || game_map<MapType>[current_pos].solid || !entity_registry<MapType>.empty(current_pos)) {
@@ -30,7 +30,7 @@ namespace necrowarp {
 		}
 
 		if (cauto victim_pos{ entity_registry<MapType>.dependent nearest<distance_function_e::Chebyshev, ALL_NEUTRAL>(position) }; victim_pos.has_value()) {
-			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
+			for (cauto offset : shuffled_offsets<distance_function_e::Chebyshev>(random_engine)) {
 				cauto current_pos{ victim_pos.value() + offset };
 
 				if (!game_map<MapType>.dependent within<region_e::Interior>(current_pos) || game_map<MapType>[current_pos].solid || !entity_registry<MapType>.empty(current_pos)) {

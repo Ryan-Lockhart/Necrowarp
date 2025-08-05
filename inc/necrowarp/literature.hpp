@@ -54,7 +54,7 @@ namespace necrowarp {
 		static inline void reset() noexcept { uses = 0; acquired = false; }
 	};
 
-	template<> inline constexpr bool grimoire_s<grimoire_e::Repulse>::Locked{ true };
+	//template<> inline constexpr bool grimoire_s<grimoire_e::Repulse>::Locked{ true };
 
 	template<patron_e Patron> static constexpr std::array<grimoire_e, 2> patron_dowry{};
 
