@@ -747,6 +747,17 @@ namespace necrowarp {
 
 	template<typename T> concept BleederEntity = NonNullEntity<T> && is_bleeder_v<T>;
 
+	template<typename T> struct is_sludger {
+		static constexpr bool value = false;
+		static constexpr fluid_e type = fluid_e::None;
+
+		static constexpr bool conditional = false;
+	};
+
+	template<typename T> constexpr bool is_sludger_v = is_sludger<T>::value && is_sludger<T>::type != fluid_e::None;
+
+	template<typename T> concept SludgerEntity = NonNullEntity<T> && is_sludger_v<T>;
+
 	template<typename T> struct is_thirsty {
 		static constexpr bool value = false;
 		static constexpr fluid_e type = fluid_e::None;

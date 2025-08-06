@@ -358,11 +358,11 @@ namespace necrowarp {
 
 		constexpr bool CheatsAllowed{ true };
 
-		constexpr bool SpawnTutorialPortal{ true };
+		constexpr bool SpawnTutorialPortal{ false };
 
 		constexpr bool EnableBoonPortal{ true };
 		constexpr bool EnableTribulationPortal{ true };
-		constexpr bool EnableAudiencePortal{ true };
+		constexpr bool EnableAudiencePortal{ false };
 
 		constexpr offset_t CavernTileNudge{ 0, 0 };
 		constexpr offset_t FluidTileNudge{ 0, 0 };

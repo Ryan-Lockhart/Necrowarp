@@ -1,5 +1,7 @@
 #pragma once
 
+#include <bleak/sparse.hpp>
+
 #include <necrowarp/entity_state.hpp>
 
 #include <necrowarp/entities.hpp>
@@ -10,11 +12,9 @@
 
 #include <atomic>
 #include <optional>
-
-#include <bleak/sparse.hpp>
+#include <variant>
 
 #include <necrowarp/entity_buffer.hpp>
-#include <variant>
 
 namespace necrowarp {	
 	using namespace bleak;
@@ -164,6 +164,8 @@ namespace necrowarp {
 
 	static inline volatile std::atomic<dimension_e> plunge_target{ dimension_e::Abyss };
 
+	static inline volatile std::atomic<dimension_e> hijacked_target{ dimension_e::Abyss };
+
 	static inline volatile std::atomic<bool> player_turn_invalidated{ false };
 
 	static inline volatile std::atomic<bool> freshly_divine{ false };
@@ -200,11 +202,11 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return contains<ALL_ENTITIES>(position); }
 
-	template<map_type_e MapType> template<distance_function_e Distance, NonNullEntity EntityType> inline bool entity_registry_t<MapType>::nearby(offset_t position) const noexcept {
+	template<map_type_e MapType> template<distance_function_e Distance, NonNullEntity... EntityType> inline bool entity_registry_t<MapType>::nearby(offset_t position) const noexcept {
 		for (cauto offset : neighbourhood_offsets<Distance>) {
 			cauto current_pos{ position + offset };
 
-			if (contains<EntityType>(current_pos)) {
+			if ((contains<EntityType>(current_pos), ...)) {
 				return true;
 			}
 		}
@@ -213,59 +215,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType>
-	template<distance_function_e Distance, NonNullEntity... EntityTypes>
-		requires is_plurary<EntityTypes...>::value
-	inline bool entity_registry_t<MapType>::nearby(offset_t position) const noexcept {
-		return (nearby<Distance, EntityTypes>(position) || ...);
-	}
-
-	template<map_type_e MapType> template<distance_function_e Distance, NonNullEntity EntityType> inline std::optional<offset_t> entity_registry_t<MapType>::nearest(offset_t position) const noexcept {
-		if (empty<EntityType>()) {
-			return std::nullopt;
-		}
-
-		if (contains<EntityType>(position)) {
-			return position;
-		}
-
-		std::queue<creeper_t<offset_t::float_t>> frontier{};
-		std::unordered_set<offset_t, offset_t::std_hasher> visited{};
-
-		frontier.emplace(position, 0);
-		visited.insert(position);
-
-		if (frontier.empty()) {
-			return std::nullopt;
-		}
-
-		while (!frontier.empty()) {
-			const creeper_t<offset_t::float_t> current{ frontier.front() };
-			frontier.pop();
-
-			if (contains<EntityType>(current.position)) {
-				return current.position;
-			}
-
-			visited.insert(current.position);
-
-			for (cauto offset : neighbourhood_offsets<Distance>) {
-				const offset_t offset_position{ current.position + offset };
-
-				if (!game_map<MapType>.dependent within<region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open ||!visited.insert(offset_position).second) {
-					continue;
-				}
-
-				frontier.emplace(offset_position, offset_t::float_t{ current.distance + 1 });
-			}
-		}
-
-		return std::nullopt;
-	}
-
-	template<map_type_e MapType>
-	template<distance_function_e Distance, NonNullEntity... EntityTypes>
-		requires is_plurary<EntityTypes...>::value
-	inline std::optional<offset_t> entity_registry_t<MapType>::nearest(offset_t position) const noexcept {
+	template<distance_function_e Distance, NonNullEntity... EntityTypes> inline std::optional<offset_t> entity_registry_t<MapType>::nearest(offset_t position) const noexcept {
 		if (empty<EntityTypes...>()) {
 			return std::nullopt;
 		}
@@ -297,7 +247,7 @@ namespace necrowarp {
 			for (cauto offset : neighbourhood_offsets<Distance>) {
 				const offset_t offset_position{ current.position + offset };
 
-				if (!game_map<MapType>.dependent within<region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open ||!visited.insert(offset_position).second) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(offset_position) || game_map<MapType>[offset_position] != cell_e::Open || !visited.insert(offset_position).second) {
 					continue;
 				}
 

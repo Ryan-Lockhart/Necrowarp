@@ -6,7 +6,7 @@
 
 namespace necrowarp {
 	template<> inline void game_s::plunge<dimension_e::Tribulation>() noexcept {
-		constexpr map_type_e map_type = map_type_e::Pocket;
+		constexpr map_type_e map_type = map_type_e::Standard;
 
 		constexpr map_cell_t open_state{ cell_e::Open, cell_e::Transperant, cell_e::Seen, cell_e::Explored };
 		constexpr map_cell_t closed_state{ cell_e::Solid, cell_e::Opaque, cell_e::Seen, cell_e::Explored };

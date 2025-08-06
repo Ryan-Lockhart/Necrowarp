@@ -3,6 +3,7 @@
 #include <necrowarp/dimensions.hpp>
 
 #include <necrowarp/game.hpp>
+#include <necrowarp/tribulation.hpp>
 
 #include <necrowarp/constants/enums.tpp>
 
@@ -10,7 +11,19 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void game_s::plunge() noexcept {
 		terminate_process_turn();
 
-		current_dimension = plunge_target;
+		const bool trap_triggered{ current_dimension != dimension_e::Tribulation && plunge_target != dimension_e::Tribulation && tribulation_s::aggravate(random_engine) };
+
+		if (trap_triggered) {
+			hijacked_target = plunge_target;
+
+			current_dimension = dimension_e::Tribulation;
+		} else {
+			if (hijacked_target != dimension_e::Abyss) {
+				hijacked_target = dimension_e::Abyss;
+			}
+
+			current_dimension = plunge_target;
+		}
 
 		plunge_target = dimension_e::Abyss;
 		plunge_flag = false;

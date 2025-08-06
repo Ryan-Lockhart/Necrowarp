@@ -49,6 +49,13 @@ namespace necrowarp {
 		static constexpr bool conditional = false;
 	};
 
+	template<> struct is_sludger<dreadwurm_t> {
+		static constexpr bool value = true;
+		static constexpr fluid_e type = fluid_e::Filth;
+
+		static constexpr bool conditional = false;
+	};
+
 	template<> struct is_concussable<dreadwurm_t> {
 		static constexpr bool value = false;
 	};

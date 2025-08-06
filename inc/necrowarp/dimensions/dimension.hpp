@@ -63,7 +63,7 @@ namespace necrowarp {
 	constexpr cstr to_description(dimension_e dimension) {
 		switch (dimension) {
 			case dimension_e::Abyss: {
-				return "The Great Chaos, is an immense region of desolated space around the galactic core destroyed thousands of millennia ago by the Andavanga";
+				return "The Great Chaos is an immense region of desolated space around the galactic core destroyed thousands of millennia ago by the Andavanga";
 			} case dimension_e::Underworld: {
 				return "The Underworld is a massive expanse of caverns and natural tunnels that trickle throughout the subsurface of Mokrae";
 			} case dimension_e::Voitykras: {
@@ -75,7 +75,7 @@ namespace necrowarp {
 			} case dimension_e::Yyndikras: {
 				return "Yyndikras is the divine realm of the eponymous Yyantranu, one of the Trydaiastokhai and ascendant vanguard of the Third Plane";
 			} case dimension_e::Overworld: {
-				return "The Overworld is the surface of Mokrae, the chiefest of planets in Nurrheim with its three continents and rich, excessively violent history";
+				return "The Overworld is the surface of Mokrae, the chiefest of planets in Nurrheim with its three continents and rich, if not violent history";
 			} case dimension_e::AncientVault: {
 				return "The Ancient Vaults were constructed a millennium ago to store the embalmed corpses of archnecromancers and their fermenting, necrotic fluids";
 			}
@@ -87,6 +87,7 @@ namespace necrowarp {
 	static constexpr map_type_e determine_map() noexcept {
 		switch (Dimension) {
 			case dimension_e::Underworld:
+			case dimension_e::Tribulation:
 			case dimension_e::Overworld:
 			case dimension_e::AncientVault: {
 				return map_type_e::Standard;
