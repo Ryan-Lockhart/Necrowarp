@@ -31,7 +31,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::Repulse;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, repulse_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, repulse_t> {
 		using entity_type = EntityType;
 		using command_type = repulse_t;
 

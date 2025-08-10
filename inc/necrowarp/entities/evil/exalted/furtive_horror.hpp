@@ -34,10 +34,6 @@ namespace necrowarp {
 		using type = furtive_horror_t;
 	};
 
-	template<> struct to_entity_group<entity_e::FurtiveHorror> {
-		static constexpr entity_group_e value = entity_group_e::FurtiveHorror;
-	};
-
 	template<> struct is_evil<furtive_horror_t> {
 		static constexpr bool value = true;
 	};

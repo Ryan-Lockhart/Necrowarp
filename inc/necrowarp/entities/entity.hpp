@@ -2,8 +2,6 @@
 
 #include <bleak.hpp>
 
-#include <cstddef>
-
 #include <necrowarp/constants/enums.hpp>
 
 #include <magic_enum/magic_enum_utility.hpp>
@@ -181,9 +179,7 @@ namespace necrowarp {
 		ALL_NON_PLAYER
 
 	enum struct entity_e : u8 {
-		None = 0,
-
-		Player,
+		Player = 0,
 
 		Skeleton,
 		Cultist,
@@ -220,9 +216,7 @@ namespace necrowarp {
 
 	template<> constexpr cstr to_string<plurality_e::Singular>(entity_e type) noexcept {
 		switch (type) {
-			case entity_e::None: {
-				return "none";
-			} case entity_e::Player: {
+			case entity_e::Player: {
 				return "player";
 			} case entity_e::Skeleton: {
 				return "skeleton";
@@ -282,9 +276,7 @@ namespace necrowarp {
 
 	template<> constexpr cstr to_string<plurality_e::Multiple>(entity_e type) noexcept {
 		switch (type) {
-			case entity_e::None: {
-				return "none";
-			} case entity_e::Player: {
+			case entity_e::Player: {
 				return "players";
 			} case entity_e::Skeleton: {
 				return "skeletons";
@@ -344,9 +336,7 @@ namespace necrowarp {
 
 	static constexpr color_t to_color(entity_e type) noexcept {
 		switch (type) {
-			case entity_e::None: {
-				return colors::Grey;
-			} case entity_e::Player: {
+			case entity_e::Player: {
 				return colors::Magenta;
 			} case entity_e::Skeleton: {
 				return colors::White;
@@ -418,74 +408,6 @@ namespace necrowarp {
 
 	constexpr usize NPCSizeCap{ 8 };
 
-	using entity_group_t = u32;
-
-	enum struct entity_group_e : entity_group_t {
-		None = 0,
-
-		Player = 1 << 0,
-
-		Skeleton = Player << 1,
-		Cultist = Skeleton << 1,
-		Bloodhound = Cultist << 1,
-		AnimatedSuit = Bloodhound << 1,
-		Abomination = AnimatedSuit << 1,
-		Draugaz = Abomination << 1,
-		Hamaz = Draugaz << 1,
-		Chromalese = Hamaz << 1,
-
-		Bonespur = Chromalese << 1,
-		Wraith = Bonespur << 1,
-		Hemogheist = Wraith << 1,
-		DeathKnight = Hemogheist << 1,
-		FleshGolem = DeathKnight << 1,
-		Dreadwurm = FleshGolem << 1,
-		FurtiveHorror = Dreadwurm << 1,
-		Isoscel = FurtiveHorror << 1,
-
-		Adventurer = Isoscel << 1,
-		Mercenary = Adventurer << 1,
-		Ranger = Mercenary << 1,
-		Skulker = Ranger << 1,
-		MistLady = Skulker << 1,
-		BannerBearer = MistLady << 1,
-		BattleMonk = BannerBearer << 1,
-		Berserker = BattleMonk << 1,
-		Paladin = Berserker << 1,
-
-		Thetwo = Paladin << 1,
-	};
-
-	constexpr entity_group_e operator+(entity_group_e lhs, entity_group_e rhs) noexcept { return static_cast<entity_group_e>(static_cast<entity_group_t>(lhs) | static_cast<entity_group_t>(rhs)); }
-
-	constexpr ref<entity_group_e> operator+=(ref<entity_group_e> lhs, entity_group_e rhs) noexcept { return lhs = lhs + rhs, lhs; }
-
-	constexpr entity_group_e operator-(entity_group_e lhs, entity_group_e rhs) noexcept { return static_cast<entity_group_e>(static_cast<entity_group_t>(lhs) & (~static_cast<entity_group_t>(rhs))); }
-
-	constexpr ref<entity_group_e> operator-=(ref<entity_group_e> lhs, entity_group_e rhs) noexcept { return lhs = lhs - rhs, lhs; }
-
-	template<entity_e EntityType> struct to_entity_group {
-		static constexpr entity_group_e value{ entity_group_e::None };
-	};
-
-	constexpr bool operator==(entity_group_e lhs, entity_e rhs) noexcept;
-
-	template<typename... EntityTypes>
-		requires is_plurary<EntityTypes...>::value && is_homogeneous<entity_e, EntityTypes...>::value
-	constexpr bool operator==(entity_group_e lhs, EntityTypes... rhs) noexcept;
-
-	constexpr bool operator!=(entity_group_e lhs, entity_e rhs) noexcept;
-
-	template<typename... EntityTypes>
-		requires is_plurary<EntityTypes...>::value && is_homogeneous<entity_e, EntityTypes...>::value
-	constexpr bool operator!=(entity_group_e lhs, EntityTypes... rhs) noexcept;
-
-	static constexpr std::string to_string(entity_group_e group) noexcept;
-
-	static constexpr runes_t to_colored_string(entity_group_e group) noexcept;
-
-	constexpr entity_e at(entity_group_e group, usize index) noexcept;
-
 	template<typename T> struct is_entity {
 		static constexpr bool value = false;
 	};
@@ -495,38 +417,16 @@ namespace necrowarp {
 	template<typename T> concept Entity = is_entity<T>::value;
 
 	template<Entity T> struct to_entity_enum {
-		static constexpr entity_e value = entity_e::None;
+		static constexpr entity_e value{};
 	};
 
 	template<Entity T> constexpr entity_e to_entity_enum_v = to_entity_enum<T>::value;
-
-	template<> struct is_entity<std::nullptr_t> {
-		static constexpr bool value = true;
-	};
 	
 	template<entity_e EntityType> struct to_entity_type;
-	
-	template<> struct to_entity_type<entity_e::None> {
-		using type = std::nullptr_t;
-	};
 
 	template<entity_e EntityType> using to_entity_type_t = typename to_entity_type<EntityType>::type;
 
-	template<typename T> struct is_null_entity {
-		static constexpr bool value = false;
-	};
-
-	template<typename T> constexpr bool is_null_entity_v = is_null_entity<T>::value;
-
-	template<typename T> concept NullEntity = Entity<T> && is_null_entity<T>::value;
-
-	template<typename T> concept NonNullEntity = Entity<T> && !is_null_entity<T>::value;
-
-	template<> struct is_null_entity<std::nullptr_t> {
-		static constexpr bool value = true;
-	};
-
-	template<typename T> concept AnimatedEntity = NonNullEntity<T> && globals::has_animation<T>::value;
+	template<typename T> concept AnimatedEntity = Entity<T> && globals::has_animation<T>::value;
 
 	template<typename T> struct is_evil {
 		static constexpr bool value = false;
@@ -534,7 +434,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_evil_v = is_evil<T>::value;
 
-	template<typename T> concept EvilEntity = NonNullEntity<T> && is_evil<T>::value;
+	template<typename T> concept EvilEntity = Entity<T> && is_evil<T>::value;
 
 	template<typename T> struct is_good {
 		static constexpr bool value = false;
@@ -542,7 +442,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_good_v = is_good<T>::value;
 
-	template<typename T> concept GoodEntity = NonNullEntity<T> && is_good<T>::value;
+	template<typename T> concept GoodEntity = Entity<T> && is_good<T>::value;
 
 	template<typename T> struct is_neutral {
 		static constexpr bool value = false;
@@ -550,7 +450,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_neutral_v = is_neutral<T>::value;
 
-	template<typename T> concept NeutralEntity = NonNullEntity<T> && is_neutral<T>::value;
+	template<typename T> concept NeutralEntity = Entity<T> && is_neutral<T>::value;
 	
 	template<typename T> struct is_non_evil {
 		static constexpr bool value = !is_evil<T>::value && (is_good<T>::value || is_neutral<T>::value);
@@ -558,7 +458,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_non_evil_v = is_non_evil<T>::value;
 
-	template<typename T> concept NonEvilEntity = NonNullEntity<T> && is_non_evil<T>::value;
+	template<typename T> concept NonEvilEntity = Entity<T> && is_non_evil<T>::value;
 	
 	template<typename T> struct is_non_good {
 		static constexpr bool value = !is_good<T>::value && (is_evil<T>::value || is_neutral<T>::value);
@@ -566,7 +466,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_non_good_v = is_non_good<T>::value;
 
-	template<typename T> concept NonGoodEntity = NonNullEntity<T> && is_non_good<T>::value;
+	template<typename T> concept NonGoodEntity = Entity<T> && is_non_good<T>::value;
 	
 	template<typename T> struct is_non_neutral {
 		static constexpr bool value = !is_neutral<T>::value && (is_evil<T>::value || is_good<T>::value);
@@ -574,7 +474,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_non_neutral_v = is_non_neutral<T>::value;
 
-	template<typename T> concept NonNeutralEntity = NonNullEntity<T> && is_non_neutral<T>::value;
+	template<typename T> concept NonNeutralEntity = Entity<T> && is_non_neutral<T>::value;
 
 	template<typename T> struct is_non_player {
 		static constexpr bool value = true;
@@ -582,9 +482,9 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_non_player_v = is_non_player<T>::value;
 
-	template<typename T> concept NonPlayerEntity = NonNullEntity<T> && is_non_player<T>::value;
+	template<typename T> concept NonPlayerEntity = Entity<T> && is_non_player<T>::value;
 
-	template<typename T> concept NPCEntity = NonNullEntity<T> && NonPlayerEntity<T>;
+	template<typename T> concept NPCEntity = Entity<T> && NonPlayerEntity<T>;
 
 	template<typename T> struct is_npc_entity {
 		static constexpr bool value = NPCEntity<T>;
@@ -598,7 +498,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_player_v = is_player<T>::value;
 
-	template<typename T> concept PlayerEntity = NonNullEntity<T> && is_player<T>::value;
+	template<typename T> concept PlayerEntity = Entity<T> && is_player<T>::value;
 
 	template<typename T> struct is_combatant {
 		static constexpr bool value = false;
@@ -606,7 +506,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_combatant_v = is_combatant<T>::value;
 
-	template<typename T> concept CombatantEntity = NonNullEntity<T> && is_combatant<T>::value;
+	template<typename T> concept CombatantEntity = Entity<T> && is_combatant<T>::value;
 
 	template<typename T> struct is_holy {
 		static constexpr bool value = false;
@@ -614,7 +514,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_holy_v = is_holy<T>::value;
 
-	template<typename T> concept HolyEntity = NonNullEntity<T> && is_holy<T>::value;
+	template<typename T> concept HolyEntity = Entity<T> && is_holy<T>::value;
 
 	template<typename T> struct is_unholy {
 		static constexpr bool value = false;
@@ -622,7 +522,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_unholy_v = is_unholy<T>::value;
 
-	template<typename T> concept UnholyEntity = NonNullEntity<T> && is_unholy<T>::value;
+	template<typename T> concept UnholyEntity = Entity<T> && is_unholy<T>::value;
 
 	template<typename T> struct is_docile {
 		static constexpr bool value = false;
@@ -630,7 +530,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_docile_v = is_docile<T>::value;
 
-	template<typename T> concept DocileEntity = NonNullEntity<T> && is_docile<T>::value;
+	template<typename T> concept DocileEntity = Entity<T> && is_docile<T>::value;
 
 	template<typename T> struct is_fodder {
 		static constexpr bool value = false;
@@ -638,7 +538,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_fodder_v = is_fodder<T>::value;
 
-	template<typename T> concept FodderEntity = NonNullEntity<T> && is_fodder<T>::value;
+	template<typename T> concept FodderEntity = Entity<T> && is_fodder<T>::value;
 
 	template<typename T> struct is_clumsy {
 		static constexpr bool value = false;
@@ -646,7 +546,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_clumsy_v = is_clumsy<T>::value;
 
-	template<typename T> concept ClumsyEntity = NonNullEntity<T> && is_clumsy<T>::value;
+	template<typename T> concept ClumsyEntity = Entity<T> && is_clumsy<T>::value;
 
 	template<typename T> struct is_elusive {
 		static constexpr bool value = false;
@@ -654,7 +554,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_elusive_v = is_elusive<T>::value;
 
-	template<typename T> concept ElusiveEntity = NonNullEntity<T> && is_elusive<T>::value;
+	template<typename T> concept ElusiveEntity = Entity<T> && is_elusive<T>::value;
 
 	template<typename T> struct is_inevadable {
 		static constexpr bool value = false;
@@ -662,7 +562,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_inevadable_v = is_inevadable<T>::value;
 
-	template<typename T> concept InevadableEntity = NonNullEntity<T> && is_inevadable<T>::value;
+	template<typename T> concept InevadableEntity = Entity<T> && is_inevadable<T>::value;
 
 	template<typename T> struct is_fast {
 		static constexpr bool value = false;
@@ -670,7 +570,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_fast_v = is_fast<T>::value;
 
-	template<typename T> concept FastEntity = NonNullEntity<T> && is_fast<T>::value;
+	template<typename T> concept FastEntity = Entity<T> && is_fast<T>::value;
 
 	template<typename T> struct is_serene {
 		static constexpr bool value = false;
@@ -678,7 +578,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_serene_v = is_serene<T>::value;
 
-	template<typename T> concept SereneEntity = NonNullEntity<T> && is_serene<T>::value;
+	template<typename T> concept SereneEntity = Entity<T> && is_serene<T>::value;
 
 	template<typename T> struct is_berker {
 		static constexpr bool value = false;
@@ -686,7 +586,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_berker_v = is_berker<T>::value;
 
-	template<typename T> concept BerkerEntity = NonNullEntity<T> && is_berker<T>::value;
+	template<typename T> concept BerkerEntity = Entity<T> && is_berker<T>::value;
 
 	template<typename T> struct is_armored {
 		static constexpr bool value = false;
@@ -694,7 +594,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_armored_v = is_armored<T>::value;
 
-	template<typename T> concept ArmoredEntity = NonNullEntity<T> && is_armored<T>::value;
+	template<typename T> concept ArmoredEntity = Entity<T> && is_armored<T>::value;
 
 	template<typename T> struct is_cleaver {
 		static constexpr bool value = false;
@@ -702,7 +602,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_cleaver_v = is_cleaver<T>::value;
 
-	template<typename T> concept CleaverEntity = NonNullEntity<T> && is_cleaver<T>::value;
+	template<typename T> concept CleaverEntity = Entity<T> && is_cleaver<T>::value;
 
 	template<typename T> struct is_primeval {
 		static constexpr bool value = false;
@@ -710,7 +610,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_primeval_v = is_primeval<T>::value;
 
-	template<typename T> concept PrimevalEntity = NonNullEntity<T> && is_primeval<T>::value;
+	template<typename T> concept PrimevalEntity = Entity<T> && is_primeval<T>::value;
 
 	template<typename T> struct is_sneaky {
 		static constexpr bool value = false;
@@ -718,7 +618,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_sneaky_v = is_sneaky<T>::value;
 
-	template<typename T> concept SneakyEntity = NonNullEntity<T> && is_sneaky<T>::value;
+	template<typename T> concept SneakyEntity = Entity<T> && is_sneaky<T>::value;
 
 	template<typename T> struct is_vigilant {
 		static constexpr bool value = false;
@@ -726,7 +626,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_vigilant_v = is_vigilant<T>::value;
 
-	template<typename T> concept VigilantEntity = NonNullEntity<T> && is_vigilant<T>::value;
+	template<typename T> concept VigilantEntity = Entity<T> && is_vigilant<T>::value;
 
 	template<typename T> struct is_volumetric {
 		static constexpr bool value = false;
@@ -734,7 +634,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_volumetric_v = is_volumetric<T>::value;
 
-	template<typename T> concept VolumetricEntity = NonNullEntity<T> && is_volumetric<T>::value;
+	template<typename T> concept VolumetricEntity = Entity<T> && is_volumetric<T>::value;
 
 	template<typename T> struct is_bleeder {
 		static constexpr bool value = false;
@@ -745,7 +645,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_bleeder_v = is_bleeder<T>::value && is_bleeder<T>::type != fluid_e::None;
 
-	template<typename T> concept BleederEntity = NonNullEntity<T> && is_bleeder_v<T>;
+	template<typename T> concept BleederEntity = Entity<T> && is_bleeder_v<T>;
 
 	template<typename T> struct is_sludger {
 		static constexpr bool value = false;
@@ -756,7 +656,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_sludger_v = is_sludger<T>::value && is_sludger<T>::type != fluid_e::None;
 
-	template<typename T> concept SludgerEntity = NonNullEntity<T> && is_sludger_v<T>;
+	template<typename T> concept SludgerEntity = Entity<T> && is_sludger_v<T>;
 
 	template<typename T> struct is_thirsty {
 		static constexpr bool value = false;
@@ -765,7 +665,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_thirsty_v = is_thirsty<T>::value && is_thirsty<T>::type != fluid_e::None;
 
-	template<typename T> concept ThirstyEntity = NonNullEntity<T> && is_thirsty_v<T>;
+	template<typename T> concept ThirstyEntity = Entity<T> && is_thirsty_v<T>;
 
 	template<typename T, typename U> constexpr bool is_thirsty_for = is_thirsty_v<T> && is_bleeder_v<U> && contains(is_thirsty<T>::type, is_bleeder<U>::type);
 
@@ -777,7 +677,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_devourable_v = is_devourable<T>::value;
 
-	template<typename T> concept DevourableEntity = NonNullEntity<T> && is_devourable<T>::value;
+	template<typename T> concept DevourableEntity = Entity<T> && is_devourable<T>::value;
 
 	template<typename T> struct is_incorporeal {
 		static constexpr bool value = false;
@@ -786,7 +686,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_incorporeal_v = is_incorporeal<T>::value;
 
-	template<typename T> concept IncorporealEntity = NonNullEntity<T> && is_bleeder_v<T>;
+	template<typename T> concept IncorporealEntity = Entity<T> && is_bleeder_v<T>;
 
 	template<typename T> struct is_encouragable {
 		static constexpr bool value = false;
@@ -794,7 +694,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_encouragable_v = is_encouragable<T>::value;
 
-	template<typename T> concept EncouragableEntity = NonNullEntity<T> && is_encouragable<T>::value;
+	template<typename T> concept EncouragableEntity = Entity<T> && is_encouragable<T>::value;
 
 	template<typename T> struct is_afflictable {
 		static constexpr bool value = false;
@@ -802,7 +702,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_afflictable_v = is_afflictable<T>::value;
 
-	template<typename T> concept AfflicatableEntity = NonNullEntity<T> && is_afflictable<T>::value;
+	template<typename T> concept AfflicatableEntity = Entity<T> && is_afflictable<T>::value;
 
 	template<typename T> struct is_abominable {
 		static constexpr bool value = false;
@@ -810,7 +710,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_abominable_v = is_abominable<T>::value;
 
-	template<typename T> concept AbominableEntity = NonNullEntity<T> && is_abominable<T>::value;
+	template<typename T> concept AbominableEntity = Entity<T> && is_abominable<T>::value;
 
 	template<typename T> struct is_concussable {
 		static constexpr bool value = true;
@@ -818,7 +718,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_concussable_v = is_concussable<T>::value;
 
-	template<typename T> concept ConcussableEntity = NonNullEntity<T> && is_concussable<T>::value;
+	template<typename T> concept ConcussableEntity = Entity<T> && is_concussable<T>::value;
 
 	template<typename T> struct is_spatterable {
 		static constexpr bool value = false;
@@ -826,7 +726,7 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_spatterable_v = is_spatterable<T>::value;
 
-	template<typename T> concept SpatterableEntity = NonNullEntity<T> && is_spatterable<T>::value;
+	template<typename T> concept SpatterableEntity = Entity<T> && is_spatterable<T>::value;
 
 	template<typename T> struct is_updateable {
 		static constexpr bool value = true;
@@ -834,23 +734,19 @@ namespace necrowarp {
 
 	template<typename T> constexpr bool is_updateable_v = is_updateable<T>::value;
 
-	template<typename T> concept UpdateableEntity = NonNullEntity<T> && is_updateable<T>::value;
+	template<typename T> concept UpdateableEntity = Entity<T> && is_updateable<T>::value;
 
 	template<typename T, entity_e EntityType> struct is_entity_type {
 		static constexpr bool value = false;
 	};
 
-	template<> struct is_entity_type<std::nullptr_t, entity_e::None> {
-		static constexpr bool value = true;
-	};
-
 	template<typename T, entity_e EntityType> constexpr bool is_entity_type_v = is_entity_type<T, EntityType>::value;
 
-	template<NonNullEntity EntityType>
+	template<Entity EntityType>
 		requires (!globals::has_animation<EntityType>::value && !globals::has_variants<EntityType>::value)
 	inline constexpr glyph_t entity_glyphs;
 
-	template<NonNullEntity EntityType> struct entity_t {
+	template<Entity EntityType> struct entity_t {
 		offset_t position;
 		ptr<EntityType> entity;
 
@@ -887,7 +783,7 @@ namespace necrowarp {
 
 	namespace globals {
 		template<entity_e Entity>
-			requires (Entity != entity_e::None && is_non_evil<typename to_entity_type<Entity>::type>::value)
+			requires (is_good<typename to_entity_type<Entity>::type>::value)
 		constexpr bool OopsAll{ false };
 	}
 } // namespace necrowarp

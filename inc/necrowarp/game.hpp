@@ -84,19 +84,27 @@ namespace necrowarp {
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::PreciseWarp)) {
 				const offset_t target_position{ grid_cursor<MapType>.get_position() };
 
-				const entity_group_e entities{ entity_registry<MapType>.at(target_position) };
-				const object_group_e objects{ object_registry<MapType>.at(target_position) };
+				const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
 
-				const entity_e target_entity{ determine_target<player_t>(entities) };
-				const object_e target_object{ determine_target<player_t>(objects) };
+				if (maybe_entity.has_value()) {
+					const entity_e target_entity{ maybe_entity.value() };
 
-				player.command = command_pack_t{
-					player.can_consume(target_entity) || (!ignore_objects && player.can_consume(target_object)) ?
-						command_e::ConsumeWarp :
-						command_e::PreciseWarp,
-					player.position,
-					target_position
-				};
+					if (player.can_consume(target_entity)) {
+						player.command = command_pack_t{ command_e::ConsumeWarp, player.position, target_position };
+					}
+				} else {
+					const object_group_e objects{ object_registry<MapType>.at(target_position) };
+
+					const object_e target_object{ determine_target<player_t>(objects) };
+
+					player.command = command_pack_t{
+						(!ignore_objects && player.can_consume(target_object)) ?
+							command_e::ConsumeWarp :
+							command_e::PreciseWarp,
+						player.position,
+						target_position
+					};	
+				}
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::Annihilate)) {
 				player.command = command_pack_t{ command_e::Annihilate, player.position, grid_cursor<MapType>.get_position() };
 			} else if (keyboard_s::is_key<input_e::Down>(bindings::Repulse)) {

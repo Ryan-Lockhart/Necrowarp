@@ -23,7 +23,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::ConsumeWarp;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, consume_warp_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, consume_warp_t> {
 		using entity_type = EntityType;
 		using command_type = consume_warp_t;
 

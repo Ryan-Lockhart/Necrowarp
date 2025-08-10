@@ -172,9 +172,9 @@ namespace necrowarp {
 
 			cauto position{ source_position + offset };
 
-			const entity_e victim_enum{ determine_target<EntityType>(entity_registry<MapType>.at(position)) };
+			const std::optional<entity_e> maybe_victim{ entity_registry<MapType>.at(position) };
 
-			if (victim_enum == entity_e::None) {
+			if (!maybe_victim.has_value() || is_valid_target<EntityType>(maybe_victim.value())) {
 				continue;
 			}
 
@@ -184,7 +184,7 @@ namespace necrowarp {
 				using victim_type = to_entity_type<cval>::type;
 
 				if constexpr (!is_evil<victim_type>::value) {
-					if constexpr (!is_null_entity<victim_type>::value && !std::is_same<EntityType, victim_type>::value) {
+					if constexpr (!std::is_same<EntityType, victim_type>::value) {
 						ptr<victim_type> victim_ptr{ entity_registry<MapType>.dependent at<victim_type>(position) };
 
 						if (victim_ptr == nullptr) {
@@ -226,7 +226,7 @@ namespace necrowarp {
 						}
 					}
 				}
-			}, victim_enum);
+			}, maybe_victim.value());
 		}
 	}
 } // namespace necrowarp

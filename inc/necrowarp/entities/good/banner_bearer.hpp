@@ -28,10 +28,6 @@ namespace necrowarp {
 		using type = banner_bearer_t;
 	};
 
-	template<> struct to_entity_group<entity_e::BannerBearer> {
-		static constexpr entity_group_e value = entity_group_e::BannerBearer;
-	};
-
 	template<> struct is_good<banner_bearer_t> {
 		static constexpr bool value = true;
 	};

@@ -24,10 +24,6 @@ namespace necrowarp {
 		using type = mist_lady_t;
 	};
 
-	template<> struct to_entity_group<entity_e::MistLady> {
-		static constexpr entity_group_e value = entity_group_e::MistLady;
-	};
-
 	template<> struct is_good<mist_lady_t> {
 		static constexpr bool value = true;
 	};

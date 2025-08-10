@@ -71,11 +71,13 @@ namespace necrowarp {
 			}
 
 			if (entity_registry<MapType>.dependent contains<ALL_NON_NEUTRAL>(current_position)) {
-				const entity_e target{ determine_target<thetwo_t>(entity_registry<MapType>.at(current_position)) };
-
-				if (!can_devour(target) || !is_hungry) {
+				if (!is_hungry) {
 					return command_pack_t{ command_e::Clash, position, current_position };
-				} else {
+				}
+
+				const std::optional<entity_e> maybe_target{ entity_registry<MapType>.at(current_position) };
+
+				if (maybe_target.has_value() && can_devour(maybe_target.value())) {
 					return command_pack_t{ command_e::Devour, position, current_position };
 				}
 			}

@@ -32,10 +32,6 @@ namespace necrowarp {
 		using type = chromalese_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Chromalese> {
-		static constexpr entity_group_e value = entity_group_e::Chromalese;
-	};
-
 	template<> struct is_evil<chromalese_t> {
 		static constexpr bool value = true;
 	};
@@ -87,7 +83,7 @@ namespace necrowarp {
 		};
 		
 	private:
-		static inline std::bernoulli_distribution dodge_dis{ 0.5 };
+		static inline std::bernoulli_distribution dodge_dis{ 0.80 };
 
 		i8 health;
 

@@ -23,7 +23,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::Metabolise;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, metabolise_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, metabolise_t> {
 		using entity_type = EntityType;
 		using command_type = metabolise_t;
 

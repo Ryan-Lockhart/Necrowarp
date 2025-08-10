@@ -10,7 +10,7 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, incorporealize_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, incorporealize_t>::process() const noexcept {
 		if (player.is_incorporeal() || !player.can_perform(grimoire_e::Incorporealize)) {
 			player_turn_invalidated = true;
 

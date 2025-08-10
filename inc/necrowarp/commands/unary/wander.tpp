@@ -12,7 +12,7 @@
 #include <necrowarp/entities/good/mist_lady.hpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, wander_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, wander_t>::process() const noexcept {
 		if constexpr (is_afflictable<EntityType>::value || is_berker<EntityType>::value) {
 			ptr<EntityType> entity{ entity_registry<MapType>.dependent at<EntityType>(source_position) };
 

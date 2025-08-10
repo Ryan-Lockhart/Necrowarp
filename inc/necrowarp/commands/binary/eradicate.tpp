@@ -13,7 +13,7 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, eradicate_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, eradicate_t>::process() const noexcept {
 		entity_command_t<EntityType, move_t>{ source_position, target_position }.dependent process<MapType>();
 
 		ptr<EntityType> maybe_isoscel{ entity_registry<MapType>.dependent at<EntityType>(target_position) };

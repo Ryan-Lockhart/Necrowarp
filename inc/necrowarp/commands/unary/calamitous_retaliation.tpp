@@ -10,7 +10,7 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calamitous_retaliation_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calamitous_retaliation_t>::process() const noexcept {
 		if (!player.can_perform(grimoire_e::CalamitousRetaliation)) {
 			player_turn_invalidated = true;
 
@@ -20,7 +20,7 @@ namespace necrowarp {
 		magic_enum::enum_for_each<entity_e>([](auto val) {
 			constexpr entity_e cval{ val };
 
-			if constexpr (cval != entity_e::None && cval != entity_e::Player) {
+			if constexpr (cval != entity_e::Player) {
 				using entity_type = typename to_entity_type<cval>::type;
 
 				entity_registry<MapType>.dependent execute<entity_type>([&](offset_t position, rauto entity) -> void {

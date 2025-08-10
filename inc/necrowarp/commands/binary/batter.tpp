@@ -10,7 +10,7 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, batter_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, batter_t>::process() const noexcept {
 		ptr<battle_monk_t> maybe_monk{ entity_registry<MapType>.dependent at<battle_monk_t>(source_position) };
 
 		if (maybe_monk == nullptr) {
@@ -25,104 +25,106 @@ namespace necrowarp {
 			}
 		}
 
-		const entity_e target{ determine_target<battle_monk_t>(entity_registry<MapType>.at(target_position)) };
-		
+		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
+
+		if (!maybe_entity.has_value() || !is_valid_target<battle_monk_t>(maybe_entity.value())) {
+			return;
+		}
+
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr entity_e cval{ val };
 
-			if constexpr (cval != entity_e::None) {
-				using entity_type = to_entity_type<cval>::type;
+			using entity_type = to_entity_type<cval>::type;
 
-				ptr<entity_type> maybe_target{ entity_registry<MapType>.dependent at<entity_type>(target_position) };
+			ptr<entity_type> maybe_target{ entity_registry<MapType>.dependent at<entity_type>(target_position) };
 
-				if (maybe_target == nullptr) {
-					return;
-				}
+			if (maybe_target == nullptr) {
+				return;
+			}
 
-				ref<entity_type> target{ *maybe_target };
-				
-				cauto try_bleed = [&] {
-					if constexpr (is_bleeder_v<entity_type>) {
-						if constexpr (is_bleeder<entity_type>::conditional) {
-							if (!target.can_bleed()) {
-								return;
-							}
-						}
-
-						constexpr fluid_e fluid{ is_bleeder<entity_type>::type };
-						
-						spill_fluid<MapType>(target_position, fluid);
-					}
-				};
-
-				bool critical_strike{ false };
-
-				if constexpr (is_concussable<entity_type>::value) {
-					if (!entity_registry<MapType>.is_concussed(target_position)) {
-						concussed.add(target_position);
-					} else {
-						critical_strike = true;
-					}
-				}
-
-				const i8 damage{ static_cast<i8>(initiator.get_damage(cval) * (critical_strike ? 2 : 1)) };
-
-				if constexpr (!is_fodder<entity_type>::value) {
-					if constexpr (is_cleaver<EntityType>::value && is_armored<entity_type>::value) {
-						if constexpr (is_volumetric<entity_type>::value) {
-							const f16 fluid_damage{ fluid_pool_volume(damage) };
-
-							if (target.dependent can_survive<EntityType>(fluid_damage)) {
-								if (target.dependent receive_damage<EntityType>(fluid_damage)) {	
-									try_bleed();
-								}
-
-								return;
-							}
-						} else {
-							if (target.dependent can_survive<EntityType>(damage)) {
-								if (target.dependent receive_damage<EntityType>(damage)) {	
-									try_bleed();
-								}
-
-								return;
-							}
-						}
-					} else {
-						if constexpr (is_volumetric<entity_type>::value) {
-							const f16 fluid_damage{ fluid_pool_volume(damage) };
-
-							if (target.can_survive(fluid_damage)) {
-								if (target.receive_damage(fluid_damage)) {	
-									try_bleed();
-								}
-
-								return;
-							}
-						} else {
-							if (target.can_survive(damage)) {
-								if (target.receive_damage(damage)) {	
-									try_bleed();
-								}
-
-								return;
-							}
+			ref<entity_type> target{ *maybe_target };
+			
+			cauto try_bleed = [&] {
+				if constexpr (is_bleeder_v<entity_type>) {
+					if constexpr (is_bleeder<entity_type>::conditional) {
+						if (!target.can_bleed()) {
+							return;
 						}
 					}
+
+					constexpr fluid_e fluid{ is_bleeder<entity_type>::type };
+					
+					spill_fluid<MapType>(target_position, fluid);
 				}
+			};
 
-				try_bleed();
+			bool critical_strike{ false };
 
-				if constexpr (is_player<entity_type>::value) {
-					target.dependent die<MapType, death_e::Killed>();
+			if constexpr (is_concussable<entity_type>::value) {
+				if (!entity_registry<MapType>.is_concussed(target_position)) {
+					concussed.add(target_position);
 				} else {
-					target.dependent die<MapType, death_e::Killed>(target_position);
-				}
-
-				if constexpr (is_npc_entity<entity_type>::value) {
-					entity_registry<MapType>.dependent remove<entity_type>(target_position);
+					critical_strike = true;
 				}
 			}
-		}, target);
+
+			const i8 damage{ static_cast<i8>(initiator.get_damage(cval) * (critical_strike ? 2 : 1)) };
+
+			if constexpr (!is_fodder<entity_type>::value) {
+				if constexpr (is_cleaver<EntityType>::value && is_armored<entity_type>::value) {
+					if constexpr (is_volumetric<entity_type>::value) {
+						const f16 fluid_damage{ fluid_pool_volume(damage) };
+
+						if (target.dependent can_survive<EntityType>(fluid_damage)) {
+							if (target.dependent receive_damage<EntityType>(fluid_damage)) {	
+								try_bleed();
+							}
+
+							return;
+						}
+					} else {
+						if (target.dependent can_survive<EntityType>(damage)) {
+							if (target.dependent receive_damage<EntityType>(damage)) {	
+								try_bleed();
+							}
+
+							return;
+						}
+					}
+				} else {
+					if constexpr (is_volumetric<entity_type>::value) {
+						const f16 fluid_damage{ fluid_pool_volume(damage) };
+
+						if (target.can_survive(fluid_damage)) {
+							if (target.receive_damage(fluid_damage)) {	
+								try_bleed();
+							}
+
+							return;
+						}
+					} else {
+						if (target.can_survive(damage)) {
+							if (target.receive_damage(damage)) {	
+								try_bleed();
+							}
+
+							return;
+						}
+					}
+				}
+			}
+
+			try_bleed();
+
+			if constexpr (is_player<entity_type>::value) {
+				target.dependent die<MapType, death_e::Killed>();
+			} else {
+				target.dependent die<MapType, death_e::Killed>(target_position);
+			}
+
+			if constexpr (is_npc_entity<entity_type>::value) {
+				entity_registry<MapType>.dependent remove<entity_type>(target_position);
+			}
+		}, maybe_entity.value());
 	}
 } // namespace necrowarp

@@ -413,7 +413,29 @@ namespace necrowarp {
 					tooltip_label<MapType>.text = runes_t{};
 
 					if (has_entity) {
-						tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(entity_registry<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
+						const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(grid_cursor<MapType>.current_position) };
+
+						if (maybe_entity.has_value()) {
+							tooltip_label<MapType>.text.concatenate(
+								magic_enum::enum_switch(
+									[&](auto val) -> runes_t {
+										constexpr entity_e cval{ val };
+
+										using entity_type = typename to_entity_type<cval>::type;
+
+										if constexpr (globals::has_unique_descriptor<entity_type>::value) {
+											cauto entity_ptr{ entity_registry<MapType>.dependent at<entity_type>(grid_cursor<MapType>.current_position) };
+
+											if (entity_ptr != nullptr) {
+												return entity_ptr->to_colored_string();
+											}
+										}
+
+										return to_colored_string(cval);
+									}, maybe_entity.value()
+								)
+							);
+						}
 					}
 
 					if (has_entity && has_object) {
@@ -466,7 +488,29 @@ namespace necrowarp {
 					tooltip_label<MapType>.text = runes_t{};
 
 					if (has_entity) {
-						tooltip_label<MapType>.text.concatenate(to_colored_string<MapType>(entity_buffer<MapType>.at(grid_cursor<MapType>.current_position), grid_cursor<MapType>.current_position));
+						const std::optional<entity_e> maybe_entity{ entity_buffer<MapType>.at(grid_cursor<MapType>.current_position) };
+
+						if (maybe_entity.has_value()) {
+							tooltip_label<MapType>.text.concatenate(
+								magic_enum::enum_switch(
+									[&](auto val) -> runes_t {
+										constexpr entity_e cval{ val };
+
+										using entity_type = typename to_entity_type<cval>::type;
+
+										if constexpr (globals::has_unique_descriptor<entity_type>::value) {
+											cauto entity_ptr{ entity_buffer<MapType>.dependent at<entity_type>(grid_cursor<MapType>.current_position) };
+
+											if (entity_ptr != nullptr) {
+												return entity_ptr->to_colored_string();
+											}
+										}
+
+										return to_colored_string(cval);
+									}, maybe_entity.value()
+								)
+							);
+						}
 					}
 
 					if (has_entity && has_object) {

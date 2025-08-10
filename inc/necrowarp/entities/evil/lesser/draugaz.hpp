@@ -28,10 +28,6 @@ namespace necrowarp {
 		using type = draugaz_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Draugaz> {
-		static constexpr entity_group_e value = entity_group_e::Draugaz;
-	};
-
 	template<> struct is_evil<draugaz_t> {
 		static constexpr bool value = true;
 	};
@@ -72,6 +68,7 @@ namespace necrowarp {
 		
 	private:
 		i8 health;
+
 		bool seared;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }

@@ -31,7 +31,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::Incorporealize;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, incorporealize_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, incorporealize_t> {
 		using entity_type = EntityType;
 		using command_type = incorporealize_t;
 

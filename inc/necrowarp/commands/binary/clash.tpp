@@ -405,10 +405,10 @@ namespace necrowarp {
 			}
 
 			ref<EntityType> initiator{ *initiator_ptr };
-			
-			const entity_e victim_enum{ determine_target<EntityType>(entity_registry<MapType>.at(target_position)) };
 
-			if (victim_enum == entity_e::None) {
+			const std::optional<entity_e> maybe_victim{ entity_registry<MapType>.at(target_position) };
+
+			if (!maybe_victim.has_value() || !is_valid_target<EntityType>(maybe_victim.value())) {
 				return;
 			}
 
@@ -417,7 +417,7 @@ namespace necrowarp {
 
 				using victim_type = to_entity_type<cval>::type;
 
-				if constexpr (!is_null_entity<victim_type>::value && !std::is_same<EntityType, victim_type>::value) {
+				if constexpr (!std::is_same<EntityType, victim_type>::value) {
 					ptr<victim_type> victim_ptr{ entity_registry<MapType>.dependent at<victim_type>(target_position) };
 
 					if (victim_ptr == nullptr) {
@@ -486,7 +486,7 @@ namespace necrowarp {
 						}
 					}
 				}			
-			}, victim_enum);
+			}, maybe_victim.value());
 		}
 	}
 } // namespace necrowarp

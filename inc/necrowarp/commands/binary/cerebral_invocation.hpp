@@ -31,7 +31,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::CerebralInvocation;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, cerebral_invocation_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, cerebral_invocation_t> {
 		using entity_type = EntityType;
 		using command_type = cerebral_invocation_t;
 

@@ -11,7 +11,7 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, retrieve_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, retrieve_t>::process() const noexcept {
 		if constexpr (std::is_same<EntityType, player_t>::value) {
 			ptr<pedestal_t> maybe_pedestal{ object_registry<MapType>.dependent at<pedestal_t>(target_position) };
 

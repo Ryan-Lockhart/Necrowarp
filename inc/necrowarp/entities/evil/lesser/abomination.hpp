@@ -34,10 +34,6 @@ namespace necrowarp {
 		using type = abomination_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Abomination> {
-		static constexpr entity_group_e value = entity_group_e::Abomination;
-	};
-
 	template<> struct is_evil<abomination_t> {
 		static constexpr bool value = true;
 	};

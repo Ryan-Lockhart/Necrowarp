@@ -36,10 +36,6 @@ namespace necrowarp {
 		using type = hamaz_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Hamaz> {
-		static constexpr entity_group_e value = entity_group_e::Hamaz;
-	};
-
 	template<> struct is_evil<hamaz_t> {
 		static constexpr bool value = true;
 	};

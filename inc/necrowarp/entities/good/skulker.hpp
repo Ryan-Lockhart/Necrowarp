@@ -28,10 +28,6 @@ namespace necrowarp {
 		using type = skulker_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Skulker> {
-		static constexpr entity_group_e value = entity_group_e::Skulker;
-	};
-
 	template<> struct is_good<skulker_t> {
 		static constexpr bool value = true;
 	};

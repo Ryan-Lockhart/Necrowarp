@@ -10,7 +10,7 @@
 #include <necrowarp/entities/entity.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, wretched_invocation_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, wretched_invocation_t>::process() const noexcept {
 		if (!player.can_perform(grimoire_e::WretchedInvocation) || (!player.bypass_invocations_enabled() && !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Filth))) {
 			player_turn_invalidated = true;
 

@@ -12,7 +12,7 @@
 #include <necrowarp/objects/object.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, devour_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, devour_t>::process() const noexcept {
 		ptr<EntityType> maybe_devourer{ entity_registry<MapType>.dependent at<EntityType>(source_position) };
 
 		if (maybe_devourer == nullptr) {
@@ -22,25 +22,22 @@ namespace necrowarp {
 		ref<EntityType> devourer{ *maybe_devourer };
 
 		const object_e target_object{ determine_target<EntityType>(object_registry<MapType>.at(target_position)) };
-		const entity_e target_entity{ determine_target<EntityType>(entity_registry<MapType>.at(target_position)) };
 
-		if (!devourer.can_devour(target_object) && !devourer.can_devour(target_entity)) {
-			if (target_entity == entity_e::Thetwo) {
+		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
+
+		if (devourer.can_devour(target_object) && target_object == object_e::Flesh) {
+			object_registry<MapType>.dependent remove<flesh_t>(target_position);
+
+			devourer.fatten();
+		} else if (maybe_entity.has_value() && (devourer.can_devour(maybe_entity.value()) || maybe_entity.value() == entity_e::Thetwo)) {
+			if (maybe_entity.value() == entity_e::Thetwo) {
 				ptr<thetwo_t> maybe_thetwo{ entity_registry<MapType>.dependent at<thetwo_t>(target_position) };
 
 				if (maybe_thetwo == nullptr || !devourer.can_devour(maybe_thetwo->get_bulk())) {
 					return;
 				}
-			} else {
-				return;
 			}
-		}
 
-		if (target_object == object_e::Flesh) {
-			object_registry<MapType>.dependent remove<flesh_t>(target_position);
-
-			devourer.fatten();
-		} else if (target_entity != entity_e::None) {
 			magic_enum::enum_switch([&](auto val) {
 				constexpr entity_e cval{ val };
 
@@ -79,7 +76,7 @@ namespace necrowarp {
 						devourer.fatten(info.protein);
 					}
 				}
-			}, target_entity);
+			}, maybe_entity.value());
 		}
 	}
 } // namespace necrowarp

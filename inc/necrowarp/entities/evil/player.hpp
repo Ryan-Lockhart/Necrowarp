@@ -48,8 +48,6 @@ namespace necrowarp {
 	TYPE_TRAIT_VALUE(to_entity_enum, player_t, entity_e::Player);
 	
 	TYPE_TRAIT_COMPARATOR(is_entity_type, player_t, entity_e::Player, true);
-	
-	TYPE_TRAIT_VALUE(to_entity_group, entity_e::Player, entity_group_e::Player);
 
 	TYPE_TRAIT_VALUE(is_evil, player_t, true);
 
@@ -562,9 +560,9 @@ namespace necrowarp {
 
 		template<CombatantEntity EntityType> inline bool receive_damage() noexcept;
 
-		template<NonNullEntity EntityType> inline void receive_death_boon() noexcept;
+		template<Entity EntityType> inline void receive_death_boon() noexcept;
 
-		template<NonNullEntity EntityType> inline void receive_death_boon(u8 multiplier) noexcept;
+		template<Entity EntityType> inline void receive_death_boon(u8 multiplier) noexcept;
 
 		template<map_type_e MapType> inline command_e clash_or_consume(offset_t position) const noexcept;
 

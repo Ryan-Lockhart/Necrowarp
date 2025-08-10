@@ -38,10 +38,6 @@ namespace necrowarp {
 		using type = ranger_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Ranger> {
-		static constexpr entity_group_e value = entity_group_e::Ranger;
-	};
-
 	template<> struct is_good<ranger_t> {
 		static constexpr bool value = true;
 	};

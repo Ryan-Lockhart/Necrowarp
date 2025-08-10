@@ -28,10 +28,6 @@ namespace necrowarp {
 		using type = bloodhound_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Bloodhound> {
-		static constexpr entity_group_e value = entity_group_e::Bloodhound;
-	};
-
 	template<> struct is_evil<bloodhound_t> {
 		static constexpr bool value = true;
 	};
@@ -41,6 +37,10 @@ namespace necrowarp {
 	};
 
 	template<> struct is_fodder<bloodhound_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_elusive<bloodhound_t> {
 		static constexpr bool value = true;
 	};
 
@@ -67,7 +67,7 @@ namespace necrowarp {
 
 	struct bloodhound_t {
 		static constexpr i8 MaximumHealth{ 1 };
-		static constexpr i8 MaximumDamage{ 1 };
+		static constexpr i8 MaximumDamage{ 2 };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
 			entity_e::Skulker,
@@ -82,21 +82,21 @@ namespace necrowarp {
 			entity_e::Thetwo,
 		};
 
+	  private:		
+		static inline std::bernoulli_distribution dodge_dis{ 0.50 };
+		
+	  public:
 		inline bloodhound_t() noexcept {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
-		inline i8 get_damage() const noexcept { return MaximumDamage; }
+		static constexpr bool HasStaticDodge{ true };
 
-		inline i8 get_damage(entity_e target) const noexcept {
-			switch (target) {
-				case entity_e::Paladin: {
-					return 0;
-				} default: {
-					return MaximumDamage;
-				}
-			}
-		}
+		template<RandomEngine Generator> static inline bool dodge(ref<Generator> generator) noexcept { return dodge_dis(generator); }
+
+		constexpr i8 get_damage() const noexcept { return MaximumDamage; }
+
+		constexpr i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 

@@ -33,36 +33,6 @@ namespace necrowarp {
 
 	static inline constexpr usize slideshow_interval{ 1000 };
 
-	struct entity_slideshow_s {
-		static constexpr usize num_entities{ EntityTypeCount };
-
-		static constexpr usize interval{ slideshow_interval };
-
-	  private:
-		static inline timer_t timer{ interval };
-
-		static inline usize index{ 0 };
-
-		static inline bool suspended{ false };
-	  public:
-		static inline void suspend() noexcept { suspended = true; }
-		static inline void resume() noexcept { suspended = false; }
-
-		static inline bool is_suspended() noexcept { return suspended; }
-
-		static inline entity_e current_entity() noexcept { return static_cast<entity_e>(index % num_entities); }
-
-		template<map_type_e MapType> static inline void tick() noexcept {
-			if (!timer.ready()) {
-				return;
-			}
-
-			timer.record();
-
-			++index;
-		}
-	} static inline entity_slideshow;
-
 	struct object_slideshow_s {
 		static constexpr usize num_objects{ ObjectTypeCount };
 

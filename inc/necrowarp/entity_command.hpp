@@ -9,15 +9,15 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<NonNullEntity EntityType, NonNullCommand Command> struct is_entity_command_valid {
+	template<Entity EntityType, NonNullCommand Command> struct is_entity_command_valid {
 		static constexpr bool value = false;
 	};
 
-	template<NonNullEntity EntityType> struct is_entity_command_valid<EntityType, wander_t> {
+	template<Entity EntityType> struct is_entity_command_valid<EntityType, wander_t> {
 		static constexpr bool value = true;
 	};
 
-	template<NonNullEntity EntityType> struct is_entity_command_valid<EntityType, move_t> {
+	template<Entity EntityType> struct is_entity_command_valid<EntityType, move_t> {
 		static constexpr bool value = true;
 	};
 
@@ -25,21 +25,21 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<NonNullEntity EntityType> static inline entity_e determine_target(entity_group_e group) noexcept {
+	template<Entity EntityType> static inline bool is_valid_target(entity_e entity) noexcept {
 		crauto priorities{ EntityType::EntityPriorities };
 
 		for (const entity_e type : priorities) {
-			if (group != type) {
+			if (entity != type) {
 				continue;
 			}
 
-			return type;
+			return true;
 		}
 
-		return entity_e::None;
+		return false;
 	}
 
-	template<NonNullEntity EntityType> static inline object_e determine_target(object_group_e group) noexcept {
+	template<Entity EntityType> static inline object_e determine_target(object_group_e group) noexcept {
 		crauto priorities{ EntityType::ObjectPriorities };
 
 		for (const object_e type : priorities) {
@@ -53,9 +53,9 @@ namespace necrowarp {
 		return object_e::None;
 	}
 
-	template<NonNullEntity EntityType, Command CommandType> struct entity_command_t;
+	template<Entity EntityType, Command CommandType> struct entity_command_t;
 
-	template<NonNullEntity EntityType, UnaryCommand CommandType> struct entity_command_t<EntityType, CommandType> {
+	template<Entity EntityType, UnaryCommand CommandType> struct entity_command_t<EntityType, CommandType> {
 		using entity_type = EntityType;
 		using command_type = CommandType;
 
@@ -67,7 +67,7 @@ namespace necrowarp {
 		inline void process() const noexcept;
 	};
 
-	template<NonNullEntity EntityType, BinaryCommand CommandType> struct entity_command_t<EntityType, CommandType> {
+	template<Entity EntityType, BinaryCommand CommandType> struct entity_command_t<EntityType, CommandType> {
 		using entity_type = EntityType;
 		using command_type = CommandType;
 
@@ -80,7 +80,7 @@ namespace necrowarp {
 		inline void process() const noexcept;
 	};
 
-	template<NonNullEntity EntityType, TernaryCommand CommandType> struct entity_command_t<EntityType, CommandType> {
+	template<Entity EntityType, TernaryCommand CommandType> struct entity_command_t<EntityType, CommandType> {
 		using entity_type = EntityType;
 		using command_type = CommandType;
 

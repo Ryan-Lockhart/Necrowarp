@@ -12,7 +12,7 @@
 #include <necrowarp/objects/object.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calcify_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calcify_t>::process() const noexcept {
 		if (!player.can_perform(grimoire_e::Calcify) || (!game_map<MapType>[target_position].solid && object_registry<MapType>.dependent empty<bones_t>(target_position))) {
 			player_turn_invalidated = true;
 
@@ -29,32 +29,30 @@ namespace necrowarp {
 			magic_enum::enum_for_each<entity_e>([&](auto val) {
 				constexpr entity_e cval{ val };
 
-				if constexpr (cval != entity_e::None) {
-					using entity_type = typename to_entity_type<cval>::type;
+				using entity_type = typename to_entity_type<cval>::type;
 
-					if constexpr (is_incorporeal<entity_type>::value && !is_incorporeal<entity_type>::conditional) {
+				if constexpr (is_incorporeal<entity_type>::value && !is_incorporeal<entity_type>::conditional) {
+					return;
+				}
+
+				ptr<entity_type> entity{ entity_registry<MapType>.dependent at<entity_type>(target_position) };
+
+				if (entity == nullptr) {
+					return;
+				}
+
+				if constexpr (is_incorporeal<entity_type>::value && is_incorporeal<entity_type>::conditional) {
+					if (entity->is_incorporeal()) {
 						return;
 					}
+				}
 
-					ptr<entity_type> entity{ entity_registry<MapType>.dependent at<entity_type>(target_position) };
+				if constexpr (is_player<entity_type>::value) {
+					entity->dependent die<MapType, death_e::Crushed>();
+				} else {
+					entity->dependent die<MapType, death_e::Crushed>(target_position);
 
-					if (entity == nullptr) {
-						return;
-					}
-
-					if constexpr (is_incorporeal<entity_type>::value && is_incorporeal<entity_type>::conditional) {
-						if (entity->is_incorporeal()) {
-							return;
-						}
-					}
-
-					if constexpr (is_player<entity_type>::value) {
-						entity->dependent die<MapType, death_e::Crushed>();
-					} else {
-						entity->dependent die<MapType, death_e::Crushed>(target_position);
-
-						entity_registry<MapType>.dependent remove<entity_type>(target_position);
-					}
+					entity_registry<MapType>.dependent remove<entity_type>(target_position);
 				}
 			});
 

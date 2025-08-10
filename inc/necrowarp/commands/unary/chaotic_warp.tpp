@@ -66,7 +66,7 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, chaotic_warp_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, chaotic_warp_t>::process() const noexcept {
 		chaotic_warp_t::execute<MapType>(source_position);
 	}
 } // namespace necrowarp

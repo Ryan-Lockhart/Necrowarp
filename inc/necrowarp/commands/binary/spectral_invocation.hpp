@@ -31,7 +31,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::SpectralInvocation;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, spectral_invocation_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, spectral_invocation_t> {
 		using entity_type = EntityType;
 		using command_type = spectral_invocation_t;
 

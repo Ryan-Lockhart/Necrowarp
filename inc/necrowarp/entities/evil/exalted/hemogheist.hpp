@@ -36,10 +36,6 @@ namespace necrowarp {
 		using type = hemogheist_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Hemogheist> {
-		static constexpr entity_group_e value = entity_group_e::Hemogheist;
-	};
-
 	template<> struct is_evil<hemogheist_t> {
 		static constexpr bool value = true;
 	};

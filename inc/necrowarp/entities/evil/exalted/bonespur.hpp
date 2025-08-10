@@ -34,10 +34,6 @@ namespace necrowarp {
 		using type = bonespur_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Bonespur> {
-		static constexpr entity_group_e value = entity_group_e::Bonespur;
-	};
-
 	template<> struct is_evil<bonespur_t> {
 		static constexpr bool value = true;
 	};

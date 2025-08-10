@@ -41,10 +41,6 @@ namespace necrowarp {
 		using type = thetwo_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Thetwo> {
-		static constexpr entity_group_e value = entity_group_e::Thetwo;
-	};
-
 	template<> struct is_neutral<thetwo_t> {
 		static constexpr bool value = true;
 	};

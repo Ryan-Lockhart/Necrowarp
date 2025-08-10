@@ -16,29 +16,29 @@ namespace necrowarp {
 				return;
 			}
 
-			const usize entity_index{ static_cast<usize>(entity_slideshow.current_entity()) % entities.count(position) };
+			const std::optional<entity_e> maybe_entity{ entities.at(position) };
 
-			const entity_e entity_enum{ at(entities.at(position), entity_index) };
+			if (!maybe_entity.has_value()) {
+				return;
+			}
 
 			magic_enum::enum_switch([&](auto val) -> void {
 				constexpr entity_e cval{ val };
 
 				using entity_type = to_entity_type<cval>::type;
 
-				if constexpr (!is_null_entity<entity_type>::value) {
-					cptr<entity_type> maybe_entity{ entities.dependent at<entity_type>(position) };
+				cptr<entity_type> maybe_entity{ entities.dependent at<entity_type>(position) };
 
-					if (maybe_entity == nullptr) {
-						return;
-					}
-
-					if constexpr (is_player<entity_type>::value) {
-						maybe_entity->draw(offset_t::Zero, globals::SparseTileNudge);
-					} else {
-						maybe_entity->draw(position, offset_t::Zero, globals::SparseTileNudge);
-					}
+				if (maybe_entity == nullptr) {
+					return;
 				}
-			}, entity_enum);
+
+				if constexpr (is_player<entity_type>::value) {
+					maybe_entity->draw(offset_t::Zero, globals::SparseTileNudge);
+				} else {
+					maybe_entity->draw(position, offset_t::Zero, globals::SparseTileNudge);
+				}
+			}, maybe_entity.value());
 		}
 
 		template<ObjectRegistry Objects> static inline constexpr void draw_object(cref<Objects> objects, offset_t position) noexcept {
@@ -72,29 +72,29 @@ namespace necrowarp {
 				return;
 			}
 
-			const usize entity_index{ static_cast<usize>(entity_slideshow.current_entity()) % entities.count(position) };
+			const std::optional<entity_e> maybe_entity{ entities.at(position) };
 
-			const entity_e entity_enum{ at(entities.at(position), entity_index) };
+			if (!maybe_entity.has_value()) {
+				return;
+			}
 
 			magic_enum::enum_switch([&](auto val) -> void {
 				constexpr entity_e cval{ val };
 
 				using entity_type = to_entity_type<cval>::type;
 
-				if constexpr (!is_null_entity<entity_type>::value) {
-					cptr<entity_type> maybe_entity{ entities.dependent at<entity_type>(position) };
+				cptr<entity_type> maybe_entity{ entities.dependent at<entity_type>(position) };
 
-					if (maybe_entity == nullptr) {
-						return;
-					}
-
-					if constexpr (is_player<entity_type>::value) {
-						maybe_entity->draw(offset, globals::SparseTileNudge);
-					} else {
-						maybe_entity->draw(position, offset, globals::SparseTileNudge);
-					}
+				if (maybe_entity == nullptr) {
+					return;
 				}
-			}, entity_enum);
+
+				if constexpr (is_player<entity_type>::value) {
+					maybe_entity->draw(offset, globals::SparseTileNudge);
+				} else {
+					maybe_entity->draw(position, offset, globals::SparseTileNudge);
+				}
+			}, maybe_entity.value());
 		}
 
 		template<ObjectRegistry Objects> static inline constexpr void draw_object(cref<Objects> objects, offset_t position, offset_t offset) noexcept {
@@ -128,29 +128,29 @@ namespace necrowarp {
 				return;
 			}
 
-			const usize entity_index{ static_cast<usize>(entity_slideshow.current_entity()) % entities.count(position) };
+			const std::optional<entity_e> maybe_entity{ entities.at(position) };
 
-			const entity_e entity_enum{ at(entities.at(position), entity_index) };
+			if (!maybe_entity.has_value()) {
+				return;
+			}
 
 			magic_enum::enum_switch([&](auto val) -> void {
 				constexpr entity_e cval{ val };
 
 				using entity_type = to_entity_type<cval>::type;
 
-				if constexpr (!is_null_entity<entity_type>::value) {
-					cptr<entity_type> maybe_entity{ entities.dependent at<entity_type>(position) };
+				cptr<entity_type> maybe_entity{ entities.dependent at<entity_type>(position) };
 
-					if (maybe_entity == nullptr) {
-						return;
-					}
-
-					if constexpr (is_player<entity_type>::value) {
-						maybe_entity->draw(offset, nudge + globals::SparseTileNudge);
-					} else {
-						maybe_entity->draw(position, offset, nudge + globals::SparseTileNudge);
-					}
+				if (maybe_entity == nullptr) {
+					return;
 				}
-			}, entity_enum);
+
+				if constexpr (is_player<entity_type>::value) {
+					maybe_entity->draw(offset, nudge + globals::SparseTileNudge);
+				} else {
+					maybe_entity->draw(position, offset, nudge + globals::SparseTileNudge);
+				}
+			}, maybe_entity.value());
 		}
 
 		template<ObjectRegistry Objects> static inline constexpr void draw_object(cref<Objects> objects, offset_t position, offset_t offset, offset_t nudge) noexcept {

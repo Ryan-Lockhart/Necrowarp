@@ -12,7 +12,7 @@
 namespace necrowarp {
 	extern player_t player;
 
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, precise_warp_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, precise_warp_t>::process() const noexcept {
 		if (!player.can_perform(grimoire_e::PreciseWarp)) {
 			player_turn_invalidated = true;
 

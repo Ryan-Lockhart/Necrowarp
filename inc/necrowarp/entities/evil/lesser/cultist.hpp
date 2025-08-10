@@ -28,10 +28,6 @@ namespace necrowarp {
 		using type = cultist_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Cultist> {
-		static constexpr entity_group_e value = entity_group_e::Cultist;
-	};
-
 	template<> struct is_evil<cultist_t> {
 		static constexpr bool value = true;
 	};

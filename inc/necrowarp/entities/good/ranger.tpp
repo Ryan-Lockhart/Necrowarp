@@ -48,9 +48,9 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Move, position, approach_pos.value() };
 			}
 
-			const entity_e target{ determine_target<ranger_t>(entity_registry<MapType>.at(maybe_position.value())) };
+			const std::optional<entity_e> maybe_target{ entity_registry<MapType>.at(maybe_position.value()) };
 
-			if (target == entity_e::None) {
+			if (!maybe_target.has_value() || !is_valid_target<ranger_t>(maybe_target.value())) {
 				return command_pack_t{ command_e::Wander };
 			}
 

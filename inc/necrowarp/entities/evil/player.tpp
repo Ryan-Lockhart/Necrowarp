@@ -24,44 +24,38 @@ namespace necrowarp {
 		return true;
 	}
 
-	template<NonNullEntity EntityType> inline void player_t::receive_death_boon() noexcept { set_energy(energy + EntityType::DeathBoon); }
+	template<Entity EntityType> inline void player_t::receive_death_boon() noexcept { set_energy(energy + EntityType::DeathBoon); }
 
-	template<NonNullEntity EntityType> inline void player_t::receive_death_boon(u8 multiplier) noexcept { set_energy(energy + EntityType::DeathBoon * multiplier); }
+	template<Entity EntityType> inline void player_t::receive_death_boon(u8 multiplier) noexcept { set_energy(energy + EntityType::DeathBoon * multiplier); }
 
 	template<map_type_e MapType> inline command_e player_t::clash_or_consume(offset_t position) const noexcept {
-		const entity_group_e entities{ entity_registry<MapType>.at(position) };		
-		const object_group_e objects{ object_registry<MapType>.at(position) };
+		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(position) };
 
-		const entity_e entity_target { determine_target<player_t>(entities) };
-		const object_e object_target { determine_target<player_t>(objects) };
+		if (maybe_entity.has_value()) {
+			const entity_e entity_target{ maybe_entity.value() };
 
-		if (entity_target == entity_e::None && object_target == object_e::None) {
-			return command_e::Move;
-		}
-		
-		switch (entity_target) {
-			case entity_e::Adventurer:
-			case entity_e::Mercenary:
-			case entity_e::Ranger:
-			case entity_e::Skulker:
-			case entity_e::MistLady:
-			case entity_e::BannerBearer:
-			case entity_e::BattleMonk:
-			case entity_e::Berserker:
-			case entity_e::Paladin:
-			case entity_e::Thetwo: {
-				return command_e::Clash;
-			} case entity_e::Skeleton:
-			  case entity_e::Bonespur: {
-				return command_e::Consume;
-			} default: {
-				break;
+			switch (entity_target) {
+				case entity_e::Adventurer:
+				case entity_e::Mercenary:
+				case entity_e::Ranger:
+				case entity_e::Skulker:
+				case entity_e::MistLady:
+				case entity_e::BannerBearer:
+				case entity_e::BattleMonk:
+				case entity_e::Berserker:
+				case entity_e::Paladin:
+				case entity_e::Thetwo: {
+					return command_e::Clash;
+				} case entity_e::Skeleton:
+				case entity_e::Bonespur: {
+					return command_e::Consume;
+				} default: {
+					return command_e::None;
+				}
 			}
 		}
 
-		if (entity_target != entity_e::None) {
-			return command_e::None;
-		}
+		const object_e object_target { determine_target<player_t>(object_registry<MapType>.at(position)) };
 		
 		switch (object_target) {
 			case object_e::Portal: {
@@ -73,11 +67,9 @@ namespace necrowarp {
 			} case object_e::Bones: {
 				return command_e::Consume;
 			} default: {
-				break;
+				return command_e::Move;
 			}
 		}
-
-		return command_e::Move;
 	}
 
 	inline bool player_t::can_receive_divine_intervention() const noexcept { return !divine_intervention_invoked; }

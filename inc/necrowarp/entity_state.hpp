@@ -15,11 +15,11 @@ namespace necrowarp {
 
 		template<NonPlayerEntity EntityType> inline void store() const noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void store() const noexcept;
 
-		inline entity_group_e at(offset_t position) const noexcept;
+		inline std::optional<entity_e> at(offset_t position) const noexcept;
 
 		template<NonPlayerEntity EntityType> inline cptr<EntityType> at(offset_t position) const noexcept;
 
@@ -33,17 +33,11 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline usize count() const noexcept { return 1; }
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline usize count() const noexcept;
 
 		inline usize count() const noexcept;
-
-		template<NonNullEntity... EntityTypes>
-			requires is_plurary<EntityTypes...>::value
-		inline usize count(offset_t position) const noexcept;
-
-		inline usize count(offset_t position) const noexcept;
 
 		template<NonPlayerEntity EntityType> inline bool empty() const noexcept;
 
@@ -55,11 +49,11 @@ namespace necrowarp {
 
 		inline bool empty(offset_t position) const noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline bool empty() const noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline bool empty(offset_t position) const noexcept;
 
@@ -69,15 +63,15 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline bool contains(offset_t position) const noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline bool contains(offset_t position) const noexcept;
 
 		inline bool contains(offset_t position) const noexcept;
 
-		template<distance_function_e Distance, NonNullEntity... EntityTypes> inline bool nearby(offset_t position) const noexcept;
+		template<distance_function_e Distance, Entity... EntityTypes> inline bool nearby(offset_t position) const noexcept;
 
-		template<distance_function_e Distance, NonNullEntity... EntityTypes> inline std::optional<offset_t> nearest(offset_t position) const noexcept;
+		template<distance_function_e Distance, Entity... EntityTypes> inline std::optional<offset_t> nearest(offset_t position) const noexcept;
 
 		template<PlayerEntity EntityType> inline bool add(offset_t position) noexcept;
 
@@ -101,7 +95,7 @@ namespace necrowarp {
 
 		template<NonPlayerEntity EntityType> inline void clear() noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void clear() noexcept;
 
@@ -119,7 +113,7 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline bool update(offset_t current, offset_t target) noexcept;
 
-		template<NonNullEntity EntityType, Command CommandType> inline bool is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept;
+		template<Entity EntityType, Command CommandType> inline bool is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept;
 
 		template<NPCEntity EntityType, NonNullCommand... CommandTypes>
 			requires is_plurary<CommandTypes...>::value
@@ -171,9 +165,9 @@ namespace necrowarp {
 
 		inline void retreat() noexcept;
 
-		template<NonNullEntity EntityType> inline void recalculate_goal_map() noexcept;
+		template<Entity EntityType> inline void recalculate_goal_map() noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void recalculate_goal_map() noexcept;
 
@@ -187,9 +181,9 @@ namespace necrowarp {
 
 		inline void recalculate_unique_goal_maps() noexcept;
 
-		template<NonNullEntity EntityType> inline void reset_goal_map() noexcept;
+		template<Entity EntityType> inline void reset_goal_map() noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void reset_goal_map() noexcept;
 
@@ -223,15 +217,15 @@ namespace necrowarp {
 
 		template<PlayerEntity EntityType> inline void draw(offset_t offset, offset_t nudge) const noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void draw() const noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void draw(offset_t offset) const noexcept;
 
-		template<NonNullEntity... EntityTypes>
+		template<Entity... EntityTypes>
 			requires is_plurary<EntityTypes...>::value
 		inline void draw(offset_t offset, offset_t nudge) const noexcept;
 

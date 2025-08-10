@@ -31,7 +31,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::Calcify;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, calcify_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, calcify_t> {
 		using entity_type = EntityType;
 		using command_type = calcify_t;
 

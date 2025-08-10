@@ -25,7 +25,7 @@ namespace necrowarp {
 
 				using entity_type = typename to_entity_type<cval>::type;
 
-				if constexpr (!is_null_entity<entity_type>::value && is_good<entity_type>::value) {
+				if constexpr (is_good<entity_type>::value) {
 					return entity_goal_map<MapType, entity_type>.dependent descend<region_e::Interior>(position, entity_registry<MapType>);
 				} else {
 					return std::nullopt;
@@ -66,7 +66,7 @@ namespace necrowarp {
 
 			using entity_type = typename to_entity_type<cval>::type;
 
-			if constexpr (!is_null_entity<entity_type>::value && is_good<entity_type>::value) {
+			if constexpr (is_good<entity_type>::value) {
 				return entity_registry<MapType>.dependent add<true>(position, entity_type{});
 			} else {
 				return false;

@@ -30,10 +30,6 @@ namespace necrowarp {
 		using type = dreadwurm_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Dreadwurm> {
-		static constexpr entity_group_e value = entity_group_e::Dreadwurm;
-	};
-
 	template<> struct is_evil<dreadwurm_t> {
 		static constexpr bool value = true;
 	};
@@ -86,6 +82,8 @@ namespace necrowarp {
 		const i8 investiture;
 		i8 health;
 
+		bool seared;
+
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 	
 	public:		
@@ -97,11 +95,31 @@ namespace necrowarp {
 
 		inline i8 max_health() const noexcept { return investiture; }
 
+		inline bool is_seared() const noexcept { return seared; }
+
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
+		inline void regenerate() noexcept {
+			if (health >= max_health() || seared) {
+				return;
+			}
+
+			set_health(health + 1);
+		}
+
+		inline void regenerate(i8 amount) noexcept {
+			if (health >= max_health() || seared) {
+				return;
+			}
+
+			set_health(health + amount);
+		}
+
+		inline void sear() noexcept { seared = true; }
 
 		inline bool receive_damage(i8 damage_amount) noexcept {
 			if (damage_amount <= 0) {

@@ -23,7 +23,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::Lunge;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, lunge_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, lunge_t> {
 		using entity_type = EntityType;
 		using command_type = lunge_t;
 

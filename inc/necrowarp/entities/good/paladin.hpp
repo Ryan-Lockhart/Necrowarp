@@ -28,10 +28,6 @@ namespace necrowarp {
 		using type = paladin_t;
 	};
 
-	template<> struct to_entity_group<entity_e::Paladin> {
-		static constexpr entity_group_e value = entity_group_e::Paladin;
-	};
-
 	template<> struct is_good<paladin_t> {
 		static constexpr bool value = true;
 	};

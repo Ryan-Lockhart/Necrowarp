@@ -23,16 +23,23 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline bool flesh_golem_t::can_devour(offset_t position) const noexcept {
-		const object_e target_object{ determine_target<flesh_golem_t>(object_registry<MapType>.at(position)) };
-		const entity_e target_entity{ determine_target<flesh_golem_t>(entity_registry<MapType>.at(position)) };
+		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(position) };
 
-		if (!can_devour(target_object) && !can_devour(target_entity) && target_entity == entity_e::Thetwo) {
-			ptr<thetwo_t> maybe_thetwo{ entity_registry<MapType>.dependent at<thetwo_t>(position) };
+		if (maybe_entity.has_value()) {
+			const entity_e target_entity{ maybe_entity.value() };
 
-			return maybe_thetwo != nullptr && can_devour(maybe_thetwo->get_bulk());
+			if (target_entity == entity_e::Thetwo) {
+				ptr<thetwo_t> maybe_thetwo{ entity_registry<MapType>.dependent at<thetwo_t>(position) };
+
+				return maybe_thetwo != nullptr && can_devour(maybe_thetwo->get_bulk());
+			} else {
+				return can_devour(target_entity);
+			}
 		}
 
-		return can_devour(target_object) || can_devour(target_entity);
+		const object_e target_object{ determine_target<flesh_golem_t>(object_registry<MapType>.at(position)) };
+
+		return can_devour(target_object);
 	}
 
 	template<map_type_e MapType> inline command_pack_t flesh_golem_t::think(offset_t position) const noexcept {

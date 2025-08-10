@@ -31,7 +31,7 @@ namespace necrowarp {
 		static constexpr command_e value = command_e::NecromanticAscendance;
 	};
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, necromantic_ascendance_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, necromantic_ascendance_t> {
 		using entity_type = EntityType;
 		using command_type = necromantic_ascendance_t;
 

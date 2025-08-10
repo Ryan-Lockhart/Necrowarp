@@ -12,60 +12,62 @@
 #include <necrowarp/objects/object.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, consume_warp_t>::process() const noexcept {
-		const entity_group_e entity_group{ entity_registry<MapType>.at(target_position) };
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, consume_warp_t>::process() const noexcept {
+		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
 
-		const entity_e entity_target{ determine_target<EntityType>(entity_group) };
-
-		if (entity_target != entity_e::None && !player.can_perform(grimoire_e::PreciseWarp)) {
-			player_turn_invalidated = true;
-
-			return;
-		}
-
-		switch (entity_target) {
-			case entity_e::Skeleton: {
-				const i8 armor_boon = entity_registry<MapType>.dependent at<skeleton_t>(target_position)->armor_boon();
-
-				entity_registry<MapType>.dependent remove<skeleton_t>(target_position);
-
-				++steam_stats::stats<steam_stat_e::SkeletonsConsumed>;
-
-				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
-
-				++steam_stats::stats<steam_stat_e::PreciseWarps>;
-
-				player.pay_cost(grimoire_e::PreciseWarp);
-
-				literature::use(grimoire_e::PreciseWarp);
-
-				player.bolster_armor(armor_boon + player.max_armor() / 8);
-
-				warped_from = std::nullopt;
+		if (maybe_entity.has_value()) {
+			if (!player.can_perform(grimoire_e::PreciseWarp) || !is_valid_target<EntityType>(maybe_entity.value())) {
+				player_turn_invalidated = true;
 
 				return;
-			} case entity_e::Bonespur: {
-				const i8 armor_boon = entity_registry<MapType>.dependent at<bonespur_t>(target_position)->armor_boon();
+			}
 
-				entity_registry<MapType>.dependent remove<bonespur_t>(target_position);
+			const entity_e entity_target{ maybe_entity.value() };
 
-				++steam_stats::stats<steam_stat_e::BonespursConsumed>;
+			switch (entity_target) {
+				case entity_e::Skeleton: {
+					const i8 armor_boon = entity_registry<MapType>.dependent at<skeleton_t>(target_position)->armor_boon();
 
-				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
+					entity_registry<MapType>.dependent remove<skeleton_t>(target_position);
 
-				++steam_stats::stats<steam_stat_e::PreciseWarps>;
+					++steam_stats::stats<steam_stat_e::SkeletonsConsumed>;
 
-				player.pay_cost(grimoire_e::PreciseWarp);
+					entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-				literature::use(grimoire_e::PreciseWarp);
+					++steam_stats::stats<steam_stat_e::PreciseWarps>;
 
-				player.bolster_armor(armor_boon + player.max_armor() / 4);
+					player.pay_cost(grimoire_e::PreciseWarp);
 
-				warped_from = std::nullopt;
+					literature::use(grimoire_e::PreciseWarp);
 
-				return;
-			} default: {
-				break;
+					player.bolster_armor(armor_boon + player.max_armor() / 8);
+
+					warped_from = std::nullopt;
+
+					return;
+				} case entity_e::Bonespur: {
+					const i8 armor_boon = entity_registry<MapType>.dependent at<bonespur_t>(target_position)->armor_boon();
+
+					entity_registry<MapType>.dependent remove<bonespur_t>(target_position);
+
+					++steam_stats::stats<steam_stat_e::BonespursConsumed>;
+
+					entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
+
+					++steam_stats::stats<steam_stat_e::PreciseWarps>;
+
+					player.pay_cost(grimoire_e::PreciseWarp);
+
+					literature::use(grimoire_e::PreciseWarp);
+
+					player.bolster_armor(armor_boon + player.max_armor() / 4);
+
+					warped_from = std::nullopt;
+
+					return;
+				} default: {
+					break;
+				}
 			}
 		}
 

@@ -39,10 +39,6 @@ namespace necrowarp {
 		using type = animated_suit_t;
 	};
 
-	template<> struct to_entity_group<entity_e::AnimatedSuit> {
-		static constexpr entity_group_e value = entity_group_e::AnimatedSuit;
-	};
-
 	template<> struct is_evil<animated_suit_t> {
 		static constexpr bool value = true;
 	};

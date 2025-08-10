@@ -28,7 +28,7 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Lunge, position, good_pos.value(), current_position };
 			}
 
-			if (cauto further_good_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; further_good_pos.has_value()) {
+			if (cauto further_good_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(good_pos.value(), entity_registry<MapType>) }; further_good_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, further_good_pos.value() };
 			}
 
@@ -46,7 +46,7 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Lunge, position, neutral_pos.value(), current_position };
 			}
 
-			if (cauto further_neutral_pos{ neutral_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; further_neutral_pos.has_value()) {
+			if (cauto further_neutral_pos{ neutral_goal_map<MapType>.dependent descend<region_e::Interior>(neutral_pos.value(), entity_registry<MapType>) }; further_neutral_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, further_neutral_pos.value() };
 			}
 

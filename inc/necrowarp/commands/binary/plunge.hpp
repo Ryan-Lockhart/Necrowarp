@@ -28,7 +28,7 @@ namespace necrowarp {
 
 	static inline dimension_e determine_dimension(stability_e stability) noexcept;
 
-	template<NonNullEntity EntityType> struct entity_command_t<EntityType, plunge_t> {
+	template<Entity EntityType> struct entity_command_t<EntityType, plunge_t> {
 		using entity_type = EntityType;
 		using command_type = plunge_t;
 

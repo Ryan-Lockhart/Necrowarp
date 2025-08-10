@@ -39,10 +39,6 @@ namespace necrowarp {
 		using type = death_knight_t;
 	};
 
-	template<> struct to_entity_group<entity_e::DeathKnight> {
-		static constexpr entity_group_e value = entity_group_e::DeathKnight;
-	};
-
 	template<> struct is_evil<death_knight_t> {
 		static constexpr bool value = true;
 	};

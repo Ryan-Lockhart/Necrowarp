@@ -11,7 +11,7 @@
 #include <necrowarp/objects/object.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calcitic_invocation_t>::process() const noexcept {
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, calcitic_invocation_t>::process() const noexcept {
 		if (!player.can_perform(grimoire_e::CalciticInvocation) || (!player.bypass_invocations_enabled() && !object_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, bones_t>(target_position))) {
 			player_turn_invalidated = true;
 

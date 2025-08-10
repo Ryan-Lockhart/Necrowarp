@@ -12,42 +12,50 @@
 #include <necrowarp/objects/object.tpp>
 
 namespace necrowarp {
-	template<NonNullEntity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, consume_t>::process() const noexcept {
-		const entity_group_e entity_group{ entity_registry<MapType>.at(target_position) };
+	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, consume_t>::process() const noexcept {
+		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
 
-		const entity_e entity_target{ determine_target<EntityType>(entity_group) };
-		
-		switch (entity_target) {
-			case entity_e::Skeleton: {
-				const i8 armor_boon = entity_registry<MapType>.dependent at<skeleton_t>(target_position)->armor_boon();
+		if (maybe_entity.has_value()) {
+			if (!is_valid_target<EntityType>(maybe_entity.value())) {
+				player_turn_invalidated = true;
 
-				entity_registry<MapType>.dependent remove<skeleton_t>(target_position);
-
-				++steam_stats::stats<steam_stat_e::SkeletonsConsumed>;
-
-				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
-				
-				player.bolster_armor(armor_boon + player.max_armor() / 8);
-
-				warped_from = std::nullopt;
-				
 				return;
-			} case entity_e::Bonespur: {
-				const i8 armor_boon = entity_registry<MapType>.dependent at<bonespur_t>(target_position)->armor_boon();
+			}
 
-				entity_registry<MapType>.dependent remove<bonespur_t>(target_position);
+			const entity_e entity_target{ maybe_entity.value() };
 
-				++steam_stats::stats<steam_stat_e::BonespursConsumed>;
+			switch (entity_target) {
+				case entity_e::Skeleton: {
+					const i8 armor_boon = entity_registry<MapType>.dependent at<skeleton_t>(target_position)->armor_boon();
 
-				entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
-				
-				player.bolster_armor(armor_boon + player.max_armor() / 4);
+					entity_registry<MapType>.dependent remove<skeleton_t>(target_position);
 
-				warped_from = std::nullopt;
-				
-				return;
-			} default: {
-				break;
+					++steam_stats::stats<steam_stat_e::SkeletonsConsumed>;
+
+					entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
+					
+					player.bolster_armor(armor_boon + max(player.max_armor() / 8, 1));
+
+					warped_from = std::nullopt;
+					
+					return;
+				} case entity_e::Bonespur: {
+					const i8 armor_boon = entity_registry<MapType>.dependent at<bonespur_t>(target_position)->armor_boon();
+
+					entity_registry<MapType>.dependent remove<bonespur_t>(target_position);
+
+					++steam_stats::stats<steam_stat_e::BonespursConsumed>;
+
+					entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
+					
+					player.bolster_armor(armor_boon + max(player.max_armor() / 4, 1));
+
+					warped_from = std::nullopt;
+					
+					return;
+				} default: {
+					break;
+				}
 			}
 		}
 
@@ -75,5 +83,7 @@ namespace necrowarp {
 				break;
 			}
 		}
+
+		player_turn_invalidated = true;
 	}
 } // namespace necrowarp
