@@ -63,7 +63,7 @@ namespace necrowarp {
 	template<> inline constexpr glyph_t entity_glyphs<dreadwurm_t>{ glyphs::Dreadwurm };
 
 	struct dreadwurm_t {
-		static constexpr i8 MaximumDamage{ 5 };
+		static constexpr i8 MaximumDamage{ 7 };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
 			entity_e::Adventurer,

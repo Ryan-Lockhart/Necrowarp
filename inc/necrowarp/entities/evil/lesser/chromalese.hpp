@@ -55,6 +55,11 @@ namespace necrowarp {
 		static constexpr bool conditional = false;
 	};
 
+	template<> struct is_incorporeal<chromalese_t>{
+		static constexpr bool value = true;
+		static constexpr bool conditional = false;
+	};
+
 	template<> struct is_vigilant<chromalese_t> {
 		static constexpr bool value = true;
 	};

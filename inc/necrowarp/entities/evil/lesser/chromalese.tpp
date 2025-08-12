@@ -17,11 +17,11 @@ namespace necrowarp {
 			return command_pack_t{ command_e::Clash, position, current_position };
 		}
 
-		if (cauto good_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; good_pos.has_value()) {
+		if (cauto good_pos{ good_goal_map<MapType, true>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; good_pos.has_value()) {
 			return command_pack_t{ command_e::Move, position, good_pos.value() };
 		}
 
-		if (cauto neutral_pos{ neutral_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; neutral_pos.has_value()) {
+		if (cauto neutral_pos{ neutral_goal_map<MapType, true>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; neutral_pos.has_value()) {
 			return command_pack_t{ command_e::Move, position, neutral_pos.value() };
 		}
 

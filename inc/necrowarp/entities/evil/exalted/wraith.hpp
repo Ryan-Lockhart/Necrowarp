@@ -40,6 +40,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_elusive<wraith_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_bleeder<wraith_t> {
 		static constexpr bool value = true;
 		static constexpr fluid_e type = fluid_e::Ichor;
@@ -87,6 +91,8 @@ namespace necrowarp {
 		};
 
 	private:
+		static inline std::bernoulli_distribution dodge_dis{ 0.40 };
+
 		const i8 investiture;
 		i8 health;
 
@@ -102,6 +108,10 @@ namespace necrowarp {
 		inline i8 max_health() const noexcept { return investiture; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > damage_amount; }
+
+		static constexpr bool HasStaticDodge{ true };
+
+		template<RandomEngine Generator> static inline bool dodge(ref<Generator> generator) noexcept { return dodge_dis(generator); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

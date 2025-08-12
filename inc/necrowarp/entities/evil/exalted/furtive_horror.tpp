@@ -14,7 +14,7 @@ namespace necrowarp {
 				continue;
 			}
 
-			return command_pack_t{ command_e::Eviscerate, position };
+			return command_pack_t{ command_e::Clash, position, current_position };
 		}
 
 		if (cauto good_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; good_pos.has_value()) {

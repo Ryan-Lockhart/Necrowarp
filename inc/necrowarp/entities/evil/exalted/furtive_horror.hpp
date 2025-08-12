@@ -60,7 +60,7 @@ namespace necrowarp {
 	struct furtive_horror_t {
 		keyframe_t idle_animation;
 
-		static constexpr i8 MaximumDamage{ 4 };
+		static constexpr i8 MaximumDamage{ 3 };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
 			entity_e::Adventurer,

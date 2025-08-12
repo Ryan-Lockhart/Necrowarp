@@ -77,7 +77,7 @@ namespace necrowarp {
 
 		static constexpr f32 HealthMultiplier{ 1.5f };
 
-		static constexpr i8 MaximumDamage{ 3 };
+		static constexpr i8 MaximumDamage{ 5 };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
 			entity_e::Paladin,
