@@ -16,7 +16,7 @@ namespace necrowarp {
 		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
 
 		if (maybe_entity.has_value()) {
-			if (!is_valid_target<EntityType>(maybe_entity.value())) {
+			if (!is_interactable<EntityType>(maybe_entity.value())) {
 				player_turn_invalidated = true;
 
 				return;

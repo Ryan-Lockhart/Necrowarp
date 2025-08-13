@@ -81,19 +81,19 @@ namespace necrowarp {
 
 	constexpr cstr to_string(zeal_e zeal) noexcept {
 		switch (zeal) {
-			case zeal_e::Downtrodden:{
+			case zeal_e::Downtrodden: {
 				return "downtrodden";
-			} case zeal_e::Vengeant:{
+			} case zeal_e::Vengeant: {
 				return "vengeant";
-			} case zeal_e::Fallen:{
+			} case zeal_e::Fallen: {
 				return "fallen";
-			} case zeal_e::Alacritous:{
+			} case zeal_e::Alacritous: {
 				return "alacritous";
-			} case zeal_e::Righteous:{
+			} case zeal_e::Righteous: {
 				return "righteous";
-			} case zeal_e::Zealous:{
+			} case zeal_e::Zealous: {
 				return "zealous";
-			} case zeal_e::Ascendant:{
+			} case zeal_e::Ascendant: {
 				return "ascendant";
 			}
 		}
@@ -101,19 +101,19 @@ namespace necrowarp {
 
 	constexpr color_t to_color(zeal_e zeal) noexcept {
 		switch (zeal) {
-			case zeal_e::Downtrodden:{
+			case zeal_e::Downtrodden: {
 				return colors::dark::Orange;
-			} case zeal_e::Vengeant:{
+			} case zeal_e::Vengeant: {
 				return colors::Red;
-			} case zeal_e::Fallen:{
+			} case zeal_e::Fallen: {
 				return colors::Orange;
-			} case zeal_e::Alacritous:{
+			} case zeal_e::Alacritous: {
 				return colors::Blue;
-			} case zeal_e::Righteous:{
+			} case zeal_e::Righteous: {
 				return colors::Magenta;
-			} case zeal_e::Zealous:{
+			} case zeal_e::Zealous: {
 				return colors::Yellow;
-			} case zeal_e::Ascendant:{
+			} case zeal_e::Ascendant: {
 				return colors::Green;
 			}
 		}

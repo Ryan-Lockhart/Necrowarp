@@ -262,12 +262,16 @@ namespace necrowarp {
 		MercenariesSlain,
 		RangersSlain,
 		SkulkersSlain,
+		ManslingsSlain,
 		MistLadiesSlain,
 		BannerBearersSlain,
-		ThetwoSlain,
+		MediciiSlain,
 		BattleMonksSlain,
 		BerserkersSlain,
+		HexeatersSlain,
 		PaladinsSlain,
+
+		ThetwoSlain,
 	};
 
 	template<steam_stat_e Stat> struct to_stat_type;
@@ -324,12 +328,16 @@ namespace necrowarp {
 	template<> struct to_stat_type<steam_stat_e::MercenariesSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::RangersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::SkulkersSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::ManslingsSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::MistLadiesSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::BannerBearersSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::ThetwoSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::MediciiSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::BattleMonksSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::BerserkersSlain> { using type = i32; };
+	template<> struct to_stat_type<steam_stat_e::HexeatersSlain> { using type = i32; };
 	template<> struct to_stat_type<steam_stat_e::PaladinsSlain> { using type = i32; };
+
+	template<> struct to_stat_type<steam_stat_e::ThetwoSlain> { using type = i32; };
 
 	template<steam_stat_e StatType> using to_stat_type_t = typename to_stat_type<StatType>::type;
 
@@ -415,18 +423,24 @@ namespace necrowarp {
 				return "rangers_slain";
 			} case steam_stat_e::SkulkersSlain: {
 				return "skulkers_slain";
-			} case steam_stat_e::ThetwoSlain: {
-				return "thetwo_slain";
+			} case steam_stat_e::ManslingsSlain: {
+				return "manslings_slain";
 			} case steam_stat_e::MistLadiesSlain: {
 				return "mist_ladies_slain";
 			} case steam_stat_e::BannerBearersSlain: {
 				return "banner_bearers_slain";
+			} case steam_stat_e::MediciiSlain: {
+				return "medicii_slain";
 			} case steam_stat_e::BattleMonksSlain: {
 				return "battle_monks_slain";
 			} case steam_stat_e::BerserkersSlain: {
 				return "berserkers_slain";
+			} case steam_stat_e::HexeatersSlain: {
+				return "hexeaters_slain";
 			} case steam_stat_e::PaladinsSlain: {
 				return "paladins_slain";
+			} case steam_stat_e::ThetwoSlain: {
+				return "thetwo_slain";
 			}
 		}
 	}
@@ -443,12 +457,12 @@ namespace necrowarp {
 				return "Chaotic Warps";
 			} case steam_stat_e::PreciseWarps: {
 				return "Precise Warps";
-			} case steam_stat_e::Calcifications: {
-				return "Calcifications";
-			} case steam_stat_e::Repulsions: {
-				return "Repulsions";
 			} case steam_stat_e::Annihilations: {
 				return "Annihilations";
+			} case steam_stat_e::Repulsions: {
+				return "Repulsions";
+			} case steam_stat_e::Calcifications: {
+				return "Calcifications";
 			} case steam_stat_e::Incorporealizations: {
 				return "Incorporealizations";
 			} case steam_stat_e::CalciticInvocations: {
@@ -513,18 +527,24 @@ namespace necrowarp {
 				return "Rangers Slain";
 			} case steam_stat_e::SkulkersSlain: {
 				return "Skulkers Slain";
-			} case steam_stat_e::ThetwoSlain: {
-				return "Thetwo Slain";
+			} case steam_stat_e::ManslingsSlain: {
+				return "Manslings Slain";
 			} case steam_stat_e::MistLadiesSlain: {
 				return "Mist Ladies Slain";
 			} case steam_stat_e::BannerBearersSlain: {
 				return "Banner Bearers Slain";
+			} case steam_stat_e::MediciiSlain: {
+				return "Medicii Slain";
 			} case steam_stat_e::BattleMonksSlain: {
 				return "Battle Monks Slain";
 			} case steam_stat_e::BerserkersSlain: {
 				return "Berserkers Slain";
+			} case steam_stat_e::HexeatersSlain: {
+				return "Hexeaters Slain";
 			} case steam_stat_e::PaladinsSlain: {
 				return "Paladins Slain";
+			} case steam_stat_e::ThetwoSlain: {
+				return "Thetwo Slain";
 			}
 		}
 	}

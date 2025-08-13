@@ -16,7 +16,7 @@ namespace necrowarp {
 		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
 
 		if (maybe_entity.has_value()) {
-			if (!player.can_perform(grimoire_e::PreciseWarp) || !is_valid_target<EntityType>(maybe_entity.value())) {
+			if (!player.can_perform(grimoire_e::PreciseWarp) || !is_interactable<EntityType>(maybe_entity.value())) {
 				player_turn_invalidated = true;
 
 				return;

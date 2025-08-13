@@ -178,5 +178,5 @@ namespace necrowarp {
 		constexpr operator entity_e() const noexcept { return entity_e::BannerBearer; }
 	};
 
-	static_assert(sizeof(banner_bearer_t) <= NPCSizeCap, "mist lady entity size must not exceed npc size cap!");
+	static_assert(sizeof(banner_bearer_t) <= NPCSizeCap, "banner bearer entity size must not exceed npc size cap!");
 } // namespace necrowarp

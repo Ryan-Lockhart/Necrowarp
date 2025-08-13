@@ -64,17 +64,26 @@ namespace necrowarp {
 	// a specialist adversary that traverses the interstice to avoid detection
 	struct skulker_t;
 
+	// a specialist adversary that blocks maligned energies
+	struct mansling_t;
+
 	// a support adversary that soothes their comrades' addled minds
 	struct mist_lady_t;
 
 	// a support adversary that inspires their comrades to fight harder
 	struct banner_bearer_t;
 
+	// a support adversary that restores their comrades broken bodies
+	struct medicus_t;
+
 	// a powerful adversary that is undefeatable in decisive battle
 	struct battle_monk_t;
 
 	// a powerful adversary that is inextinguishable amidst the heat of battle
 	struct berserker_t;
+
+	// a powerful adversary that is fueled by maligned energies
+	struct hexeater_t;
 
 	// a dangerous adversary that crushes lesser minions without effort
 	struct paladin_t;
@@ -111,10 +120,13 @@ namespace necrowarp {
 		mercenary_t, \
 		ranger_t, \
 		skulker_t, \
+		mansling_t, \
 		mist_lady_t, \
 		banner_bearer_t, \
+		medicus_t, \
 		battle_monk_t, \
 		berserker_t, \
+		hexeater_t, \
 		paladin_t
 	
 	#define ALL_GOOD \
@@ -162,7 +174,9 @@ namespace necrowarp {
 		hemogheist_t, \
 		death_knight_t, \
 		furtive_horror_t, \
-		isoscel_t
+		isoscel_t, \
+		mansling_t, \
+		hexeater_t
 	
 	#define ALL_VIGILANT_ENTITIES \
 		player_t, \
@@ -203,10 +217,13 @@ namespace necrowarp {
 		Mercenary,
 		Ranger,
 		Skulker,
+		Mansling,
 		MistLady,
 		BannerBearer,
+		Medicus,
 		BattleMonk,
 		Berserker,
+		Hexeater,
 		Paladin,
 		
 		Thetwo,
@@ -258,14 +275,20 @@ namespace necrowarp {
 				return "ranger";
 			} case entity_e::Skulker: {
 				return "skulker";
+			} case entity_e::Mansling: {
+				return "mansling";
 			} case entity_e::MistLady: {
 				return "lady of the mist";
 			} case entity_e::BannerBearer: {
 				return "banner bearer";
+			} case entity_e::Medicus: {
+				return "medicus";
 			} case entity_e::BattleMonk: {
 				return "battle monk";
 			} case entity_e::Berserker: {
 				return "berserker";
+			} case entity_e::Hexeater: {
+				return "hexeater";
 			} case entity_e::Paladin: {
 				return "paladin";
 			} case entity_e::Thetwo: {
@@ -318,14 +341,20 @@ namespace necrowarp {
 				return "rangers";
 			} case entity_e::Skulker: {
 				return "skulkers";
+			} case entity_e::Mansling: {
+				return "manslings";
 			} case entity_e::MistLady: {
 				return "ladies of the mist";
 			} case entity_e::BannerBearer: {
 				return "banner bearers";
+			} case entity_e::Medicus: {
+				return "medicii";
 			} case entity_e::BattleMonk: {
 				return "battle monks";
 			} case entity_e::Berserker: {
 				return "berserkers";
+			} case entity_e::Hexeater: {
+				return "hexeaters";
 			} case entity_e::Paladin: {
 				return "paladins";
 			} case entity_e::Thetwo: {
@@ -378,14 +407,20 @@ namespace necrowarp {
 				return colors::dark::Green;
 			} case entity_e::Skulker: {
 				return colors::dark::Grey;
+			} case entity_e::Mansling: {
+				return mix(colors::Grey, colors::Magenta);
 			} case entity_e::MistLady: {
 				return colors::dark::Green;
 			} case entity_e::BannerBearer: {
 				return colors::dark::Grey;
+			} case entity_e::Medicus: {
+				return mix(colors::Red, colors::White);
 			} case entity_e::BattleMonk: {
 				return colors::light::Yellow;
 			} case entity_e::Berserker: {
 				return colors::dark::Orange;
+			} case entity_e::Hexeater: {
+				return mix(colors::Orange, colors::Blue);
 			} case entity_e::Paladin: {
 				return colors::metals::Steel;
 			} case entity_e::Thetwo: {

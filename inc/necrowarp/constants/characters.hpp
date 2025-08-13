@@ -36,9 +36,13 @@ namespace necrowarp::characters {
 	constexpr const u8 NockedEmptyRanger{ UnnockedEmptyRanger + 1 };
 
 	constexpr const u8 Skulker{ NockedEmptyRanger + 1 };
-	constexpr const u8 BattleMonk{ Skulker + 1 };
-	constexpr const u8 MistLady{ BattleMonk + 1 };
+	constexpr const u8 MistLady{ Skulker + 1 };
 	constexpr const u8 BannerBearer{ MistLady + 1 };
+
+	constexpr const u8 StockedMedicus{ BannerBearer + 1 };
+	constexpr const u8 DepletedMedicus{ StockedMedicus + 1 };
+
+	constexpr const u8 BattleMonk{ DepletedMedicus + 1 };
 	constexpr const u8 Paladin{ BannerBearer + 1 };
 
 	constexpr const u8 NeonatalThetwo{ Paladin + 1 };

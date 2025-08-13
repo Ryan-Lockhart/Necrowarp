@@ -25,18 +25,28 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<Entity EntityType> static inline bool is_valid_target(entity_e entity) noexcept {
-		crauto priorities{ EntityType::EntityPriorities };
+	template<Entity EntityType, entity_e Entity> static constexpr bool is_interactable() noexcept {
+		return std::any_of(EntityType::EntityPriorities.begin(), EntityType::EntityPriorities.end(), [&](auto val) -> bool { return Entity == val; });
+	}
 
-		for (const entity_e type : priorities) {
-			if (entity != type) {
-				continue;
-			}
+	template<Entity EntityType, object_e Object> static constexpr bool is_interactable() noexcept {
+		return std::any_of(EntityType::ObjectPriorities.begin(), EntityType::ObjectPriorities.end(), [&](auto val) -> bool { return Object == val; });
+	}
 
-			return true;
-		}
+	template<Entity EntityType> static inline bool is_interactable(entity_e entity) noexcept {
+		return magic_enum::enum_switch([&](auto val) -> bool {
+			constexpr entity_e cval{ val };
 
-		return false;
+			return is_interactable<EntityType, cval>();
+		}, entity);
+	}
+
+	template<Entity EntityType> static inline bool is_interactable(object_e object) noexcept {
+		return magic_enum::enum_switch([&](auto val) -> bool {
+			constexpr object_e cval{ val };
+
+			return is_interactable<EntityType, cval>();
+		}, object);
 	}
 
 	template<Entity EntityType> static inline object_e determine_target(object_group_e group) noexcept {

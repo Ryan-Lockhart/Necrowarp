@@ -50,7 +50,7 @@ namespace necrowarp {
 
 			const std::optional<entity_e> maybe_target{ entity_registry<MapType>.at(maybe_position.value()) };
 
-			if (!maybe_target.has_value() || !is_valid_target<ranger_t>(maybe_target.value())) {
+			if (!maybe_target.has_value() || !is_interactable<ranger_t>(maybe_target.value())) {
 				return command_pack_t{ command_e::Wander };
 			}
 

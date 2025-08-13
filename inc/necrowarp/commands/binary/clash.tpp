@@ -408,7 +408,7 @@ namespace necrowarp {
 
 			const std::optional<entity_e> maybe_victim{ entity_registry<MapType>.at(target_position) };
 
-			if (!maybe_victim.has_value() || !is_valid_target<EntityType>(maybe_victim.value())) {
+			if (!maybe_victim.has_value() || !is_interactable<EntityType>(maybe_victim.value())) {
 				return;
 			}
 

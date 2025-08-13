@@ -35,7 +35,7 @@ namespace necrowarp {
 
 			const std::optional<entity_e> maybe_target{ entity_registry<MapType>.at(target_position) };
 
-			if (maybe_target.has_value() && is_valid_target<player_t>(maybe_target.value())) {
+			if (maybe_target.has_value() && is_interactable<player_t>(maybe_target.value())) {
 				magic_enum::enum_switch([&](auto val) {
 					constexpr entity_e cval{ val };
 

@@ -62,9 +62,14 @@ namespace necrowarp {
 		constexpr const glyph_t NockedEmptyRanger{ characters::NockedEmptyRanger, colors::White };
 	
 		constexpr const glyph_t Skulker{ characters::Skulker, colors::White };
-		constexpr const glyph_t BattleMonk{ characters::BattleMonk, colors::White };
 		constexpr const glyph_t MistLady{ characters::MistLady, colors::White };
 		constexpr const glyph_t BannerBearer{ characters::BannerBearer, colors::White };
+		
+		constexpr const glyph_t StockedMedicus{ characters::StockedMedicus, colors::White };
+		constexpr const glyph_t DepletedMedicus{ characters::DepletedMedicus, colors::White };
+
+		constexpr const glyph_t BattleMonk{ characters::BattleMonk, colors::White };
+		constexpr const glyph_t Paladin{ characters::Paladin, colors::White };
 
 		constexpr const glyph_t NeonatalThetwo{ characters::NeonatalThetwo, colors::White };
 		constexpr const glyph_t YoungThetwo{ characters::YoungThetwo, colors::White };
@@ -72,8 +77,6 @@ namespace necrowarp {
 		constexpr const glyph_t BulkyThetwo{ characters::BulkyThetwo, colors::White };
 		constexpr const glyph_t GrossThetwo{ characters::GrossThetwo, colors::White };
 		constexpr const glyph_t TitanicThetwo{ characters::TitanicThetwo, colors::White };
-
-		constexpr const glyph_t Paladin{ characters::Paladin, colors::White };
 
 		constexpr const glyph_t FreshBones{ characters::FreshBones, colors::White };
 		constexpr const glyph_t AnimateBones{ characters::AnimateBones, colors::White };

@@ -51,7 +51,7 @@ namespace necrowarp {
 
 		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
 
-		if (!maybe_entity.has_value() || !is_valid_target<ranger_t>(maybe_entity.value())) {
+		if (!maybe_entity.has_value() || !is_interactable<ranger_t>(maybe_entity.value())) {
 			return;
 		}
 
