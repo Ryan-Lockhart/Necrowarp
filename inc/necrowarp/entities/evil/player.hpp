@@ -38,9 +38,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_variants<player_t> {
-		static constexpr bool value = true;
-	};
+	TYPE_TRAIT_VALUE(globals::has_unique_descriptor, player_t, true);
+
+	TYPE_TRAIT_VALUE(globals::has_animation, player_t, true);
+
+	TYPE_TRAIT_VALUE(globals::has_variants, player_t, true);
 
 	TYPE_TRAIT_VALUE(is_entity, player_t, true);
 
@@ -99,6 +101,8 @@ namespace necrowarp {
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, calamitous_retaliation_t, true);
 
 	struct player_t {
+		keyframe_t idle_animation;
+
 		command_pack_t command;
 		offset_t position;
 
@@ -187,6 +191,10 @@ namespace necrowarp {
 
 		static inline sound_t intervention_sound{ "res/sfx/clips/divine_intervention.flac" };
 
+		inline void sync_animation() noexcept {
+			
+		}
+
 		i8 energy;
 		i8 armor;
 		i8 phantasm;
@@ -206,6 +214,8 @@ namespace necrowarp {
 			} else {
 				armor = max<i8>(game_stats.cheats.armor.current_minimum(), value);
 			}
+
+			sync_animation();
 		}
 
 		inline void set_phantasm(i8 value) noexcept {
@@ -214,6 +224,8 @@ namespace necrowarp {
 			} else {
 				phantasm = max<i8>(game_stats.cheats.phantasm.current_minimum(), value);
 			}
+
+			sync_animation();
 		}
 
 		inline void set_divinity(i8 value) noexcept {
@@ -222,10 +234,13 @@ namespace necrowarp {
 			} else {
 				divinity = max<i8>(game_stats.cheats.divinity.current_minimum(), value);
 			}
+
+			sync_animation();
 		}
 
 	  public:
 	  	inline player_t() noexcept :
+			idle_animation{ random_engine, true },
 			command{}, 
 			position{},
 			patron{},
@@ -233,9 +248,10 @@ namespace necrowarp {
 			armor{ StartingArmor },
 			phantasm{ StartingPhantasm },
 			divinity{ StartingDivinity }
-		{}
+		{ sync_animation(); }
 
 	  	inline player_t(patron_e patron) noexcept :
+			idle_animation{ random_engine, true },
 			command{},
 			position{},
 			patron{ patron },
@@ -243,9 +259,10 @@ namespace necrowarp {
 			armor{ StartingArmor },
 			phantasm{ StartingPhantasm },
 			divinity{ StartingDivinity }
-		{}
+		{ sync_animation(); }
 
 		inline player_t(offset_t position) noexcept :
+			idle_animation{ random_engine, true },
 			command{},
 			position{ position },
 			patron{},
@@ -253,9 +270,10 @@ namespace necrowarp {
 			armor{ StartingArmor },
 			phantasm{ StartingPhantasm },
 			divinity{ StartingDivinity }
-		{}
+		{ sync_animation(); }
 
 		inline player_t(offset_t position, patron_e patron) noexcept :
+			idle_animation{ random_engine, true },
 			command{},
 			position{ position },
 			patron{ patron },
@@ -263,9 +281,10 @@ namespace necrowarp {
 			armor{ StartingArmor },
 			phantasm{ StartingPhantasm },
 			divinity{ StartingDivinity }
-		{}
+		{ sync_animation(); }
 
 		inline player_t(cref<player_t> other) noexcept :
+			idle_animation{ other.idle_animation },
 			command{ other.command },
 			position{ other.position },
 			patron{ other.patron },
@@ -273,9 +292,10 @@ namespace necrowarp {
 			armor{ other.armor },
 			phantasm{ other.phantasm },
 			divinity{ other.divinity }
-		{}
+		{ sync_animation(); }
 
 		inline player_t(rval<player_t> other) noexcept :
+			idle_animation{ std::move(other.idle_animation) },
 			command{ std::move(other.command) },
 			position{ std::move(other.position) },
 			patron{ std::move(other.patron) },
@@ -283,7 +303,7 @@ namespace necrowarp {
 			armor{ std::move(other.armor) },
 			phantasm{ std::move(other.phantasm) },
 			divinity{ std::move(other.divinity) }
-		{}
+		{ sync_animation(); }
 
 		inline ~player_t() noexcept {}
 
@@ -292,6 +312,7 @@ namespace necrowarp {
 				return *this;
 			}
 
+			idle_animation = other.idle_animation;
 			command = other.command;
 			position = other.position;
 			patron = other.patron;
@@ -299,6 +320,8 @@ namespace necrowarp {
 			armor = other.armor;
 			phantasm = other.phantasm;
 			divinity = other.divinity;
+
+			sync_animation();
 
 			return *this;
 		}
@@ -308,6 +331,7 @@ namespace necrowarp {
 				return *this;
 			}
 
+			idle_animation = std::move(other.idle_animation);
 			command = std::move(other.command);
 			position = std::move(other.position);
 			patron = std::move(other.patron);
@@ -315,6 +339,8 @@ namespace necrowarp {
 			armor = std::move(other.armor);
 			phantasm = std::move(other.phantasm);
 			divinity = std::move(other.divinity);
+
+			sync_animation();
 
 			return *this;
 		}
@@ -600,11 +626,55 @@ namespace necrowarp {
 			};
 		}
 
-		inline void draw() const noexcept { game_atlas.draw(current_glyph(), position); }
+		// this is an abomination in the eyes of man and the gods
+		inline std::string to_string() const noexcept {
+			return std::format("{} [{}/{}]{}",
+				necrowarp::to_string(entity_e::Player),
+				get_armor(),
+				max_armor(),
+				is_incorporeal() || has_ascended() ?
+					std::format(" ({})",
+						is_incorporeal() && has_ascended() ?
+							"incorporeal | ascended" :
+							is_incorporeal() ?
+								"incorporeal" :
+								"ascended"
+					) :
+					""
+			);
+		}
 
-		inline void draw(offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + offset); }
+		inline runes_t to_colored_string() const noexcept {
+			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Player) };
 
-		inline void draw(offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(current_glyph(), position + offset, nudge); }
+			colored_string.concatenate(runes_t{ std::format(" [{}/{}]", get_armor(), max_armor()) });
+
+			if (is_incorporeal() || has_ascended()) {
+				colored_string.concatenate(runes_t{ " (" });
+
+				if (is_incorporeal()) {
+					colored_string.concatenate(runes_t{ "incorporeal", colors::dark::Grey });
+				}
+
+				if (is_incorporeal() && has_ascended()) {
+					colored_string.concatenate(runes_t{ " | " });
+				}
+
+				if (has_ascended()) {
+					colored_string.concatenate(runes_t{ "ascended", colors::metals::Gold });
+				}
+
+				colored_string.concatenate(runes_t{ ")" });
+			}
+
+			return colored_string;
+		}
+
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
+
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset); }
+
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Player; }
 
