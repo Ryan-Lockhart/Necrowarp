@@ -9,7 +9,7 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline command_pack_t skulker_t::think(offset_t position) const noexcept {
-		concealment = skulker_t::determine_concealment(skulker_goal_map<MapType>[position]);
+		set_concealment(skulker_t::determine_concealment(skulker_goal_map<MapType>[position]));
 
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t current_position{ position + offset };
@@ -21,7 +21,7 @@ namespace necrowarp {
 			return command_pack_t{ command_e::Clash, position, current_position };
 		}
 
-		if (cauto player_pos{ entity_goal_map<MapType, player_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; player_pos.has_value()) {
+		if (cauto player_pos{ entity_goal_map<MapType, player_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; player_pos.has_value() && is<concealment_e::Imperceptible>()) {
 			return command_pack_t{ command_e::Move, position, player_pos.value() };
 		}
 

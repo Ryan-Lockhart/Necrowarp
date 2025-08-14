@@ -8,6 +8,10 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	template<> struct globals::has_variants<adventurer_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<adventurer_t> {
 		static constexpr bool value = true;
 	};
@@ -55,13 +59,9 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<adventurer_t>{ glyphs::Adventurer };
-
 	struct adventurer_t {
-	  private:
-		static inline std::bernoulli_distribution fumble_dis{ 0.25 };
+		const u8 variant;
 
-	  public:
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
@@ -92,7 +92,17 @@ namespace necrowarp {
 
 		static constexpr i8 ProteinValue{ 1 };
 
-		inline adventurer_t() noexcept {}
+	  private:
+		static constexpr u8 VariantCount{ 8 };
+
+		static inline std::uniform_int_distribution<u16> variant_dis{ 0, VariantCount - 1 };
+
+		static inline std::bernoulli_distribution fumble_dis{ 0.25 };
+
+		template<RandomEngine Generator> static inline u8 random_variant(ref<Generator> engine) noexcept { return static_cast<u8>(variant_dis(engine)); }
+
+	  public:
+		inline adventurer_t() noexcept : variant{ random_variant(random_engine) } {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
@@ -106,11 +116,13 @@ namespace necrowarp {
 
 		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
-		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<adventurer_t>, position); }
+		inline keyframe_t current_keyframe() const noexcept { return keyframe_t{ indices::Adventurer, variant }; }
 
-		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<adventurer_t>, position + offset); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
 
-		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(entity_glyphs<adventurer_t>, position + offset, nudge); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + offset); }
+
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Adventurer; }
 	};

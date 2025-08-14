@@ -16,6 +16,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_animation<wraith_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<wraith_t> {
 		static constexpr bool value = true;
 	};
@@ -72,9 +76,9 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<wraith_t>{ glyphs::Wraith };
-
 	struct wraith_t {
+		keyframe_t idle_animation;
+
 		static constexpr i8 MaximumDamage{ 9 };
 
 		static constexpr std::array<entity_e, 10> EntityPriorities{
@@ -99,7 +103,7 @@ namespace necrowarp {
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 	
 	public:		
-		inline wraith_t(i8 health) noexcept : investiture{ health }, health{ investiture } {}
+		inline wraith_t(i8 health) noexcept : idle_animation{ indices::Wraith, random_engine, true }, investiture{ health }, health{ investiture } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -141,11 +145,11 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position + offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset); }
 
-		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(entity_glyphs<wraith_t>, position + offset, nudge); }
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Wraith; }
 	};

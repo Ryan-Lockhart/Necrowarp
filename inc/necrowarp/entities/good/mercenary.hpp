@@ -12,6 +12,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_variants<mercenary_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<mercenary_t> {
 		static constexpr bool value = true;
 	};
@@ -55,9 +59,9 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<mercenary_t>{ glyphs::Mercenary };
-
 	struct mercenary_t {
+		const u8 variant;
+
 		static constexpr i8 MaximumHealth{ 3 };
 		static constexpr i8 MaximumDamage{ 2 };
 
@@ -91,12 +95,18 @@ namespace necrowarp {
 		static constexpr i8 ProteinValue{ 1 };
 		
 	private:
+		static constexpr u8 VariantCount{ 4 };
+
+		static inline std::uniform_int_distribution<u16> variant_dis{ 0, VariantCount - 1 };
+
+		template<RandomEngine Generator> static inline u8 random_variant(ref<Generator> engine) noexcept { return static_cast<u8>(variant_dis(engine)); }
+
 		i8 health;
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 
 	public:
-		inline mercenary_t() noexcept : health{ MaximumHealth } {}
+		inline mercenary_t() noexcept : variant{ random_variant(random_engine) }, health{ MaximumHealth } {}
 		
 		inline i8 get_health() const noexcept { return health; }
 
@@ -166,11 +176,13 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<mercenary_t>, position); }
+		inline keyframe_t current_keyframe() const noexcept { return keyframe_t{ indices::Mercenary, variant }; }
 
-		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<mercenary_t>, position + offset); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position); }
 
-		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(entity_glyphs<mercenary_t>, position + offset, nudge); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + offset); }
+
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { animated_atlas.draw(current_keyframe(), colors::White, position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Mercenary; }
 	};

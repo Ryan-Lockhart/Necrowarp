@@ -37,9 +37,6 @@ namespace necrowarp {
 
 		constexpr const glyph_t Floor{ characters::Floor, colors::Transparent };
 
-		constexpr const glyph_t UnarmoredPlayer{ characters::UnarmoredPlayer, colors::White };
-		constexpr const glyph_t ArmoredPlayer{ characters::ArmoredPlayer, colors::White };
-
 		constexpr const glyph_t FreshSkeleton{ characters::FreshSkeleton, colors::White };
 		constexpr const glyph_t AnimateSkeleton{ characters::AnimateSkeleton, colors::White };
 		constexpr const glyph_t RottedSkeleton{ characters::RottedSkeleton, colors::White };
@@ -49,19 +46,14 @@ namespace necrowarp {
 		constexpr const glyph_t Abomination{ characters::Abomination, colors::White };
 		constexpr const glyph_t Draugaz{ characters::Draugaz, colors::White };
 
-		constexpr const glyph_t Wraith{ characters::Wraith, colors::White };
 		constexpr const glyph_t FleshGolem{ characters::FleshGolem, colors::White };
 		constexpr const glyph_t Dreadwurm{ characters::Dreadwurm, colors::White };
-
-		constexpr const glyph_t Adventurer{ characters::Adventurer, colors::White };
-		constexpr const glyph_t Mercenary{ characters::Mercenary, colors::White };
 
 		constexpr const glyph_t UnnockedFullRanger{ characters::UnnockedFullRanger, colors::White };
 		constexpr const glyph_t NockedFullRanger{ characters::NockedFullRanger, colors::White };
 		constexpr const glyph_t UnnockedEmptyRanger{ characters::UnnockedEmptyRanger, colors::White };
 		constexpr const glyph_t NockedEmptyRanger{ characters::NockedEmptyRanger, colors::White };
 	
-		constexpr const glyph_t Skulker{ characters::Skulker, colors::White };
 		constexpr const glyph_t MistLady{ characters::MistLady, colors::White };
 		constexpr const glyph_t BannerBearer{ characters::BannerBearer, colors::White };
 		
@@ -69,7 +61,6 @@ namespace necrowarp {
 		constexpr const glyph_t DepletedMedicus{ characters::DepletedMedicus, colors::White };
 
 		constexpr const glyph_t BattleMonk{ characters::BattleMonk, colors::White };
-		constexpr const glyph_t Paladin{ characters::Paladin, colors::White };
 
 		constexpr const glyph_t NeonatalThetwo{ characters::NeonatalThetwo, colors::White };
 		constexpr const glyph_t YoungThetwo{ characters::YoungThetwo, colors::White };

@@ -12,6 +12,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_animation<paladin_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<paladin_t> {
 		static constexpr bool value = true;
 	};
@@ -62,8 +66,6 @@ namespace necrowarp {
 	template<> struct is_holy<paladin_t> {
 		static constexpr bool value = true;
 	};
-
-	template<> inline constexpr glyph_t entity_glyphs<paladin_t>{ glyphs::Paladin };
 
 	enum struct zeal_e : u8 {
 		Downtrodden, // ultra-low zeal; lowest damage attacks with lowest damage reduction (5%)
@@ -123,6 +125,8 @@ namespace necrowarp {
 
 	struct paladin_t {
 		const zeal_e zeal;
+
+		keyframe_t idle_animation;
 
 		static constexpr i8 MinimumHealth{ 4 };
 		static constexpr i8 MiddlingHealth{ 8 };
@@ -210,13 +214,25 @@ namespace necrowarp {
 
 		inline void set_health(i8 value) noexcept { health = clamp<i8>(value, 0, max_health()); }
 
-	public:
-		inline paladin_t() noexcept : zeal{ zeal_e::Alacritous }, health{ determine_health(zeal) } {}
+		inline u8 get_index() const noexcept {
+			switch (zeal) {
+				case zeal_e::Vengeant: {
+					return indices::VengeantPaladin;
+				} case zeal_e::Ascendant: {
+					return indices::AscendantPaladin;
+				} default: {
+					return indices::Paladin;
+				}
+			}
+		}
 
-		inline paladin_t(zeal_e zeal) noexcept : zeal{ zeal }, health{ determine_health(zeal) } {}
+	public:
+		inline paladin_t() noexcept : zeal{ zeal_e::Alacritous }, idle_animation{ get_index(), random_engine, true }, health{ determine_health(zeal) } {}
+
+		inline paladin_t(zeal_e zeal) noexcept : zeal{ zeal }, idle_animation{ get_index(), random_engine, true }, health{ determine_health(zeal) } {}
 
 		template<RandomEngine Generator> inline paladin_t(ref<Generator> generator) noexcept :
-			zeal{ random_scaled_zeal(generator) }, health{ determine_health(zeal) }
+			zeal{ random_scaled_zeal(generator) }, idle_animation{ get_index(), random_engine, true }, health{ determine_health(zeal) }
 		{}
 
 		inline i8 get_health() const noexcept { return health; }
@@ -345,11 +361,11 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw(offset_t position) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position); }
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position + offset); }
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset); }
 
-		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(entity_glyphs<paladin_t>, position + offset, nudge); }
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Paladin; }
 	};

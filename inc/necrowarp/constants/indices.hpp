@@ -6,7 +6,18 @@ namespace necrowarp::indices {
 	using namespace bleak;
 	using namespace bleak::indices;
 
-	constexpr const u8 TwistedSuit{ 0x00 };
+	constexpr const u8 Player{ 0x00 };
+	constexpr const u8 ArmoredPlayer{ Player + 1 };
+	constexpr const u8 IncorporealPlayer{ ArmoredPlayer + 1 };
+	constexpr const u8 ArmoredIncorporealPlayer{ IncorporealPlayer + 1 };
+	constexpr const u8 AscendedPlayer{ ArmoredIncorporealPlayer + 1 };
+	constexpr const u8 ArmoredAscendedPlayer{ AscendedPlayer + 1 };
+	constexpr const u8 IncorporealAscendedPlayer{ ArmoredAscendedPlayer + 1 };
+	constexpr const u8 ArmoredIncorporealAscendedPlayer{ IncorporealAscendedPlayer + 1 };
+
+	constexpr const u8 RogueNecromancer{ ArmoredIncorporealAscendedPlayer + 1 };
+
+	constexpr const u8 TwistedSuit{ RogueNecromancer + 1 };
 	constexpr const u8 ShimmeringSuit{ TwistedSuit + 1 };
 	constexpr const u8 WrigglingSuit{ ShimmeringSuit + 1 };
 	constexpr const u8 WrithingSuit{ WrigglingSuit + 1 };
@@ -24,7 +35,8 @@ namespace necrowarp::indices {
 	constexpr const u8 Chromalese{ PaladinHamaz + 1 };
 
 	constexpr const u8 Bonespur{ Chromalese + 1 };
-	constexpr const u8 Hemogheist{ Bonespur + 1 };
+	constexpr const u8 Wraith{ Bonespur + 1 };
+	constexpr const u8 Hemogheist{ Wraith + 1 };
 
 	constexpr const u8 TwistedKnight{ Hemogheist + 1 };
 	constexpr const u8 ShimmeringKnight{ TwistedKnight + 1 };
@@ -34,16 +46,27 @@ namespace necrowarp::indices {
 	constexpr const u8 FurtiveHorror{ WrithingKnight + 1 };
 	constexpr const u8 Isoscel{ FurtiveHorror + 1 };
 
-	constexpr const u8 Mansling{ Isoscel + 1 };
+	constexpr const u8 Adventurer{ Isoscel + 1 };
+	constexpr const u8 Mercenary{ Adventurer + 1 };
 
-	constexpr const u8 ExtinguishedHexeater{ Mansling + 1 };
+	constexpr const u8 VisibleSkulker{ Mercenary + 1 };
+	constexpr const u8 ShroudedSkulker{ VisibleSkulker + 1 };
+	constexpr const u8 ImperceptibleSkulker{ ShroudedSkulker + 1 };
+
+	constexpr const u8 Mansling{ ImperceptibleSkulker + 1 };
+
+	constexpr const u8 Berserker{ Mansling + 1 };
+
+	constexpr const u8 ExtinguishedHexeater{ Berserker + 1 };
 	constexpr const u8 SmolderingHexeater{ ExtinguishedHexeater + 1 };
 	constexpr const u8 SwellingHexeater{ SmolderingHexeater + 1 };
 	constexpr const u8 BlazingHexeater{ SwellingHexeater + 1 };
 
-	constexpr const u8 Berserker{ BlazingHexeater + 1 };
+	constexpr const u8 Paladin{ BlazingHexeater + 1 };
+	constexpr const u8 VengeantPaladin{ Paladin + 1 };
+	constexpr const u8 AscendantPaladin{ VengeantPaladin + 1 };
 
-	constexpr const u8 TwistedMetal{ Berserker + 1 };
+	constexpr const u8 TwistedMetal{ AscendantPaladin + 1 };
 	constexpr const u8 ShimmeringMetal{ TwistedMetal + 1 };
 	constexpr const u8 WrigglingMetal{ ShimmeringMetal + 1 };
 	constexpr const u8 WrithingMetal{ WrigglingMetal + 1 };
@@ -68,4 +91,6 @@ namespace necrowarp::indices {
 	constexpr const u8 Pedestal{ EchoingPortal + 1 };
 
 	constexpr const u8 Arrow{ Pedestal + 1 };
+
+	constexpr const u8 Count{ Arrow + 1 };
 } // namespace necrowarp::indices

@@ -12,6 +12,14 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct globals::has_animation<skulker_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct globals::has_variants<skulker_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity<skulker_t> {
 		static constexpr bool value = true;
 	};
@@ -63,8 +71,6 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> inline constexpr glyph_t entity_glyphs<skulker_t>{ glyphs::Skulker };
-
 	enum struct concealment_e : u8 {
 		Visible,
 		Shrouded,
@@ -98,8 +104,9 @@ namespace necrowarp {
 	constexpr runes_t to_colored_string(concealment_e concealment) noexcept { return runes_t{ to_string(concealment), to_color(concealment) }; }
 
 	struct skulker_t {
-	  public:
 		mutable concealment_e concealment;
+
+		mutable keyframe_t idle_animation;
 
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 3 };
@@ -155,11 +162,30 @@ namespace necrowarp {
 
 		template<RandomEngine Generator> static inline i8 get_dodge_chance(ref<Generator> generator) noexcept { return static_cast<i8>(skulker_t::dodge_dis(generator)); }
 
+		inline u8 get_index() const noexcept {
+			switch (concealment) {
+				case concealment_e::Visible: {
+					return indices::VisibleSkulker;
+				} case concealment_e::Shrouded: {
+					return indices::ShroudedSkulker;					
+				} case concealment_e::Imperceptible: {
+					return indices::ImperceptibleSkulker;					
+				}
+			}
+		}
+
+		inline void sync_animation() const noexcept { idle_animation.index = get_index(); }
+
+		inline void set_concealment(concealment_e value) const noexcept {
+			concealment = value;
+
+			sync_animation();
+		}
+
 	  public:
+		inline skulker_t() noexcept : concealment{ concealment_e::Visible }, idle_animation{ get_index(), random_engine, true } {}
 
-		inline skulker_t() noexcept : concealment{ concealment_e::Visible } {}
-
-		inline skulker_t(concealment_e concealment) noexcept : concealment{ concealment } {}
+		inline skulker_t(concealment_e concealment) noexcept : concealment{ concealment }, idle_animation{ get_index(), random_engine, true } {}
 
 		template<concealment_e Concealment> inline bool is() const noexcept { return concealment == Concealment; }
 
@@ -204,21 +230,11 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline glyph_t current_glyph() const noexcept {
-			glyph_t glyph{ entity_glyphs<skulker_t> };
+		inline void draw(offset_t position) const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-			if (!is_visible()) {
-				glyph.color.fade(stealth_wave.current_value() + (is_imperceptible() ? 0.1 : 0.25));
-			}
+		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset); }
 
-			return glyph;
-		}
-
-		inline void draw(offset_t position) const noexcept { game_atlas.draw(current_glyph(), position); }
-
-		inline void draw(offset_t position, offset_t offset) const noexcept { game_atlas.draw(current_glyph(), position + offset); }
-
-		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { game_atlas.draw(current_glyph(), position + offset, nudge); }
+		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Skulker; }
 	};

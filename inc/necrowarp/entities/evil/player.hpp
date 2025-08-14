@@ -192,7 +192,23 @@ namespace necrowarp {
 		static inline sound_t intervention_sound{ "res/sfx/clips/divine_intervention.flac" };
 
 		inline void sync_animation() noexcept {
-			
+			if (has_armor() && is_incorporeal() && has_ascended()) {
+				idle_animation.index = indices::ArmoredIncorporealAscendedPlayer;
+			} else if (has_armor() && is_incorporeal()) {
+				idle_animation.index = indices::ArmoredIncorporealPlayer;
+			} else if (has_armor() && has_ascended()) {
+				idle_animation.index = indices::ArmoredAscendedPlayer;
+			} else if (is_incorporeal() && has_ascended()) {
+				idle_animation.index = indices::IncorporealAscendedPlayer;
+			} else if (has_armor()) {
+				idle_animation.index = indices::ArmoredPlayer;
+			} else if (is_incorporeal()) {
+				idle_animation.index = indices::IncorporealPlayer;
+			} else if (has_ascended()) {
+				idle_animation.index = indices::AscendedPlayer;
+			} else {
+				idle_animation.index = indices::Player;
+			}
 		}
 
 		i8 energy;
@@ -577,13 +593,13 @@ namespace necrowarp {
 
 		inline void max_out_divinity() noexcept { divinity = max_divinity(); }
 
-		inline void zero_out_energy() noexcept { set_energy(0); }
+		inline void zero_out_energy() noexcept { energy = 0; }
 
-		inline void zero_out_armor() noexcept { set_armor(0); }
+		inline void zero_out_armor() noexcept { armor = 0; }
 
-		inline void zero_out_phantasm() noexcept { set_phantasm(0); }
+		inline void zero_out_phantasm() noexcept { phantasm = 0; }
 
-		inline void zero_out_divinity() noexcept { set_divinity(0); }
+		inline void zero_out_divinity() noexcept { divinity = 0; }
 
 		template<CombatantEntity EntityType> inline bool will_perish() const noexcept;
 
@@ -618,13 +634,6 @@ namespace necrowarp {
 		inline void erode_divinity() noexcept { set_divinity(divinity - DivinityErosionRate); }
 
 		inline void erode_phantasm() noexcept { set_phantasm(phantasm - PhantasmErosionRate); }
-
-		inline glyph_t current_glyph() const noexcept {
-			return glyph_t{
-				has_armor() ? characters::ArmoredPlayer : characters::UnarmoredPlayer,
-				is_incorporeal() ? colors::White.faded(0.1 + stealth_wave.current_value()) : colors::White
-			};
-		}
 
 		// this is an abomination in the eyes of man and the gods
 		inline std::string to_string() const noexcept {
@@ -670,11 +679,11 @@ namespace necrowarp {
 			return colored_string;
 		}
 
-		inline void draw(offset_t position) const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
+		inline void draw() const noexcept { animated_atlas.draw(idle_animation, colors::White, position); }
 
-		inline void draw(offset_t position, offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset); }
+		inline void draw(offset_t offset) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset); }
 
-		inline void draw(offset_t position, offset_t offset, offset_t nudge) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset, nudge); }
+		inline void draw(offset_t offset, offset_t nudge) const noexcept { animated_atlas.draw(idle_animation, colors::White, position + offset, nudge); }
 
 		constexpr operator entity_e() const noexcept { return entity_e::Player; }
 

@@ -160,8 +160,8 @@ namespace necrowarp {
 
 		inline void set_hexes(i8 value) noexcept { hexes = clamp<i8>(value, 0, max_hexes()); sync_animation(); }
 
-		static constexpr u8 get_index(exudance_e shackle) noexcept {
-			switch (shackle) {
+		static constexpr u8 get_index(exudance_e exudance) noexcept {
+			switch (exudance) {
 				case exudance_e::Extinguished: {
 					return indices::ExtinguishedHexeater;
 				} case exudance_e::Smoldering: {
@@ -170,7 +170,7 @@ namespace necrowarp {
 					return indices::SwellingHexeater;
 				} case exudance_e::Blazing: {
 					return indices::BlazingHexeater;
-				}			
+				}
 			}
 		}
 
