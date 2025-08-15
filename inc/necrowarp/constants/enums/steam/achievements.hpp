@@ -107,6 +107,7 @@ namespace necrowarp {
 
 		LesserDeathKnightSummoning,
 		GreaterDeathKnightSummoning,
+		ExaltedDeathKnightSummoning,
 
 		LesserAbominationSummoning,
 		GreaterAbominationSummoning,
@@ -122,6 +123,7 @@ namespace necrowarp {
 
 		LesserHamazSummoning,
 		GreaterHamazSummoning,
+		ExaltedHamazSummoning,
 
 		LesserFurtiveHorrorSummoning,
 		GreaterFurtiveHorrorSummoning,
@@ -256,6 +258,7 @@ namespace necrowarp {
 
 	template<> inline constexpr cstr achievements::api_key<achievement_e::LesserDeathKnightSummoning>{ "lesser_death_knight_summoning" };
 	template<> inline constexpr cstr achievements::api_key<achievement_e::GreaterDeathKnightSummoning>{ "greater_death_knight_summoning" };
+	template<> inline constexpr cstr achievements::api_key<achievement_e::ExaltedDeathKnightSummoning>{ "exalted_death_knight_summoning" };
 
 	template<> inline constexpr cstr achievements::api_key<achievement_e::LesserAbominationSummoning>{ "lesser_abomination_summoning" };
 	template<> inline constexpr cstr achievements::api_key<achievement_e::GreaterAbominationSummoning>{ "greater_abomination_summoning" };
@@ -305,7 +308,7 @@ namespace necrowarp {
 
 	template<> inline constexpr cstr achievements::display_name<achievement_e::PreciseWarpUsage>{ "Intentionality" };
 	template<> inline constexpr cstr achievements::display_name<achievement_e::PreciseWarpToBones>{ "Double Jump" };
-	template<> inline constexpr cstr achievements::display_name<achievement_e::PreciseWarpToArmorMinion>{ "Remote Armament" };
+	template<> inline constexpr cstr achievements::display_name<achievement_e::PreciseWarpToArmorMinion>{ "Remote Rearmament" };
 
 	template<> inline constexpr cstr achievements::display_name<achievement_e::BasicAnnihilateUsage>{ "Path of Destruction" };
 	template<> inline constexpr cstr achievements::display_name<achievement_e::ExceptionalAnnihilateUsage>{ "Splashback" };
@@ -326,7 +329,7 @@ namespace necrowarp {
 
 	template<> inline constexpr cstr achievements::display_name<achievement_e::DescendDownLadder>{ "And Yet Deeper We Must Delve" };
 
-	template<> inline constexpr cstr achievements::display_name<achievement_e::ReceiveDivineIntervention>{ "Destined Death; Denied" };
+	template<> inline constexpr cstr achievements::display_name<achievement_e::ReceiveDivineIntervention>{ "Destined Death; Defied" };
 
 	template<> inline constexpr cstr achievements::display_name<achievement_e::DefeatOverworldSiege>{ "A Minor Cuncation" };
 
@@ -396,6 +399,7 @@ namespace necrowarp {
 
 	template<> inline constexpr cstr achievements::display_name<achievement_e::LesserDeathKnightSummoning>{ "A Pale Gaze" };
 	template<> inline constexpr cstr achievements::display_name<achievement_e::GreaterDeathKnightSummoning>{ "Death Incarnate" };
+	template<> inline constexpr cstr achievements::display_name<achievement_e::ExaltedDeathKnightSummoning>{ "Malevolent Masterwork" };
 
 	template<> inline constexpr cstr achievements::display_name<achievement_e::LesserAbominationSummoning>{ "A Mob of Meat" };
 	template<> inline constexpr cstr achievements::display_name<achievement_e::GreaterAbominationSummoning>{ "Abominable Multiplicity" };
@@ -411,6 +415,7 @@ namespace necrowarp {
 
 	template<> inline constexpr cstr achievements::display_name<achievement_e::LesserHamazSummoning>{ "The Mind's Eye" };
 	template<> inline constexpr cstr achievements::display_name<achievement_e::GreaterHamazSummoning>{ "Refraction of the Soul" };
+	template<> inline constexpr cstr achievements::display_name<achievement_e::ExaltedHamazSummoning>{ "Turning the Tide" };
 
 	template<> inline constexpr cstr achievements::display_name<achievement_e::LesserFurtiveHorrorSummoning>{ "Throwing Hands" };
 	template<> inline constexpr cstr achievements::display_name<achievement_e::GreaterFurtiveHorrorSummoning>{ "Purple People Eater" };
