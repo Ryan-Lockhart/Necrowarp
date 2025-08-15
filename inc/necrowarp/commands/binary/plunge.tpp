@@ -41,7 +41,7 @@ namespace necrowarp {
 			return;
 		}
 
-		++steam_stats::stats<steam_stat_e::PortalsTraversed>;
+		++steam_stats::stats<stat_e::PortalsTraversed>;
 
 		plunge_target = determine_dimension(portal->stability);
 		plunge_flag = true;

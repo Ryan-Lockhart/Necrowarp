@@ -47,7 +47,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType, death_e Death> inline death_info_t<Death> hexeater_t::die(offset_t position) noexcept {
-		++steam_stats::stats<steam_stat_e::HexeatersSlain>;
+		++steam_stats::stats<stat_e::HexeatersSlain>;
 
 		if constexpr (Death == death_e::Killed) {
 			object_registry<MapType>.spill(position, bones_t{});

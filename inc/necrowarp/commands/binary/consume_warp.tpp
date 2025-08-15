@@ -30,11 +30,11 @@ namespace necrowarp {
 
 					entity_registry<MapType>.dependent remove<skeleton_t>(target_position);
 
-					++steam_stats::stats<steam_stat_e::SkeletonsConsumed>;
+					++steam_stats::stats<stat_e::SkeletonsConsumed>;
 
 					entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-					++steam_stats::stats<steam_stat_e::PreciseWarps>;
+					++steam_stats::stats<stat_e::PreciseWarps>;
 
 					player.pay_cost(grimoire_e::PreciseWarp);
 
@@ -50,11 +50,11 @@ namespace necrowarp {
 
 					entity_registry<MapType>.dependent remove<bonespur_t>(target_position);
 
-					++steam_stats::stats<steam_stat_e::BonespursConsumed>;
+					++steam_stats::stats<stat_e::BonespursConsumed>;
 
 					entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-					++steam_stats::stats<steam_stat_e::PreciseWarps>;
+					++steam_stats::stats<stat_e::PreciseWarps>;
 
 					player.pay_cost(grimoire_e::PreciseWarp);
 
@@ -89,11 +89,11 @@ namespace necrowarp {
 
 				object_registry<MapType>.dependent remove<bones_t>(target_position);
 
-				++steam_stats::stats<steam_stat_e::BonesConsumed>;
+				++steam_stats::stats<stat_e::BonesConsumed>;
 
 				entity_registry<MapType>.add(target_position, skeleton_t{ state });
 
-				++steam_stats::stats<steam_stat_e::PreciseWarps>;
+				++steam_stats::stats<stat_e::PreciseWarps>;
 
 				player.pay_cost(grimoire_e::PreciseWarp, boon);
 

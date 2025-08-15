@@ -102,7 +102,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::BloodConsumed> += fluid_pool_volume(pools_consumed);
+		steam_stats::stats<stat_e::BloodConsumed> += fluid_pool_volume(pools_consumed);
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -146,17 +146,17 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first bloody shackle achievment placeholder : Vivisection
+				steam_stats_s::unlock(achievement_e::SanguineUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Sanguine);
 
-				// bloody enshackle first ladder achievment placeholder : Bloodbindings
+				steam_stats_s::unlock(achievement_e::SanguineEnshackling);
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::SanguineInvocations>;
+		++steam_stats::stats<stat_e::SanguineInvocations>;
 
 		player.pay_cost(grimoire_e::SanguineInvocation);
 
@@ -164,10 +164,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (pools_consumed > 1) {
-				// summon first pack of bloodhounds achievment placeholder : Ankle-biter
+				steam_stats_s::unlock(achievement_e::LesserBloodhoundSummoning);
 
 				if (pools_consumed >= globals::MaximumCatalyst) {
-					// summon max amount of bloodhounds achievment placeholder : The Harrying
+					steam_stats_s::unlock(achievement_e::GreaterBloodhoundSummoning);
 				}
 			}
 
@@ -182,10 +182,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, hemogheist_t{ pools_consumed });
 
-		// summon first hemogheist achievment placeholder : Eternal Thirst
+		steam_stats_s::unlock(achievement_e::LesserHemogheistSummoning);
 
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			// summon hemogheist with max health achievment placeholder : Phantom of the Operating Theater
+			steam_stats_s::unlock(achievement_e::GreaterHemogheistSummoning);
 		}
 	}
 } // namespace necrowarp

@@ -141,7 +141,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType, death_e Death> inline death_info_t<Death> thetwo_t::die(offset_t position) noexcept {
-		++steam_stats::stats<steam_stat_e::ThetwoSlain>;
+		++steam_stats::stats<stat_e::ThetwoSlain>;
 
 		const i8 droppings{ static_cast<i8>(protein_value() + protein * ProteinRatio) };
 

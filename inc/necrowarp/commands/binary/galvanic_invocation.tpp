@@ -109,7 +109,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::MetalConsumed> += metal_consumed;
+		steam_stats::stats<stat_e::MetalConsumed> += metal_consumed;
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -153,17 +153,17 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first glimmering shackle achievment placeholder : The Riddle of Steel
+				steam_stats_s::unlock(achievement_e::GalvanicUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Galvanic);
 
-				// glimmering enshackle first ladder achievment placeholder : Unbreakable Chains
+				steam_stats_s::unlock(achievement_e::GalvanicEnshackling);
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::GalvanicInvocations>;
+		++steam_stats::stats<stat_e::GalvanicInvocations>;
 
 		player.pay_cost(grimoire_e::GalvanicInvocation);
 
@@ -171,10 +171,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (metal_consumed > 1) {
-				// summon first squad of animated suits of armor achievment placeholder : Anyone home?
+				steam_stats_s::unlock(achievement_e::LesserAnimatedSuitSummoning);
 
 				if (metal_consumed >= globals::MaximumCatalyst) {
-					// summon max amount of animated suits of armor achievment placeholder : Chosen of the Void
+					steam_stats_s::unlock(achievement_e::GreaterAnimatedSuitSummoning);
 				}
 			}
 
@@ -198,10 +198,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(target_position, death_knight_t{ metal_consumed, triflip(random_engine) ? galvanise(dk_quality) : dk_quality });
 
-		// summon first death knight achievment placeholder : A Pale Gaze
+		steam_stats_s::unlock(achievement_e::LesserDeathKnightSummoning);
 
 		if (metal_consumed >= globals::MaximumCatalyst) {
-			// summon death knight with max heatlh achievment placeholder : Death Incarnate
+			steam_stats_s::unlock(achievement_e::GreaterDeathKnightSummoning);
 		}
 	}
 } // namespace necrowarp

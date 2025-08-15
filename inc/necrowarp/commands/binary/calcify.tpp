@@ -67,7 +67,7 @@ namespace necrowarp {
 
 		game_map<MapType>[target_position].recalculate_index(game_map<MapType>, target_position, cell_e::Solid);
 
-		++steam_stats::stats<steam_stat_e::Calcifications>;
+		++steam_stats::stats<stat_e::Calcifications>;
 
 		player.pay_cost(grimoire_e::Calcify);
 

@@ -104,7 +104,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::BonesConsumed> += accumulated_skulls;
+		steam_stats::stats<stat_e::BonesConsumed> += accumulated_skulls;
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -148,17 +148,17 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first spooky shackle achievment placeholder : A Rattling Hole?
+				steam_stats_s::unlock(achievement_e::CalciticUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Calcitic);
 
-				// spooky enshackle first ladder achievment placeholder : Barricade of Bone
+				steam_stats_s::unlock(achievement_e::CalciticEnshackling);
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::CalciticInvocations>;
+		++steam_stats::stats<stat_e::CalciticInvocations>;
 
 		player.pay_cost(grimoire_e::CalciticInvocation);
 
@@ -166,12 +166,12 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			  if (accumulated_skulls == 1) {
-				// summon a single skeleton achievment placeholder : Kind of a waste?
+				steam_stats_s::unlock(achievement_e::PatheticSkeletonSummoning);
 			} else if (accumulated_skulls > 1) {
-				// summon first crew of skeletons achievment placeholder : Skeleton Crew
+				steam_stats_s::unlock(achievement_e::LesserSkeletonSummoning);
 
 				if (accumulated_skulls >= globals::MaximumCatalyst) {
-					// summon max amount of skeletons achievment placeholder : Next Stop: the Bone Zone
+					steam_stats_s::unlock(achievement_e::GreaterSkeletonSummoning);
 				}
 			}
 
@@ -186,10 +186,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, bonespur_t{ accumulated_skulls });
 
-		// summon first bonespur achievment placeholder : Right to the Point
+		steam_stats_s::unlock(achievement_e::LesserBonespurSummoning);
 
 		if (accumulated_skulls >= globals::MaximumCatalyst) {
-			// summon bonespur with max health achievment placeholder : 28 STAB WOUNDS (SELF-INFLICTED)
+			steam_stats_s::unlock(achievement_e::GreaterBonespurSummoning);
 		}
 	}
 } // namespace necrowarp

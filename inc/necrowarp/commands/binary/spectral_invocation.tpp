@@ -104,7 +104,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::IchorConsumed> += fluid_pool_volume(pools_consumed);
+		steam_stats::stats<stat_e::IchorConsumed> += fluid_pool_volume(pools_consumed);
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -148,17 +148,17 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first eldritch shackle achievment placeholder : A Chilling Draft
+				steam_stats_s::unlock(achievement_e::SpectralUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Spectral);
 
-				// eldritch enshackle first ladder achievment placeholder : Isn't it incorporeal?
+				steam_stats_s::unlock(achievement_e::SpectralEnshackling);
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::SpectralInvocations>;
+		++steam_stats::stats<stat_e::SpectralInvocations>;
 
 		player.pay_cost(grimoire_e::SpectralInvocation);
 
@@ -166,10 +166,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (pools_consumed > 1) {
-				// summon first squad of cultists achievment placeholder : Enshrined Depravity
+				steam_stats_s::unlock(achievement_e::LesserCultistSummoning);
 
 				if (pools_consumed >= globals::MaximumCatalyst) {
-					// summon max amount of cultists achievment placeholder : Sycophantic Symposium
+					steam_stats_s::unlock(achievement_e::GreaterCultistSummoning);
 				}
 			}
 
@@ -184,10 +184,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, wraith_t{ pools_consumed });
 
-		// summon wraith with max heatlh achievment placeholder : Summoned from Beyond
+		steam_stats_s::unlock(achievement_e::LesserWraithSummoning);
 
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			// summon first wraith achievment placeholder : Intersticial Interloper
+			steam_stats_s::unlock(achievement_e::GreaterWraithSummoning);
 		}
 	}
 } // namespace necrowarp

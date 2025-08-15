@@ -20,7 +20,7 @@ namespace necrowarp {
 		player.max_out_divinity();
 		freshly_divine = true;
 
-		++steam_stats::stats<steam_stat_e::NecromanticAscensions>;
+		++steam_stats::stats<stat_e::NecromanticAscensions>;
 
 		player.pay_cost(grimoire_e::NecromanticAscendance);
 

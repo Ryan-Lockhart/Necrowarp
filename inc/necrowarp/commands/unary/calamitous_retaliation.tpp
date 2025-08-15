@@ -29,12 +29,12 @@ namespace necrowarp {
 					entity_registry<MapType>.dependent remove<entity_type>(position);
 					
 					++game_stats.player_kills;
-					++steam_stats::stats<steam_stat_e::PlayerKills>;
+					++steam_stats::stats<stat_e::PlayerKills>;
 				});
 			}
 		});
 
-		++steam_stats::stats<steam_stat_e::CalamitousRetaliations>;
+		++steam_stats::stats<stat_e::CalamitousRetaliations>;
 
 		player.pay_cost(grimoire_e::CalamitousRetaliation);
 
@@ -42,6 +42,6 @@ namespace necrowarp {
 
 		descent_flag = true;
 
-		++steam_stats::stats<steam_stat_e::MetersMoved>;
+		++steam_stats::stats<stat_e::MetersMoved>;
 	}
 } // namespace necrowarp

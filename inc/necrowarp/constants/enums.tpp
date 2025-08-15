@@ -8,4 +8,5 @@
 #include <necrowarp/constants/enums/fluid.tpp>
 #include <necrowarp/constants/enums/galvanisation.tpp>
 #include <necrowarp/constants/enums/shackle.tpp>
+#include <necrowarp/constants/enums/steam.tpp>
 // IWYU pragma: end_exports

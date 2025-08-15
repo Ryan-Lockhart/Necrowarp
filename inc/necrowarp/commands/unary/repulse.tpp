@@ -147,7 +147,7 @@ namespace necrowarp {
 								entity_registry<MapType>.dependent remove<entity_type>(current_position);
 
 								++game_stats.player_kills;
-								++steam_stats::stats<steam_stat_e::PlayerKills>;
+								++steam_stats::stats<stat_e::PlayerKills>;
 							}
 						} else {
 							const death_info_t<death_e::Killed> info{ target.dependent die<MapType, death_e::Killed>(current_position) };
@@ -156,7 +156,7 @@ namespace necrowarp {
 								entity_registry<MapType>.dependent remove<entity_type>(current_position);
 
 								++game_stats.player_kills;
-								++steam_stats::stats<steam_stat_e::PlayerKills>;
+								++steam_stats::stats<stat_e::PlayerKills>;
 							}
 						}
 					}
@@ -164,7 +164,7 @@ namespace necrowarp {
 			}
 		}
 
-		++steam_stats::stats<steam_stat_e::Repulsions>;
+		++steam_stats::stats<stat_e::Repulsions>;
 
 		player.pay_cost(grimoire_e::Repulse);
 

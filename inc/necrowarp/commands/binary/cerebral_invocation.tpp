@@ -104,7 +104,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::CerebraConsumed> += accumulated_cerebra;
+		steam_stats::stats<stat_e::CerebraConsumed> += accumulated_cerebra;
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -148,17 +148,17 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first entrancing shackle achievment placeholder : Free the Mind
+				steam_stats_s::unlock(achievement_e::CerebralUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Cerebral);
 
-				// entrancing enshackle first ladder achievment placeholder : Spellbound
+				steam_stats_s::unlock(achievement_e::CerebralEnshackling);
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::CerebralInvocations>;
+		++steam_stats::stats<stat_e::CerebralInvocations>;
 
 		player.pay_cost(grimoire_e::CerebralInvocation);
 
@@ -166,10 +166,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (accumulated_cerebra > 1) {
-				// summon first group of hamr achievment placeholder : The Mind's Eye
+				steam_stats_s::unlock(achievement_e::LesserHamazSummoning);
 
 				if (accumulated_cerebra >= globals::MaximumCatalyst) {
-					// summon max amount of hamr achievment placeholder : Refraction of the Soul
+					steam_stats_s::unlock(achievement_e::GreaterHamazSummoning);
 				}
 			}
 
@@ -184,10 +184,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, furtive_horror_t{ accumulated_cerebra });
 
-		// summon first furtive horror achievment placeholder : ?
+		steam_stats_s::unlock(achievement_e::LesserFurtiveHorrorSummoning);
 
 		if (accumulated_cerebra >= globals::MaximumCatalyst) {
-			// summon furtive horror with max health achievment placeholder : ?
+			steam_stats_s::unlock(achievement_e::GreaterFurtiveHorrorSummoning);
 		}
 	}
 } // namespace necrowarp

@@ -158,7 +158,7 @@ namespace necrowarp {
 			shackle = random_shackle(random_engine);
 			sync_animation();
 
-			++steam_stats_s::stats<steam_stat_e::LaddersShackled>;
+			++steam_stats_s::stats<stat_e::LaddersShackled>;
 		}
 
 		inline void enshackle(shackle_e type) noexcept {
@@ -169,7 +169,7 @@ namespace necrowarp {
 			shackle = type;
 			sync_animation();
 
-			++steam_stats_s::stats<steam_stat_e::LaddersShackled>;
+			++steam_stats_s::stats<stat_e::LaddersShackled>;
 		}
 
 		inline void unshackle() noexcept {
@@ -180,7 +180,7 @@ namespace necrowarp {
 			shackle = shackle_e::Unshackled;
 			sync_animation();
 
-			++steam_stats_s::stats<steam_stat_e::LaddersUnshackled>;
+			++steam_stats_s::stats<stat_e::LaddersUnshackled>;
 		};
 
 		inline void draw(offset_t position) const noexcept {

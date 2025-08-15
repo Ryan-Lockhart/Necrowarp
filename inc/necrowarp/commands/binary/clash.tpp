@@ -455,12 +455,12 @@ namespace necrowarp {
 
 						if constexpr (is_player<EntityType>::value) {
 							++game_stats.player_kills;
-							++steam_stats::stats<steam_stat_e::PlayerKills>;
+							++steam_stats::stats<stat_e::PlayerKills>;
 
 							warped_from = std::nullopt;
 						} else if constexpr (is_evil<EntityType>::value) {
 							++game_stats.minion_kills;
-							++steam_stats::stats<steam_stat_e::MinionKills>;
+							++steam_stats::stats<stat_e::MinionKills>;
 						}
 					}
 
@@ -477,12 +477,12 @@ namespace necrowarp {
 
 						if constexpr (is_player<victim_type>::value) {
 							++game_stats.player_kills;
-							++steam_stats::stats<steam_stat_e::PlayerKills>;
+							++steam_stats::stats<stat_e::PlayerKills>;
 
 							warped_from = std::nullopt;
 						} else if constexpr (is_evil<victim_type>::value) {
 							++game_stats.minion_kills;
-							++steam_stats::stats<steam_stat_e::MinionKills>;
+							++steam_stats::stats<stat_e::MinionKills>;
 						}
 					}
 				}			

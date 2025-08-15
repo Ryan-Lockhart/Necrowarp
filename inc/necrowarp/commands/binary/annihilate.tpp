@@ -146,7 +146,7 @@ namespace necrowarp {
 								entity_registry<MapType>.dependent remove<entity_type>(pos);
 
 								++game_stats.player_kills;
-								++steam_stats::stats<steam_stat_e::PlayerKills>;
+								++steam_stats::stats<stat_e::PlayerKills>;
 							}
 						}
 					}, maybe_target.value());
@@ -174,7 +174,7 @@ namespace necrowarp {
 
 		entity_command_t<EntityType, move_t>{ source_position, target_position }.dependent process<MapType>();
 
-		++steam_stats::stats<steam_stat_e::Annihilations>;
+		++steam_stats::stats<stat_e::Annihilations>;
 
 		player.pay_cost(grimoire_e::Annihilate);
 

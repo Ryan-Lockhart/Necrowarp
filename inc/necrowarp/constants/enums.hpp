@@ -11,4 +11,5 @@
 #include <necrowarp/constants/enums/plurality.hpp>
 #include <necrowarp/constants/enums/region.hpp>
 #include <necrowarp/constants/enums/shackle.hpp>
+#include <necrowarp/constants/enums/steam.hpp>
 // IWYU pragma: end_exports

@@ -20,7 +20,7 @@ namespace necrowarp {
 		player.max_out_phantasm();
 		freshly_incorporeal = true;
 
-		++steam_stats::stats<steam_stat_e::Incorporealizations>;
+		++steam_stats::stats<stat_e::Incorporealizations>;
 
 		player.pay_cost(grimoire_e::Incorporealize);
 

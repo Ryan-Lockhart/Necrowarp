@@ -102,7 +102,9 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::FilthConsumed> += fluid_pool_volume(pools_consumed);
+		const f16 total_fluid{ fluid_pool_volume(pools_consumed) };
+
+		steam_stats::stats<stat_e::FilthConsumed> += total_fluid;
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -146,17 +148,17 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first festering shackle achievment placeholder : What is that stench?
+				steam_stats_s::unlock(achievement_e::WretchedUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Wretched);
 
-				// festering enshackle first ladder achievment placeholder : Bulbous Barrier
+				steam_stats_s::unlock(achievement_e::WretchedEnshackling);
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::WretchedInvocations>;
+		++steam_stats::stats<stat_e::WretchedInvocations>;
 
 		player.pay_cost(grimoire_e::WretchedInvocation);
 
@@ -164,10 +166,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (pools_consumed > 1) {
-				// summon first pack of draugr achievment placeholder : Desiccate and Decayed
+				steam_stats_s::unlock(achievement_e::LesserDraugazSummoning);
 
 				if (pools_consumed >= globals::MaximumCatalyst) {
-					// summon max amount of draugr achievment placeholder : The Grave Legion
+					steam_stats_s::unlock(achievement_e::GreaterDraugazSummoning);
 				}
 			}
 
@@ -182,10 +184,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, dreadwurm_t{ pools_consumed });
 
-		// summon first dreadwurm achievment placeholder : Eldritch Chimera
+		steam_stats_s::unlock(achievement_e::LesserDreadwurmSummoning);
 
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			// summon dreadwurm with max health achievment placeholder : Dread Incarnate
+			steam_stats_s::unlock(achievement_e::GreaterDreadwurmSummoning);
 		}
 	}
 } // namespace necrowarp

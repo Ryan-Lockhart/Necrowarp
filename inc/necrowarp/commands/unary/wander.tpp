@@ -89,7 +89,7 @@ namespace necrowarp {
 		entity_registry<MapType>.dependent update<EntityType>(source_position, wander_pos.value());
 
 		if constexpr (is_player<EntityType>::value) {
-			steam_stats::stats<steam_stat_e::MetersMoved> += offset_t::distance<f32>(source_position, wander_pos.value());
+			steam_stats::stats<stat_e::MetersMoved> += offset_t::distance<f32>(source_position, wander_pos.value());
 		}
 	}
 } // namespace necrowarp

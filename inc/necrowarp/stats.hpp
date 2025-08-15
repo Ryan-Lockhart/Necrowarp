@@ -11,6 +11,9 @@
 
 #include <magic_enum/magic_enum_utility.hpp>
 
+#include <necrowarp/constants/enums/steam/achievements.tpp>
+#include <necrowarp/constants/enums/steam/stats.tpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -177,6 +180,20 @@ namespace necrowarp {
 		i16	player_kills{ 0 };
 		i16	minion_kills{ 0 };
 
+		f16 liters_of_blood{ 0.0f };
+		f16 liters_of_ichor{ 0.0f };
+		f16 liters_of_filth{ 0.0f };
+		f16 liters_of_ectoplasm{ 0.0f };
+
+		inline f16 liters_of_fluid() const noexcept { return liters_of_blood + liters_of_ichor + liters_of_filth + liters_of_ectoplasm; }
+
+		i16 piles_of_bone{ 0 };
+		i16 piles_of_flesh{ 0 };
+		i16 piles_of_metal{ 0 };
+		i16 piles_of_cerebra{ 0 };
+
+		inline i16 piles_of_catalyst() const noexcept { return piles_of_bone + piles_of_flesh + piles_of_metal + piles_of_cerebra; }
+
 		inline i16 total_kills() const noexcept { return player_kills + minion_kills; };
 
 		inline void update_wave_size() noexcept { wave_size = clamp(static_cast<i16>(StartingWaveSize + total_kills() / globals::KillsPerPopulation), MinimumWaveSize, MaximumWaveSize); }
@@ -204,801 +221,27 @@ namespace necrowarp {
 			wave_size = StartingWaveSize;
 			spawns_remaining = StartingWaveSize;
 
+			liters_of_blood = 0.0f;
+			liters_of_ichor = 0.0f;
+			liters_of_filth = 0.0f;
+			liters_of_ectoplasm = 0.0f;
+
+			piles_of_bone = 0;
+			piles_of_flesh = 0;
+			piles_of_metal = 0;
+			piles_of_cerebra = 0;
+
 			player_kills = 0;
 			minion_kills = 0;
 		}
 	};
 
-	enum struct steam_achievement_e : u8 {
-		BasicSkeletonSummoning,
-
-		AcquireBoneArmor,
-
-		ChaoticWarpUsage,
-		PanicWarpUsage,
-		PanicWarpDeath,
-
-		PreciseWarpUsage,
-		PreciseWarpToBones,
-		PreciseWarpToArmorMinion,
-
-		BasicAnnihilateUsage,
-		ExceptionalAnnihilateUsage,
-
-		BasicRepulseUsage,
-		ExceptionalRepulseUsage,
-
-		CalcifyWallIntoBones,
-		CalcifyBonesIntoWall,
-		CalcifyBonesWithEnemy,
-
-		BasicIncorporealizeUsage,
-		ExceptionalIncorporealizeUsage,
-		RecorporealizeDeath,
-
-		CompleteBasicTutorial,
-		CompleteAdvancedTutorial,
-
-		DescendDownLadder,
-
-		ReceiveDivineIntervention,
-
-		DefeatOverworldSiege,
-
-		EnterAncientVault,
-
-		CollectKharoplasm,
-
-		ReceiveEldritchAudience,
-
-		DefeatElbikezzir,
-
-		DefeatRebelEncampment,
-
-		ReceiveEldritchMonologue,
-
-		DefeatPraethornyn,
-
-		ReceiveImperialAudience,
-
-		ReturnToRaetun,
-
-		CalciticEnshackling,
-		CalciticUnshackling,
-
-		SpectralEnshackling,
-		SpectralUnshackling,
-
-		SanguineEnshackling,
-		SanguineUnshackling,
-
-		GalvanicEnshackling,
-		GalvanicUnshackling,
-
-		RavenousEnshackling,
-		RavenousUnshackling,
-
-		WretchedEnshackling,
-		WretchedUnshackling,
-
-		CerebralEnshackling,
-		CerebralUnshackling,
-
-		InfernalEnshackling,
-		InfernalUnshackling,
-
-		LesserSkeletonSummoning,
-		GreaterSkeletonSummoning,
-
-		LesserBonespurSummoning,
-		GreaterBonespurSummoning,
-
-		LesserCultistSummoning,
-		GreaterCultistSummoning,
-
-		LesserWraithSummoning,
-		GreaterWraithSummoning,
-
-		LesserBloodhoundSummoning,
-		GreaterBloodhoundSummoning,
-
-		LesserHemogheistSummoning,
-		GreaterHemogheistSummoning,
-
-		LesserAnimatedSuitSummoning,
-		GreaterAnimatedSuitSummoning,
-
-		LesserDeathKnightSummoning,
-		GreaterDeathKnightSummoning,
-
-		LesserAbominationSummoning,
-		GreaterAbominationSummoning,
-
-		LesserFleshGolemSummoning,
-		GreaterFleshGolemSummoning,
-
-		LesserDraugazSummoning,
-		GreaterDraugazSummoning,
-
-		LesserDreadwurmSummoning,
-		GreaterDreadwurmSummoning,
-
-		LesserHamazSummoning,
-		GreaterHamazSummoning,
-
-		LesserFurtiveHorrorSummoning,
-		GreaterFurtiveHorrorSummoning,
-
-		LesserChromaleseSummoning,
-		GreaterChromaleseSummoning,
-
-		LesserIsoscelSummoning,
-		GreaterIsoscelSummoning,
-
-		BoneConsumption,
-		MetalConsumption,
-		FleshConsumption,
-		CerebraConsumption,
-
-		SolidCatalystConsumption,
-
-		BloodConsumption,
-		IchorConsumption,
-		FilthConsumption,
-		EctoplasmConsumption,
-
-		FluidCatalystConsumption,
-	};
-
-	constexpr const u8 AchievementCount{ static_cast<u8>(steam_achievement_e::FluidCatalystConsumption) + 1 };
-
-	template<steam_achievement_e Achievement> static constexpr cstr api_key{ "" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::BasicSkeletonSummoning>{ "basic_skeleton_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::AcquireBoneArmor>{ "acquire_bone_armor" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::ChaoticWarpUsage>{ "chaotic_warp_usage" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::PanicWarpUsage>{ "panic_warp_usage" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::PanicWarpDeath>{ "panic_warp_death" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::PreciseWarpUsage>{ "precise_warp_usage" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::PreciseWarpToBones>{ "precise_warp_to_bones" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::PreciseWarpToArmorMinion>{ "precise_warp_to_armor_minion" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::BasicAnnihilateUsage>{ "basic_annihilate_usage" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::ExceptionalAnnihilateUsage>{ "exceptional_annihilate_usage" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::BasicRepulseUsage>{ "basic_repulse_usage" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::ExceptionalRepulseUsage>{ "exceptional_repulse_usage" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::CalcifyWallIntoBones>{ "calcify_wall_into_bones" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::CalcifyBonesIntoWall>{ "calcify_bones_into_wall" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::CalcifyBonesWithEnemy>{ "calcify_bones_with_enemy" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::BasicIncorporealizeUsage>{ "basic_incorporealize_usage" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::ExceptionalIncorporealizeUsage>{ "exceptional_incorporealize_usage" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::RecorporealizeDeath>{ "recorporealize_death" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::CompleteBasicTutorial>{ "complete_basic_tutorial" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::CompleteAdvancedTutorial>{ "complete_advanced_tutorial" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::DescendDownLadder>{ "descend_down_ladder" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::ReceiveDivineIntervention>{ "receive_divine_intervention" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::DefeatOverworldSiege>{ "defeat_overworld_siege" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::EnterAncientVault>{ "enter_ancient_vault" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::CollectKharoplasm>{ "collect_kharoplasm" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::ReceiveEldritchAudience>{ "receive_eldritch_audience" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::DefeatElbikezzir>{ "defeat_elbikezzir" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::DefeatRebelEncampment>{ "defeat_rebel_encampment" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::ReceiveEldritchMonologue>{ "receive_eldritch_monologue" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::DefeatPraethornyn>{ "defeat_praethornyn" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::ReceiveImperialAudience>{ "receive_imperial_audience" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::ReturnToRaetun>{ "return_to_raetun" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::CalciticEnshackling>{ "calcitic_enshackling" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::CalciticUnshackling>{ "calcitic_unshackling" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::SpectralEnshackling>{ "spectral_enshackling" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::SpectralUnshackling>{ "spectral_unshackling" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::SanguineEnshackling>{ "sanguine_enshackling" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::SanguineUnshackling>{ "sanguine_unshackling" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::GalvanicEnshackling>{ "galvanic_enshackling" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GalvanicUnshackling>{ "galvanic_unshackling" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::RavenousEnshackling>{ "ravenous_enshackling" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::RavenousUnshackling>{ "ravenous_unshackling" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::WretchedEnshackling>{ "wretched_enshackling" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::WretchedUnshackling>{ "wretched_unshackling" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::CerebralEnshackling>{ "cerebral_enshackling" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::CerebralUnshackling>{ "cerebral_unshackling" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::InfernalEnshackling>{ "infernal_enshackling" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::InfernalUnshackling>{ "infernal_unshackling" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserSkeletonSummoning>{ "lesser_skeleton_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterSkeletonSummoning>{ "greater_skeleton_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserBonespurSummoning>{ "lesser_bonespur_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterBonespurSummoning>{ "greater_bonespur_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserCultistSummoning>{ "lesser_cultist_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterCultistSummoning>{ "greater_cultist_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserWraithSummoning>{ "lesser_wraith_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterWraithSummoning>{ "greater_wraith_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserBloodhoundSummoning>{ "lesser_bloodhound_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterBloodhoundSummoning>{ "greater_bloodhound_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserHemogheistSummoning>{ "lesser_hemogheist_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterHemogheistSummoning>{ "greater_hemogheist_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserAnimatedSuitSummoning>{ "lesser_animated_suit_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterAnimatedSuitSummoning>{ "greater_animated_suit_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserDeathKnightSummoning>{ "lesser_death_knight_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterDeathKnightSummoning>{ "greater_death_knight_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserAbominationSummoning>{ "lesser_abomination_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterAbominationSummoning>{ "greater_abomination_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserFleshGolemSummoning>{ "lesser_flesh_golem_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterFleshGolemSummoning>{ "greater_flesh_golem_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserDraugazSummoning>{ "lesser_draugaz_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterDraugazSummoning>{ "greater_draugaz_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserDreadwurmSummoning>{ "lesser_dreadwurm_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterDreadwurmSummoning>{ "greater_dreadwurm_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserHamazSummoning>{ "lesser_hamaz_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterHamazSummoning>{ "greater_hamaz_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserFurtiveHorrorSummoning>{ "lesser_furtive_horror_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterFurtiveHorrorSummoning>{ "greater_furtive_horror_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserChromaleseSummoning>{ "lesser_chromalese_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterChromaleseSummoning>{ "greater_chromalese_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::LesserIsoscelSummoning>{ "lesser_isoscel_summoning" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::GreaterIsoscelSummoning>{ "greater_isoscel_summoning" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::BoneConsumption>{ "bone_consumption" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::MetalConsumption>{ "metal_consumption" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::FleshConsumption>{ "flesh_consumption" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::CerebraConsumption>{ "cerebra_consumption" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::SolidCatalystConsumption>{ "solid_catalyst_consumption" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::BloodConsumption>{ "blood_consumption" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::IchorConsumption>{ "ichor_consumption" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::FilthConsumption>{ "filth_consumption" };
-	template<> inline constexpr cstr api_key<steam_achievement_e::EctoplasmConsumption>{ "ectoplasm_consumption" };
-
-	template<> inline constexpr cstr api_key<steam_achievement_e::FluidCatalystConsumption>{ "fluid_catalyst_consumption" };
-
-	template<steam_achievement_e Achievement> static constexpr cstr display_name{ "" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::BasicSkeletonSummoning>{ "The Summoning Begins" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::AcquireBoneArmor>{ "Bony Breastplate" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::ChaoticWarpUsage>{ "Vanishing Act" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::PanicWarpUsage>{ "Fool's Gambit" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::PanicWarpDeath>{ "Wrong Place, Wrong Time" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::PreciseWarpUsage>{ "Intentionality" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::PreciseWarpToBones>{ "Double Jump" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::PreciseWarpToArmorMinion>{ "Remote Armament" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::BasicAnnihilateUsage>{ "Path of Destruction" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::ExceptionalAnnihilateUsage>{ "Splashback" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::BasicRepulseUsage>{ "Personal Space" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::ExceptionalRepulseUsage>{ "Otherworldly Check" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::CalcifyWallIntoBones>{ "Calcium Deposit" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::CalcifyBonesIntoWall>{ "Constructive Influence" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::CalcifyBonesWithEnemy>{ "Petrifying!" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::BasicIncorporealizeUsage>{ "Abyssal Adventure" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::ExceptionalIncorporealizeUsage>{ "Toodles!" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::RecorporealizeDeath>{ "Matter Rearrangement" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::CompleteBasicTutorial>{ "Nascent Necromancer" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::CompleteAdvancedTutorial>{ "The Prodigal Pupil" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::DescendDownLadder>{ "And Yet Deeper We Must Delve" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::ReceiveDivineIntervention>{ "Destined Death" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::DefeatOverworldSiege>{ "A Minor Cuncation" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::EnterAncientVault>{ "Once Unbidden; Hence Unsealed" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::CollectKharoplasm>{ "A Perturbing Prize" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::ReceiveEldritchAudience>{ "Odious Tidings" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::DefeatElbikezzir>{ "Barotrauma" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::DefeatRebelEncampment>{ "Rebel Razing" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::ReceiveEldritchMonologue>{ "Soliloquy of the Damned" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::DefeatPraethornyn>{ "Sandy Slumber" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::ReceiveImperialAudience>{ "The Pale Princess" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::ReturnToRaetun>{ "Reunion" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::CalciticEnshackling>{ "calcitic_enshackling" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::CalciticUnshackling>{ "calcitic_unshackling" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::SpectralEnshackling>{ "spectral_enshackling" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::SpectralUnshackling>{ "spectral_unshackling" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::SanguineEnshackling>{ "sanguine_enshackling" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::SanguineUnshackling>{ "sanguine_unshackling" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::GalvanicEnshackling>{ "galvanic_enshackling" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GalvanicUnshackling>{ "galvanic_unshackling" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::RavenousEnshackling>{ "ravenous_enshackling" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::RavenousUnshackling>{ "ravenous_unshackling" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::WretchedEnshackling>{ "wretched_enshackling" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::WretchedUnshackling>{ "wretched_unshackling" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::CerebralEnshackling>{ "cerebral_enshackling" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::CerebralUnshackling>{ "cerebral_unshackling" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::InfernalEnshackling>{ "infernal_enshackling" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::InfernalUnshackling>{ "infernal_unshackling" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserSkeletonSummoning>{ "lesser_skeleton_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterSkeletonSummoning>{ "greater_skeleton_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserBonespurSummoning>{ "lesser_bonespur_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterBonespurSummoning>{ "greater_bonespur_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserCultistSummoning>{ "lesser_cultist_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterCultistSummoning>{ "greater_cultist_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserWraithSummoning>{ "lesser_wraith_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterWraithSummoning>{ "greater_wraith_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserBloodhoundSummoning>{ "lesser_bloodhound_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterBloodhoundSummoning>{ "greater_bloodhound_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserHemogheistSummoning>{ "lesser_hemogheist_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterHemogheistSummoning>{ "greater_hemogheist_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserAnimatedSuitSummoning>{ "lesser_animated_suit_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterAnimatedSuitSummoning>{ "greater_animated_suit_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserDeathKnightSummoning>{ "lesser_death_knight_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterDeathKnightSummoning>{ "greater_death_knight_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserAbominationSummoning>{ "lesser_abomination_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterAbominationSummoning>{ "greater_abomination_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserFleshGolemSummoning>{ "lesser_flesh_golem_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterFleshGolemSummoning>{ "greater_flesh_golem_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserDraugazSummoning>{ "lesser_draugaz_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterDraugazSummoning>{ "greater_draugaz_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserDreadwurmSummoning>{ "lesser_dreadwurm_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterDreadwurmSummoning>{ "greater_dreadwurm_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserHamazSummoning>{ "lesser_hamaz_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterHamazSummoning>{ "greater_hamaz_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserFurtiveHorrorSummoning>{ "lesser_furtive_horror_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterFurtiveHorrorSummoning>{ "greater_furtive_horror_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserChromaleseSummoning>{ "lesser_chromalese_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterChromaleseSummoning>{ "greater_chromalese_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::LesserIsoscelSummoning>{ "lesser_isoscel_summoning" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::GreaterIsoscelSummoning>{ "greater_isoscel_summoning" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::BoneConsumption>{ "Karkaphage" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::FleshConsumption>{ "Sarkaphage" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::MetalConsumption>{ "Ferrophage" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::CerebraConsumption>{ "Myalaphage" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::SolidCatalystConsumption>{ "Sterophage" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::BloodConsumption>{ "Hemophage" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::IchorConsumption>{ "Ichophage" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::FilthConsumption>{ "Rupaphage" };
-	template<> inline constexpr cstr display_name<steam_achievement_e::EctoplasmConsumption>{ "Ectophage" };
-
-	template<> inline constexpr cstr display_name<steam_achievement_e::FluidCatalystConsumption>{ "Yrgophage" };
-
-	static inline constexpr cstr to_api_key(steam_achievement_e type) noexcept {
-		return magic_enum::enum_switch([&](auto val) -> cstr {
-			constexpr steam_achievement_e cval{ val };
-
-			return api_key<cval>;
-		}, type);
-	}
-
-	static inline constexpr cstr to_display_name(steam_achievement_e type) noexcept {
-		return magic_enum::enum_switch([&](auto val) -> cstr {
-			constexpr steam_achievement_e cval{ val };
-
-			return display_name<cval>;
-		}, type);
-	}
-
-	enum struct steam_stat_e : u8 {
-		PlayerKills = 0,
-		MinionKills,
-
-		PlayerDeaths,
-
-		ChaoticWarps,
-		PreciseWarps,
-
-		Calcifications,
-		Repulsions,
-		Annihilations,
-		Incorporealizations,
-
-		CalciticInvocations,
-		SpectralInvocations,
-		SanguineInvocations,
-		GalvanicInvocations,
-		RavenousInvocations,
-		WretchedInvocations,
-		CerebralInvocations,
-		InfernalInvocations,
-
-		NecromanticAscensions,
-		CalamitousRetaliations,
-
-		MetersMoved,
-		MetersWarped,
-		LowestDepth,
-		PortalsTraversed,
-
-		BonesConsumed,
-		FleshConsumed,
-		MetalConsumed,
-		CerebraConsumed,
-
-		BloodConsumed,
-		IchorConsumed,
-		FilthConsumed,
-		EctoplasmConsumed,
-
-		SkeletonsConsumed,
-		BonespursConsumed,
-
-		GrimoiresCollected,
-
-		LaddersUnshackled,
-		LaddersShackled,
-
-		AdventurersSlain,
-		MercenariesSlain,
-		RangersSlain,
-		SkulkersSlain,
-		ManslingsSlain,
-		MistLadiesSlain,
-		BannerBearersSlain,
-		MediciiSlain,
-		BattleMonksSlain,
-		BerserkersSlain,
-		HexeatersSlain,
-		PaladinsSlain,
-
-		ThetwoSlain,
-	};
-
-	template<steam_stat_e Stat> struct to_stat_type;
-
-	template<> struct to_stat_type<steam_stat_e::PlayerKills> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::MinionKills> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::PlayerDeaths> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::ChaoticWarps> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::PreciseWarps> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::Calcifications> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::Repulsions> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::Annihilations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::Incorporealizations> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::CalciticInvocations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::SpectralInvocations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::SanguineInvocations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::GalvanicInvocations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::RavenousInvocations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::WretchedInvocations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::CerebralInvocations> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::InfernalInvocations> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::NecromanticAscensions> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::CalamitousRetaliations> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::MetersMoved> { using type = f32; };
-	template<> struct to_stat_type<steam_stat_e::MetersWarped> { using type = f32; };
-	template<> struct to_stat_type<steam_stat_e::LowestDepth> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::PortalsTraversed> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::BonesConsumed> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::FleshConsumed> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::MetalConsumed> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::CerebraConsumed> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::BloodConsumed> { using type = f32; };
-	template<> struct to_stat_type<steam_stat_e::IchorConsumed> { using type = f32; };
-	template<> struct to_stat_type<steam_stat_e::FilthConsumed> { using type = f32; };
-	template<> struct to_stat_type<steam_stat_e::EctoplasmConsumed> { using type = f32; };
-
-	template<> struct to_stat_type<steam_stat_e::SkeletonsConsumed> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::BonespursConsumed> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::GrimoiresCollected> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::LaddersUnshackled> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::LaddersShackled> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::AdventurersSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::MercenariesSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::RangersSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::SkulkersSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::ManslingsSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::MistLadiesSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::BannerBearersSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::MediciiSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::BattleMonksSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::BerserkersSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::HexeatersSlain> { using type = i32; };
-	template<> struct to_stat_type<steam_stat_e::PaladinsSlain> { using type = i32; };
-
-	template<> struct to_stat_type<steam_stat_e::ThetwoSlain> { using type = i32; };
-
-	template<steam_stat_e StatType> using to_stat_type_t = typename to_stat_type<StatType>::type;
-
-	static inline constexpr cstr to_api_str(steam_stat_e type) noexcept {
-		switch (type) {
-			case steam_stat_e::PlayerKills: {
-				return "player_kills";
-			} case steam_stat_e::MinionKills: {
-				return "minion_kills";
-			} case steam_stat_e::PlayerDeaths: {
-				return "player_deaths";
-			} case steam_stat_e::ChaoticWarps: {
-				return "chaotic_warps";
-			} case steam_stat_e::PreciseWarps: {
-				return "precise_warps";
-			} case steam_stat_e::Calcifications: {
-				return "calcifications";
-			} case steam_stat_e::Repulsions: {
-				return "repulsions";
-			} case steam_stat_e::Annihilations: {
-				return "annihilations";
-			} case steam_stat_e::Incorporealizations: {
-				return "incorporealizations";
-			} case steam_stat_e::CalciticInvocations: {
-				return "calcitic_invocations";
-			} case steam_stat_e::SpectralInvocations: {
-				return "spectral_invocations";
-			} case steam_stat_e::SanguineInvocations: {
-				return "sanguine_invocations";
-			} case steam_stat_e::GalvanicInvocations: {
-				return "galvanic_invocations";
-			} case steam_stat_e::RavenousInvocations: {
-				return "ravenous_invocations";
-			} case steam_stat_e::WretchedInvocations: {
-				return "wretched_invocations";
-			} case steam_stat_e::CerebralInvocations: {
-				return "cerebral_invocations";
-			} case steam_stat_e::InfernalInvocations: {
-				return "infernal_invocations";
-			} case steam_stat_e::NecromanticAscensions: {
-				return "necromantic_ascensions";
-			} case steam_stat_e::CalamitousRetaliations: {
-				return "calamitous_retaliations";
-			} case steam_stat_e::MetersMoved: {
-				return "meters_moved";
-			} case steam_stat_e::MetersWarped: {
-				return "meters_warped";
-			} case steam_stat_e::LowestDepth: {
-				return "lowest_depth";
-			} case steam_stat_e::PortalsTraversed: {
-				return "portals_traversed";
-			} case steam_stat_e::BonesConsumed: {
-				return "bones_consumed";
-			} case steam_stat_e::FleshConsumed: {
-				return "flesh_consumed";
-			} case steam_stat_e::MetalConsumed: {
-				return "metal_consumed";
-			} case steam_stat_e::CerebraConsumed: {
-				return "cerebra_consumed";
-			} case steam_stat_e::BloodConsumed: {
-				return "blood_consumed";
-			} case steam_stat_e::IchorConsumed: {
-				return "ichor_consumed";
-			} case steam_stat_e::FilthConsumed: {
-				return "flith_consumed";
-			} case steam_stat_e::EctoplasmConsumed: {
-				return "ectoplasm_consumed";
-			} case steam_stat_e::SkeletonsConsumed: {
-				return "skeletons_consumed";
-			} case steam_stat_e::BonespursConsumed: {
-				return "bonespurs_consumed";
-			} case steam_stat_e::GrimoiresCollected: {
-				return "grimoires_collected";
-			} case steam_stat_e::LaddersUnshackled: {
-				return "ladders_unshackled";
-			} case steam_stat_e::LaddersShackled: {
-				return "ladders_shackled";
-			} case steam_stat_e::AdventurersSlain: {
-				return "adventurers_slain";
-			} case steam_stat_e::MercenariesSlain: {
-				return "mercenaries_slain";
-			} case steam_stat_e::RangersSlain: {
-				return "rangers_slain";
-			} case steam_stat_e::SkulkersSlain: {
-				return "skulkers_slain";
-			} case steam_stat_e::ManslingsSlain: {
-				return "manslings_slain";
-			} case steam_stat_e::MistLadiesSlain: {
-				return "mist_ladies_slain";
-			} case steam_stat_e::BannerBearersSlain: {
-				return "banner_bearers_slain";
-			} case steam_stat_e::MediciiSlain: {
-				return "medicii_slain";
-			} case steam_stat_e::BattleMonksSlain: {
-				return "battle_monks_slain";
-			} case steam_stat_e::BerserkersSlain: {
-				return "berserkers_slain";
-			} case steam_stat_e::HexeatersSlain: {
-				return "hexeaters_slain";
-			} case steam_stat_e::PaladinsSlain: {
-				return "paladins_slain";
-			} case steam_stat_e::ThetwoSlain: {
-				return "thetwo_slain";
-			}
-		}
-	}
-
-	static inline constexpr cstr to_display_str(steam_stat_e type) noexcept {
-		switch (type) {
-			case steam_stat_e::PlayerKills: {
-				return "Player Kills";
-			} case steam_stat_e::MinionKills: {
-				return "Minion Kills";
-			} case steam_stat_e::PlayerDeaths: {
-				return "Player Deaths";
-			} case steam_stat_e::ChaoticWarps: {
-				return "Chaotic Warps";
-			} case steam_stat_e::PreciseWarps: {
-				return "Precise Warps";
-			} case steam_stat_e::Annihilations: {
-				return "Annihilations";
-			} case steam_stat_e::Repulsions: {
-				return "Repulsions";
-			} case steam_stat_e::Calcifications: {
-				return "Calcifications";
-			} case steam_stat_e::Incorporealizations: {
-				return "Incorporealizations";
-			} case steam_stat_e::CalciticInvocations: {
-				return "Calcitic Invocations";
-			} case steam_stat_e::SpectralInvocations: {
-				return "Spectral Invocations";
-			} case steam_stat_e::SanguineInvocations: {
-				return "Sanguine Invocations";
-			} case steam_stat_e::GalvanicInvocations: {
-				return "Galvanic Invocations";
-			} case steam_stat_e::RavenousInvocations: {
-				return "Ravenous Invocations";
-			} case steam_stat_e::WretchedInvocations: {
-				return "Wretched Invocations";
-			} case steam_stat_e::CerebralInvocations: {
-				return "Cerebral Invocations";
-			} case steam_stat_e::InfernalInvocations: {
-				return "Infernal Invocations";
-			} case steam_stat_e::NecromanticAscensions: {
-				return "Necromantic Ascensions";
-			} case steam_stat_e::CalamitousRetaliations: {
-				return "Calamitous Retaliations";
-			} case steam_stat_e::MetersMoved: {
-				return "Meters Moved";
-			} case steam_stat_e::MetersWarped: {
-				return "Meters Warped";
-			} case steam_stat_e::LowestDepth: {
-				return "Lowest Depth";
-			} case steam_stat_e::PortalsTraversed: {
-				return "Portals Traversed";
-			} case steam_stat_e::BonesConsumed: {
-				return "Bones Consumed";
-			} case steam_stat_e::FleshConsumed: {
-				return "Flesh Consumed";
-			} case steam_stat_e::MetalConsumed: {
-				return "Metal Consumed";
-			} case steam_stat_e::CerebraConsumed: {
-				return "Cerebra Consumed";
-			} case steam_stat_e::BloodConsumed: {
-				return "Blood Consumed";
-			} case steam_stat_e::IchorConsumed: {
-				return "Ichor Consumed";
-			} case steam_stat_e::FilthConsumed: {
-				return "Filth Consumed";
-			} case steam_stat_e::EctoplasmConsumed: {
-				return "Ectoplasm Consumed";
-			} case steam_stat_e::SkeletonsConsumed: {
-				return "Skeletons Consumed";
-			} case steam_stat_e::BonespursConsumed: {
-				return "Bonespurs Consumed";
-			} case steam_stat_e::GrimoiresCollected: {
-				return "Grimoires Collected";
-			} case steam_stat_e::LaddersUnshackled: {
-				return "Ladders Unshackled";
-			} case steam_stat_e::LaddersShackled: {
-				return "Ladders Shackled";
-			} case steam_stat_e::AdventurersSlain: {
-				return "Adventurers Slain";
-			} case steam_stat_e::MercenariesSlain: {
-				return "Mercenaries Slain";
-			} case steam_stat_e::RangersSlain: {
-				return "Rangers Slain";
-			} case steam_stat_e::SkulkersSlain: {
-				return "Skulkers Slain";
-			} case steam_stat_e::ManslingsSlain: {
-				return "Manslings Slain";
-			} case steam_stat_e::MistLadiesSlain: {
-				return "Mist Ladies Slain";
-			} case steam_stat_e::BannerBearersSlain: {
-				return "Banner Bearers Slain";
-			} case steam_stat_e::MediciiSlain: {
-				return "Medicii Slain";
-			} case steam_stat_e::BattleMonksSlain: {
-				return "Battle Monks Slain";
-			} case steam_stat_e::BerserkersSlain: {
-				return "Berserkers Slain";
-			} case steam_stat_e::HexeatersSlain: {
-				return "Hexeaters Slain";
-			} case steam_stat_e::PaladinsSlain: {
-				return "Paladins Slain";
-			} case steam_stat_e::ThetwoSlain: {
-				return "Thetwo Slain";
-			}
-		}
-	}
-
-	template<steam_stat_e Type, typename T>
+	template<stat_e Type, typename T>
 		requires is_one_of<T, i32, f32>::value
 	struct steam_stat_t {
 		using value_type = T;
 
-		static inline constexpr steam_stat_e type{ Type };
-
-		static inline constexpr cstr api_name{ to_api_str(Type) };
-		static inline constexpr cstr display_name{ to_display_str(Type) };
+		static inline constexpr stat_e type{ Type };
 
 		static inline value_type cached_value;
 		static inline value_type initial_value;
@@ -1008,10 +251,10 @@ namespace necrowarp {
 				return T{};
 			}
 
-			std::optional<T> maybe_value{ steam::user_stats::get_stat<T>(api_name) };
+			std::optional<T> maybe_value{ steam::user_stats::get_stat<T>(stats::api_key<Type>) };
 
 			if (!maybe_value.has_value()) {
-				error_log.add("[WARNING]: returning cached value of \"{}\"...", api_name);
+				error_log.add("[WARNING]: returning cached value of \"{}\"...", stats::api_key<Type>);
 
 				return cached_value;
 			}
@@ -1024,7 +267,7 @@ namespace necrowarp {
 				return false;
 			}
 
-			return steam::user_stats::set_stat(api_name, value);
+			return steam::user_stats::set_stat(stats::api_key<Type>, value);
 		}
 
 		inline ref<steam_stat_t<Type, T>> operator=(T other) noexcept {
@@ -1088,7 +331,7 @@ namespace necrowarp {
 		static STEAM_CALLBACK(steam_stats_s, on_user_stats_stored, UserStatsStored_t);
 		static STEAM_CALLBACK(steam_stats_s, on_global_stats_received, GlobalStatsReceived_t);
 
-		template<steam_stat_e Type> static inline steam_stat_t<Type, typename to_stat_type<Type>::type> stats{};
+		template<stat_e Type> static inline steam_stat_t<Type, typename to_stat_type<Type>::type> stats{};
 		
 		static inline ptr<ISteamUserStats> user_stats() {
 			if constexpr (IsSteamless) {
@@ -1104,7 +347,7 @@ namespace necrowarp {
 			return interface;
 		}
 
-		static inline bool is_unlocked(steam_achievement_e achievement) noexcept {
+		static inline bool is_unlocked(achievement_e achievement) noexcept {
 			if constexpr (IsSteamless) {
 				return false;
 			}
@@ -1114,7 +357,7 @@ namespace necrowarp {
 			return user_stats()->GetAchievement(to_api_key(achievement), &unlocked) && unlocked;
 		}
 
-		static inline bool reset(steam_achievement_e achievement) noexcept {
+		static inline bool reset(achievement_e achievement) noexcept {
 			if constexpr (IsSteamless) {
 				return false;
 			}
@@ -1127,14 +370,14 @@ namespace necrowarp {
 				return;
 			}
 
-			magic_enum::enum_for_each<steam_achievement_e>([&](auto val) {
-				constexpr steam_achievement_e cval{ val };
+			magic_enum::enum_for_each<achievement_e>([&](auto val) {
+				constexpr achievement_e cval{ val };
 
-				user_stats()->ClearAchievement(api_key<cval>);
+				user_stats()->ClearAchievement(achievements::api_key<cval>);
 			});
 		}
 
-		static inline bool unlock(steam_achievement_e achievement) noexcept {
+		static inline bool unlock(achievement_e achievement) noexcept {
 			if constexpr (IsSteamless) {
 				return false;
 			}
@@ -1147,10 +390,10 @@ namespace necrowarp {
 				return;
 			}
 
-			magic_enum::enum_for_each<steam_achievement_e>([&](auto val) {
-				constexpr steam_achievement_e cval{ val };
+			magic_enum::enum_for_each<achievement_e>([&](auto val) {
+				constexpr achievement_e cval{ val };
 
-				user_stats()->SetAchievement(api_key<cval>);
+				user_stats()->SetAchievement(achievements::api_key<cval>);
 			});
 		}
 
@@ -1167,8 +410,8 @@ namespace necrowarp {
 				return;
 			}
 
-			magic_enum::enum_for_each<steam_stat_e>([] (auto val) -> void {
-				constexpr steam_stat_e Stat{ val };
+			magic_enum::enum_for_each<stat_e>([] (auto val) -> void {
+				constexpr stat_e Stat{ val };
 				
 				stats<Stat>.initial_value = stats<Stat>.get_value();
 			});

@@ -21,9 +21,9 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
-		++steam_stats::stats<steam_stat_e::PreciseWarps>;
+		++steam_stats::stats<stat_e::PreciseWarps>;
 
-		steam_stats::stats<steam_stat_e::MetersWarped> += offset_t::distance<f32>(source_position, player.position);
+		steam_stats::stats<stat_e::MetersWarped> += offset_t::distance<f32>(source_position, player.position);
 
 		player.pay_cost(grimoire_e::PreciseWarp);
 

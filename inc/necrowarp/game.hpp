@@ -357,8 +357,8 @@ namespace necrowarp {
 
 			++game_stats.game_depth;
 #if !defined(STEAMLESS)
-			if (steam_stats_s::stats<steam_stat_e::LowestDepth>.get_value() > -static_cast<i32>(game_stats.game_depth)) {
-				steam_stats_s::stats<steam_stat_e::LowestDepth> = -static_cast<i32>(game_stats.game_depth);
+			if (steam_stats_s::stats<stat_e::LowestDepth>.get_value() > -static_cast<i32>(game_stats.game_depth)) {
+				steam_stats_s::stats<stat_e::LowestDepth> = -static_cast<i32>(game_stats.game_depth);
 			}
 #endif
 			fluid_positions.clear();
@@ -460,7 +460,7 @@ namespace necrowarp {
 				terminate_prematurely();
 			}
 #if !defined(STEAMLESS)
-			steam_stats_s::stats<steam_stat_e::MetersMoved> += offset_t::distance<f32>(previous_position, player.position);
+			steam_stats_s::stats<stat_e::MetersMoved> += offset_t::distance<f32>(previous_position, player.position);
 #endif
 			if constexpr (globals::SpawnTutorialPortal) {
 				if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; !portal_pos.has_value() || !object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Insightful })) {

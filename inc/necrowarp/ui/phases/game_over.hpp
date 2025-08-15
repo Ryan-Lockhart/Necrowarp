@@ -98,8 +98,8 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			if (show_statistics) {
 				runes_t stats_str{ "\n" };
 
-				magic_enum::enum_for_each<steam_stat_e>([&stats_str] (auto val) -> void {
-					constexpr steam_stat_e Stat{ val };
+				magic_enum::enum_for_each<stat_e>([&stats_str] (auto val) -> void {
+					constexpr stat_e Stat{ val };
 
 					using Type = to_stat_type<Stat>::type;
 
@@ -107,7 +107,7 @@ template<> struct phase_state_t<phase_e::GameOver> {
 					const Type delta_value{ steam_stats::stats<Stat>.get_value() - steam_stats::stats<Stat>.initial_value };
 
 					stats_str.concatenate(std::format(" {}: {} ({}{}) \n\n",
-						steam_stats::stats<Stat>.display_name,
+						stats::display_name<Stat>,
 						std::to_string(current_value),
 						delta_value > 0 ? "+" : "",
 						std::to_string(delta_value)

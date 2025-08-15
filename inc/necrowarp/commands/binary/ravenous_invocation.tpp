@@ -100,7 +100,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::BonesConsumed> += accumulated_flesh;
+		steam_stats::stats<stat_e::BonesConsumed> += accumulated_flesh;
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -144,17 +144,17 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first wriggling shackle achievment placeholder : Raw and Wriggling
+				steam_stats_s::unlock(achievement_e::RavenousUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Ravenous);
 
-				// wriggling enshackle first ladder achievment placeholder : Don't Let It Touch You
+				steam_stats_s::unlock(achievement_e::RavenousEnshackling);
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::RavenousInvocations>;
+		++steam_stats::stats<stat_e::RavenousInvocations>;
 
 		player.pay_cost(grimoire_e::RavenousInvocation);
 
@@ -162,10 +162,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (accumulated_flesh > 1) {
-				// summon first mob of abominations achievment placeholder : A Mob of Meat
+				steam_stats_s::unlock(achievement_e::LesserAbominationSummoning);
 
 				if (accumulated_flesh >= globals::MaximumCatalyst) {
-					// summon max amount of abominations achievment placeholder : Abominable Multiplicity
+					steam_stats_s::unlock(achievement_e::GreaterAbominationSummoning);
 				}
 			}
 
@@ -180,10 +180,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, flesh_golem_t{ accumulated_flesh });
 
-		// summon first flesh golem achievment placeholder : The Shambling Horror
+		steam_stats_s::unlock(achievement_e::LesserFleshGolemSummoning);
 
 		if (accumulated_flesh >= globals::MaximumCatalyst) {
-			// summon flesh golem with max health achievment placeholder : Mountain of Flesh
+			steam_stats_s::unlock(achievement_e::GreaterFleshGolemSummoning);
 		}
 	}
 } // namespace necrowarp

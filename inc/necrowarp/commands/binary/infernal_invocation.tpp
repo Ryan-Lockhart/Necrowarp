@@ -102,7 +102,7 @@ namespace necrowarp {
 			}
 		}
 
-		steam_stats::stats<steam_stat_e::EctoplasmConsumed> += fluid_pool_volume(pools_consumed);
+		steam_stats::stats<stat_e::EctoplasmConsumed> += fluid_pool_volume(pools_consumed);
 
 		if (eligible_ladder == nullptr && source_position != target_position) {
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -146,17 +146,17 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				// unshackle first cackling shackle achievment placeholder : Diquietude Dispelled
+				steam_stats_s::unlock(achievement_e::InfernalUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Infernal);
 
-				// cackling enshackle first ladder achievment placeholder : Infernal Irreverance
+				steam_stats_s::unlock(achievement_e::InfernalEnshackling);
 			}
 
 			eligible_ladder = nullptr;
 		}
 
-		++steam_stats::stats<steam_stat_e::InfernalInvocations>;
+		++steam_stats::stats<stat_e::InfernalInvocations>;
 
 		player.pay_cost(grimoire_e::InfernalInvocation);
 
@@ -164,10 +164,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (pools_consumed > 1) {
-				// summon first spectrum of chromalesia achievment placeholder : Living Color
+				steam_stats_s::unlock(achievement_e::LesserChromaleseSummoning);
 
 				if (pools_consumed >= globals::MaximumCatalyst) {
-					// summon max amount of chromalesia achievment placeholder : Death Fog
+					steam_stats_s::unlock(achievement_e::GreaterChromaleseSummoning);
 				}
 			}
 
@@ -182,10 +182,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, isoscel_t{ pools_consumed });
 
-		// summon first isoscel achievment placeholder : Euclidean Solecism
+		steam_stats_s::unlock(achievement_e::LesserIsoscelSummoning);
 
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			// summon isoscel with max health achievment placeholder : Angular Annihilation
+			steam_stats_s::unlock(achievement_e::GreaterIsoscelSummoning);
 		}
 	}
 } // namespace necrowarp
