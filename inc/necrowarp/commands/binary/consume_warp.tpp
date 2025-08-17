@@ -36,6 +36,12 @@ namespace necrowarp {
 
 					++steam_stats::stats<stat_e::PreciseWarps>;
 
+					steam_stats::unlock(achievement_e::PreciseWarpUsage);
+
+					steam_stats::unlock(achievement_e::PreciseWarpToArmorMinion);
+
+					steam_stats::unlock(achievement_e::AcquireBoneArmor);
+
 					player.pay_cost(grimoire_e::PreciseWarp);
 
 					literature::use(grimoire_e::PreciseWarp);
@@ -55,6 +61,12 @@ namespace necrowarp {
 					entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 
 					++steam_stats::stats<stat_e::PreciseWarps>;
+
+					steam_stats::unlock(achievement_e::PreciseWarpUsage);
+
+					steam_stats::unlock(achievement_e::PreciseWarpToArmorMinion);
+
+					steam_stats::unlock(achievement_e::AcquireBoneArmor);
 
 					player.pay_cost(grimoire_e::PreciseWarp);
 
@@ -91,9 +103,15 @@ namespace necrowarp {
 
 				++steam_stats::stats<stat_e::BonesConsumed>;
 
+				steam_stats::unlock(achievement_e::BasicSkeletonSummoning);
+
 				entity_registry<MapType>.add(target_position, skeleton_t{ state });
 
 				++steam_stats::stats<stat_e::PreciseWarps>;
+
+				steam_stats::unlock(achievement_e::PreciseWarpUsage);
+
+				steam_stats::unlock(achievement_e::PreciseWarpToBones);
 
 				player.pay_cost(grimoire_e::PreciseWarp, boon);
 

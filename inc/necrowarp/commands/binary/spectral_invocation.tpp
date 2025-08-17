@@ -148,11 +148,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				steam_stats_s::unlock(achievement_e::SpectralUnshackling);
+				steam_stats::unlock(achievement_e::SpectralUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Spectral);
 
-				steam_stats_s::unlock(achievement_e::SpectralEnshackling);
+				steam_stats::unlock(achievement_e::SpectralEnshackling);
 			}
 
 			eligible_ladder = nullptr;
@@ -166,10 +166,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (pools_consumed > 1) {
-				steam_stats_s::unlock(achievement_e::LesserCultistSummoning);
+				steam_stats::unlock(achievement_e::LesserCultistSummoning);
 
 				if (pools_consumed >= globals::MaximumCatalyst) {
-					steam_stats_s::unlock(achievement_e::GreaterCultistSummoning);
+					steam_stats::unlock(achievement_e::GreaterCultistSummoning);
 				}
 			}
 
@@ -184,10 +184,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, wraith_t{ pools_consumed });
 
-		steam_stats_s::unlock(achievement_e::LesserWraithSummoning);
+		steam_stats::unlock(achievement_e::LesserWraithSummoning);
 
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			steam_stats_s::unlock(achievement_e::GreaterWraithSummoning);
+			steam_stats::unlock(achievement_e::GreaterWraithSummoning);
 		}
 	}
 } // namespace necrowarp

@@ -176,6 +176,8 @@ namespace necrowarp {
 
 		++steam_stats::stats<stat_e::Annihilations>;
 
+		steam_stats::unlock(achievement_e::BasicAnnihilateUsage);
+
 		player.pay_cost(grimoire_e::Annihilate);
 
 		literature::use(grimoire_e::Annihilate);

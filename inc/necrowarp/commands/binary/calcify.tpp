@@ -23,7 +23,9 @@ namespace necrowarp {
 			game_map<MapType>[target_position].solid = false;
 
 			object_registry<MapType>.add(target_position, bones_t{ decay_e::Animate });
-		} else if (!object_registry<MapType>.dependent empty<bones_t>(target_position)) {
+
+			steam_stats::unlock(achievement_e::CalcifyWallIntoBones);
+		} else if (object_registry<MapType>.dependent contains<bones_t>(target_position)) {
 			object_registry<MapType>.remove(target_position);
 
 			magic_enum::enum_for_each<entity_e>([&](auto val) {
@@ -50,6 +52,14 @@ namespace necrowarp {
 				if constexpr (is_player<entity_type>::value) {
 					entity->dependent die<MapType, death_e::Crushed>();
 				} else {
+					if constexpr (is_non_evil<entity_type>::value) {
+						steam_stats::unlock(achievement_e::CalcifyBonesWithEnemy);
+
+						++game_stats.player_kills;
+
+						++steam_stats::stats<stat_e::PlayerKills>;
+					}
+
 					entity->dependent die<MapType, death_e::Crushed>(target_position);
 
 					entity_registry<MapType>.dependent remove<entity_type>(target_position);
@@ -57,6 +67,8 @@ namespace necrowarp {
 			});
 
 			game_map<MapType>[target_position].solid = true;
+
+			steam_stats::unlock(achievement_e::CalcifyBonesIntoWall);
 		}
 
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {

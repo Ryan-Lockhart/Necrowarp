@@ -32,6 +32,8 @@ namespace necrowarp {
 
 					++steam_stats::stats<stat_e::SkeletonsConsumed>;
 
+					steam_stats::unlock(achievement_e::AcquireBoneArmor);
+
 					entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 					
 					player.bolster_armor(armor_boon + max(player.max_armor() / 8, 1));
@@ -45,6 +47,8 @@ namespace necrowarp {
 					entity_registry<MapType>.dependent remove<bonespur_t>(target_position);
 
 					++steam_stats::stats<stat_e::BonespursConsumed>;
+
+					steam_stats::unlock(achievement_e::AcquireBoneArmor);
 
 					entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
 					
@@ -71,6 +75,8 @@ namespace necrowarp {
 				entity_registry<MapType>.add(target_position, skeleton_t{ state });
 
 				++steam_stats::stats<stat_e::BonesConsumed>;
+
+				steam_stats::unlock(achievement_e::BasicSkeletonSummoning);
 
 				if (state == decay_e::Fresh) {
 					player.receive_skull_boon();

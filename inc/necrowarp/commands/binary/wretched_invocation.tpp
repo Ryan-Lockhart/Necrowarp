@@ -148,11 +148,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				steam_stats_s::unlock(achievement_e::WretchedUnshackling);
+				steam_stats::unlock(achievement_e::WretchedUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Wretched);
 
-				steam_stats_s::unlock(achievement_e::WretchedEnshackling);
+				steam_stats::unlock(achievement_e::WretchedEnshackling);
 			}
 
 			eligible_ladder = nullptr;
@@ -166,10 +166,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (pools_consumed > 1) {
-				steam_stats_s::unlock(achievement_e::LesserDraugazSummoning);
+				steam_stats::unlock(achievement_e::LesserDraugazSummoning);
 
 				if (pools_consumed >= globals::MaximumCatalyst) {
-					steam_stats_s::unlock(achievement_e::GreaterDraugazSummoning);
+					steam_stats::unlock(achievement_e::GreaterDraugazSummoning);
 				}
 			}
 
@@ -184,10 +184,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, dreadwurm_t{ pools_consumed });
 
-		steam_stats_s::unlock(achievement_e::LesserDreadwurmSummoning);
+		steam_stats::unlock(achievement_e::LesserDreadwurmSummoning);
 
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			steam_stats_s::unlock(achievement_e::GreaterDreadwurmSummoning);
+			steam_stats::unlock(achievement_e::GreaterDreadwurmSummoning);
 		}
 	}
 } // namespace necrowarp

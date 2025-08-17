@@ -21,6 +21,8 @@ namespace necrowarp {
 			player.pay_cost(grimoire_e::ChaoticWarp);
 
 			literature::use(grimoire_e::ChaoticWarp);
+
+			steam_stats::unlock(achievement_e::ChaoticWarpUsage);
 		}
 
 		cauto random_safe_position{ evil_goal_map<MapType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, 8) };

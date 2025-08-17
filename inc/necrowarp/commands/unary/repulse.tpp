@@ -166,6 +166,8 @@ namespace necrowarp {
 
 		++steam_stats::stats<stat_e::Repulsions>;
 
+		steam_stats::unlock(achievement_e::BasicRepulseUsage);
+
 		player.pay_cost(grimoire_e::Repulse);
 
 		literature::use(grimoire_e::Repulse);

@@ -172,8 +172,6 @@ namespace necrowarp {
 
 	static inline volatile std::atomic<bool> freshly_incorporeal{ false };
 
-	static inline volatile std::atomic<bool> divine_intervention_invoked{ false };
-
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline void entity_registry_t<MapType>::store() const noexcept {
 		player_buffer = player;
 	}
@@ -962,6 +960,8 @@ namespace necrowarp {
 			if (info.perished) {
 				return;
 			}
+
+			steam_stats::unlock(achievement_e::RecorporealizeDeath);
 		}
 
 		update<ALL_NON_PLAYER>();

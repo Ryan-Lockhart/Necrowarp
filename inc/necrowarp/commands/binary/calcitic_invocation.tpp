@@ -148,11 +148,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				steam_stats_s::unlock(achievement_e::CalciticUnshackling);
+				steam_stats::unlock(achievement_e::CalciticUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Calcitic);
 
-				steam_stats_s::unlock(achievement_e::CalciticEnshackling);
+				steam_stats::unlock(achievement_e::CalciticEnshackling);
 			}
 
 			eligible_ladder = nullptr;
@@ -166,12 +166,12 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			  if (accumulated_skulls == 1) {
-				steam_stats_s::unlock(achievement_e::PatheticSkeletonSummoning);
+				steam_stats::unlock(achievement_e::PatheticSkeletonSummoning);
 			} else if (accumulated_skulls > 1) {
-				steam_stats_s::unlock(achievement_e::LesserSkeletonSummoning);
+				steam_stats::unlock(achievement_e::LesserSkeletonSummoning);
 
 				if (accumulated_skulls >= globals::MaximumCatalyst) {
-					steam_stats_s::unlock(achievement_e::GreaterSkeletonSummoning);
+					steam_stats::unlock(achievement_e::GreaterSkeletonSummoning);
 				}
 			}
 
@@ -186,10 +186,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, bonespur_t{ accumulated_skulls });
 
-		steam_stats_s::unlock(achievement_e::LesserBonespurSummoning);
+		steam_stats::unlock(achievement_e::LesserBonespurSummoning);
 
 		if (accumulated_skulls >= globals::MaximumCatalyst) {
-			steam_stats_s::unlock(achievement_e::GreaterBonespurSummoning);
+			steam_stats::unlock(achievement_e::GreaterBonespurSummoning);
 		}
 	}
 } // namespace necrowarp

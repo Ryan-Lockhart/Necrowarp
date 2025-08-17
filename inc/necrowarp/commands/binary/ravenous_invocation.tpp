@@ -144,11 +144,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				steam_stats_s::unlock(achievement_e::RavenousUnshackling);
+				steam_stats::unlock(achievement_e::RavenousUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Ravenous);
 
-				steam_stats_s::unlock(achievement_e::RavenousEnshackling);
+				steam_stats::unlock(achievement_e::RavenousEnshackling);
 			}
 
 			eligible_ladder = nullptr;
@@ -162,10 +162,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (accumulated_flesh > 1) {
-				steam_stats_s::unlock(achievement_e::LesserAbominationSummoning);
+				steam_stats::unlock(achievement_e::LesserAbominationSummoning);
 
 				if (accumulated_flesh >= globals::MaximumCatalyst) {
-					steam_stats_s::unlock(achievement_e::GreaterAbominationSummoning);
+					steam_stats::unlock(achievement_e::GreaterAbominationSummoning);
 				}
 			}
 
@@ -180,10 +180,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, flesh_golem_t{ accumulated_flesh });
 
-		steam_stats_s::unlock(achievement_e::LesserFleshGolemSummoning);
+		steam_stats::unlock(achievement_e::LesserFleshGolemSummoning);
 
 		if (accumulated_flesh >= globals::MaximumCatalyst) {
-			steam_stats_s::unlock(achievement_e::GreaterFleshGolemSummoning);
+			steam_stats::unlock(achievement_e::GreaterFleshGolemSummoning);
 		}
 	}
 } // namespace necrowarp

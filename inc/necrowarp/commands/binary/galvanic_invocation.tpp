@@ -153,11 +153,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				steam_stats_s::unlock(achievement_e::GalvanicUnshackling);
+				steam_stats::unlock(achievement_e::GalvanicUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Galvanic);
 
-				steam_stats_s::unlock(achievement_e::GalvanicEnshackling);
+				steam_stats::unlock(achievement_e::GalvanicEnshackling);
 			}
 
 			eligible_ladder = nullptr;
@@ -171,10 +171,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (metal_consumed > 1) {
-				steam_stats_s::unlock(achievement_e::LesserAnimatedSuitSummoning);
+				steam_stats::unlock(achievement_e::LesserAnimatedSuitSummoning);
 
 				if (metal_consumed >= globals::MaximumCatalyst) {
-					steam_stats_s::unlock(achievement_e::GreaterAnimatedSuitSummoning);
+					steam_stats::unlock(achievement_e::GreaterAnimatedSuitSummoning);
 				}
 			}
 
@@ -198,10 +198,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(target_position, death_knight_t{ metal_consumed, triflip(random_engine) ? galvanise(dk_quality) : dk_quality });
 
-		steam_stats_s::unlock(achievement_e::LesserDeathKnightSummoning);
+		steam_stats::unlock(achievement_e::LesserDeathKnightSummoning);
 
 		if (metal_consumed >= globals::MaximumCatalyst) {
-			steam_stats_s::unlock(achievement_e::GreaterDeathKnightSummoning);
+			steam_stats::unlock(achievement_e::GreaterDeathKnightSummoning);
 		}
 	}
 } // namespace necrowarp

@@ -433,6 +433,42 @@ namespace necrowarp {
 		}, patron);
 	}
 
+	static inline void impress(patron_e patron) noexcept {
+		magic_enum::enum_switch([&](auto val) -> void {
+			constexpr patron_e cval{ val };
+			
+			switch (patrons<cval>.disposition) {
+				case disposition_e::Sadistic: {
+					patrons<cval>.disposition = disposition_e::Apathetic;
+					break;
+				} case disposition_e::Apathetic: {
+					patrons<cval>.disposition = disposition_e::Cooperative;
+					break;
+				} default: {
+					break;
+				}
+			}
+		}, patron);
+	}
+
+	static inline void annoy(patron_e patron) noexcept {
+		magic_enum::enum_switch([&](auto val) -> void {
+			constexpr patron_e cval{ val };
+			
+			switch (patrons<cval>.disposition) {
+				case disposition_e::Apathetic: {
+					patrons<cval>.disposition = disposition_e::Sadistic;
+					break;
+				} case disposition_e::Cooperative: {
+					patrons<cval>.disposition = disposition_e::Apathetic;
+					break;
+				} default: {
+					break;
+				}
+			}
+		}, patron);
+	}
+
 	static inline void reset_patrons() noexcept {
 		magic_enum::enum_for_each<patron_e>([&](auto val) -> void {
 			constexpr patron_e cval{ val };

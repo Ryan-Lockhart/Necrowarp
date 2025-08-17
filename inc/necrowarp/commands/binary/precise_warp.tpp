@@ -23,6 +23,8 @@ namespace necrowarp {
 
 		++steam_stats::stats<stat_e::PreciseWarps>;
 
+		steam_stats::unlock(achievement_e::PreciseWarpUsage);
+
 		steam_stats::stats<stat_e::MetersWarped> += offset_t::distance<f32>(source_position, player.position);
 
 		player.pay_cost(grimoire_e::PreciseWarp);

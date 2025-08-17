@@ -146,11 +146,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				steam_stats_s::unlock(achievement_e::SanguineUnshackling);
+				steam_stats::unlock(achievement_e::SanguineUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Sanguine);
 
-				steam_stats_s::unlock(achievement_e::SanguineEnshackling);
+				steam_stats::unlock(achievement_e::SanguineEnshackling);
 			}
 
 			eligible_ladder = nullptr;
@@ -164,10 +164,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (pools_consumed > 1) {
-				steam_stats_s::unlock(achievement_e::LesserBloodhoundSummoning);
+				steam_stats::unlock(achievement_e::LesserBloodhoundSummoning);
 
 				if (pools_consumed >= globals::MaximumCatalyst) {
-					steam_stats_s::unlock(achievement_e::GreaterBloodhoundSummoning);
+					steam_stats::unlock(achievement_e::GreaterBloodhoundSummoning);
 				}
 			}
 
@@ -182,10 +182,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, hemogheist_t{ pools_consumed });
 
-		steam_stats_s::unlock(achievement_e::LesserHemogheistSummoning);
+		steam_stats::unlock(achievement_e::LesserHemogheistSummoning);
 
 		if (pools_consumed >= globals::MaximumCatalyst) {
-			steam_stats_s::unlock(achievement_e::GreaterHemogheistSummoning);
+			steam_stats::unlock(achievement_e::GreaterHemogheistSummoning);
 		}
 	}
 } // namespace necrowarp

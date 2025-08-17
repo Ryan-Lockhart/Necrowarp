@@ -55,7 +55,11 @@ diagnostics = [
 ]
 
 executable('necrowarp', 'src/program.cpp',
-	cpp_args: ['-DSTEAMLESS', '-march=x86-64-v3', necrowarp_args, diagnostics],
+	cpp_args: [
+        #'-DSTEAMLESS',
+        '-march=x86-64-v3',
+        necrowarp_args, diagnostics
+    ],
 
     include_directories: [necrowarp_private_includes, necrowarp_internal_includes],
     dependencies: bleak_dep,

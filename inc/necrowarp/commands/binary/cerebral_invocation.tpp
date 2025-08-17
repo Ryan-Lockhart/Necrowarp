@@ -148,11 +148,11 @@ namespace necrowarp {
 			if (eligible_ladder->is_down_ladder()) {
 				eligible_ladder->unshackle();
 
-				steam_stats_s::unlock(achievement_e::CerebralUnshackling);
+				steam_stats::unlock(achievement_e::CerebralUnshackling);
 			} else {
 				eligible_ladder->enshackle(shackle_e::Cerebral);
 
-				steam_stats_s::unlock(achievement_e::CerebralEnshackling);
+				steam_stats::unlock(achievement_e::CerebralEnshackling);
 			}
 
 			eligible_ladder = nullptr;
@@ -166,10 +166,10 @@ namespace necrowarp {
 
 		if (!player.has_ascended()) {
 			if (accumulated_cerebra > 1) {
-				steam_stats_s::unlock(achievement_e::LesserHamazSummoning);
+				steam_stats::unlock(achievement_e::LesserHamazSummoning);
 
 				if (accumulated_cerebra >= globals::MaximumCatalyst) {
-					steam_stats_s::unlock(achievement_e::GreaterHamazSummoning);
+					steam_stats::unlock(achievement_e::GreaterHamazSummoning);
 				}
 			}
 
@@ -184,10 +184,10 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent add<true>(source_position, furtive_horror_t{ accumulated_cerebra });
 
-		steam_stats_s::unlock(achievement_e::LesserFurtiveHorrorSummoning);
+		steam_stats::unlock(achievement_e::LesserFurtiveHorrorSummoning);
 
 		if (accumulated_cerebra >= globals::MaximumCatalyst) {
-			steam_stats_s::unlock(achievement_e::GreaterFurtiveHorrorSummoning);
+			steam_stats::unlock(achievement_e::GreaterFurtiveHorrorSummoning);
 		}
 	}
 } // namespace necrowarp
