@@ -155,6 +155,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> ranger_goal_map{};
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> skulker_goal_map{};
+	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> medicus_goal_map{};
 
 	template<map_type_e MapType, Entity EntityType, bool Incorporeal = false> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> entity_goal_map{};
 
@@ -1101,6 +1102,73 @@ namespace necrowarp {
 		skulker_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
 
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_medicus_goal_map() noexcept {
+		medicus_goal_map<MapType>.reset();
+
+		for (offset_t::scalar_t y{ game_map<MapType>.interior_origin.y }; y < game_map<MapType>.interior_origin.y + game_map<MapType>.interior_size.h; ++y) {
+			for (offset_t::scalar_t x{ game_map<MapType>.interior_origin.x }; game_map<MapType>.interior_origin.x + game_map<MapType>.interior_size.w; ++x) {
+				const offset_t pos{ x, y };
+				
+				if (object_registry<MapType>.dependent empty<cerebra_t>(pos) && object_registry<MapType>.dependent empty<flesh_t>(pos) && object_registry<MapType>.dependent empty<bones_t>(pos)) {
+					continue;
+				}
+
+				cptr<cerebra_t> maybe_cerebra{ object_registry<MapType>.dependent at<cerebra_t>(pos) };
+
+				if (maybe_cerebra == nullptr) {
+					continue;
+				}
+
+				cref<cerebra_t> cerebra{ *maybe_cerebra };
+
+				switch (cerebra.entity) {
+					case entity_e::Mercenary:
+					case entity_e::Paladin: {
+						if (object_registry<MapType>.dependent empty<metal_t>(pos)) {
+							continue;
+						}
+
+						break;
+					} default: {
+						medicus_goal_map<MapType>.add(pos);
+
+						continue;
+					}
+				}
+
+				cptr<metal_t> maybe_metal{ object_registry<MapType>.dependent at<metal_t>(pos) };
+
+				if (maybe_metal == nullptr) {
+					continue;
+				}
+
+				cref<metal_t> metal{ *maybe_metal };
+
+				switch (cerebra.entity) {
+					case entity_e::Mercenary: {
+						if (metal.state != galvanisation_e::Twisted) {
+							continue;
+						}
+
+						break;
+					} case entity_e::Paladin: {
+						if (metal.state != galvanisation_e::Shimmering) {
+							continue;
+						}
+
+						break;
+					} default: {
+						continue;
+					}
+				}
+
+				medicus_goal_map<MapType>.add(pos);
+			}
+		}
+
+		medicus_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
+	}
+
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_specialist_goal_maps() noexcept {
 		recalculate_skulker_goal_map();
 
@@ -1151,6 +1219,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_specialist_goal_maps() noexcept {
 		skulker_goal_map<MapType>.reset();
 		ranger_goal_map<MapType>.reset();
+		medicus_goal_map<MapType>.reset();
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_unique_goal_maps() noexcept {

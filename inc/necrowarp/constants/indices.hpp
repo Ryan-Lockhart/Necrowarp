@@ -26,11 +26,14 @@ namespace necrowarp::indices {
 	constexpr const u8 MercenaryHamaz{ AdventurerHamaz + 1 };
 	constexpr const u8 RangerHamaz{ MercenaryHamaz + 1 };
 	constexpr const u8 SkulkerHamaz{ RangerHamaz + 1 };
-	constexpr const u8 MistLadyHamaz{ SkulkerHamaz + 1 };
+	constexpr const u8 ManslingHamaz{ SkulkerHamaz + 1 };
+	constexpr const u8 MistLadyHamaz{ ManslingHamaz + 1 };
 	constexpr const u8 BannerBearerHamaz{ MistLadyHamaz + 1 };
-	constexpr const u8 BattleMonkHamaz{ BannerBearerHamaz + 1 };
+	constexpr const u8 MedicusHamaz{ BannerBearerHamaz + 1 };
+	constexpr const u8 BattleMonkHamaz{ MedicusHamaz + 1 };
 	constexpr const u8 BerserkerHamaz{ BattleMonkHamaz + 1 };
-	constexpr const u8 PaladinHamaz{ BerserkerHamaz + 1 };
+	constexpr const u8 HexeaterHamaz{ BerserkerHamaz + 1 };
+	constexpr const u8 PaladinHamaz{ HexeaterHamaz + 1 };
 
 	constexpr const u8 Chromalese{ PaladinHamaz + 1 };
 

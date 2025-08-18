@@ -63,10 +63,13 @@ namespace necrowarp {
 		template<> inline constexpr i8 MaximumHealth<entity_e::Mercenary>{ 2 };
 		template<> inline constexpr i8 MaximumHealth<entity_e::Ranger>{ 1 };
 		template<> inline constexpr i8 MaximumHealth<entity_e::Skulker>{ 2 };
+		template<> inline constexpr i8 MaximumHealth<entity_e::Mansling>{ 1 };
 		template<> inline constexpr i8 MaximumHealth<entity_e::MistLady>{ 1 };
 		template<> inline constexpr i8 MaximumHealth<entity_e::BannerBearer>{ 2 };
+		template<> inline constexpr i8 MaximumHealth<entity_e::Medicus>{ 1 };
 		template<> inline constexpr i8 MaximumHealth<entity_e::BattleMonk>{ 3 };
 		template<> inline constexpr i8 MaximumHealth<entity_e::Berserker>{ 3 };
+		template<> inline constexpr i8 MaximumHealth<entity_e::Hexeater>{ 4 };
 		template<> inline constexpr i8 MaximumHealth<entity_e::Paladin>{ 5 };
 
 		template<entity_e Entity> static constexpr i8 MaximumDamage{ 0 };
@@ -75,24 +78,30 @@ namespace necrowarp {
 		template<> inline constexpr i8 MaximumDamage<entity_e::Mercenary>{ 2 };
 		template<> inline constexpr i8 MaximumDamage<entity_e::Ranger>{ 1 };
 		template<> inline constexpr i8 MaximumDamage<entity_e::Skulker>{ 2 };
+		template<> inline constexpr i8 MaximumDamage<entity_e::Mansling>{ 1 };
 		template<> inline constexpr i8 MaximumDamage<entity_e::MistLady>{ 1 };
 		template<> inline constexpr i8 MaximumDamage<entity_e::BannerBearer>{ 2 };
+		template<> inline constexpr i8 MaximumDamage<entity_e::Medicus>{ 1 };
 		template<> inline constexpr i8 MaximumDamage<entity_e::BattleMonk>{ 2 };
 		template<> inline constexpr i8 MaximumDamage<entity_e::Berserker>{ 2 };
+		template<> inline constexpr i8 MaximumDamage<entity_e::Hexeater>{ 3 };
 		template<> inline constexpr i8 MaximumDamage<entity_e::Paladin>{ 3 };
 
 		static constexpr f16 EnhancedHealthMultiplier{ 2.0f };
 		static constexpr f16 EnhancedDamageMultiplier{ 1.5f };
 
-		static constexpr std::array<entity_e, 10> EntityPriorities{
+		static constexpr std::array<entity_e, 13> EntityPriorities{
 			entity_e::Adventurer,
 			entity_e::Mercenary,
 			entity_e::Ranger,
 			entity_e::Skulker,
+			entity_e::Mansling,
 			entity_e::MistLady,
 			entity_e::BannerBearer,
+			entity_e::Medicus,
 			entity_e::BattleMonk,
 			entity_e::Berserker,
+			entity_e::Hexeater,
 			entity_e::Paladin,
 			entity_e::Thetwo,
 		};

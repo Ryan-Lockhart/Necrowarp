@@ -175,6 +175,8 @@ namespace necrowarp {
 
 		inline void recalculate_alignment_goal_maps() noexcept;
 
+		inline void recalculate_medicus_goal_map() noexcept;
+
 		inline void recalculate_skulker_goal_map() noexcept;
 
 		inline void recalculate_specialist_goal_maps() noexcept;
