@@ -29,11 +29,13 @@ namespace necrowarp {
 	struct move_t;
 	struct descend_t;
 	struct plunge_t;
+	struct depart_t;
 	struct consume_t;
 	struct clash_t;
 	struct devour_t;
 	struct loose_t;
 	struct retrieve_t;
+	struct resuscitate_t;
 	struct batter_t;
 	struct precise_warp_t;
 	struct consume_warp_t;
@@ -73,11 +75,13 @@ namespace necrowarp {
 		move_t, \
 		descend_t, \
 		plunge_t, \
+		depart_t, \
 		consume_t, \
 		clash_t, \
 		devour_t, \
 		loose_t, \
 		retrieve_t, \
+		resuscitate_t, \
 		batter_t, \
 		precise_warp_t, \
 		consume_warp_t, \
@@ -108,6 +112,7 @@ namespace necrowarp {
 	#define ALL_BASIC_COMMANDS \
 		wander_t, \
 		move_t, \
+		depart_t, \
 		clash_t
 
 	#define ALL_NECRO_COMMANDS \
@@ -155,6 +160,9 @@ namespace necrowarp {
 		retrieve_t, \
 		loose_t
 
+	#define ALL_MEDICUS_COMMANDS \
+		resuscitate_t
+
 	#define ALL_BATTLE_MONK_COMMANDS \
 		meditate_t, \
 		batter_t
@@ -170,6 +178,7 @@ namespace necrowarp {
 		ALL_FLESH_GOLEM_COMMANDS, \
 		ALL_THETWO_COMMANDS, \
 		ALL_RANGER_COMMANDS, \
+		ALL_MEDICUS_COMMANDS, \
 		ALL_BATTLE_MONK_COMMANDS, \
 		ALL_ISOSCEL_COMMANDS
 	
@@ -196,10 +205,12 @@ namespace necrowarp {
 		Move,
 		Descend,
 		Plunge,
+		Depart,
 		Consume,
 		Clash,
 		Devour,
 		Retrieve,
+		Resuscitate,
 		Loose,
 		Batter,
 		PreciseWarp,
@@ -271,6 +282,8 @@ namespace necrowarp {
 				return "descend";
 			} case command_e::Plunge: {
 				return "plunge";
+			} case command_e::Depart: {
+				return "depart";
 			} case command_e::Consume: {
 				return "consume";
 			} case command_e::Clash: {
@@ -279,6 +292,8 @@ namespace necrowarp {
 				return "devour";
 			} case command_e::Retrieve: {
 				return "retrieve";
+			} case command_e::Resuscitate: {
+				return "resuscitate";
 			} case command_e::Loose: {
 				return "loose";
 			} case command_e::Batter: {

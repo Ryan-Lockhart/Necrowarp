@@ -714,6 +714,14 @@ namespace necrowarp {
 
 	template<typename T> concept DevourableEntity = Entity<T> && is_devourable<T>::value;
 
+	template<typename T> struct is_stockable {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_stockable_v = is_stockable<T>::value;
+
+	template<typename T> concept StockableEntity = Entity<T> && is_stockable<T>::value;
+
 	template<typename T> struct is_incorporeal {
 		static constexpr bool value = false;
 		static constexpr bool conditional = false;

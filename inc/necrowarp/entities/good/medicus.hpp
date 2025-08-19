@@ -3,6 +3,10 @@
 #include <necrowarp/entities/entity.hpp>
 #include <necrowarp/commands/command.hpp>
 
+#include <necrowarp/entity_command.hpp>
+
+#include <necrowarp/commands/binary/resuscitate.hpp>
+
 #include <necrowarp/game_state.hpp>
 
 namespace necrowarp {
@@ -59,6 +63,14 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_stockable<medicus_t> {
+		static constexpr bool value = true;
+	};
+
+	template<> struct is_entity_command_valid<medicus_t, resuscitate_t> {
+		static constexpr bool value = true;
+	};
+
 	struct medicus_t {
 		static constexpr i8 MaximumHealth{ 1 };
 
@@ -77,8 +89,10 @@ namespace necrowarp {
 		inline void set_satchels(i8 value) noexcept { satchels = clamp<i8>(value, 0, max_satchels()); }
 
 	  public:
-		inline medicus_t() noexcept {}
-		
+		inline medicus_t() noexcept : satchels{ MaximumSatchels } {}
+
+		inline medicus_t(i8 amount) noexcept : satchels{ clamp<i8>(amount, 0, max_satchels()) } {}
+
 		inline i8 get_satchels() const noexcept { return satchels; }
 
 		inline bool has_satchels() const noexcept { return satchels > 0; }
@@ -87,7 +101,11 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
+		template<map_type_e MapType> inline std::optional<entity_e> can_resuscitate(offset_t position) const noexcept;
+
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
+
+		template<map_type_e MapType> inline bool resuscitate(offset_t position) noexcept;
 
 		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 

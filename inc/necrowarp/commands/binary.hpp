@@ -4,10 +4,12 @@
 #include <necrowarp/commands/binary/move.hpp>
 #include <necrowarp/commands/binary/descend.hpp>
 #include <necrowarp/commands/binary/plunge.hpp>
+#include <necrowarp/commands/binary/depart.hpp>
 #include <necrowarp/commands/binary/consume.hpp>
 #include <necrowarp/commands/binary/clash.hpp>
 #include <necrowarp/commands/binary/devour.hpp>
 #include <necrowarp/commands/binary/retrieve.hpp>
+#include <necrowarp/commands/binary/resuscitate.hpp>
 #include <necrowarp/commands/binary/loose.hpp>
 #include <necrowarp/commands/binary/batter.hpp>
 #include <necrowarp/commands/binary/eradicate.hpp>

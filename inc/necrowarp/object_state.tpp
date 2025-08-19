@@ -32,6 +32,8 @@ namespace necrowarp {
 	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_registry_storage{};
 
 	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_buffer_storage{};
+	
+	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> departure_goal_map{};
 
 	template<map_type_e MapType, NonNullObject ObjectType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> object_goal_map{};
 
@@ -257,6 +259,14 @@ namespace necrowarp {
 
 		if (inserted) {
 			object_goal_map<MapType, ObjectType>.add(position);
+
+			if constexpr (std::is_same<ObjectType, ladder_t>::value) {
+				ptr<ladder_t> maybe_ladder{ at<ladder_t>(position) };
+
+				if (maybe_ladder != nullptr && maybe_ladder->is_up_ladder() && !maybe_ladder->has_shackle()) {
+					departure_goal_map<MapType>.add(position);
+				}
+			}
 		}
 
 		return inserted;
@@ -273,6 +283,14 @@ namespace necrowarp {
 
 		if (inserted) {
 			object_goal_map<MapType, ObjectType>.add(position);
+
+			if constexpr (std::is_same<ObjectType, ladder_t>::value) {
+				ptr<ladder_t> maybe_ladder{ at<ladder_t>(position) };
+
+				if (maybe_ladder != nullptr && maybe_ladder->is_up_ladder() && !maybe_ladder->has_shackle()) {
+					departure_goal_map<MapType>.add(position);
+				}
+			}
 		}
 
 		return inserted;
@@ -548,7 +566,11 @@ namespace necrowarp {
 		(recalculate_goal_map<ObjectTypes>(), ...);
 	}
 
-	template<map_type_e MapType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept { recalculate_goal_map<ALL_OBJECTS>(); }
+	template<map_type_e MapType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
+		departure_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
+
+		recalculate_goal_map<ALL_OBJECTS>();
+	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::reset_goal_map() noexcept {
 		object_goal_map<MapType, ObjectType>.reset();
@@ -561,7 +583,11 @@ namespace necrowarp {
 		(reset_goal_map<ObjectTypes>(), ...);
 	}
 
-	template<map_type_e MapType> inline void object_registry_t<MapType>::reset_goal_map() noexcept { reset_goal_map<ALL_OBJECTS>(); }
+	template<map_type_e MapType> inline void object_registry_t<MapType>::reset_goal_map() noexcept {
+		departure_goal_map<MapType>.reset();
+
+		reset_goal_map<ALL_OBJECTS>();
+	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw() const noexcept {
 		for (crauto [position, object] : object_registry_storage<ObjectType>) {

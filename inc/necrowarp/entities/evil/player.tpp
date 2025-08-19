@@ -40,10 +40,13 @@ namespace necrowarp {
 				case entity_e::Mercenary:
 				case entity_e::Ranger:
 				case entity_e::Skulker:
+				case entity_e::Mansling:
 				case entity_e::MistLady:
 				case entity_e::BannerBearer:
+				case entity_e::Medicus:
 				case entity_e::BattleMonk:
 				case entity_e::Berserker:
+				case entity_e::Hexeater:
 				case entity_e::Paladin:
 				case entity_e::Thetwo: {
 					return command_e::Clash;

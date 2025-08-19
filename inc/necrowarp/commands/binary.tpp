@@ -4,10 +4,12 @@
 #include <necrowarp/commands/binary/move.tpp>
 #include <necrowarp/commands/binary/descend.tpp>
 #include <necrowarp/commands/binary/plunge.tpp>
+#include <necrowarp/commands/binary/depart.tpp>
 #include <necrowarp/commands/binary/consume.tpp>
 #include <necrowarp/commands/binary/clash.tpp>
 #include <necrowarp/commands/binary/devour.tpp>
 #include <necrowarp/commands/binary/retrieve.tpp>
+#include <necrowarp/commands/binary/resuscitate.tpp>
 #include <necrowarp/commands/binary/loose.tpp>
 #include <necrowarp/commands/binary/batter.tpp>
 #include <necrowarp/commands/binary/eradicate.tpp>
@@ -35,6 +37,9 @@ namespace necrowarp {
 	template struct entity_command_t<player_t, plunge_t>;
 	template void entity_command_t<player_t, plunge_t>::process<map_type_e::Pocket>() const noexcept;
 
+	template struct entity_command_t<medicus_t, depart_t>;
+	template void entity_command_t<medicus_t, depart_t>::process<map_type_e::Pocket>() const noexcept;
+
 	template struct entity_command_t<player_t, consume_t>;
 	template void entity_command_t<player_t, consume_t>::process<map_type_e::Pocket>() const noexcept;
 
@@ -49,6 +54,9 @@ namespace necrowarp {
 
 	template struct entity_command_t<ranger_t, retrieve_t>;
 	template void entity_command_t<ranger_t, retrieve_t>::process<map_type_e::Pocket>() const noexcept;
+
+	template struct entity_command_t<medicus_t, resuscitate_t>;
+	template void entity_command_t<medicus_t, resuscitate_t>::process<map_type_e::Pocket>() const noexcept;
 
 	template struct entity_command_t<ranger_t, loose_t>;
 	template void entity_command_t<ranger_t, loose_t>::process<map_type_e::Pocket>() const noexcept;

@@ -354,6 +354,11 @@ namespace necrowarp {
 
 		constexpr i16 FloorsPerReinforcement{ 2 };
 
+		constexpr i16 MinimumDepartureEpoch{ 3 };
+		constexpr i16 MaximumDepartureEpoch{ 12 };
+
+		constexpr i16 FloorsPerDepartureEpoch{ 4 };
+
 		constexpr i16 FleshPerThetwoPopulation{ 32 };
 
 		constexpr bool CheatsAllowed{ true };

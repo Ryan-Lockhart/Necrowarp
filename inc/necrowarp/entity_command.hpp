@@ -4,6 +4,7 @@
 
 #include <necrowarp/entities/entity.hpp>
 #include <necrowarp/commands/command.hpp>
+
 #include <necrowarp/objects/object.hpp>
 
 namespace necrowarp {
@@ -22,6 +23,10 @@ namespace necrowarp {
 	};
 
 	template<CombatantEntity EntityType> struct is_entity_command_valid<EntityType, clash_t> {
+		static constexpr bool value = true;
+	};
+
+	template<GoodEntity EntityType> struct is_entity_command_valid<EntityType, depart_t> {
 		static constexpr bool value = true;
 	};
 

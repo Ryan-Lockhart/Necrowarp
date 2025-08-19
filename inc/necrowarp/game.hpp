@@ -781,6 +781,36 @@ namespace necrowarp {
 			return true;
 		}
 
+		template<map_type_e MapType, GoodEntity... EntityTypes> static inline bool spawn_offmap() noexcept {
+			cauto maybe_spawn = find_spawn_position<MapType, object_e::Ladder>();
+
+			if (!maybe_spawn.has_value()) {
+				return false;
+			}
+
+			const offset_t spawn_position{ maybe_spawn.value() };
+
+			static std::discrete_distribution<usize> offmap_dis{ static_cast<f64>(reinforcement_count<MapType, EntityTypes> * 2)... };
+
+			return magic_enum::enum_switch([&](auto val) -> bool {
+				constexpr entity_e cval{ val };
+
+				using entity_type = typename to_entity_type<cval>::type;
+
+				if constexpr (is_good<entity_type>::value) {
+					if (entity_registry<MapType>.dependent add<true>(spawn_position, entity_type{})) {
+						--reinforcement_count<MapType, entity_type>;
+
+						return true;
+					}
+
+					return false;
+				}
+
+				return false;
+			}, static_cast<entity_e>(static_cast<usize>(entity_e::Adventurer) + offmap_dis(random_engine)));
+		}
+
 		template<map_type_e MapType> static inline bool spawn_neutral() noexcept {
 			cauto maybe_spawn = find_spawn_position<MapType, object_e::Crevice>();
 
@@ -815,8 +845,14 @@ namespace necrowarp {
 
 			game_stats.update_wave_size();
 
-			if (entity_registry<MapType>.dependent empty<ALL_GOOD_NPCS>() && !game_stats.has_spawns()) {
+			if (entity_registry<MapType>.dependent empty<ALL_GOOD_NPCS>() && !game_stats.has_spawns() && !entity_registry<MapType>.any_offmap()) {
 				game_stats.spawns_remaining = game_stats.wave_size;
+			}
+
+			while (entity_registry<MapType>.any_offmap()) {
+				if (!spawn_offmap<MapType, ALL_GOOD>()) {
+					break;
+				}
 			}
 
 			while (game_stats.has_spawns()) {
@@ -844,12 +880,8 @@ namespace necrowarp {
 			}
 
 			if (fluid_map_dirty) {
-				for (offset_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
-					for (offset_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
-						const offset_t pos{ x, y };
-
-						fluid_map<MapType>[pos].recalculate_index(fluid_map<MapType>, pos, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
-					}
+				for (cauto position : fluid_map<MapType>.zone_offsets) {
+					fluid_map<MapType>[position].recalculate_index(fluid_map<MapType>, position, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
 				}
 
 				fluid_map_dirty = false;

@@ -23,6 +23,7 @@ namespace necrowarp {
 		i8 accumulated_skulls{ 0 };
 
 		ptr<ladder_t> eligible_ladder{ nullptr };
+		std::optional<offset_t> ladder_position{ std::nullopt };
 
 		for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
 			const offset_t position{ target_position + offset };
@@ -66,14 +67,18 @@ namespace necrowarp {
 						if (eligible_ladder->is_down_ladder()) {
 							eligible_ladder = nullptr;
 						}
+
 						break;
 					} default: {
 						if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_e::Calcitic) {
 							eligible_ladder = nullptr;
 						}
+
 						break;
 					}
 				}
+
+				ladder_position = position;
 			}
 		}
 
@@ -128,14 +133,18 @@ namespace necrowarp {
 							if (eligible_ladder->is_down_ladder()) {
 								eligible_ladder = nullptr;
 							}
+
 							break;
 						} default: {
 							if (eligible_ladder->is_up_ladder() || eligible_ladder->shackle != shackle_e::Calcitic) {
 								eligible_ladder = nullptr;
 							}
+
 							break;
 						}
 					}
+
+					ladder_position = position;
 				}
 			}
 		}
@@ -152,10 +161,15 @@ namespace necrowarp {
 			} else {
 				eligible_ladder->enshackle(shackle_e::Calcitic);
 
+				if (ladder_position.has_value()) {
+					departure_goal_map<MapType>.remove(ladder_position.value());
+				}
+
 				steam_stats::unlock(achievement_e::CalciticEnshackling);
 			}
 
 			eligible_ladder = nullptr;
+			ladder_position = std::nullopt;
 		}
 
 		++steam_stats::stats<stat_e::CalciticInvocations>;

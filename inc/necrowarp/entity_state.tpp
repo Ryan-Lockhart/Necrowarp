@@ -159,6 +159,10 @@ namespace necrowarp {
 
 	template<map_type_e MapType, Entity EntityType, bool Incorporeal = false> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> entity_goal_map{};
 
+	template<map_type_e MapType, GoodEntity EntityType> static inline std::priority_queue<usize> offmap_reinforcements{};
+
+	template<map_type_e MapType, GoodEntity EntityType> static inline usize reinforcement_count{};
+
 	static inline volatile std::atomic<bool> descent_flag{ false };
 
 	static inline volatile std::atomic<bool> plunge_flag{ false };
@@ -577,11 +581,13 @@ namespace necrowarp {
 
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline void entity_registry_t<MapType>::clear() noexcept {
 		player.reset();
+
 		reset_goal_map<EntityType>();
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::clear() noexcept {
 		entity_registry_storage<EntityType>.clear();
+
 		reset_goal_map<EntityType>();
 	}
 
@@ -924,6 +930,8 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::update() noexcept {
 		concussed.clear();
 
+		tick_offmap();
+
 		entity_registry<MapType>.recalculate_goal_map();
 		object_registry<MapType>.recalculate_goal_map();
 
@@ -1105,65 +1113,73 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_medicus_goal_map() noexcept {
 		medicus_goal_map<MapType>.reset();
 
-		for (offset_t::scalar_t y{ game_map<MapType>.interior_origin.y }; y < game_map<MapType>.interior_origin.y + game_map<MapType>.interior_size.h; ++y) {
-			for (offset_t::scalar_t x{ game_map<MapType>.interior_origin.x }; game_map<MapType>.interior_origin.x + game_map<MapType>.interior_size.w; ++x) {
-				const offset_t pos{ x, y };
-				
-				if (object_registry<MapType>.dependent empty<cerebra_t>(pos) && object_registry<MapType>.dependent empty<flesh_t>(pos) && object_registry<MapType>.dependent empty<bones_t>(pos)) {
-					continue;
-				}
+		if (entity_registry<MapType>.dependent empty<medicus_t>() || object_registry<MapType>.dependent empty<cerebra_t>() || object_registry<MapType>.dependent empty<flesh_t>() || object_registry<MapType>.dependent empty<bones_t>()) {
+			return;
+		}
 
-				cptr<cerebra_t> maybe_cerebra{ object_registry<MapType>.dependent at<cerebra_t>(pos) };
-
-				if (maybe_cerebra == nullptr) {
-					continue;
-				}
-
-				cref<cerebra_t> cerebra{ *maybe_cerebra };
-
-				switch (cerebra.entity) {
-					case entity_e::Mercenary:
-					case entity_e::Paladin: {
-						if (object_registry<MapType>.dependent empty<metal_t>(pos)) {
-							continue;
-						}
-
-						break;
-					} default: {
-						medicus_goal_map<MapType>.add(pos);
-
-						continue;
-					}
-				}
-
-				cptr<metal_t> maybe_metal{ object_registry<MapType>.dependent at<metal_t>(pos) };
-
-				if (maybe_metal == nullptr) {
-					continue;
-				}
-
-				cref<metal_t> metal{ *maybe_metal };
-
-				switch (cerebra.entity) {
-					case entity_e::Mercenary: {
-						if (metal.state != galvanisation_e::Twisted) {
-							continue;
-						}
-
-						break;
-					} case entity_e::Paladin: {
-						if (metal.state != galvanisation_e::Shimmering) {
-							continue;
-						}
-
-						break;
-					} default: {
-						continue;
-					}
-				}
-
-				medicus_goal_map<MapType>.add(pos);
+		for (cauto position : game_map<MapType>.interior_offsets) {
+			if (!game_map<MapType>.dependent within<region_e::Interior>(position) || game_map<MapType>[position].solid || !entity_registry<MapType>.empty(position)) {
+				continue;
 			}
+
+			if (object_registry<MapType>.dependent empty<cerebra_t>(position) && object_registry<MapType>.dependent empty<flesh_t>(position) && object_registry<MapType>.dependent empty<bones_t>(position)) {
+				continue;
+			}
+
+			if (cptr<bones_t> maybe_bones{ object_registry<MapType>.dependent at<bones_t>(position) }; maybe_bones == nullptr || !maybe_bones->is<decay_e::Fresh>()) {
+				continue;
+			}
+
+			cptr<cerebra_t> maybe_cerebra{ object_registry<MapType>.dependent at<cerebra_t>(position) };
+
+			if (maybe_cerebra == nullptr) {
+				continue;
+			}
+
+			cref<cerebra_t> cerebra{ *maybe_cerebra };
+
+			switch (cerebra.entity) {
+				case entity_e::Mercenary:
+				case entity_e::Paladin: {
+					if (object_registry<MapType>.dependent empty<metal_t>(position)) {
+						continue;
+					}
+
+					break;
+				} default: {
+					medicus_goal_map<MapType>.add(position);
+
+					continue;
+				}
+			}
+
+			cptr<metal_t> maybe_metal{ object_registry<MapType>.dependent at<metal_t>(position) };
+
+			if (maybe_metal == nullptr) {
+				continue;
+			}
+
+			cref<metal_t> metal{ *maybe_metal };
+
+			switch (cerebra.entity) {
+				case entity_e::Mercenary: {
+					if (metal.state != galvanisation_e::Twisted) {
+						continue;
+					}
+
+					break;
+				} case entity_e::Paladin: {
+					if (metal.state != galvanisation_e::Shimmering) {
+						continue;
+					}
+
+					break;
+				} default: {
+					continue;
+				}
+			}
+
+			medicus_goal_map<MapType>.add(position);
 		}
 
 		medicus_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
@@ -1171,6 +1187,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_specialist_goal_maps() noexcept {
 		recalculate_skulker_goal_map();
+		recalculate_medicus_goal_map();
 
 		ranger_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
@@ -1226,6 +1243,80 @@ namespace necrowarp {
 		reset_alignment_goal_maps();
 		reset_specialist_goal_maps();
 	}
+
+	template<map_type_e MapType> template<GoodEntity EntityType> inline bool entity_registry_t<MapType>::depart() noexcept {}
+
+	template<map_type_e MapType> template<GoodEntity EntityType> inline bool entity_registry_t<MapType>::depart(usize epoch) noexcept {}
+
+	template<map_type_e MapType> template<GoodEntity EntityType> inline void entity_registry_t<MapType>::clear_offmap() noexcept {
+		while (!offmap_reinforcements<MapType, EntityType>.empty()) { offmap_reinforcements<MapType, EntityType>.pop(); }
+	}
+
+	template<map_type_e MapType>
+	template<GoodEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline void entity_registry_t<MapType>::clear_offmap() noexcept {
+		(clear_offmap<EntityTypes>(), ...);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::clear_offmap() noexcept { clear_offmap<ALL_GOOD>(); }
+
+	template<map_type_e MapType> template<GoodEntity EntityType> inline void entity_registry_t<MapType>::tick_offmap() noexcept {
+		if (offmap_reinforcements<MapType, EntityType>.empty()) {
+			return;
+		}
+
+		std::priority_queue<usize> ticked{};
+
+		while (!offmap_reinforcements<MapType, EntityType>.empty()) {
+			usize epoch{ offmap_reinforcements<MapType, EntityType>.top() };
+
+			offmap_reinforcements<MapType, EntityType>.pop();
+
+			if (epoch > 0) {
+				ticked.emplace(--epoch);
+			} else {
+				++reinforcement_count<MapType, EntityType>;
+			}
+		}
+
+		offmap_reinforcements<MapType, EntityType> = ticked;
+	}
+
+	template<map_type_e MapType>
+	template<GoodEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline void entity_registry_t<MapType>::tick_offmap() noexcept {
+		(tick_offmap<EntityTypes>(), ...);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::tick_offmap() noexcept { tick_offmap<ALL_GOOD>(); }
+
+	template<map_type_e MapType> template<GoodEntity EntityType> inline bool entity_registry_t<MapType>::any_offmap() const noexcept {
+		return reinforcement_count<MapType, EntityType> > 0;
+	}
+
+	template<map_type_e MapType>
+	template<GoodEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline bool entity_registry_t<MapType>::any_offmap() const noexcept {
+		return (any_offmap<EntityTypes>() || ...);
+	}
+
+	template<map_type_e MapType> inline bool entity_registry_t<MapType>::any_offmap() const noexcept { return any_offmap<ALL_GOOD>(); }
+
+	template<map_type_e MapType> template<GoodEntity EntityType> inline usize entity_registry_t<MapType>::offmap_count() const noexcept {
+		return reinforcement_count<MapType, EntityType>;
+	}
+
+	template<map_type_e MapType>
+	template<GoodEntity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline usize entity_registry_t<MapType>::offmap_count() const noexcept {
+		return (offmap_count<EntityTypes>() + ...);
+	}
+
+	template<map_type_e MapType> inline usize entity_registry_t<MapType>::offmap_count() const noexcept { return offmap_count<ALL_GOOD>(); }
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
 		reset_goal_map<ALL_ENTITIES>();
@@ -1322,7 +1413,8 @@ namespace necrowarp {
 					}
 
 					break;
-				} case command_e::Retrieve: {
+				} case command_e::Retrieve:
+				  case command_e::Resuscitate: {
 					if (object_registry<MapType>.empty(command.target_position)) {
 						return false;
 					}

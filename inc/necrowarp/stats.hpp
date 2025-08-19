@@ -207,6 +207,8 @@ namespace necrowarp {
 		inline i8 kills_until_next_phantasm_turn() const noexcept { return abs(total_kills() % globals::KillsPerPhantasmTurn - globals::KillsPerPhantasmTurn); }
 
 		inline i16 current_reinforcements() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerReinforcement, globals::MinimumReinforcements, globals::MaximumReinforcements); }
+
+		inline i16 current_departure_epoch() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerDepartureEpoch, globals::MinimumDepartureEpoch, globals::MaximumDepartureEpoch); }
 		
 		inline bool has_reinforcements() const noexcept { return current_reinforcements() > 0; }
 

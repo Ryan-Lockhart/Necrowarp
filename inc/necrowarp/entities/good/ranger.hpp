@@ -69,6 +69,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_stockable<ranger_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_entity_command_valid<ranger_t, nock_t> {
 		static constexpr bool value = true;
 	};

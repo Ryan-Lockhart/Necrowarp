@@ -197,6 +197,42 @@ namespace necrowarp {
 
 		inline void reset_unique_goal_maps() noexcept;
 
+		template<GoodEntity EntityType> inline bool depart() noexcept;
+
+		template<GoodEntity EntityType> inline bool depart(usize epoch) noexcept;
+
+		template<GoodEntity EntityType> inline void clear_offmap() noexcept;
+
+		template<GoodEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline void clear_offmap() noexcept;
+
+		inline void clear_offmap() noexcept;
+
+		template<GoodEntity EntityType> inline void tick_offmap() noexcept;
+
+		template<GoodEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline void tick_offmap() noexcept;
+
+		inline void tick_offmap() noexcept;
+
+		template<GoodEntity EntityType> inline bool any_offmap() const noexcept;
+
+		template<GoodEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline bool any_offmap() const noexcept;
+
+		inline bool any_offmap() const noexcept;
+
+		template<GoodEntity EntityType> inline usize offmap_count() const noexcept;
+
+		template<GoodEntity... EntityTypes>
+			requires is_plurary<EntityTypes...>::value
+		inline usize offmap_count() const noexcept;
+
+		inline usize offmap_count() const noexcept;
+
 		inline bool is_deceased(offset_t position) const noexcept;
 
 		inline bool is_concussed(offset_t position) const noexcept;
