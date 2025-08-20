@@ -21,7 +21,7 @@ namespace necrowarp {
 
 	namespace globals {
 		constexpr cstr GameName{ "Necrowarp" };
-		constexpr cstr GameVersion{ "0.1.2rc-2" };
+		constexpr cstr GameVersion{ "0.1.2rc-3" };
 		constexpr cstr GameAuthor{ "Ryan Lockhart" };
 
 		const std::string GameTitle{ std::format("{} v{} by {}", GameName, GameVersion, GameAuthor) };
@@ -29,7 +29,7 @@ namespace necrowarp {
 		constexpr sdl::window_flags WindowFlags{ static_cast<sdl::window_flags>(SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS) };
 		constexpr sdl::renderer_flags RendererFlags{ static_cast<sdl::renderer_flags>(SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE) };
 
-		static inline bool use_frame_limit{ true };
+		static inline bool use_frame_limit{ false };
 
 		static inline u32 frame_limit{ 60u };
 		static inline f32 frame_time() { return 1000.0f / frame_limit; }
@@ -362,12 +362,12 @@ namespace necrowarp {
 
 		constexpr i16 FleshPerThetwoPopulation{ 32 };
 
-		constexpr bool CheatsAllowed{ true };
+		constexpr bool CheatsAllowed{ false };
 
 		constexpr bool SpawnTutorialPortal{ false };
 
 		constexpr bool EnableBoonPortal{ true };
-		constexpr bool EnableTribulationPortal{ true };
+		constexpr bool EnableTribulationPortal{ false };
 		constexpr bool EnableAudiencePortal{ false };
 
 		constexpr offset_t CavernTileNudge{ 0, 0 };

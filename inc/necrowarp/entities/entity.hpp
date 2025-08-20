@@ -16,7 +16,7 @@ namespace necrowarp {
 
 	// calcitic domain (bones): a lesser minion that loses potency as it decays
 	struct skeleton_t;
-	// spectral domain (ichor): a lesser minion that will drown the map in ichor
+	// spectral domain (ichor): a lesser minion that will leash to the player
 	struct cultist_t;
 	// sanguine domain (blood): a lesser minion that harries enemies with its speed
 	struct bloodhound_t;

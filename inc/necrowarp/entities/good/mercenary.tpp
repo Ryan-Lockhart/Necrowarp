@@ -42,6 +42,8 @@ namespace necrowarp {
 			object_registry<MapType>.spill(position, flesh_t{});
 			object_registry<MapType>.spill(position, metal_t{});
 			object_registry<MapType>.spill(position, cerebra_t{ entity_e::Mercenary });
+	
+			medicus_goals_dirty = true;
 		} else if constexpr (Death == death_e::Devoured) {
 			object_registry<MapType>.spill(position, bones_t{});
 			object_registry<MapType>.spill(position, metal_t{});

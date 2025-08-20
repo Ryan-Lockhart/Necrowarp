@@ -11,24 +11,42 @@
 namespace necrowarp {
 	enum struct patron_e : u8 {
 		None,
-		Rathghul,
+
+		Kalypdrot,
 		Akurakhaithan,
 		Merirfin,
-		Saeiligarkeuss
+		Praethornyn,
+
+		Tsendikor,
+		Ionna,
+		Rathghul,
+		Moslager,
+
+		Sudoclor
 	};
 
 	constexpr usize padding_size(patron_e patron) noexcept {
 		switch (patron) {
 			case patron_e::None: {
 				return 15;
-			} case patron_e::Rathghul: {
-				return 11;
+			} case patron_e::Kalypdrot: {
+				return 10;
 			} case patron_e::Akurakhaithan: {
 				return 6;
 			} case patron_e::Merirfin: {
 				return 11;
-			} case patron_e::Saeiligarkeuss: {
-				return 5;
+			} case patron_e::Praethornyn: {
+				return 8;
+			} case patron_e::Tsendikor: {
+				return 10;
+			} case patron_e::Ionna: {
+				return 14;
+			} case patron_e::Rathghul: {
+				return 11;
+			} case patron_e::Moslager: {
+				return 7;
+			} case patron_e::Sudoclor: {
+				return 11;
 			}
 		}
 	}
@@ -37,35 +55,55 @@ namespace necrowarp {
 		switch (patron) {
 			case patron_e::None: {
 				return "None";
-			} case patron_e::Rathghul: {
-				return "Rathghul";
+			} case patron_e::Kalypdrot: {
+				return "Kalypdrot";
 			} case patron_e::Akurakhaithan: {
 				return "Akurakhaithan";
 			} case patron_e::Merirfin: {
 				return "Merirfin";
-			} case patron_e::Saeiligarkeuss: {
-				return "Saeiligarkeuss";
+			} case patron_e::Praethornyn: {
+				return "Praethornyn";
+			} case patron_e::Tsendikor: {
+				return "Tsendikor";
+			} case patron_e::Ionna: {
+				return "Ionna";
+			} case patron_e::Rathghul: {
+				return "Rathghul";
+			} case patron_e::Moslager: {
+				return "The Moslager";
+			} case patron_e::Sudoclor: {
+				return "Sudoclor";
 			}
 		}
 	}
 
-	constexpr runes_t to_colored_string(patron_e patron) noexcept {
-		const cstr string{ to_string(patron) };
-		
+	constexpr color_t to_color(patron_e patron) noexcept {
 		switch (patron) {
 			case patron_e::None: {
-				return runes_t{ string, colors::light::Grey };
-			} case patron_e::Rathghul: {
-				return runes_t{ string, colors::light::Green };
+				return colors::light::Grey;
+			} case patron_e::Kalypdrot: {
+				return colors::Marble;
 			} case patron_e::Akurakhaithan: {
-				return runes_t{ string, colors::light::Magenta };
+				return colors::light::Magenta;
 			} case patron_e::Merirfin: {
-				return runes_t{ string, colors::light::Red };
-			} case patron_e::Saeiligarkeuss: {
-				return runes_t{ string, colors::dark::Orange };
+				return colors::light::Red;
+			} case patron_e::Praethornyn: {
+				return mix(colors::Red, colors::Grey);
+			} case patron_e::Tsendikor: {
+				return mix(colors::Orange, colors::Grey);
+			} case patron_e::Ionna: {
+				return mix(colors::Green, colors::Grey);
+			} case patron_e::Rathghul: {
+				return colors::light::Green;
+			} case patron_e::Moslager: {
+				return mix(colors::metals::Steel, colors::Blue);
+			} case patron_e::Sudoclor: {
+				return colors::dark::Orange;
 			}
 		}
 	}
+
+	constexpr runes_t to_colored_string(patron_e patron) noexcept { return runes_t{ to_string(patron), to_color(patron) }; }
 
 	enum struct disposition_e : u8 {
 		Sadistic,
@@ -215,6 +253,10 @@ namespace necrowarp {
 		}
 	};
 
+	constexpr discount_t strong_invocation{ 0, 4, 6 };
+	constexpr discount_t mild_invocation{ -4, 0, 4 };
+	constexpr discount_t weak_invocation{ -6, -2, 2 };
+
 	struct patron_t {
 		disposition_e disposition{ disposition_e::Apathetic };
 
@@ -303,7 +345,7 @@ namespace necrowarp {
 		.calamitous_retaliation = discount_t{ 0, 0, 0 },
 	};
 
-	template<> inline patron_t patrons<patron_e::Rathghul>{
+	template<> inline patron_t patrons<patron_e::Kalypdrot>{
 		.disposition = disposition_e::Apathetic,
 
 		.chaotic_warp = discount_t{ 0, 0, 1 },
@@ -314,14 +356,14 @@ namespace necrowarp {
 		.calcify = discount_t{ 0, 2, 4 },
 		.incorporealize = discount_t{ -4, -2, 0 },
 
-		.calcitic_invocation = discount_t{ 0, 4, 6 },
-		.spectral_invocation = discount_t{ -6, -2, 2 },
-		.sanguine_invocation = discount_t{ -4, 0, 4 },
-		.galvanic_invocation = discount_t{ -4, 0, 4 },
-		.ravenous_invocation = discount_t{ -6, -2, 2 },
-		.wretched_invocation = discount_t{ 0, 4, 6 },
-		.cerebral_invocation = discount_t{ -6, -2, 2 },
-		.infernal_invocation = discount_t{ -6, -2, 2 },
+		.calcitic_invocation = strong_invocation,
+		.spectral_invocation = weak_invocation,
+		.sanguine_invocation = mild_invocation,
+		.galvanic_invocation = mild_invocation,
+		.ravenous_invocation = weak_invocation,
+		.wretched_invocation = strong_invocation,
+		.cerebral_invocation = weak_invocation,
+		.infernal_invocation = weak_invocation,
 
 		.necromantic_ascendance = discount_t{ -8, 0, 4 },
 		.calamitous_retaliation = discount_t{ 4, 8, 12 },
@@ -338,17 +380,17 @@ namespace necrowarp {
 		.calcify = discount_t{ -4, -2, 0 },
 		.incorporealize = discount_t{ 0, 2, 4 },
 
-		.calcitic_invocation = discount_t{ -4, 0, 4 },
-		.spectral_invocation = discount_t{ 0, 4, 6 },
-		.sanguine_invocation = discount_t{ -6, -2, 2 },
-		.galvanic_invocation = discount_t{ -4, 0, 4 },
-		.ravenous_invocation = discount_t{ -6, -2, 2 },
-		.wretched_invocation = discount_t{ -6, -2, 2 },
-		.cerebral_invocation = discount_t{ 0, 4, 6 },
-		.infernal_invocation = discount_t{ -4, 0, 4 },
+		.calcitic_invocation = mild_invocation,
+		.spectral_invocation = strong_invocation,
+		.sanguine_invocation = weak_invocation,
+		.galvanic_invocation = mild_invocation,
+		.ravenous_invocation = weak_invocation,
+		.wretched_invocation = weak_invocation,
+		.cerebral_invocation = mild_invocation,
+		.infernal_invocation = mild_invocation,
 
 		.necromantic_ascendance = discount_t{ -4, 0, 8 },
-		.calamitous_retaliation = discount_t{ -4, 0, 4 },
+		.calamitous_retaliation = mild_invocation,
 	};
 
 	template<> inline patron_t patrons<patron_e::Merirfin>{
@@ -362,20 +404,140 @@ namespace necrowarp {
 		.calcify = discount_t{ -4, -2, 0 },
 		.incorporealize = discount_t{ -8, -4, 0 },
 
-		.calcitic_invocation = discount_t{ -4, 0, 4 },
-		.spectral_invocation = discount_t{ -6, -2, 2 },
-		.sanguine_invocation = discount_t{ 0, 4, 6 },
-		.galvanic_invocation = discount_t{ -4, 0, 4 },
-		.ravenous_invocation = discount_t{ -4, 0, 4 },
-		.wretched_invocation = discount_t{ -6, -2, 2 },
-		.cerebral_invocation = discount_t{ -6, -2, 2 },
-		.infernal_invocation = discount_t{ -4, 0, 4 },
+		.calcitic_invocation = weak_invocation,
+		.spectral_invocation = weak_invocation,
+		.sanguine_invocation = strong_invocation,
+		.galvanic_invocation = mild_invocation,
+		.ravenous_invocation = mild_invocation,
+		.wretched_invocation = weak_invocation,
+		.cerebral_invocation = weak_invocation,
+		.infernal_invocation = mild_invocation,
 
 		.necromantic_ascendance = discount_t{ -6, 0, 6 },
 		.calamitous_retaliation = discount_t{ 0, 8, 16 },
 	};
 
-	template<> inline patron_t patrons<patron_e::Saeiligarkeuss>{
+	template<> inline patron_t patrons<patron_e::Rathghul>{
+		.disposition = disposition_e::Apathetic,
+
+		.chaotic_warp = discount_t{ 0, 0, 1 },
+		.precise_warp = discount_t{ 0, 0, 2 },
+
+		.annihilate = discount_t{ -4, -2, 0 },
+		.repulse = discount_t{ 0, 4, 8 },
+		.calcify = discount_t{ 0, 2, 4 },
+		.incorporealize = discount_t{ -4, -2, 0 },
+
+		.calcitic_invocation = weak_invocation,
+		.spectral_invocation = strong_invocation,
+		.sanguine_invocation = weak_invocation,
+		.galvanic_invocation = weak_invocation,
+		.ravenous_invocation = weak_invocation,
+		.wretched_invocation = weak_invocation,
+		.cerebral_invocation = strong_invocation,
+		.infernal_invocation = mild_invocation,
+
+		.necromantic_ascendance = discount_t{ -8, 0, 4 },
+		.calamitous_retaliation = discount_t{ 4, 8, 12 },
+	};
+
+	template<> inline patron_t patrons<patron_e::Praethornyn>{
+		.disposition = disposition_e::Apathetic,
+
+		.chaotic_warp = discount_t{ 0, 0, 1 },
+		.precise_warp = discount_t{ 0, 0, 2 },
+
+		.annihilate = discount_t{ -4, -2, 0 },
+		.repulse = discount_t{ 0, 4, 8 },
+		.calcify = discount_t{ 0, 2, 4 },
+		.incorporealize = discount_t{ -4, -2, 0 },
+
+		.calcitic_invocation = weak_invocation,
+		.spectral_invocation = weak_invocation,
+		.sanguine_invocation = strong_invocation,
+		.galvanic_invocation = strong_invocation,
+		.ravenous_invocation = weak_invocation,
+		.wretched_invocation = weak_invocation,
+		.cerebral_invocation = weak_invocation,
+		.infernal_invocation = weak_invocation,
+
+		.necromantic_ascendance = discount_t{ -8, 0, 4 },
+		.calamitous_retaliation = discount_t{ 4, 8, 12 },
+	};
+
+	template<> inline patron_t patrons<patron_e::Tsendikor>{
+		.disposition = disposition_e::Apathetic,
+
+		.chaotic_warp = discount_t{ 0, 0, 1 },
+		.precise_warp = discount_t{ 0, 0, 2 },
+
+		.annihilate = discount_t{ -4, -2, 0 },
+		.repulse = discount_t{ 0, 4, 8 },
+		.calcify = discount_t{ 0, 2, 4 },
+		.incorporealize = discount_t{ -4, -2, 0 },
+
+		.calcitic_invocation = weak_invocation,
+		.spectral_invocation = weak_invocation,
+		.sanguine_invocation = mild_invocation,
+		.galvanic_invocation = weak_invocation,
+		.ravenous_invocation = strong_invocation,
+		.wretched_invocation = weak_invocation,
+		.cerebral_invocation = weak_invocation,
+		.infernal_invocation = strong_invocation,
+
+		.necromantic_ascendance = discount_t{ -8, 0, 4 },
+		.calamitous_retaliation = discount_t{ 4, 8, 12 },
+	};
+
+	template<> inline patron_t patrons<patron_e::Ionna>{
+		.disposition = disposition_e::Apathetic,
+
+		.chaotic_warp = discount_t{ 0, 0, 1 },
+		.precise_warp = discount_t{ 0, 0, 2 },
+
+		.annihilate = discount_t{ -4, -2, 0 },
+		.repulse = discount_t{ 0, 4, 8 },
+		.calcify = discount_t{ 0, 2, 4 },
+		.incorporealize = discount_t{ -4, -2, 0 },
+
+		.calcitic_invocation = mild_invocation,
+		.spectral_invocation = weak_invocation,
+		.sanguine_invocation = weak_invocation,
+		.galvanic_invocation = weak_invocation,
+		.ravenous_invocation = weak_invocation,
+		.wretched_invocation = strong_invocation,
+		.cerebral_invocation = weak_invocation,
+		.infernal_invocation = weak_invocation,
+
+		.necromantic_ascendance = discount_t{ -8, 0, 4 },
+		.calamitous_retaliation = discount_t{ 4, 8, 12 },
+	};
+
+	template<> inline patron_t patrons<patron_e::Moslager>{
+		.disposition = disposition_e::Apathetic,
+
+		.chaotic_warp = discount_t{ 0, 0, 1 },
+		.precise_warp = discount_t{ 0, 0, 2 },
+
+		.annihilate = discount_t{ -4, -2, 0 },
+		.repulse = discount_t{ 0, 4, 8 },
+		.calcify = discount_t{ 0, 2, 4 },
+		.incorporealize = discount_t{ -4, -2, 0 },
+
+		.calcitic_invocation = weak_invocation,
+		.spectral_invocation = weak_invocation,
+		.sanguine_invocation = weak_invocation,
+		.galvanic_invocation = weak_invocation,
+		.ravenous_invocation = weak_invocation,
+		.wretched_invocation = weak_invocation,
+		.cerebral_invocation = strong_invocation,
+		.infernal_invocation = strong_invocation,
+
+		.necromantic_ascendance = discount_t{ -8, 0, 4 },
+		.calamitous_retaliation = discount_t{ 4, 8, 12 },
+	};
+
+	template<> inline patron_t patrons<patron_e::Sudoclor>{
 		.disposition = disposition_e::Apathetic,
 
 		.chaotic_warp = discount_t{ -1, 1, 2 },

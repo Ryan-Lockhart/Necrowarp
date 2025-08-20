@@ -7,10 +7,10 @@
 
 namespace necrowarp {
 	namespace globals {
-		static constexpr entity_e OopsAllEnum{ entity_e::Medicus };
+		static constexpr entity_e OopsAllEnum{ entity_e::Mansling };
 
-		template<> inline constexpr bool OopsAll<OopsAllEnum>{ true };
-		
+		template<> inline constexpr bool OopsAll<OopsAllEnum>{ false };
+
 		template<GoodEntity... Entities> static constexpr usize OopsAllCount{ (OopsAll<to_entity_enum<Entities>::value> + ...) };
 
 		static_assert(OopsAllCount<ALL_GOOD_NPCS> <= 1, "cannot force multiple enemy types!");

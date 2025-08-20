@@ -50,6 +50,10 @@ namespace necrowarp {
 		(store<ObjectTypes>(), ...);
 	}
 
+	template<map_type_e MapType> inline void object_registry_t<MapType>::store() const noexcept {
+		store<ALL_OBJECTS>();
+	}
+
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::contains(offset_t position) const noexcept { return object_registry_storage<ObjectType>.contains(position); }
 
 	template<map_type_e MapType>
@@ -262,7 +266,7 @@ namespace necrowarp {
 		if (inserted) {
 			object_goal_map<MapType, ObjectType>.add(position);
 
-			if constexpr (std::is_same<ObjectType, ladder_t>::value) {
+			if constexpr (is_same<ObjectType, ladder_t>::value) {
 				departure_goals_dirty = true;
 			}
 		}
@@ -282,7 +286,7 @@ namespace necrowarp {
 		if (inserted) {
 			object_goal_map<MapType, ObjectType>.add(position);
 
-			if constexpr (std::is_same<ObjectType, ladder_t>::value) {
+			if constexpr (is_same<ObjectType, ladder_t>::value) {
 				departure_goals_dirty = true;
 			}
 		}
@@ -391,7 +395,7 @@ namespace necrowarp {
 
 		object_goal_map<MapType, ObjectType>.remove(position);
 
-		if constexpr (std::is_same<ObjectType, ladder_t>::value) {
+		if constexpr (is_same<ObjectType, ladder_t>::value) {
 			departure_goals_dirty = true;
 		}
 
@@ -420,7 +424,7 @@ namespace necrowarp {
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::clear() noexcept {
 		object_registry_storage<ObjectType>.clear();
 
-		if constexpr (std::is_same<ObjectType, ladder_t>::value) {
+		if constexpr (is_same<ObjectType, ladder_t>::value) {
 			departure_goals_dirty = true;
 		}
 
@@ -556,7 +560,7 @@ namespace necrowarp {
 		}
 
 		for (cauto position : game_map<MapType>.interior_offsets) {
-			if (game_map<MapType>[position].solid || !object_registry<MapType>.dependent empty<ladder_t>(position)) {
+			if (game_map<MapType>[position].solid || object_registry<MapType>.dependent empty<ladder_t>(position)) {
 				continue;
 			}
 

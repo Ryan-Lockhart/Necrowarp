@@ -127,6 +127,13 @@ namespace necrowarp {
 
 		if constexpr (Death != death_e::Crushed || Death != death_e::Eradicated) {
 			object_registry<MapType>.spill(position, bones_t{});
+
+			if constexpr (Death != death_e::Devoured) {
+				object_registry<MapType>.spill(position, flesh_t{});
+	
+				medicus_goals_dirty = true;
+			}
+
 			object_registry<MapType>.spill(position, cerebra_t{ entity_e::Ranger });
 
 			if (has_ammunition()) {
@@ -156,10 +163,6 @@ namespace necrowarp {
 					object_registry<MapType>.spill(position, arrow_t{ dropped_ammunition });
 				}
 			}
-		}
-
-		if constexpr (Death != death_e::Devoured) {
-			object_registry<MapType>.spill(position, flesh_t{});
 		}
 
 		player.receive_death_boon<ranger_t>();

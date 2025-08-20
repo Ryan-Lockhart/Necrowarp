@@ -115,7 +115,7 @@ namespace necrowarp {
 			}, phase.current_phase);
 
 			title_label.draw(renderer);
-			fps_label.draw(renderer);
+			// fps_label.draw(renderer);
 
 			// if (phase.current_phase != phase_e::Playing || draw_cursor) {
 			ui_cursor.draw(ui_cursor_texture);

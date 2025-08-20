@@ -708,5 +708,7 @@ namespace necrowarp {
 		};
 	};
 
-	static inline patron_e desired_patron{ patron_e::None };
+	constexpr patron_e StartingPatron{ patron_e::None };
+
+	static inline patron_e desired_patron{ StartingPatron };
 } // namespace necrowarp

@@ -13,7 +13,7 @@
 
 namespace necrowarp {
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
-		requires (!is_docile<InitiatorType>::value && !std::is_same<InitiatorType, VictimType>::value)
+		requires (!is_docile<InitiatorType>::value && is_different<InitiatorType, VictimType>::value)
 	inline bool instigate(offset_t source_position, offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		cauto try_bleed = [&] {
 			if constexpr (is_bleeder_v<VictimType>) {
@@ -147,7 +147,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
-		requires (!is_docile<VictimType>::value && !std::is_same<InitiatorType, VictimType>::value)
+		requires (!is_docile<VictimType>::value && is_different<InitiatorType, VictimType>::value)
 	inline bool retaliate(offset_t source_position, offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		cauto try_bleed = [&] {
 			if constexpr (is_bleeder_v<InitiatorType>) {
@@ -277,7 +277,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType, CombatantEntity InitiatorType, CombatantEntity VictimType>
-		requires (!is_docile<InitiatorType>::value && !std::is_same<InitiatorType, VictimType>::value)
+		requires (!is_docile<InitiatorType>::value && is_different<InitiatorType, VictimType>::value)
 	inline bool reflect(offset_t source_position, offset_t target_position, ref<InitiatorType> initiator, ref<VictimType> victim) noexcept {
 		cauto try_bleed = [&] {
 			if constexpr (is_bleeder<InitiatorType>::value) {
@@ -417,7 +417,7 @@ namespace necrowarp {
 
 				using victim_type = to_entity_type<cval>::type;
 
-				if constexpr (!std::is_same<EntityType, victim_type>::value) {
+				if constexpr (is_different<EntityType, victim_type>::value) {
 					ptr<victim_type> victim_ptr{ entity_registry<MapType>.dependent at<victim_type>(target_position) };
 
 					if (victim_ptr == nullptr) {

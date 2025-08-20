@@ -49,6 +49,9 @@ namespace necrowarp {
 				entity_registry<map_type>.recalculate_goal_map();
 				object_registry<map_type>.recalculate_goal_map();
 
+				entity_registry<map_type>.store();
+				object_registry<map_type>.store();
+
 				phase.transition(phase_e::Playing);
 
 				game_running = true;

@@ -217,20 +217,7 @@ namespace necrowarp {
 
 			literature::receive_dowry(player.patron);
 
-			literature::acquire();
-
 			game_stats.reset();
-
-			game_stats.cheats.activate();
-
-			game_stats.cheats.no_hit = true;
-			game_stats.cheats.free_costs = true;
-			game_stats.cheats.bypass_invocations = true;
-
-			// game_stats.cheats.energy.enable(player_t::MaximumEnergy, player_t::MaximumEnergy);
-			// game_stats.cheats.armor.enable(player_t::MaximumArmor, player_t::MaximumArmor);
-			// game_stats.cheats.divinity.enable(player_t::MaximumDivinity, player_t::MaximumDivinity);
-			// game_stats.cheats.phantasm.enable(player_t::MinimumPhantasm, player_t::MaximumPhantasm);
 
 			player.refresh();
 
@@ -337,6 +324,9 @@ namespace necrowarp {
 
 			entity_registry<MapType>.recalculate_goal_map();
 			object_registry<MapType>.recalculate_goal_map();
+
+			entity_registry<MapType>.store();
+			object_registry<MapType>.store();
 
 			phase.transition(phase_e::Playing);
 
@@ -529,6 +519,9 @@ namespace necrowarp {
 
 			entity_registry<MapType>.recalculate_goal_map();
 			object_registry<MapType>.recalculate_goal_map();
+
+			entity_registry<MapType>.store();
+			object_registry<MapType>.store();
 
 			phase.transition(phase_e::Playing);
 
@@ -832,8 +825,8 @@ namespace necrowarp {
 
 			buffer_access.lock<true>();
 
-			entity_registry<MapType>.dependent store<ALL_ENTITIES>();
-			object_registry<MapType>.dependent store<ALL_OBJECTS>();
+			entity_registry<MapType>.store();
+			object_registry<MapType>.store();
 
 			buffer_access.unlock();
 

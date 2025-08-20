@@ -194,6 +194,10 @@ namespace necrowarp {
 		(store<EntityTypes>(), ...);
 	}
 
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::store() const noexcept {
+		store<ALL_ENTITIES>();
+	}
+
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return entity_registry_storage<EntityType>.contains(position); }
 
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline bool entity_registry_t<MapType>::contains(offset_t position) const noexcept { return player.position == position; }

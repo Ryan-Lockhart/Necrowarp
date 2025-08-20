@@ -64,11 +64,11 @@ namespace necrowarp {
 							} else if (objects.contains(pos)) {
 								return colors::Blue;
 							} else if (game_map<MapType>[pos].solid) {
-								return colors::light::Charcoal;
+								return colors::Charcoal;
 							} else if (!fluid_map<MapType>[pos].contains(fluid_e::None)) {
 								return to_color(static_cast<fluid_e>(fluid_map<MapType>[pos]));
 							} else {
-								return colors::dark::Marble;
+								return colors::Marble;
 							}
 						}()
 					};

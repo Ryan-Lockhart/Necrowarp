@@ -12,7 +12,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, retrieve_t>::process() const noexcept {
-		if constexpr (std::is_same<EntityType, player_t>::value) {
+		if constexpr (is_same<EntityType, player_t>::value) {
 			ptr<pedestal_t> maybe_pedestal{ object_registry<MapType>.dependent at<pedestal_t>(target_position) };
 
 			if (maybe_pedestal == nullptr || !maybe_pedestal->can_loot() || !literature::can_acquire(maybe_pedestal->grimoire) || !maybe_pedestal->loot()) {
@@ -22,7 +22,7 @@ namespace necrowarp {
 			}
 			
 			literature::acquire(maybe_pedestal->grimoire);
-		} else if constexpr (std::is_same<EntityType, ranger_t>::value) {
+		} else if constexpr (is_same<EntityType, ranger_t>::value) {
 			ptr<ranger_t> maybe_ranger{ entity_registry<MapType>.dependent at<ranger_t>(source_position) };
 
 			if (maybe_ranger == nullptr || maybe_ranger->ammunition_full()) {

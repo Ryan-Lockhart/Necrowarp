@@ -34,15 +34,14 @@ namespace necrowarp {
 		}
 	};
 
-	struct transform_t {
-		anchor_t anchor;
+	struct transform_t : public anchor_t {
 		extent_t size;
 
-		constexpr transform_t() noexcept : anchor{}, size{} {}
+		constexpr transform_t() noexcept : anchor_t{}, size{} {}
 
-		explicit constexpr transform_t(anchor_t anchor, extent_t size) noexcept : anchor{ anchor }, size{ size } {}
+		explicit constexpr transform_t(anchor_t anchor, extent_t size) noexcept : anchor_t{ anchor }, size{ size } {}
 
-		constexpr offset_t get_offset() const noexcept { return anchor.get_offset(size); }
+		constexpr offset_t get_offset() const noexcept { return anchor_t::get_offset(size); }
 	};
 
 	struct border_t {

@@ -35,11 +35,11 @@ namespace necrowarp {
 
 			switch (get_patron_disposition(current_patron)) {
 				case disposition_e::Sadistic: {
-					return current_patron == patron_e::Saeiligarkeuss ? 2.0f : 1.5f;
+					return current_patron == patron_e::Sudoclor ? 2.0f : 1.5f;
 				} case disposition_e::Apathetic: {
 					return 1.0f;
 				} case disposition_e::Cooperative: {
-					return current_patron == patron_e::Saeiligarkeuss ? 0.25f : 0.5f;
+					return current_patron == patron_e::Sudoclor ? 0.25f : 0.5f;
 				}
 			}
 		}

@@ -68,7 +68,7 @@ namespace necrowarp {
 		};
 
 		static inline label_t command_label{
-			anchor_t{ offset_t{}, cardinal_e::Northwest },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() }, cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{},
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -133,7 +133,7 @@ namespace necrowarp {
 		};
 
 		template<map_type_e MapType> static inline minimap_t<MapType, BigMapPixelSize> big_map{
-			anchor_t{ offset_t{ globals::grid_center<grid_type_e::UI>() * globals::cell_size<grid_type_e::UI> }, cardinal_e::Northwest },
+			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w * globals::cell_size<grid_type_e::UI>.w, 1 }, cardinal_e::Northeast },
 			embedded_box_t{ colors::Black, border_t{ colors::White, 2 } },
 			extent_t{ 2, 2 }
 		};
@@ -167,7 +167,7 @@ namespace necrowarp {
 		}
 
 		template<> inline constexpr offset_t icon_position<grimoire_e::Incorporealize>() {
-			return icon_position<grimoire_e::CalciticInvocation>() - offset_t{ 2, 0 };
+			return icon_position<grimoire_e::CalciticInvocation>() - offset_t{ 1, 0 };
 		}
 
 		template<> inline constexpr offset_t icon_position<grimoire_e::Calcify>() {
@@ -183,7 +183,7 @@ namespace necrowarp {
 		}
 
 		template<> inline constexpr offset_t icon_position<grimoire_e::PreciseWarp>() {
-			return icon_position<grimoire_e::Annihilate>() - offset_t{ 2, 0 };
+			return icon_position<grimoire_e::Annihilate>() - offset_t{ 1, 0 };
 		}
 
 		template<> inline constexpr offset_t icon_position<grimoire_e::ChaoticWarp>() {
@@ -199,7 +199,7 @@ namespace necrowarp {
 		}
 
 		template<> inline constexpr offset_t icon_position<grimoire_e::RavenousInvocation>() {
-			return icon_position<grimoire_e::GalvanicInvocation>() + offset_t{ 2, 0 };
+			return icon_position<grimoire_e::GalvanicInvocation>() + offset_t{ 1, 0 };
 		}
 
 		template<> inline constexpr offset_t icon_position<grimoire_e::WretchedInvocation>() {
@@ -215,7 +215,7 @@ namespace necrowarp {
 		}
 
 		template<> inline constexpr offset_t icon_position<grimoire_e::NecromanticAscendance>() {
-			return icon_position<grimoire_e::InfernalInvocation>() + offset_t{ 2, 0 };
+			return icon_position<grimoire_e::InfernalInvocation>() + offset_t{ 1, 0 };
 		}
 
 		template<> inline constexpr offset_t icon_position<grimoire_e::CalamitousRetaliation>() {
@@ -267,10 +267,6 @@ namespace necrowarp {
 					.concatenate(runes_t{ "/" })
 					.concatenate(runes_t{ std::format("{}", player.get_cost(cval)), colors::Yellow })
 					.concatenate(runes_t{ std::format("] (uses: {})", grimoire_s<cval>::get_uses()) });
-				
-				const extent_t label_size{ text::calculate_size(command_label.text) };
-				
-				command_label.position = ((icon_position<cval>() + offset_t{ 0, 1 }) * globals::cell_size<grid_type_e::Icon> / globals::cell_size<grid_type_e::UI>) + offset_t{ (globals::cell_size<grid_type_e::Icon>.w / globals::cell_size<grid_type_e::UI>.w / 2), 0 } - offset_t{ label_size.w / 2, -2 };
 			}, command.value());
 		}
 

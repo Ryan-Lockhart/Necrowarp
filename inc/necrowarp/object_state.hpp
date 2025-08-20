@@ -15,6 +15,8 @@ namespace necrowarp {
 			requires is_plurary<ObjectTypes...>::value
 		inline void store() const noexcept;
 
+		inline void store() const noexcept;
+
 		inline object_group_e at(offset_t position) const noexcept;
 
 		template<NonNullObject ObjectType> inline cptr<ObjectType> at(offset_t position) const noexcept;

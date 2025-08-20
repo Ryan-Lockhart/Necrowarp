@@ -1,4 +1,4 @@
-project('necrowarp', 'cpp', version: '0.1.2rc-1', meson_version: '>=1.3.0')
+project('necrowarp', 'cpp', version: '0.1.2rc-3', meson_version: '>=1.3.0')
 
 build_type = get_option('buildtype')
 

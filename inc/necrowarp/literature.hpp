@@ -54,29 +54,62 @@ namespace necrowarp {
 		static inline void reset() noexcept { uses = 0; acquired = false; }
 	};
 
-	template<patron_e Patron> static constexpr std::array<grimoire_e, 2> patron_dowry{};
+	template<patron_e Patron> static constexpr auto patron_dowry = std::array<grimoire_e, 0>{};
 
 	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::None>{
 		grimoire_e::ChaoticWarp,
 		grimoire_e::PreciseWarp,
 	};
 
-	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Rathghul>{
+	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Kalypdrot>{
 		grimoire_e::ChaoticWarp,
+		grimoire_e::Calcify,
 		grimoire_e::CalciticInvocation,
 	};
 
-	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Akurakhaithan>{
+	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Akurakhaithan>{
 		grimoire_e::ChaoticWarp,
+		grimoire_e::Incorporealize,
 		grimoire_e::SpectralInvocation,
 	};
 
-	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Merirfin>{
+	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Merirfin>{
 		grimoire_e::ChaoticWarp,
+		grimoire_e::Annihilate,
 		grimoire_e::SanguineInvocation,
 	};
 
-	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Saeiligarkeuss>{
+	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Praethornyn>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::ChaoticWarp,
+		grimoire_e::GalvanicInvocation,
+	};
+
+	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Tsendikor>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::ChaoticWarp,
+		grimoire_e::RavenousInvocation,
+	};
+
+	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Ionna>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::ChaoticWarp,
+		grimoire_e::WretchedInvocation,
+	};
+
+	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Rathghul>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::Repulse,
+		grimoire_e::CerebralInvocation,
+	};
+
+	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Moslager>{
+		grimoire_e::ChaoticWarp,
+		grimoire_e::InfernalInvocation,
+		grimoire_e::CalamitousRetaliation,
+	};
+
+	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Sudoclor>{
 		grimoire_e::ChaoticWarp,
 		grimoire_e::NecromanticAscendance,
 	};

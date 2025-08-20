@@ -19,6 +19,8 @@ namespace necrowarp {
 			requires is_plurary<EntityTypes...>::value
 		inline void store() const noexcept;
 
+		inline void store() const noexcept;
+
 		inline std::optional<entity_e> at(offset_t position) const noexcept;
 
 		template<NonPlayerEntity EntityType> inline cptr<EntityType> at(offset_t position) const noexcept;
