@@ -370,6 +370,14 @@ namespace necrowarp {
 		constexpr bool EnableTribulationPortal{ false };
 		constexpr bool EnableAudiencePortal{ false };
 
+		constexpr f64 BoonPortalChance{ 0.02 };
+		constexpr f64 TribulationPortalChance{ 0.10 };
+		constexpr f64 AudiencePortalChance{ 0.01 };
+
+		static inline std::bernoulli_distribution boon_portal_chance{ BoonPortalChance };
+		static inline std::bernoulli_distribution tribulation_portal_chance{ TribulationPortalChance };
+		static inline std::bernoulli_distribution audience_portal_chance{ AudiencePortalChance };
+
 		constexpr offset_t CavernTileNudge{ 0, 0 };
 		constexpr offset_t FluidTileNudge{ 0, 0 };
 

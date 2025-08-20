@@ -81,19 +81,19 @@ namespace necrowarp {
 
 	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Praethornyn>{
 		grimoire_e::ChaoticWarp,
-		grimoire_e::ChaoticWarp,
+		grimoire_e::SanguineInvocation,
 		grimoire_e::GalvanicInvocation,
 	};
 
 	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Tsendikor>{
 		grimoire_e::ChaoticWarp,
-		grimoire_e::ChaoticWarp,
 		grimoire_e::RavenousInvocation,
+		grimoire_e::WretchedInvocation,
 	};
 
 	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Ionna>{
 		grimoire_e::ChaoticWarp,
-		grimoire_e::ChaoticWarp,
+		grimoire_e::CalciticInvocation,
 		grimoire_e::WretchedInvocation,
 	};
 

@@ -56,27 +56,11 @@ namespace necrowarp {
 		}
 
 		if constexpr (globals::SpawnTutorialPortal) {
-			if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; !portal_pos.has_value() || !object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Insightful })) {
-				error_log.add("could not find open position for tutorial portal!");
-				terminate_prematurely();
-			}
-		}
-
-		if constexpr (globals::EnableBoonPortal) {
-			if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
-				object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Calm });
-			}
-		}
-
-		if constexpr (globals::EnableTribulationPortal) {
-			if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
-				object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Turbulent });
-			}
-		}
-
-		if constexpr (globals::EnableAudiencePortal) {
-			if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value()) {
-				object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Vocal });
+			if (!steam_stats::is_unlocked(achievement_e::CompleteBasicTutorial)) {
+				if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; !portal_pos.has_value() || !object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Insightful })) {
+					error_log.add("could not find open position for tutorial portal!");
+					terminate_prematurely();
+				}
 			}
 		}
 
@@ -98,6 +82,78 @@ namespace necrowarp {
 
 			verticality_e::Down, random_engine
 		);
+
+		if constexpr (globals::EnableTribulationPortal) {
+			const bool softlock_detected{
+				[&]() -> bool {
+					for (crauto [position, ladder] : object_registry_storage<ladder_t>) {
+						if (!game_map<map_type>.dependent within<region_e::Interior>(position) || game_map<map_type>[position].solid || ladder.is_up_ladder() || !ladder.has_shackle()) {
+							continue;
+						}
+
+						switch (ladder.shackle) {
+							case shackle_e::Calcitic: {
+								if (!literature::is_acquired(grimoire_e::CalciticInvocation)) {
+									continue;
+								}
+
+								return false;
+							} case shackle_e::Spectral: {
+								if (!literature::is_acquired(grimoire_e::SpectralInvocation)) {
+									continue;
+								}
+
+								return false;
+							} case shackle_e::Sanguine: {
+								if (!literature::is_acquired(grimoire_e::SanguineInvocation)) {
+									continue;
+								}
+
+								return false;
+							} case shackle_e::Galvanic: {
+								if (!literature::is_acquired(grimoire_e::GalvanicInvocation)) {
+									continue;
+								}
+
+								return false;
+							} case shackle_e::Ravenous: {
+								if (!literature::is_acquired(grimoire_e::RavenousInvocation)) {
+									continue;
+								}
+
+								return false;
+							} case shackle_e::Wretched: {
+								if (!literature::is_acquired(grimoire_e::WretchedInvocation)) {
+									continue;
+								}
+
+								return false;
+							} case shackle_e::Cerebral: {
+								if (!literature::is_acquired(grimoire_e::CerebralInvocation)) {
+									continue;
+								}
+
+								return false;
+							} case shackle_e::Infernal: {
+								if (!literature::is_acquired(grimoire_e::InfernalInvocation)) {
+									continue;
+								}
+
+								return false;
+							} default: {
+								continue;
+							}
+						}
+					}
+
+					return true;
+				}()
+			};
+
+			if (cauto portal_pos{ game_map<map_type>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value() && (softlock_detected || globals::tribulation_portal_chance(random_engine))) {
+				object_registry<map_type>.add(portal_pos.value(), portal_t{ stability_e::Turbulent });
+			}
+		}
 
 		object_registry<map_type>.dependent spawn<bones_t>(
 			static_cast<usize>(globals::StartingBones),
