@@ -121,6 +121,8 @@ namespace necrowarp {
 
 		inline void retreat() noexcept;
 
+		inline void rescan_departure_goals() noexcept;
+
 		template<NonNullObject ObjectType> inline void recalculate_goal_map() noexcept;
 
 		template<NonNullObject... ObjectTypes>
@@ -129,6 +131,8 @@ namespace necrowarp {
 
 		inline void recalculate_goal_map() noexcept;
 
+		inline void recalculate_departure_goal_map() noexcept;
+
 		template<NonNullObject ObjectType> inline void reset_goal_map() noexcept;
 
 		template<NonNullObject... ObjectTypes>
@@ -136,6 +140,8 @@ namespace necrowarp {
 		inline void reset_goal_map() noexcept;
 
 		inline void reset_goal_map() noexcept;
+
+		inline void reset_departure_goal_map() noexcept;
 
 		template<NonNullObject ObjectType> inline void draw() const noexcept;
 

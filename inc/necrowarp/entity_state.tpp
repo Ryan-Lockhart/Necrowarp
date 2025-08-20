@@ -157,6 +157,8 @@ namespace necrowarp {
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> skulker_goal_map{};
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> medicus_goal_map{};
 
+	static inline bool medicus_goals_dirty{ false };
+
 	template<map_type_e MapType, Entity EntityType, bool Incorporeal = false> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> entity_goal_map{};
 
 	template<map_type_e MapType, GoodEntity EntityType> static inline std::priority_queue<usize> offmap_reinforcements{};
@@ -779,6 +781,165 @@ namespace necrowarp {
 		return true;
 	}
 
+	template<map_type_e MapType> template<Entity EntityType, Command CommandType> inline bool entity_registry_t<MapType>::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
+		static constexpr command_e command_enum{ to_command_enum<CommandType>::value };
+
+		if constexpr (is_null_command<CommandType>::value) {
+			return false;
+		}
+
+		if (!game_map<MapType>.dependent within<region_e::Interior>(command.source_position) || !contains<EntityType>(command.source_position)) {
+			return false;
+		}
+
+		if constexpr (!is_entity_command_valid<EntityType, CommandType>::value) {
+			return false;
+		}
+
+		if constexpr (is_binary_command<CommandType>::value) {
+			if (!game_map<MapType>.dependent within<region_e::Interior>(command.target_position)) {
+				return false;
+			}
+
+			switch (command_enum) {
+				case command_e::Move:
+				case command_e::PreciseWarp: {
+					if (contains(command.target_position)) {
+						return false;
+					}
+
+					if (game_map<MapType>[command.target_position].solid) {
+						if constexpr (is_incorporeal<EntityType>::value) {
+							if constexpr (is_incorporeal<EntityType>::conditional) {
+								if (cptr<EntityType> entity{ at<EntityType>(command.source_position) }; entity == nullptr || !entity->is_incorporeal()) {
+									return false;
+								} else {
+									break;
+								}
+							} else {
+								break;
+							}
+						}
+
+						return false;
+					}
+
+					break;
+				} case command_e::Clash:
+				  case command_e::Lunge:
+				  case command_e::Loose:
+				  case command_e::Batter: {
+					if (empty(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Devour: {
+					if (empty(command.target_position) && object_registry<MapType>.dependent empty<flesh_t>(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Descend: {
+					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<ladder_t>(command.target_position)) {
+						return false;
+					}
+
+					cptr<ladder_t> ladder{ object_registry<MapType>.dependent at<ladder_t>(command.target_position) };
+
+					if (ladder == nullptr || ladder->is_up_ladder() || ladder->has_shackle()) {
+						return false;
+					}
+
+					break;
+				} case command_e::Plunge: {
+					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<portal_t>(command.target_position)) {
+						return false;
+					}
+
+					cptr<portal_t> portal{ object_registry<MapType>.dependent at<portal_t>(command.target_position) };
+
+					if (portal == nullptr || portal->stability == current_dimension) {
+						return false;
+					}
+
+					break;
+				} case command_e::Consume:
+				  case command_e::ConsumeWarp: {
+					if (empty(command.target_position) && object_registry<MapType>.empty(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Retrieve:
+				  case command_e::Resuscitate: {
+					if (object_registry<MapType>.empty(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Calcify: {
+					if (!game_map<MapType>[command.target_position].solid && object_registry<MapType>.dependent empty<bones_t>(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Annihilate: {
+					if (empty(command.source_position) || !empty(command.target_position) || command.source_position == command.target_position || (!player.is_incorporeal() && game_map<MapType>.linear_blockage(command.source_position, command.target_position, cell_e::Solid))) {
+						return false;
+					}
+
+					break;
+				} default: {
+					break;
+				}
+			}
+
+			if constexpr (is_ternary_command<CommandType>::value) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(command.intermediate_position)) {
+					return false;
+				}
+
+				const std::optional<entity_e> intermediate_target{ at(command.intermediate_position) };
+
+				switch (command_enum) {
+					case command_e::Lunge: {
+						if (!empty(command.intermediate_position) || intermediate_target.has_value()) {
+							return false;
+						}
+					} default: {
+						return false;
+					}
+				}
+			}
+		}		
+
+		return true;
+	}
+
+	template<map_type_e MapType> template<NPCEntity EntityType, NonNullCommand CommandType> inline void entity_registry_t<MapType>::process_commands() noexcept {
+		if constexpr (is_entity_command_valid<EntityType, CommandType>::value) {
+			while (!entity_commands<EntityType, CommandType>.empty()) {
+				cauto command{ entity_commands<EntityType, CommandType>.front() };
+
+				entity_commands<EntityType, CommandType>.pop();
+
+				command.dependent process<MapType>();
+			}
+		}
+	}
+
+	template<map_type_e MapType>
+	template<NPCEntity EntityType, NonNullCommand... CommandTypes>
+		requires is_plurary<CommandTypes...>::value
+	inline void entity_registry_t<MapType>::process_commands() noexcept {
+		(process_commands<EntityType, CommandTypes>(), ...);
+	}
+
+	template<map_type_e MapType> template<NPCEntity EntityType> inline void entity_registry_t<MapType>::process_commands() noexcept {
+		process_commands<EntityType, ALL_NPC_COMMANDS>();
+	}
+
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline void entity_registry_t<MapType>::update() noexcept {
 		const command_pack_t pack{ player.command };
 
@@ -1052,65 +1213,9 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_ENTITIES>(); }
 
-	template<map_type_e MapType> template<NPCEntity EntityType, NonNullCommand CommandType> inline void entity_registry_t<MapType>::process_commands() noexcept {
-		if constexpr (is_entity_command_valid<EntityType, CommandType>::value) {
-			while (!entity_commands<EntityType, CommandType>.empty()) {
-				cauto command{ entity_commands<EntityType, CommandType>.front() };
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::rescan_medicus_goals() noexcept {
+		medicus_goals_dirty = false;
 
-				entity_commands<EntityType, CommandType>.pop();
-
-				command.dependent process<MapType>();
-			}
-		}
-	}
-
-	template<map_type_e MapType>
-	template<NPCEntity EntityType, NonNullCommand... CommandTypes>
-		requires is_plurary<CommandTypes...>::value
-	inline void entity_registry_t<MapType>::process_commands() noexcept {
-		(process_commands<EntityType, CommandTypes>(), ...);
-	}
-
-	template<map_type_e MapType> template<NPCEntity EntityType> inline void entity_registry_t<MapType>::process_commands() noexcept {
-		process_commands<EntityType, ALL_NPC_COMMANDS>();
-	}
-
-	template<map_type_e MapType> template<Entity EntityType> inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
-		entity_goal_map<MapType, EntityType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-	}
-
-	template<map_type_e MapType>
-	template<Entity... EntityTypes>
-		requires is_plurary<EntityTypes...>::value
-	inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
-		(recalculate_goal_map<EntityTypes>(), ...);
-	}
-
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_alignment_goal_maps() noexcept {
-		evil_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-		evil_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
-
-		good_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-		good_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
-
-		neutral_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-		neutral_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
-
-		non_evil_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-		non_evil_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
-
-		non_good_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-		non_good_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
-
-		non_neutral_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-		non_neutral_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
-	}
-
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_skulker_goal_map() noexcept {
-		skulker_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
-	}
-
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_medicus_goal_map() noexcept {
 		medicus_goal_map<MapType>.reset();
 
 		if (entity_registry<MapType>.dependent empty<medicus_t>() || object_registry<MapType>.dependent empty<cerebra_t>() || object_registry<MapType>.dependent empty<flesh_t>() || object_registry<MapType>.dependent empty<bones_t>()) {
@@ -1118,7 +1223,7 @@ namespace necrowarp {
 		}
 
 		for (cauto position : game_map<MapType>.interior_offsets) {
-			if (!game_map<MapType>.dependent within<region_e::Interior>(position) || game_map<MapType>[position].solid || !entity_registry<MapType>.empty(position)) {
+			if (game_map<MapType>[position].solid || !entity_registry<MapType>.empty(position)) {
 				continue;
 			}
 
@@ -1180,6 +1285,47 @@ namespace necrowarp {
 			}
 
 			medicus_goal_map<MapType>.add(position);
+		}
+	}
+
+	template<map_type_e MapType> template<Entity EntityType> inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
+		entity_goal_map<MapType, EntityType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+	}
+
+	template<map_type_e MapType>
+	template<Entity... EntityTypes>
+		requires is_plurary<EntityTypes...>::value
+	inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
+		(recalculate_goal_map<EntityTypes>(), ...);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_alignment_goal_maps() noexcept {
+		evil_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		evil_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
+
+		good_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		good_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
+
+		neutral_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		neutral_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
+
+		non_evil_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		non_evil_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
+
+		non_good_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		non_good_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
+
+		non_neutral_goal_map<MapType, false>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		non_neutral_goal_map<MapType, true>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Explored, entity_registry<MapType>);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_skulker_goal_map() noexcept {
+		skulker_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::recalculate_medicus_goal_map() noexcept {
+		if (medicus_goals_dirty) {
+			rescan_medicus_goals();
 		}
 
 		medicus_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
@@ -1321,142 +1467,6 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
 		reset_goal_map<ALL_ENTITIES>();
 		reset_unique_goal_maps();
-	}
-
-	template<map_type_e MapType> template<Entity EntityType, Command CommandType> inline bool entity_registry_t<MapType>::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
-		static constexpr command_e command_enum{ to_command_enum<CommandType>::value };
-
-		if constexpr (is_null_command<CommandType>::value) {
-			return false;
-		}
-
-		if (!game_map<MapType>.dependent within<region_e::Interior>(command.source_position) || !contains<EntityType>(command.source_position)) {
-			return false;
-		}
-
-		if constexpr (!is_entity_command_valid<EntityType, CommandType>::value) {
-			return false;
-		}
-
-		if constexpr (is_binary_command<CommandType>::value) {
-			if (!game_map<MapType>.dependent within<region_e::Interior>(command.target_position)) {
-				return false;
-			}
-
-			switch (command_enum) {
-				case command_e::Move:
-				case command_e::PreciseWarp: {
-					if (contains(command.target_position)) {
-						return false;
-					}
-
-					if (game_map<MapType>[command.target_position].solid) {
-						if constexpr (is_incorporeal<EntityType>::value) {
-							if constexpr (is_incorporeal<EntityType>::conditional) {
-								if (cptr<EntityType> entity{ at<EntityType>(command.source_position) }; entity == nullptr || !entity->is_incorporeal()) {
-									return false;
-								} else {
-									break;
-								}
-							} else {
-								break;
-							}
-						}
-
-						return false;
-					}
-
-					break;
-				} case command_e::Clash:
-				  case command_e::Lunge:
-				  case command_e::Loose:
-				  case command_e::Batter: {
-					if (empty(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Devour: {
-					if (empty(command.target_position) && object_registry<MapType>.dependent empty<flesh_t>(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Descend: {
-					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<ladder_t>(command.target_position)) {
-						return false;
-					}
-
-					cptr<ladder_t> ladder{ object_registry<MapType>.dependent at<ladder_t>(command.target_position) };
-
-					if (ladder == nullptr || ladder->is_up_ladder() || ladder->has_shackle()) {
-						return false;
-					}
-
-					break;
-				} case command_e::Plunge: {
-					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<portal_t>(command.target_position)) {
-						return false;
-					}
-
-					cptr<portal_t> portal{ object_registry<MapType>.dependent at<portal_t>(command.target_position) };
-
-					if (portal == nullptr || portal->stability == current_dimension) {
-						return false;
-					}
-
-					break;
-				} case command_e::Consume:
-				  case command_e::ConsumeWarp: {
-					if (empty(command.target_position) && object_registry<MapType>.empty(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Retrieve:
-				  case command_e::Resuscitate: {
-					if (object_registry<MapType>.empty(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Calcify: {
-					if (!game_map<MapType>[command.target_position].solid && object_registry<MapType>.dependent empty<bones_t>(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Annihilate: {
-					if (empty(command.source_position) || !empty(command.target_position) || command.source_position == command.target_position || (!player.is_incorporeal() && game_map<MapType>.linear_blockage(command.source_position, command.target_position, cell_e::Solid))) {
-						return false;
-					}
-
-					break;
-				} default: {
-					break;
-				}
-			}
-
-			if constexpr (is_ternary_command<CommandType>::value) {
-				if (!game_map<MapType>.dependent within<region_e::Interior>(command.intermediate_position)) {
-					return false;
-				}
-
-				const std::optional<entity_e> intermediate_target{ at(command.intermediate_position) };
-
-				switch (command_enum) {
-					case command_e::Lunge: {
-						if (!empty(command.intermediate_position) || intermediate_target.has_value()) {
-							return false;
-						}
-					} default: {
-						return false;
-					}
-				}
-			}
-		}		
-
-		return true;
 	}
 
 	template<map_type_e MapType> inline bool entity_registry_t<MapType>::is_concussed(offset_t position) const noexcept { return concussed.contains(position); }

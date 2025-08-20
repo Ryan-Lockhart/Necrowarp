@@ -74,8 +74,8 @@ namespace necrowarp {
 				}
 			}
 
-			if (cauto descent_pos{ object_goal_map<MapType, arrow_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; descent_pos.has_value()) {
-				return command_pack_t{ command_e::Move, position, descent_pos.value() };
+			if (cauto ammo_pos{ object_goal_map<MapType, arrow_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; ammo_pos.has_value()) {
+				return command_pack_t{ command_e::Move, position, ammo_pos.value() };
 			}
 		}
 
@@ -105,8 +105,8 @@ namespace necrowarp {
 					}
 				}
 
-				if (cauto descent_pos{ object_goal_map<MapType, arrow_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; descent_pos.has_value()) {
-					return command_pack_t{ command_e::Move, position, descent_pos.value() };
+				if (cauto ammo_pos{ object_goal_map<MapType, arrow_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; ammo_pos.has_value()) {
+					return command_pack_t{ command_e::Move, position, ammo_pos.value() };
 				}
 			}
 

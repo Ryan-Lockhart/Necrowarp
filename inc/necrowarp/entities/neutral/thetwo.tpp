@@ -102,10 +102,10 @@ namespace necrowarp {
 				return command_pack_t{ command_e::Devour, position, position };
 			}
 
-			cauto meal_pos{ object_goal_map<MapType, flesh_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
+			cauto flesh_pos{ object_goal_map<MapType, flesh_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
-			if (meal_pos.has_value()) {
-				return command_pack_t{ command_e::Move, position, meal_pos.value() };
+			if (flesh_pos.has_value()) {
+				return command_pack_t{ command_e::Move, position, flesh_pos.value() };
 			}
 		}
 

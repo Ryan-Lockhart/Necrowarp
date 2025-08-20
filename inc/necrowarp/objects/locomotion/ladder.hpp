@@ -150,38 +150,11 @@ namespace necrowarp {
 			}, verticality);
 		}
 
-		inline void enshackle() noexcept {
-			if (has_shackle()) {
-				return;
-			}
-			
-			shackle = random_shackle(random_engine);
-			sync_animation();
+		inline void enshackle() noexcept;
 
-			++steam_stats_s::stats<stat_e::LaddersShackled>;
-		}
+		inline void enshackle(shackle_e type) noexcept;
 
-		inline void enshackle(shackle_e type) noexcept {
-			if (has_shackle() || type == shackle_e::Unshackled) {
-				return;
-			}
-			
-			shackle = type;
-			sync_animation();
-
-			++steam_stats_s::stats<stat_e::LaddersShackled>;
-		}
-
-		inline void unshackle() noexcept {
-			if (!has_shackle()) {
-				return;
-			}
-
-			shackle = shackle_e::Unshackled;
-			sync_animation();
-
-			++steam_stats_s::stats<stat_e::LaddersUnshackled>;
-		};
+		inline void unshackle() noexcept;
 
 		inline void draw(offset_t position) const noexcept {
 			game_atlas.draw(current_glyph(), position);

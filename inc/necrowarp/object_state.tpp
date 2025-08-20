@@ -34,6 +34,8 @@ namespace necrowarp {
 	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_buffer_storage{};
 	
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> departure_goal_map{};
+	
+	static inline bool departure_goals_dirty{ false };
 
 	template<map_type_e MapType, NonNullObject ObjectType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> object_goal_map{};
 
@@ -261,11 +263,7 @@ namespace necrowarp {
 			object_goal_map<MapType, ObjectType>.add(position);
 
 			if constexpr (std::is_same<ObjectType, ladder_t>::value) {
-				ptr<ladder_t> maybe_ladder{ at<ladder_t>(position) };
-
-				if (maybe_ladder != nullptr && maybe_ladder->is_up_ladder() && !maybe_ladder->has_shackle()) {
-					departure_goal_map<MapType>.add(position);
-				}
+				departure_goals_dirty = true;
 			}
 		}
 
@@ -285,11 +283,7 @@ namespace necrowarp {
 			object_goal_map<MapType, ObjectType>.add(position);
 
 			if constexpr (std::is_same<ObjectType, ladder_t>::value) {
-				ptr<ladder_t> maybe_ladder{ at<ladder_t>(position) };
-
-				if (maybe_ladder != nullptr && maybe_ladder->is_up_ladder() && !maybe_ladder->has_shackle()) {
-					departure_goal_map<MapType>.add(position);
-				}
+				departure_goals_dirty = true;
 			}
 		}
 
@@ -301,14 +295,8 @@ namespace necrowarp {
 			return false;
 		}
 
-		if (!contains<ObjectType>(position)) {
-			const bool inserted{ object_registry_storage<ObjectType>.add(position, std::move(object)) };
-
-			if (inserted) {
-				object_goal_map<MapType, ObjectType>.add(position);
-			}
-
-			return inserted;
+		if (empty<ObjectType>(position)) {
+			return add<true>(position, std::move(object));
 		}
 
 		std::queue<creeper_t<offset_t::product_t>> frontier{};
@@ -323,14 +311,8 @@ namespace necrowarp {
 
 			visited.insert(current.position);
 
-			if (!contains<ObjectType>(current.position)) {
-				const bool inserted{ object_registry_storage<ObjectType>.add(current.position, std::move(object)) };
-
-				if (inserted) {
-					object_goal_map<MapType, ObjectType>.add(current.position);
-				}
-
-				return inserted;
+			if (empty<ObjectType>(current.position)) {
+				return add<true>(current.position, std::move(object));
 			}
 
 			for (cauto offset : neighbourhood_offsets<distance_function_e::Chebyshev>) {
@@ -352,12 +334,8 @@ namespace necrowarp {
 			return false;
 		}
 
-		if (!contains<ObjectType>(position)) {
-			const bool inserted{ object_registry_storage<ObjectType>.add(position, std::move(object)) };
-
-			if (inserted) {
-				object_goal_map<MapType, ObjectType>.add(position);
-			}
+		if (empty<ObjectType>(position)) {
+			const bool inserted{ add<true>(position, std::move(object)) };
 
 			if (amount <= 1) {
 				return inserted;
@@ -378,12 +356,8 @@ namespace necrowarp {
 
 			visited.insert(current.position);
 
-			if (!contains<ObjectType>(current.position)) {
-				const bool inserted{ object_registry_storage<ObjectType>.add(current.position, std::move(object)) };
-
-				if (inserted) {
-					object_goal_map<MapType, ObjectType>.add(current.position);
-				}
+			if (empty<ObjectType>(current.position)) {
+				const bool inserted{ add<true>(position, std::move(object)) };
 
 				if (amount <= 1) {
 					return inserted;
@@ -407,7 +381,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::remove(offset_t position) noexcept {
-		if (empty(position)) {
+		if (empty<ObjectType>(position)) {
 			return false;
 		}
 		
@@ -417,6 +391,10 @@ namespace necrowarp {
 
 		object_goal_map<MapType, ObjectType>.remove(position);
 
+		if constexpr (std::is_same<ObjectType, ladder_t>::value) {
+			departure_goals_dirty = true;
+		}
+
 		return true;
 	}
 
@@ -424,15 +402,28 @@ namespace necrowarp {
 	template<NonNullObject... ObjectTypes>
 		requires is_plurary<ObjectTypes...>::value
 	inline void object_registry_t<MapType>::remove(offset_t position) noexcept {
+		if (empty<ObjectTypes...>(position)) {
+			return;
+		}
+
 		(remove<ObjectTypes>(position), ...);
 	}
 
 	template<map_type_e MapType> inline void object_registry_t<MapType>::remove(offset_t position) noexcept {
+		if (empty(position)) {
+			return;
+		}
+
 		remove<ALL_OBJECTS>(position);
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::clear() noexcept {
 		object_registry_storage<ObjectType>.clear();
+
+		if constexpr (std::is_same<ObjectType, ladder_t>::value) {
+			departure_goals_dirty = true;
+		}
+
 		reset_goal_map<ObjectType>();
 	}
 
@@ -476,7 +467,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance) noexcept {
-		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
+		recalculate_goal_map<ObjectType>();
 
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
@@ -487,14 +478,14 @@ namespace necrowarp {
 
 			add(maybe_position.value(), ObjectType{});
 
-			object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
+			recalculate_goal_map<ObjectType>();
 		}
 
 		return true;
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType, typename... Args> inline bool object_registry_t<MapType>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
-		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
+		recalculate_goal_map<ObjectType>();
 		
 		for (usize i{ 0 }; i < count; ++i) {
 			cauto maybe_position{ object_goal_map<MapType, ObjectType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, minimum_distance) };
@@ -505,7 +496,7 @@ namespace necrowarp {
 
 			add(maybe_position.value(), ObjectType{ args... });
 
-			object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
+			recalculate_goal_map<ObjectType>();
 		}
 
 		return true;
@@ -555,6 +546,28 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void object_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_OBJECTS>(); }
 
+	template<map_type_e MapType> inline void object_registry_t<MapType>::rescan_departure_goals() noexcept {
+		departure_goals_dirty = false;
+
+		departure_goal_map<MapType>.reset();
+
+		if (object_registry<MapType>.dependent empty<ladder_t>()) {
+			return;
+		}
+
+		for (cauto position : game_map<MapType>.interior_offsets) {
+			if (game_map<MapType>[position].solid || !object_registry<MapType>.dependent empty<ladder_t>(position)) {
+				continue;
+			}
+
+			if (cptr<ladder_t> maybe_ladder{ object_registry<MapType>.dependent at<ladder_t>(position) }; maybe_ladder == nullptr || maybe_ladder->is_down_ladder() || maybe_ladder->has_shackle()) {
+				continue;
+			}
+
+			departure_goal_map<MapType>.add(position);
+		}
+	}
+
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
 		object_goal_map<MapType, ObjectType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, object_registry_storage<ObjectType>);
 	}
@@ -567,9 +580,17 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void object_registry_t<MapType>::recalculate_goal_map() noexcept {
-		departure_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
+		recalculate_departure_goal_map();
 
 		recalculate_goal_map<ALL_OBJECTS>();
+	}
+
+	template<map_type_e MapType> inline void object_registry_t<MapType>::recalculate_departure_goal_map() noexcept {
+		if (departure_goals_dirty) {
+			rescan_departure_goals();
+		}
+
+		departure_goal_map<MapType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open);
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::reset_goal_map() noexcept {
@@ -584,9 +605,13 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void object_registry_t<MapType>::reset_goal_map() noexcept {
-		departure_goal_map<MapType>.reset();
+		reset_departure_goal_map();
 
 		reset_goal_map<ALL_OBJECTS>();
+	}
+
+	template<map_type_e MapType> inline void object_registry_t<MapType>::reset_departure_goal_map() noexcept {
+		departure_goal_map<MapType>.reset();
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw() const noexcept {

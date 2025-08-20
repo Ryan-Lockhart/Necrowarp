@@ -165,6 +165,8 @@ namespace necrowarp {
 
 		inline void retreat() noexcept;
 
+		inline void rescan_medicus_goals() noexcept;
+
 		template<Entity EntityType> inline void recalculate_goal_map() noexcept;
 
 		template<Entity... EntityTypes>
