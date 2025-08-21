@@ -73,7 +73,7 @@ namespace necrowarp::bindings {
 	constexpr const sdl::key HastenTimestep{ keys::RightBracket };
 	constexpr const sdl::key HarryTimestep{ keys::LeftBracket };
 
-	constexpr const sdl::key IgnoreObjects{ keys::Modifier::Left::Alt };
+	constexpr const sdl::key IgnoreObjects{ keys::Modifier::Left::Control };
 
 	constexpr const sdl::key ChaoticWarp{ keys::Alpha::Q };
 	constexpr const sdl::key PreciseWarp{ keys::Alpha::E };

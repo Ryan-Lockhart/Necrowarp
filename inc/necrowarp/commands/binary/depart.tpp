@@ -25,6 +25,6 @@ namespace necrowarp {
 
 		entity_registry<MapType>.dependent remove<EntityType>(source_position);
 
-		offmap_reinforcements<MapType, EntityType>.emplace(game_stats.current_departure_epoch());
+		offmap_reinforcements<EntityType>.emplace(game_stats.current_departure_epoch());
 	}
 } // namespace necrowarp

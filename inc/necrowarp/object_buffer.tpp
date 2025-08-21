@@ -103,7 +103,7 @@ namespace necrowarp {
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_buffer_t<MapType>::draw() const noexcept {
 		for (crauto [position, object] : object_buffer_storage<ObjectType>) {
-			object.draw();
+			object.draw(position);
 		}
 	}
 

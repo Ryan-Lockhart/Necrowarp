@@ -3,24 +3,33 @@
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
-	constexpr cstr help_hidden_text{ " F1: Show Controls " };
+	constexpr cstr help_hidden_text{ "        F1: Show Controls        " };
 
 	constexpr cstr help_expanded_text{
-		" Movement:   WASD / Numpad \n\n\n"
-		" Chaotic Warp:           Q \n\n"
-		" Precise Warp:           E \n\n\n"
-		" Calcitic Invocation:    1 \n\n"
-		" Spectral Invocation:    2 \n\n"
-		" Sanguine Invocation:    3 \n\n"
-		" Galvanic Invocation:    4 \n\n\n"
-		" Ravenous Invocation:    5 \n\n"
-		" Wretched Invocation:    6 \n\n"
-		" Cerebral Invocation:    7 \n\n"
-		" Infernal Invocation:    8 \n\n\n"
-		" Necromantic Ascendance: R \n\n"
-		" Calamitous Retaliation: F \n\n\n"
-		" Ignore Objects:       Alt \n\n\n"
-		" F1: Hide Controls "
+		"Player Movement:    WASD / Numpad\n\n\n"
+		"Camera Movement:       Arrow Keys\n\n"
+		"Toggle Camera Lock:           Tab\n\n\n"
+		"Hasten Timestep:    Right Bracket\n\n"
+		"Harry Timestep:      Left Bracket\n\n\n"
+		"Resize Minimap:                 M\n\n\n"
+		"Chaotic Warp:                   Q\n\n"
+		"Precise Warp:                   E\n\n\n"
+		"Annihilate:                     Z\n\n"
+		"Repulse:                        X\n\n"
+		"Calcify:                        C\n\n"
+		"Incorporealize:                 V\n\n\n"
+		"Calcitic Invocation:            1\n\n"
+		"Spectral Invocation:            2\n\n"
+		"Sanguine Invocation:            3\n\n"
+		"Galvanic Invocation:            4\n\n\n"
+		"Ravenous Invocation:            5\n\n"
+		"Wretched Invocation:            6\n\n"
+		"Cerebral Invocation:            7\n\n"
+		"Infernal Invocation:            8\n\n\n"
+		"Necromantic Ascendance:         R\n\n"
+		"Calamitous Retaliation:         F\n\n\n"
+		"Ignore Objects:      Left Control\n\n\n"
+		"        F1: Hide Controls        "
 	};
 
 	template<> struct phase_state_t<phase_e::Paused> {

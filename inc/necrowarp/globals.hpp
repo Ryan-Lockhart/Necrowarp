@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SDL_video.h"
 #include <bleak.hpp>
 
 #include <necrowarp/constants.hpp>
@@ -321,24 +320,28 @@ namespace necrowarp {
 			map_config = map_config_dis(engine) ? CavernPreset : TunnelsPreset;
 		}
 
+		constexpr bool EnableRushMode{ true };
+
+		static inline bool rush_mode_toggle{ true };
+
 		constexpr i16 MinimumDepth{ 0 };
 		constexpr i16 MaximumDepth{ 999 };
 
 		constexpr f32 MinimumDepthMultiplier{ 1.0f };
 		constexpr f32 MaximumDepthMultiplier{ 10.0f };
 
-		constexpr i16 StartingBones{ 16 };
+		constexpr i16 StartingBones{ 32 };
 
-		constexpr i16 MinimumBoneDistance{ 16 };
+		constexpr i16 MinimumBoneDistance{ 32 };
 
-		constexpr i16 StartingCrevices{ 2 };
+		constexpr i16 StartingCrevices{ 4 };
 
-		constexpr i16 MinimumCreviceDistance{ 32 };
+		constexpr i16 MinimumCreviceDistance{ 64 };
 	
-		constexpr i16 StartingUpLadders{ 8 };
-		constexpr i16 StartingDownLadders{ 4 };
+		constexpr i16 StartingUpLadders{ 16 };
+		constexpr i16 StartingDownLadders{ 8 };
 
-		constexpr i16 MinimumLadderDistance{ 16 };
+		constexpr i16 MinimumLadderDistance{ 32 };
 
 		constexpr f32 MinimumWaveSizeMultiplier{ 0.5f };
 		constexpr f32 MaximumWaveSizeMultiplier{ 4.0f };
@@ -367,7 +370,7 @@ namespace necrowarp {
 		constexpr bool SpawnTutorialPortal{ false };
 
 		constexpr bool EnableBoonPortal{ true };
-		constexpr bool EnableTribulationPortal{ false };
+		constexpr bool EnableTribulationPortal{ true };
 		constexpr bool EnableAudiencePortal{ false };
 
 		constexpr f64 BoonPortalChance{ 0.02 };

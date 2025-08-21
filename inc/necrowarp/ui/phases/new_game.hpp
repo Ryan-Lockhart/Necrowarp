@@ -55,6 +55,19 @@ namespace necrowarp {
 			}
 		};
 
+		static inline labeled_toggle_t rush_toggle{
+			anchor_t{
+				offset_t{ globals::grid_size<grid_type_e::UI>() - offset_t{ 1, 1 } },
+				cardinal_e::Southeast
+			},
+			embedded_label_t{
+				runes_t{ "Rush Mode", colors::Orange },
+				embedded_box_t{ colors::White, border_t{ colors::Red, 1 } },
+				extent_t{ 1, 1 }
+			},
+			globals::rush_mode_toggle
+		};
+
 		static inline label_t warning_label{
 			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 0, 5 } }, cardinal_e::North },
 			embedded_label_t{
@@ -69,7 +82,14 @@ namespace necrowarp {
 				return false;
 			}
 
-			return header_label.is_hovered() || patron_label.is_hovered() || patron_selector.is_hovered() || play_button.is_hovered() || back_button.is_hovered();
+			return
+				header_label.is_hovered() ||
+				patron_label.is_hovered() ||
+				patron_selector.is_hovered() ||
+				play_button.is_hovered() ||
+				back_button.is_hovered() || 
+				rush_toggle.is_hovered() ||
+				warning_label.is_hovered();
 		}
 
 		static inline void update_label() noexcept {
@@ -103,8 +123,11 @@ namespace necrowarp {
 
 			back_button.update(button_e::Left);
 
+			rush_toggle.update(button_e::Left);
+
 			if (play_button.is_active()) {
 				desired_patron = patron_selector.get_selected();
+				globals::rush_mode_toggle = rush_toggle.is_active();
 
 				phase.transition(phase_e::Loading);
 			} else if (back_button.is_active()) {
@@ -129,6 +152,8 @@ namespace necrowarp {
 
 			play_button.draw(renderer);
 			back_button.draw(renderer);
+
+			rush_toggle.draw(renderer);
 		}
 	};
 } //namespace necrowarp

@@ -34,7 +34,7 @@ namespace necrowarp {
 	template<NonNullObject ObjectType> static inline sparse_t<ObjectType> object_buffer_storage{};
 	
 	template<map_type_e MapType> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> departure_goal_map{};
-	
+
 	static inline bool departure_goals_dirty{ false };
 
 	template<map_type_e MapType, NonNullObject ObjectType> static inline field_t<float, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> object_goal_map{};
@@ -440,6 +440,8 @@ namespace necrowarp {
 
 	template<map_type_e MapType> inline void object_registry_t<MapType>::clear() noexcept {
 		clear<ALL_OBJECTS>();
+
+		reset_goal_map();
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline bool object_registry_t<MapType>::spawn(usize count) noexcept {
@@ -553,7 +555,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void object_registry_t<MapType>::rescan_departure_goals() noexcept {
 		departure_goals_dirty = false;
 
-		departure_goal_map<MapType>.reset();
+		departure_goal_map<MapType>.dependent clear<region_e::All>();
 
 		if (object_registry<MapType>.dependent empty<ladder_t>()) {
 			return;
@@ -598,7 +600,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::reset_goal_map() noexcept {
-		object_goal_map<MapType, ObjectType>.reset();
+		object_goal_map<MapType, ObjectType>.dependent clear<region_e::All>();
 	}
 
 	template<map_type_e MapType>
@@ -609,13 +611,15 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void object_registry_t<MapType>::reset_goal_map() noexcept {
-		reset_departure_goal_map();
-
 		reset_goal_map<ALL_OBJECTS>();
+
+		reset_departure_goal_map();
 	}
 
 	template<map_type_e MapType> inline void object_registry_t<MapType>::reset_departure_goal_map() noexcept {
-		departure_goal_map<MapType>.reset();
+		departure_goal_map<MapType>.dependent clear<region_e::All>();
+
+		departure_goals_dirty = false;
 	}
 
 	template<map_type_e MapType> template<NonNullObject ObjectType> inline void object_registry_t<MapType>::draw() const noexcept {
@@ -667,3 +671,11 @@ namespace necrowarp {
 #include <necrowarp/object_buffer.tpp>
 
 #include <necrowarp/objects.tpp>
+
+namespace necrowarp {
+	template struct object_registry_t<map_type_e::Pocket>;
+	template struct object_registry_t<map_type_e::Standard>;
+
+	template struct object_buffer_t<map_type_e::Pocket>;
+	template struct object_buffer_t<map_type_e::Standard>;
+} // namespace necrowarp

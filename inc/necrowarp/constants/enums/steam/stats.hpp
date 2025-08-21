@@ -183,7 +183,7 @@ namespace necrowarp {
 
 	template<> inline constexpr cstr stats::api_key<stat_e::BloodConsumed>{ "blood_consumed" };
 	template<> inline constexpr cstr stats::api_key<stat_e::IchorConsumed>{ "ichor_consumed" };
-	template<> inline constexpr cstr stats::api_key<stat_e::FilthConsumed>{ "flith_consumed" };
+	template<> inline constexpr cstr stats::api_key<stat_e::FilthConsumed>{ "filth_consumed" };
 	template<> inline constexpr cstr stats::api_key<stat_e::EctoplasmConsumed>{ "ectoplasm_consumed" };
 
 	template<> inline constexpr cstr stats::api_key<stat_e::SkeletonsConsumed>{ "skeletons_consumed" };

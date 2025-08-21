@@ -161,9 +161,9 @@ namespace necrowarp {
 
 	template<map_type_e MapType, Entity EntityType, bool Incorporeal = false> static inline field_t<f32, globals::DistanceFunction, globals::MapSize<MapType>, globals::BorderSize<MapType>> entity_goal_map{};
 
-	template<map_type_e MapType, GoodEntity EntityType> static inline std::priority_queue<usize> offmap_reinforcements{};
+	template<GoodEntity EntityType> static inline std::priority_queue<usize> offmap_reinforcements{};
 
-	template<map_type_e MapType, GoodEntity EntityType> static inline usize reinforcement_count{};
+	template<GoodEntity EntityType> static inline usize reinforcement_count{};
 
 	static inline volatile std::atomic<bool> descent_flag{ false };
 
@@ -595,6 +595,10 @@ namespace necrowarp {
 		entity_registry_storage<EntityType>.clear();
 
 		reset_goal_map<EntityType>();
+
+		if constexpr (is_good<EntityType>::value) {
+			clear_offmap<EntityType>();
+		}
 	}
 
 	template<map_type_e MapType>
@@ -607,8 +611,22 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::clear() noexcept {
 		clear<ALL_ENTITIES>();
 
-		reset_alignment_goal_maps();
-		reset_specialist_goal_maps();
+		reset_unique_goal_maps();
+
+		deceased.clear();
+		concussed.clear();
+		afflicted.clear();
+	
+		descent_flag = false;
+		plunge_flag = false;
+	
+		plunge_target = dimension_e::Abyss;
+		hijacked_target = dimension_e::Abyss;
+	
+		player_turn_invalidated = false;
+	
+		freshly_divine = false;
+		freshly_incorporeal = false;
 	}
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::spawn(usize count) noexcept {
@@ -1220,7 +1238,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::rescan_medicus_goals() noexcept {
 		medicus_goals_dirty = false;
 
-		medicus_goal_map<MapType>.reset();
+		medicus_goal_map<MapType>.dependent clear<region_e::All>();
 
 		if (entity_registry<MapType>.dependent empty<medicus_t>() || object_registry<MapType>.dependent empty<cerebra_t>() || object_registry<MapType>.dependent empty<flesh_t>() || object_registry<MapType>.dependent empty<bones_t>()) {
 			return;
@@ -1353,7 +1371,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<Entity EntityType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
-		entity_goal_map<MapType, EntityType>.reset();
+		entity_goal_map<MapType, EntityType>.dependent clear<region_e::All>();
 	}
 
 	template<map_type_e MapType>
@@ -1363,30 +1381,38 @@ namespace necrowarp {
 		(reset_goal_map<EntityTypes>(), ...);
 	}
 
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
+		reset_goal_map<ALL_ENTITIES>();
+
+		reset_unique_goal_maps();
+	}
+
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_alignment_goal_maps() noexcept {
-		evil_goal_map<MapType, false>.reset();
-		evil_goal_map<MapType, true>.reset();
+		evil_goal_map<MapType, false>.dependent clear<region_e::All>();
+		evil_goal_map<MapType, true>.dependent clear<region_e::All>();
 
-		good_goal_map<MapType, false>.reset();
-		good_goal_map<MapType, true>.reset();
+		good_goal_map<MapType, false>.dependent clear<region_e::All>();
+		good_goal_map<MapType, true>.dependent clear<region_e::All>();
 
-		neutral_goal_map<MapType, false>.reset();
-		neutral_goal_map<MapType, true>.reset();
+		neutral_goal_map<MapType, false>.dependent clear<region_e::All>();
+		neutral_goal_map<MapType, true>.dependent clear<region_e::All>();
 
-		non_evil_goal_map<MapType, false>.reset();
-		non_evil_goal_map<MapType, true>.reset();
+		non_evil_goal_map<MapType, false>.dependent clear<region_e::All>();
+		non_evil_goal_map<MapType, true>.dependent clear<region_e::All>();
 
-		non_good_goal_map<MapType, false>.reset();
-		non_good_goal_map<MapType, true>.reset();
+		non_good_goal_map<MapType, false>.dependent clear<region_e::All>();
+		non_good_goal_map<MapType, true>.dependent clear<region_e::All>();
 
-		non_neutral_goal_map<MapType, false>.reset();
-		non_neutral_goal_map<MapType, true>.reset();
+		non_neutral_goal_map<MapType, false>.dependent clear<region_e::All>();
+		non_neutral_goal_map<MapType, true>.dependent clear<region_e::All>();
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_specialist_goal_maps() noexcept {
-		skulker_goal_map<MapType>.reset();
-		ranger_goal_map<MapType>.reset();
-		medicus_goal_map<MapType>.reset();
+		skulker_goal_map<MapType>.dependent clear<region_e::All>();
+		ranger_goal_map<MapType>.dependent clear<region_e::All>();
+		medicus_goal_map<MapType>.dependent clear<region_e::All>();
+
+		medicus_goals_dirty = false;
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_unique_goal_maps() noexcept {
@@ -1399,7 +1425,9 @@ namespace necrowarp {
 	template<map_type_e MapType> template<GoodEntity EntityType> inline bool entity_registry_t<MapType>::depart(usize epoch) noexcept {}
 
 	template<map_type_e MapType> template<GoodEntity EntityType> inline void entity_registry_t<MapType>::clear_offmap() noexcept {
-		while (!offmap_reinforcements<MapType, EntityType>.empty()) { offmap_reinforcements<MapType, EntityType>.pop(); }
+		reinforcement_count<EntityType> = 0;
+
+		while (!offmap_reinforcements<EntityType>.empty()) { offmap_reinforcements<EntityType>.pop(); }
 	}
 
 	template<map_type_e MapType>
@@ -1412,25 +1440,25 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::clear_offmap() noexcept { clear_offmap<ALL_GOOD>(); }
 
 	template<map_type_e MapType> template<GoodEntity EntityType> inline void entity_registry_t<MapType>::tick_offmap() noexcept {
-		if (offmap_reinforcements<MapType, EntityType>.empty()) {
+		if (offmap_reinforcements<EntityType>.empty()) {
 			return;
 		}
 
 		std::priority_queue<usize> ticked{};
 
-		while (!offmap_reinforcements<MapType, EntityType>.empty()) {
-			usize epoch{ offmap_reinforcements<MapType, EntityType>.top() };
+		while (!offmap_reinforcements<EntityType>.empty()) {
+			usize epoch{ offmap_reinforcements<EntityType>.top() };
 
-			offmap_reinforcements<MapType, EntityType>.pop();
+			offmap_reinforcements<EntityType>.pop();
 
 			if (epoch > 0) {
 				ticked.emplace(--epoch);
 			} else {
-				++reinforcement_count<MapType, EntityType>;
+				++reinforcement_count<EntityType>;
 			}
 		}
 
-		offmap_reinforcements<MapType, EntityType> = ticked;
+		offmap_reinforcements<EntityType> = ticked;
 	}
 
 	template<map_type_e MapType>
@@ -1443,7 +1471,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::tick_offmap() noexcept { tick_offmap<ALL_GOOD>(); }
 
 	template<map_type_e MapType> template<GoodEntity EntityType> inline bool entity_registry_t<MapType>::any_offmap() const noexcept {
-		return reinforcement_count<MapType, EntityType> > 0;
+		return reinforcement_count<EntityType> > 0;
 	}
 
 	template<map_type_e MapType>
@@ -1456,7 +1484,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline bool entity_registry_t<MapType>::any_offmap() const noexcept { return any_offmap<ALL_GOOD>(); }
 
 	template<map_type_e MapType> template<GoodEntity EntityType> inline usize entity_registry_t<MapType>::offmap_count() const noexcept {
-		return reinforcement_count<MapType, EntityType>;
+		return reinforcement_count<EntityType>;
 	}
 
 	template<map_type_e MapType>
@@ -1467,11 +1495,6 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline usize entity_registry_t<MapType>::offmap_count() const noexcept { return offmap_count<ALL_GOOD>(); }
-
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::reset_goal_map() noexcept {
-		reset_goal_map<ALL_ENTITIES>();
-		reset_unique_goal_maps();
-	}
 
 	template<map_type_e MapType> inline bool entity_registry_t<MapType>::is_concussed(offset_t position) const noexcept { return concussed.contains(position); }
 	
@@ -1569,6 +1592,12 @@ namespace necrowarp {
 #include <necrowarp/commands.tpp>
 
 namespace necrowarp {
+	template struct entity_registry_t<map_type_e::Pocket>;
+	template struct entity_registry_t<map_type_e::Standard>;
+
+	template struct entity_buffer_t<map_type_e::Pocket>;
+	template struct entity_buffer_t<map_type_e::Standard>;
+
 	struct omni_entity_t {
 	  private:
 		std::variant<ALL_NON_PLAYER> value;

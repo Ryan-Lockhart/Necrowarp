@@ -72,6 +72,9 @@ namespace necrowarp {
 
 	static constexpr usize cursor_interval{ 125ULL };
 	static inline bleak::timer_t cursor_timer{ cursor_interval };
+	
+	static constexpr usize cache_interval{ 25ULL };
+	static inline bleak::timer_t cache_timer{ input_interval };
 
 	enum struct timestep_e : u8 {
 		Slow,
@@ -89,9 +92,18 @@ namespace necrowarp {
 		pair_t<timestep_e, usize>{ timestep_e::Ludicrous, 25ULL }
 	};
 
+	static constexpr bleak::lut_t<timestep_e, usize, magic_enum::enum_count<timestep_e>()> rush_interval{
+		pair_t<timestep_e, usize>{ timestep_e::Slow, 325ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Normal, 250ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Fast, 125ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Faster, 50ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Ludicrous, 25ULL }
+	};
+
 	static inline timestep_e epoch_timestep{ timestep_e::Normal };
 
 	static inline bleak::timer_t epoch_timer{ epoch_interval[epoch_timestep] };
+	static inline bleak::timer_t rush_timer{ rush_interval[epoch_timestep] };
 
 	static inline std::uniform_int_distribution<usize> epoch_interval_dis{ static_cast<usize>(epoch_interval[epoch_timestep] * 0.10), static_cast<usize>(epoch_interval[epoch_timestep] * 0.90) };
 
@@ -103,6 +115,7 @@ namespace necrowarp {
 		epoch_timestep = static_cast<timestep_e>(static_cast<u8>(epoch_timestep) + 1);
 
 		epoch_timer.interval = epoch_interval[epoch_timestep];
+		rush_timer.interval = rush_interval[epoch_timestep];
 
 		epoch_interval_dis = std::uniform_int_distribution<usize>{ static_cast<usize>(epoch_interval[epoch_timestep] * 0.10), static_cast<usize>(epoch_interval[epoch_timestep] * 0.90) };
 
@@ -117,6 +130,7 @@ namespace necrowarp {
 		epoch_timestep = static_cast<timestep_e>(static_cast<u8>(epoch_timestep) - 1);
 
 		epoch_timer.interval = epoch_interval[epoch_timestep];
+		rush_timer.interval = rush_interval[epoch_timestep];
 
 		epoch_interval_dis = std::uniform_int_distribution<usize>{ static_cast<usize>(epoch_interval[epoch_timestep] * 0.10), static_cast<usize>(epoch_interval[epoch_timestep] * 0.90) };
 
