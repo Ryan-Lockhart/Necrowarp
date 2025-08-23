@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, infernal_invocation_t>::process() const noexcept {
-		if (!player.can_perform(grimoire_e::InfernalInvocation) || (!player.bypass_invocations_enabled() && !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Ectoplasm))) {
+		if (!player.can_perform<MapType>(grimoire_e::InfernalInvocation) || (!player.bypass_invocations_enabled() && !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Ectoplasm))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -158,7 +158,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<stat_e::InfernalInvocations>;
 
-		player.pay_cost(grimoire_e::InfernalInvocation);
+		player.pay_cost<MapType>(grimoire_e::InfernalInvocation);
 
 		literature::use(grimoire_e::InfernalInvocation);
 

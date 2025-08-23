@@ -296,19 +296,19 @@ namespace necrowarp {
 		
 		constexpr const map_config_t CavernPreset{
 			.fill_percent = 0.45,
-			.automata_iterations = 512,
+			.automata_iterations = 10,
 			.automata_threshold = 4,
 		};
 		
 		constexpr const map_config_t TunnelsPreset{
 			.fill_percent = 0.5,
-			.automata_iterations = 512,
+			.automata_iterations = 10,
 			.automata_threshold = 4,
 		};
 		
 		constexpr const map_config_t FieldPreset{
 			.fill_percent = 0.425,
-			.automata_iterations = 512,
+			.automata_iterations = 10,
 			.automata_threshold = 4,
 		};
 
@@ -322,7 +322,7 @@ namespace necrowarp {
 
 		constexpr bool EnableRushMode{ true };
 
-		static inline bool rush_mode_toggle{ true };
+		static inline bool rush_mode_toggle{ false };
 
 		constexpr i16 MinimumDepth{ 0 };
 		constexpr i16 MaximumDepth{ 999 };

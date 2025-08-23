@@ -11,14 +11,14 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline bool chaotic_warp_t::execute(offset_t position, bool free) noexcept {
-		if (!free && !player.can_perform(grimoire_e::ChaoticWarp)) {
+		if (!free && !player.can_perform<MapType>(grimoire_e::ChaoticWarp)) {
 			player_turn_invalidated = true;
 
 			return false;
 		}
 
 		if (!free) {
-			player.pay_cost(grimoire_e::ChaoticWarp);
+			player.pay_cost<MapType>(grimoire_e::ChaoticWarp);
 
 			literature::use(grimoire_e::ChaoticWarp);
 

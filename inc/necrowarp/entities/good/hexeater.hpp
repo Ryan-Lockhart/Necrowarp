@@ -122,6 +122,28 @@ namespace necrowarp {
 		static constexpr i8 MaximumHexes{ 8 };
 		static constexpr i8 SwellingPoint{ MaximumHexes / 2 };
 
+		template<grimoire_e Grimoire> static constexpr i8 SwellAmount{};
+
+		template<> constexpr i8 SwellAmount<grimoire_e::ChaoticWarp>{ 1 };
+		template<> constexpr i8 SwellAmount<grimoire_e::PreciseWarp>{ 1 };
+
+		template<> constexpr i8 SwellAmount<grimoire_e::Annihilate>{ 2 };
+		template<> constexpr i8 SwellAmount<grimoire_e::Repulse>{ 2 };
+		template<> constexpr i8 SwellAmount<grimoire_e::Calcify>{ 1 };
+		template<> constexpr i8 SwellAmount<grimoire_e::Incorporealize>{ 1 };
+
+		template<> constexpr i8 SwellAmount<grimoire_e::CalciticInvocation>{ 3 };
+		template<> constexpr i8 SwellAmount<grimoire_e::SpectralInvocation>{ 3 };
+		template<> constexpr i8 SwellAmount<grimoire_e::SanguineInvocation>{ 3 };
+		template<> constexpr i8 SwellAmount<grimoire_e::GalvanicInvocation>{ 3 };
+		template<> constexpr i8 SwellAmount<grimoire_e::RavenousInvocation>{ 4 };
+		template<> constexpr i8 SwellAmount<grimoire_e::WretchedInvocation>{ 4 };
+		template<> constexpr i8 SwellAmount<grimoire_e::CerebralInvocation>{ 4 };
+		template<> constexpr i8 SwellAmount<grimoire_e::InfernalInvocation>{ 4 };
+
+		template<> constexpr i8 SwellAmount<grimoire_e::NecromanticAscendance>{ 8 };
+		template<> constexpr i8 SwellAmount<grimoire_e::CalamitousRetaliation>{ 8 };
+
 		static constexpr i8 MaximumHealth{ BaseMaximumHealth + MaximumHexes / HexesPerMaximumHealth };
 		static constexpr i8 MaximumDamage{ BaseMaximumDamage + MaximumHexes / HexesPerMaximumDamage };
 
@@ -288,6 +310,14 @@ namespace necrowarp {
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
 		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
+
+		inline void swell() { set_hexes(hexes + 1); }
+
+		inline void swell(i8 amount) { set_hexes(hexes + amount); }
+
+		inline void exude() { set_hexes(hexes - 1); }
+
+		inline void exude(i8 amount) { set_hexes(hexes - amount); }
 
 		inline std::string to_string() const noexcept { return std::format("{} [{}/{}] ({})", necrowarp::to_string(entity_e::Hexeater), get_health(), max_health(), necrowarp::to_string(get_exudance())); }
 

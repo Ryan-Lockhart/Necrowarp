@@ -250,7 +250,7 @@ namespace necrowarp {
 			return hovered;
 		}
 
-		static constexpr void update_command() noexcept {
+		template<map_type_e MapType> static constexpr void update_command() noexcept {
 			const std::optional<grimoire_e> command{ get_hovered_icon() };
 
 			if (!command.has_value()) {
@@ -259,23 +259,35 @@ namespace necrowarp {
 
 			magic_enum::enum_switch([&](auto val) {
 				constexpr grimoire_e cval{ val };
+				
+				const bool can_perform{ player.can_perform<MapType>(cval) };
+
+				const bool blocked{ mansling_t::in_range<MapType>() };
 
 				command_label.text = runes_t{ to_string(cval) };
 				command_label.text
 					.concatenate(runes_t{ " ["})
-					.concatenate(runes_t{ std::format("{}", player.get_energy()), player.can_perform(cval) ? colors::Green : colors::Red })
+					.concatenate(runes_t{ std::format("{}", player.get_energy()), can_perform ? colors::Green : colors::Red })
 					.concatenate(runes_t{ "/" })
-					.concatenate(runes_t{ std::format("{}", player.get_cost(cval)), colors::Yellow })
-					.concatenate(runes_t{ std::format("] (uses: {})", grimoire_s<cval>::get_uses()) });
+					.concatenate(runes_t{ std::format("{}", player.get_cost(cval)) });
+
+				if (!can_perform && blocked) {
+					command_label.text
+						.concatenate(runes_t{ " (" })
+						.concatenate(runes_t{ "blocked", colors::Red })
+						.concatenate(runes_t{ ")"});
+				}
+
+				command_label.text.concatenate(runes_t{ std::format("] (uses: {})", grimoire_s<cval>::get_uses()) });
 			}, command.value());
 		}
 
-		static constexpr void draw_commands() noexcept {
+		template<map_type_e MapType> static constexpr void draw_commands() noexcept {
 			magic_enum::enum_for_each<grimoire_e>([&](auto val) {
 				constexpr grimoire_e cval{ val };
 
 				if (grimoire_s<cval>::can_use()) {
-					icon_atlas.draw(glyph_t{ static_cast<u16>(cval), player.can_perform(cval) ? colors::White : colors::dark::Grey }, icon_position<cval>());
+					icon_atlas.draw(glyph_t{ static_cast<u16>(cval), player.can_perform<MapType>(cval) ? colors::White : colors::dark::Grey }, icon_position<cval>());
 				}
 			});
 		}
@@ -334,7 +346,7 @@ namespace necrowarp {
 			show_command = any_icon_hovered();
 
 			if (show_command) {
-				update_command();
+				update_command<MapType>();
 			}
 
 			show_depth = show_depth ? depth_expanded_label.is_hovered() : depth_hidden_label.is_hovered();
@@ -563,7 +575,7 @@ namespace necrowarp {
 				advancement_label.draw(renderer);
 			}
 
-			draw_commands();
+			draw_commands<MapType>();
 
 			if (show_command) {
 				command_label.draw(renderer);

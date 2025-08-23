@@ -9,7 +9,7 @@ namespace necrowarp {
 	namespace globals {
 		static constexpr entity_e OopsAllEnum{ entity_e::Mansling };
 
-		template<> inline constexpr bool OopsAll<OopsAllEnum>{ false };
+		template<> inline constexpr bool OopsAll<OopsAllEnum>{ true };
 
 		template<GoodEntity... Entities> static constexpr usize OopsAllCount{ (OopsAll<to_entity_enum<Entities>::value> + ...) };
 

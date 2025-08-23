@@ -12,7 +12,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, repulse_t>::process() const noexcept {
-		if (!player.can_perform(grimoire_e::Repulse)) {
+		if (!player.can_perform<MapType>(grimoire_e::Repulse)) {
 			player_turn_invalidated = true;
 
 			return;
@@ -168,7 +168,7 @@ namespace necrowarp {
 
 		steam_stats::unlock(achievement_e::BasicRepulseUsage);
 
-		player.pay_cost(grimoire_e::Repulse);
+		player.pay_cost<MapType>(grimoire_e::Repulse);
 
 		literature::use(grimoire_e::Repulse);
 	}

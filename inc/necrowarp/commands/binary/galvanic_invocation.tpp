@@ -12,7 +12,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, galvanic_invocation_t>::process() const noexcept {
-		if (!player.can_perform(grimoire_e::GalvanicInvocation) || (!player.bypass_invocations_enabled() && !object_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, metal_t>(target_position))) {
+		if (!player.can_perform<MapType>(grimoire_e::GalvanicInvocation) || (!player.bypass_invocations_enabled() && !object_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, metal_t>(target_position))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -165,7 +165,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<stat_e::GalvanicInvocations>;
 
-		player.pay_cost(grimoire_e::GalvanicInvocation);
+		player.pay_cost<MapType>(grimoire_e::GalvanicInvocation);
 
 		literature::use(grimoire_e::GalvanicInvocation);
 

@@ -16,7 +16,7 @@ namespace necrowarp {
 		const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
 
 		if (maybe_entity.has_value()) {
-			if (!player.can_perform(grimoire_e::PreciseWarp) || !is_interactable<EntityType>(maybe_entity.value())) {
+			if (!player.can_perform<MapType>(grimoire_e::PreciseWarp) || !is_interactable<EntityType>(maybe_entity.value())) {
 				player_turn_invalidated = true;
 
 				return;
@@ -42,7 +42,7 @@ namespace necrowarp {
 
 					steam_stats::unlock(achievement_e::AcquireBoneArmor);
 
-					player.pay_cost(grimoire_e::PreciseWarp);
+					player.pay_cost<MapType>(grimoire_e::PreciseWarp);
 
 					literature::use(grimoire_e::PreciseWarp);
 
@@ -68,7 +68,7 @@ namespace necrowarp {
 
 					steam_stats::unlock(achievement_e::AcquireBoneArmor);
 
-					player.pay_cost(grimoire_e::PreciseWarp);
+					player.pay_cost<MapType>(grimoire_e::PreciseWarp);
 
 					literature::use(grimoire_e::PreciseWarp);
 
@@ -93,7 +93,7 @@ namespace necrowarp {
 
 				const i8 boon{ state == decay_e::Fresh ? player_t::BoneBoon : i8{ 0 } };
 
-				if (!player.can_perform(grimoire_e::PreciseWarp, boon)) {
+				if (!player.can_perform<MapType>(grimoire_e::PreciseWarp, boon)) {
 					player_turn_invalidated = true;
 
 					return;
@@ -113,7 +113,7 @@ namespace necrowarp {
 
 				steam_stats::unlock(achievement_e::PreciseWarpToBones);
 
-				player.pay_cost(grimoire_e::PreciseWarp, boon);
+				player.pay_cost<MapType>(grimoire_e::PreciseWarp, boon);
 
 				literature::use(grimoire_e::PreciseWarp);
 

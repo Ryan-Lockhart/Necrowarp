@@ -12,7 +12,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, cerebral_invocation_t>::process() const noexcept {
-		if (!player.can_perform(grimoire_e::CerebralInvocation) || (!player.bypass_invocations_enabled() && !object_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, cerebra_t>(target_position))) {
+		if (!player.can_perform<MapType>(grimoire_e::CerebralInvocation) || (!player.bypass_invocations_enabled() && !object_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, cerebra_t>(target_position))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -160,7 +160,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<stat_e::CerebralInvocations>;
 
-		player.pay_cost(grimoire_e::CerebralInvocation);
+		player.pay_cost<MapType>(grimoire_e::CerebralInvocation);
 
 		literature::use(grimoire_e::CerebralInvocation);
 

@@ -5,6 +5,8 @@
 
 #include <necrowarp/game_state.hpp>
 
+#include <necrowarp/patronage.hpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -58,7 +60,13 @@ namespace necrowarp {
 	struct mansling_t {
 		keyframe_t idle_animation;
 
-		static constexpr i8 EffectRadius{ 6 };
+		template<disposition_e Disposition> static constexpr i8 EffectRadius{};
+
+		template<> inline constexpr i8 EffectRadius<disposition_e::Sadistic>{ 24 };
+		template<> inline constexpr i8 EffectRadius<disposition_e::Apathetic>{ 12 };
+		template<> inline constexpr i8 EffectRadius<disposition_e::Cooperative>{ 6 };
+
+		static constexpr i8 get_effect_radius() noexcept;
 
 		static constexpr i8 MaximumHealth{ 1 };
 
@@ -69,6 +77,8 @@ namespace necrowarp {
 		inline mansling_t() noexcept : idle_animation{ indices::Mansling, random_engine, true } {}
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
+
+		template<map_type_e MapType> static constexpr bool in_range() noexcept;
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 

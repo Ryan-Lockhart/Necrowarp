@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, incorporealize_t>::process() const noexcept {
-		if (player.is_incorporeal() || !player.can_perform(grimoire_e::Incorporealize)) {
+		if (player.is_incorporeal() || !player.can_perform<MapType>(grimoire_e::Incorporealize)) {
 			player_turn_invalidated = true;
 
 			return;
@@ -22,7 +22,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<stat_e::Incorporealizations>;
 
-		player.pay_cost(grimoire_e::Incorporealize);
+		player.pay_cost<MapType>(grimoire_e::Incorporealize);
 
 		literature::use(grimoire_e::Incorporealize);
 	}

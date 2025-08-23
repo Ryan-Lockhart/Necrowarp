@@ -13,7 +13,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, annihilate_t>::process() const noexcept {
-		if (!player.can_perform(grimoire_e::Annihilate)) {
+		if (!player.can_perform<MapType>(grimoire_e::Annihilate)) {
 			player_turn_invalidated = true;
 
 			return;
@@ -178,7 +178,7 @@ namespace necrowarp {
 
 		steam_stats::unlock(achievement_e::BasicAnnihilateUsage);
 
-		player.pay_cost(grimoire_e::Annihilate);
+		player.pay_cost<MapType>(grimoire_e::Annihilate);
 
 		literature::use(grimoire_e::Annihilate);
 	}

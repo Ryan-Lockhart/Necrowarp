@@ -8,6 +8,18 @@
 #include <necrowarp/scorekeeper.hpp>
 
 namespace necrowarp {
+	inline constexpr i8 mansling_t::get_effect_radius() noexcept {
+		return magic_enum::enum_switch([&](auto val) -> i8 {
+			constexpr disposition_e cval{ val };
+
+			return EffectRadius<cval>;
+		}, get_patron_disposition(player.patron));
+	}
+
+	template<map_type_e MapType> inline constexpr bool mansling_t::in_range() noexcept {
+		return entity_goal_map<MapType, mansling_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(player.position) <= get_effect_radius();
+	}
+
 	template<map_type_e MapType> inline command_pack_t mansling_t::think(offset_t position) const noexcept {
 		cauto descent_pos{ good_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 

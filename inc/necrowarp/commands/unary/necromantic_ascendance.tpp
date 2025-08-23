@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, necromantic_ascendance_t>::process() const noexcept {
-		if (player.has_ascended() || !player.can_perform(grimoire_e::NecromanticAscendance)) {
+		if (player.has_ascended() || !player.can_perform<MapType>(grimoire_e::NecromanticAscendance)) {
 			player_turn_invalidated = true;
 
 			return;
@@ -22,7 +22,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<stat_e::NecromanticAscensions>;
 
-		player.pay_cost(grimoire_e::NecromanticAscendance);
+		player.pay_cost<MapType>(grimoire_e::NecromanticAscendance);
 
 		literature::use(grimoire_e::NecromanticAscendance);
 	}

@@ -6,6 +6,111 @@
 #include <necrowarp/entity_state.tpp>
 
 namespace necrowarp {
+
+	template<map_type_e MapType> inline void player_t::swell_hexeaters() noexcept {
+		if (!hexeater_t::in_range<MapType>()) {
+			return;
+		}
+
+		cauto current_radius{ hexeater_t::get_effect_radius() };
+
+		for (rauto [position, hexeater] : entity_registry_storage<hexeater_t>) {
+			if (entity_goal_map<MapType, player_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(position) > current_radius) {
+				continue;
+			}
+
+			hexeater.swell();
+		}
+	}
+
+	template<map_type_e MapType> inline void player_t::swell_hexeaters(i8 amount) noexcept {
+		if (!hexeater_t::in_range<MapType>()) {
+			return;
+		}
+
+		cauto current_radius{ hexeater_t::get_effect_radius() };
+
+		for (rauto [position, hexeater] : entity_registry_storage<hexeater_t>) {
+			if (entity_goal_map<MapType, player_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(position) > current_radius) {
+				continue;
+			}
+
+			hexeater.swell(amount);
+		}
+	}
+
+	template<map_type_e MapType> inline bool player_t::can_perform(grimoire_e type) const noexcept {
+		return magic_enum::enum_switch([&, this](auto val) -> bool {
+			constexpr grimoire_e cval{ val };
+
+			if (!grimoire_s<cval>::can_use()) {
+				return false;
+			}
+
+			const bool sufficient_energy{ free_costs_enabled() || energy >= get_cost(val) };
+
+			const bool blocked{ mansling_t::in_range<MapType>() };
+
+			if constexpr (cval == grimoire_e::CalamitousRetaliation) {
+				return has_ascended() && sufficient_energy;
+			} else if constexpr (cval == grimoire_e::ChaoticWarp || cval == grimoire_e::NecromanticAscendance) {
+				return sufficient_energy;
+			} else {
+				return !blocked && sufficient_energy;
+			}
+		}, type);
+	}
+
+	template<map_type_e MapType> inline bool player_t::can_perform(grimoire_e type, i8 discount) const noexcept {
+		return magic_enum::enum_switch([&, this](auto val) -> bool {
+			constexpr grimoire_e cval{ val };
+
+			if (!grimoire_s<cval>::can_use()) {
+				return false;
+			}
+
+			const bool sufficient_energy{ free_costs_enabled() || energy >= get_cost(val) - discount };
+
+			const bool blocked{ mansling_t::in_range<MapType>() };
+
+			if constexpr (cval == grimoire_e::CalamitousRetaliation) {
+				return has_ascended() && sufficient_energy;
+			} else if constexpr (cval == grimoire_e::ChaoticWarp || cval == grimoire_e::NecromanticAscendance) {
+				return sufficient_energy;
+			} else {
+				return !blocked && sufficient_energy;
+			}
+		}, type);
+	}
+
+	template<map_type_e MapType> inline void player_t::pay_cost(grimoire_e type) noexcept {
+		magic_enum::enum_switch([&](auto val) {
+			constexpr grimoire_e cval{ val };
+
+			swell_hexeaters<MapType>(hexeater_t::SwellAmount<cval>);
+		}, type);
+
+		if (free_costs_enabled()) {
+			return;
+		}
+
+		set_energy(energy - get_cost(type));
+	}
+
+	template<map_type_e MapType> inline void player_t::pay_cost(grimoire_e type, i8 discount) noexcept {
+		magic_enum::enum_switch([&](auto val) {
+			constexpr grimoire_e cval{ val };
+
+			swell_hexeaters<MapType>(hexeater_t::SwellAmount<cval>);
+		}, type);
+
+		if (free_costs_enabled()) {
+			return;
+		}
+
+		set_energy(energy - get_cost(type) + discount);
+	}
+
 	template<CombatantEntity EntityType> inline bool player_t::will_perish() const noexcept {
 		if (has_ascended() || no_hit_enabled()) {
 			return false;
@@ -50,7 +155,7 @@ namespace necrowarp {
 				case entity_e::Thetwo: {
 					return command_e::Clash;
 				} case entity_e::Skeleton:
-				case entity_e::Bonespur: {
+				  case entity_e::Bonespur: {
 					return command_e::Consume;
 				} default: {
 					return command_e::None;

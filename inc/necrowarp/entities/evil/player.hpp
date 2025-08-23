@@ -185,6 +185,10 @@ namespace necrowarp {
 
 		static constexpr i8 ProteinValue{ 1 };
 
+		template<map_type_e MapType> static inline void swell_hexeaters() noexcept;
+
+		template<map_type_e MapType> static inline void swell_hexeaters(i8 amount) noexcept;
+
 	  private:
 		static inline std::bernoulli_distribution apathetic_intervention_dis{ 0.01 };
 		static inline std::bernoulli_distribution cooperative_intervention_dis{ 0.10 };
@@ -527,57 +531,13 @@ namespace necrowarp {
 			}
 		}
 
-		inline bool can_perform(grimoire_e type) const noexcept {
-			return magic_enum::enum_switch([&, this](auto val) -> bool {
-				constexpr grimoire_e cval{ val };
+		template<map_type_e MapType> inline bool can_perform(grimoire_e type) const noexcept;
 
-				if (!grimoire_s<cval>::can_use()) {
-					return false;
-				}
+		template<map_type_e MapType> inline bool can_perform(grimoire_e type, i8 discount) const noexcept;
 
-				const bool sufficient_energy{ free_costs_enabled() || energy >= get_cost(val) };
+		template<map_type_e MapType> inline void pay_cost(grimoire_e type) noexcept;
 
-				if constexpr (cval == grimoire_e::CalamitousRetaliation) {
-					return has_ascended() && sufficient_energy;
-				} else {
-					return sufficient_energy;
-				}
-			}, type);
-		}
-
-		inline bool can_perform(grimoire_e type, i8 discount) const noexcept {
-			return magic_enum::enum_switch([&, this](auto val) -> bool {
-				constexpr grimoire_e cval{ val };
-
-				if (!grimoire_s<cval>::can_use()) {
-					return false;
-				}
-
-				const bool sufficient_energy{ free_costs_enabled() || energy >= get_cost(val) - discount };
-
-				if constexpr (cval == grimoire_e::CalamitousRetaliation) {
-					return has_ascended() && sufficient_energy;
-				} else {
-					return sufficient_energy;
-				}
-			}, type);
-		}
-
-		inline void pay_cost(grimoire_e type) noexcept {
-			if (free_costs_enabled()) {
-				return;
-			}
-
-			set_energy(energy - get_cost(type));
-		}
-
-		inline void pay_cost(grimoire_e type, i8 discount) noexcept {
-			if (free_costs_enabled()) {
-				return;
-			}
-
-			set_energy(energy - get_cost(type) + discount);
-		}
+		template<map_type_e MapType> inline void pay_cost(grimoire_e type, i8 discount) noexcept;
 
 		inline void receive_skull_boon() noexcept { set_energy(energy + BoneBoon); }
 

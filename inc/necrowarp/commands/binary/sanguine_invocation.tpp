@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, sanguine_invocation_t>::process() const noexcept {
-		if (!player.can_perform(grimoire_e::SanguineInvocation) || (!player.bypass_invocations_enabled() && !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Blood))) {
+		if (!player.can_perform<MapType>(grimoire_e::SanguineInvocation) || (!player.bypass_invocations_enabled() && !fluid_map<MapType>.dependent contains<region_e::Interior>(fluid_e::Blood))) {
 			player_turn_invalidated = true;
 
 			return;
@@ -158,7 +158,7 @@ namespace necrowarp {
 
 		++steam_stats::stats<stat_e::SanguineInvocations>;
 
-		player.pay_cost(grimoire_e::SanguineInvocation);
+		player.pay_cost<MapType>(grimoire_e::SanguineInvocation);
 
 		literature::use(grimoire_e::SanguineInvocation);
 
