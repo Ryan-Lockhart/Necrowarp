@@ -10,9 +10,22 @@
 #include <necrowarp/patronage.hpp>
 
 #include <necrowarp/constants/enums/grimoire.tpp>
+#include <necrowarp/constants/enums/shackle.tpp>
 
 namespace necrowarp {
 	using namespace bleak;
+
+	template<shackle_e Shackle> constexpr grimoire_e shackle_breaker{};
+
+	template<> inline constexpr grimoire_e shackle_breaker<shackle_e::Calcitic>{ grimoire_e::CalciticInvocation };
+	template<> inline constexpr grimoire_e shackle_breaker<shackle_e::Spectral>{ grimoire_e::SpectralInvocation };
+	template<> inline constexpr grimoire_e shackle_breaker<shackle_e::Sanguine>{ grimoire_e::SanguineInvocation };
+	template<> inline constexpr grimoire_e shackle_breaker<shackle_e::Galvanic>{ grimoire_e::GalvanicInvocation };
+
+	template<> inline constexpr grimoire_e shackle_breaker<shackle_e::Ravenous>{ grimoire_e::RavenousInvocation };
+	template<> inline constexpr grimoire_e shackle_breaker<shackle_e::Wretched>{ grimoire_e::WretchedInvocation };
+	template<> inline constexpr grimoire_e shackle_breaker<shackle_e::Cerebral>{ grimoire_e::CerebralInvocation };
+	template<> inline constexpr grimoire_e shackle_breaker<shackle_e::Infernal>{ grimoire_e::InfernalInvocation };
 
 	template<grimoire_e Grimoire> struct grimoire_s {
 	  private:
@@ -62,25 +75,25 @@ namespace necrowarp {
 	};
 
 	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Kalypdrot>{
-		grimoire_e::ChaoticWarp,
+		grimoire_e::PreciseWarp,
 		grimoire_e::Calcify,
 		grimoire_e::CalciticInvocation,
 	};
 
 	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Akurakhaithan>{
-		grimoire_e::ChaoticWarp,
+		grimoire_e::PreciseWarp,
 		grimoire_e::Incorporealize,
 		grimoire_e::SpectralInvocation,
 	};
 
 	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Merirfin>{
-		grimoire_e::ChaoticWarp,
+		grimoire_e::PreciseWarp,
 		grimoire_e::Annihilate,
 		grimoire_e::SanguineInvocation,
 	};
 
 	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Praethornyn>{
-		grimoire_e::ChaoticWarp,
+		grimoire_e::Annihilate,
 		grimoire_e::SanguineInvocation,
 		grimoire_e::GalvanicInvocation,
 	};
@@ -98,20 +111,22 @@ namespace necrowarp {
 	};
 
 	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Rathghul>{
-		grimoire_e::ChaoticWarp,
 		grimoire_e::Repulse,
+		grimoire_e::Incorporealize,
 		grimoire_e::CerebralInvocation,
 	};
 
-	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Moslager>{
+	template<> inline constexpr std::array<grimoire_e, 4> patron_dowry<patron_e::Moslager>{
 		grimoire_e::ChaoticWarp,
+		grimoire_e::PreciseWarp,
+		grimoire_e::CerebralInvocation,
 		grimoire_e::InfernalInvocation,
-		grimoire_e::CalamitousRetaliation,
 	};
 
-	template<> inline constexpr std::array<grimoire_e, 2> patron_dowry<patron_e::Sudoclor>{
+	template<> inline constexpr std::array<grimoire_e, 3> patron_dowry<patron_e::Sudoclor>{
 		grimoire_e::ChaoticWarp,
 		grimoire_e::NecromanticAscendance,
+		grimoire_e::CalamitousRetaliation,
 	};
 
 	namespace literature {
@@ -271,5 +286,7 @@ namespace necrowarp {
 
 			return std::nullopt;
 		}
+
+		template<map_type_e MapType> static inline bool is_softlocked() noexcept;
 	} // namespace literature
 } // namespace necrowarp

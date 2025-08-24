@@ -20,12 +20,12 @@ namespace necrowarp {
 
 	namespace globals {
 		constexpr cstr GameName{ "Necrowarp" };
-		constexpr cstr GameVersion{ "0.1.2rc-3" };
+		constexpr cstr GameVersion{ "0.1.2" };
 		constexpr cstr GameAuthor{ "Ryan Lockhart" };
 
 		const std::string GameTitle{ std::format("{} v{} by {}", GameName, GameVersion, GameAuthor) };
 
-		constexpr sdl::window_flags WindowFlags{ static_cast<sdl::window_flags>(SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS) };
+		constexpr sdl::window_flags WindowFlags{ static_cast<sdl::window_flags>(SDL_WINDOW_SHOWN) };
 		constexpr sdl::renderer_flags RendererFlags{ static_cast<sdl::renderer_flags>(SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE) };
 
 		static inline bool use_frame_limit{ false };

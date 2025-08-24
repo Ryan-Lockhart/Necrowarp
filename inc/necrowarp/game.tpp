@@ -2,12 +2,68 @@
 
 #include <necrowarp/dimensions.hpp>
 
+#include <thread>
+
 #include <necrowarp/game.hpp>
 #include <necrowarp/tribulation.hpp>
 
 #include <necrowarp/constants/enums.tpp>
 
 namespace necrowarp {
+	template<map_type_e MapType> inline void game_s::load() noexcept {
+		terminate_process_turn();
+
+		magic_enum::enum_switch([&](auto val) -> void {
+			constexpr dimension_e cval{ val };
+
+			if constexpr (is_material<cval>::value) {
+				constexpr map_type_e map_type{ determine_map<cval>() };
+
+				load<cval>();
+
+				entity_registry<map_type>.recalculate_goal_map();
+				object_registry<map_type>.recalculate_goal_map();
+		
+				entity_registry<map_type>.store();
+				object_registry<map_type>.store();
+		
+				phase.transition(phase_e::Playing);
+		
+				game_running = true;
+				process_turn_async<map_type>();
+			}
+		}, static_cast<dimension_e>(current_dimension));
+	}
+
+	template<map_type_e MapType> inline void game_s::load_async() noexcept { std::thread([]() -> void { load<MapType>(); }).detach(); }
+
+	template<map_type_e MapType> inline void game_s::descend() noexcept {
+		terminate_process_turn();
+
+		magic_enum::enum_switch([&](auto val) -> void {
+			constexpr dimension_e cval{ val };
+
+			if constexpr (is_material<cval>::value) {
+				constexpr map_type_e map_type{ determine_map<cval>() };
+
+				descend<cval>();
+
+				entity_registry<map_type>.recalculate_goal_map();
+				object_registry<map_type>.recalculate_goal_map();
+		
+				entity_registry<map_type>.store();
+				object_registry<map_type>.store();
+		
+				phase.transition(phase_e::Playing);
+		
+				game_running = true;
+				process_turn_async<map_type>();
+			}
+		}, static_cast<dimension_e>(current_dimension));
+	}
+
+	template<map_type_e MapType> inline void game_s::descend_async() noexcept { std::thread([]() -> void { descend<MapType>(); }).detach(); }
+
 	template<map_type_e MapType> inline void game_s::plunge() noexcept {
 		terminate_process_turn();
 
@@ -61,6 +117,63 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void game_s::plunge_async() noexcept { std::thread([]() -> void { plunge<MapType>(); }).detach(); }
+
+	template<map_type_e MapType> inline void game_s::process_turn() noexcept {
+		if (window.is_closing() || !game_running || !player_acted || descent_flag || plunge_flag) {
+			return;
+		}
+
+		magic_enum::enum_switch([&](auto val) -> void {
+			constexpr dimension_e cval{ val };
+
+			if constexpr (is_material<cval>::value) {
+				constexpr map_type_e map_type{ determine_map<cval>() };
+
+				buffer_access.lock<true>();
+
+				entity_registry<map_type>.store();
+				object_registry<map_type>.store();
+		
+				buffer_access.unlock();
+		
+				registry_access.lock<true>();
+		
+				processing_turn = true;
+		
+				entity_registry<map_type>.update();
+
+				process_turn<cval>();
+
+				registry_access.unlock();
+		
+				update_camera<map_type>();
+		
+				processing_turn = false;
+				
+				player_acted = false;
+			}
+		}, static_cast<dimension_e>(current_dimension));
+	}
+
+	template<map_type_e MapType> inline void game_s::process_turn_async() noexcept {
+		std::thread([]() -> void {
+			do { process_turn<MapType>(); } while (game_running);
+		}).detach();
+	}
+
+	template<map_type_e MapType> inline void game_s::unload() noexcept {
+		terminate_process_turn();
+
+		magic_enum::enum_switch([&](auto val) -> void {
+			constexpr dimension_e cval{ val };
+
+			if constexpr (is_material<cval>::value) {
+				unload<cval>();
+			}
+		}, static_cast<dimension_e>(current_dimension));
+	}
+
+	template<map_type_e MapType> inline void game_s::unload_async() noexcept { std::thread([]() -> void { unload<MapType>(); }).detach(); }
 
 	template<map_type_e MapType> inline void game_s::update() noexcept {
 		sine_wave.update<wave_e::Sine>(Clock::elapsed());

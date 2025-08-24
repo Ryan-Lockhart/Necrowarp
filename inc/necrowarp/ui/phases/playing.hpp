@@ -148,7 +148,11 @@ namespace necrowarp {
 		};
 
 		static inline bool show_tooltip{ false };
+		static inline bool attach_tooltip{ false };
+
 		static inline bool show_command{ false };
+		static inline bool attach_command{ false };
+
 		static inline bool show_advancement{ false };
 		static inline bool show_depth{ false };
 		static inline bool show_favor{ false };
@@ -354,17 +358,17 @@ namespace necrowarp {
 			if (show_depth) {
 				depth_expanded_label.text = runes_t{
 					std::format(
+						"    Depth: {:3}    \n\n\n"
 						"Minion Kills: {:4}\n\n"
 						"Player Kills: {:4}\n\n\n"
 						"Total Kills:  {:4}\n\n\n"
-						"Score:  {} (x{:2.1f})\n\n\n"
-						"    Depth: {:3}    ",
+						"Score:  {} (x{:2.1f})",
 						
+						static_cast<isize>(game_stats.game_depth) * -1,
 						game_stats.minion_kills,
 						game_stats.player_kills,
 						game_stats.total_kills(),
-						scorekeeper.get_score(), scorekeeper.current_multiplier(),
-						static_cast<isize>(game_stats.game_depth) * -1
+						scorekeeper.get_score(), scorekeeper.current_multiplier()
 					),
 					colors::White,
 				};

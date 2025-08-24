@@ -19,7 +19,7 @@ namespace necrowarp {
 
 	constexpr usize default_seed{ 1337 };
 
-	constexpr bool use_fixed_seed{ true };
+	constexpr bool use_fixed_seed{ !IsReleaseBuild };
 
 	static inline usize random_seed{ std::random_device{}() };
 

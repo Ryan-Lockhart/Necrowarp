@@ -158,25 +158,27 @@ namespace necrowarp {
 
 		template<grimoire_e Type> static constexpr i8 Cost{};
 
-		template<> constexpr i8 Cost<grimoire_e::ChaoticWarp>{ 2 };
+		template<> constexpr i8 Cost<grimoire_e::ChaoticWarp>{ 4 };
 		template<> constexpr i8 Cost<grimoire_e::PreciseWarp>{ 4 };
 
 		template<> constexpr i8 Cost<grimoire_e::Annihilate>{ 8 };
 		template<> constexpr i8 Cost<grimoire_e::Repulse>{ 8 };
+
 		template<> constexpr i8 Cost<grimoire_e::Calcify>{ 4 };
 		template<> constexpr i8 Cost<grimoire_e::Incorporealize>{ 4 };
 
-		template<> constexpr i8 Cost<grimoire_e::CalciticInvocation>{ 8 };
-		template<> constexpr i8 Cost<grimoire_e::SpectralInvocation>{ 8 };
-		template<> constexpr i8 Cost<grimoire_e::SanguineInvocation>{ 8 };
+		template<> constexpr i8 Cost<grimoire_e::CalciticInvocation>{ 12 };
+		template<> constexpr i8 Cost<grimoire_e::SpectralInvocation>{ 12 };
+		template<> constexpr i8 Cost<grimoire_e::SanguineInvocation>{ 12 };
 		template<> constexpr i8 Cost<grimoire_e::GalvanicInvocation>{ 12 };
+
 		template<> constexpr i8 Cost<grimoire_e::RavenousInvocation>{ 12 };
 		template<> constexpr i8 Cost<grimoire_e::WretchedInvocation>{ 12 };
-		template<> constexpr i8 Cost<grimoire_e::CerebralInvocation>{ 16 };
-		template<> constexpr i8 Cost<grimoire_e::InfernalInvocation>{ 16 };
+		template<> constexpr i8 Cost<grimoire_e::CerebralInvocation>{ 12 };
+		template<> constexpr i8 Cost<grimoire_e::InfernalInvocation>{ 12 };
 
 		template<> constexpr i8 Cost<grimoire_e::NecromanticAscendance>{ 16 };
-		template<> constexpr i8 Cost<grimoire_e::CalamitousRetaliation>{ 24 };
+		template<> constexpr i8 Cost<grimoire_e::CalamitousRetaliation>{ 32 };
 
 		static constexpr i8 BoneBoon{ 1 };
 

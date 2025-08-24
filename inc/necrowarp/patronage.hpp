@@ -253,9 +253,25 @@ namespace necrowarp {
 		}
 	};
 
-	constexpr discount_t strong_invocation{ 0, 4, 6 };
-	constexpr discount_t mild_invocation{ -4, 0, 4 };
-	constexpr discount_t weak_invocation{ -6, -2, 2 };
+	constexpr discount_t strong_locomotion{ 0, 2, 4 };
+	constexpr discount_t mild_locomotion{ -2, 0, 2 };
+	constexpr discount_t weak_locomotion{ -4, -2, 0 };
+
+	constexpr discount_t supreme_invocation{ 4, 8, 12 };
+	constexpr discount_t strong_invocation{ 0, 4, 8 };
+	constexpr discount_t mild_invocation{ -6, 0, 6 };
+	constexpr discount_t weak_invocation{ -8, -4, 0 };
+	constexpr discount_t abyssmal_invocation{ -12, -8, -4 };
+
+	constexpr discount_t strong_combat_spell{ 0, 4, 8 };
+	constexpr discount_t mild_combat_spell{ -4, 0, 4 };
+	constexpr discount_t weak_combat_spell{ -8, -4, 0 };
+
+	constexpr discount_t strong_utility_spell{ 0, 2, 4 };
+	constexpr discount_t mild_utility_spell{ -2, 0, 2 };
+	constexpr discount_t weak_utility_spell{ -4, -2, 0 };
+
+	constexpr discount_t no_discount{ 0, 0, 0 };
 
 	struct patron_t {
 		disposition_e disposition{ disposition_e::Apathetic };
@@ -324,39 +340,39 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::None>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ 0, 1, 2 },
-		.precise_warp = discount_t{ 0, 2, 4 },
+		.chaotic_warp = strong_locomotion,
+		.precise_warp = mild_locomotion,
 
-		.annihilate = discount_t{ 0, 0, 0 },
-		.repulse = discount_t{ 0, 0, 0 },
-		.calcify = discount_t{ 0, 0, 0 },
-		.incorporealize = discount_t{ 0, 0, 0 },
+		.annihilate = no_discount,
+		.repulse = no_discount,
+		.calcify = no_discount,
+		.incorporealize = no_discount,
 
-		.calcitic_invocation = discount_t{ 0, 0, 0 },
-		.spectral_invocation = discount_t{ 0, 0, 0 },
-		.sanguine_invocation = discount_t{ 0, 0, 0 },
-		.galvanic_invocation = discount_t{ 0, 0, 0 },
-		.ravenous_invocation = discount_t{ 0, 0, 0 },
-		.wretched_invocation = discount_t{ 0, 0, 0 },
-		.cerebral_invocation = discount_t{ 0, 0, 0 },
-		.infernal_invocation = discount_t{ 0, 0, 0 },
+		.calcitic_invocation = no_discount,
+		.spectral_invocation = no_discount,
+		.sanguine_invocation = no_discount,
+		.galvanic_invocation = no_discount,
+		.ravenous_invocation = no_discount,
+		.wretched_invocation = no_discount,
+		.cerebral_invocation = no_discount,
+		.infernal_invocation = no_discount,
 
-		.necromantic_ascendance = discount_t{ 0, 0, 0 },
-		.calamitous_retaliation = discount_t{ 0, 0, 0 },
+		.necromantic_ascendance = no_discount,
+		.calamitous_retaliation = no_discount,
 	};
 
 	template<> inline patron_t patrons<patron_e::Kalypdrot>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ 0, 0, 1 },
-		.precise_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = weak_locomotion,
+		.precise_warp = strong_locomotion,
 
-		.annihilate = discount_t{ -4, -2, 0 },
-		.repulse = discount_t{ 0, 4, 8 },
-		.calcify = discount_t{ 0, 2, 4 },
-		.incorporealize = discount_t{ -4, -2, 0 },
+		.annihilate = weak_combat_spell,
+		.repulse = strong_combat_spell,
+		.calcify = strong_utility_spell,
+		.incorporealize = weak_utility_spell,
 
-		.calcitic_invocation = strong_invocation,
+		.calcitic_invocation = supreme_invocation,
 		.spectral_invocation = weak_invocation,
 		.sanguine_invocation = mild_invocation,
 		.galvanic_invocation = mild_invocation,
@@ -372,22 +388,22 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Akurakhaithan>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ 0, 0, 1 },
-		.precise_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = weak_locomotion,
+		.precise_warp = strong_locomotion,
 
-		.annihilate = discount_t{ 0, 4, 8 },
-		.repulse = discount_t{ -4, -2, 0 },
-		.calcify = discount_t{ -4, -2, 0 },
-		.incorporealize = discount_t{ 0, 2, 4 },
+		.annihilate = strong_combat_spell,
+		.repulse = weak_combat_spell,
+		.calcify = weak_utility_spell,
+		.incorporealize = strong_utility_spell,
 
 		.calcitic_invocation = mild_invocation,
-		.spectral_invocation = strong_invocation,
+		.spectral_invocation = supreme_invocation,
 		.sanguine_invocation = weak_invocation,
 		.galvanic_invocation = mild_invocation,
 		.ravenous_invocation = weak_invocation,
 		.wretched_invocation = weak_invocation,
 		.cerebral_invocation = mild_invocation,
-		.infernal_invocation = mild_invocation,
+		.infernal_invocation = strong_invocation,
 
 		.necromantic_ascendance = discount_t{ -4, 0, 8 },
 		.calamitous_retaliation = mild_invocation,
@@ -396,17 +412,17 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Merirfin>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ 0, 0, 1 },
-		.precise_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = weak_locomotion,
+		.precise_warp = strong_locomotion,
 
-		.annihilate = discount_t{ 0, 2, 4 },
-		.repulse = discount_t{ 0, 2, 4 },
-		.calcify = discount_t{ -4, -2, 0 },
-		.incorporealize = discount_t{ -8, -4, 0 },
+		.annihilate = strong_combat_spell,
+		.repulse = mild_combat_spell,
+		.calcify = weak_utility_spell,
+		.incorporealize = weak_utility_spell,
 
 		.calcitic_invocation = weak_invocation,
 		.spectral_invocation = weak_invocation,
-		.sanguine_invocation = strong_invocation,
+		.sanguine_invocation = supreme_invocation,
 		.galvanic_invocation = mild_invocation,
 		.ravenous_invocation = mild_invocation,
 		.wretched_invocation = weak_invocation,
@@ -420,13 +436,13 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Rathghul>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ 0, 0, 1 },
-		.precise_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = strong_locomotion,
+		.precise_warp = weak_locomotion,
 
-		.annihilate = discount_t{ -4, -2, 0 },
-		.repulse = discount_t{ 0, 4, 8 },
-		.calcify = discount_t{ 0, 2, 4 },
-		.incorporealize = discount_t{ -4, -2, 0 },
+		.annihilate = weak_combat_spell,
+		.repulse = strong_combat_spell,
+		.calcify = mild_utility_spell,
+		.incorporealize = strong_utility_spell,
 
 		.calcitic_invocation = weak_invocation,
 		.spectral_invocation = strong_invocation,
@@ -434,7 +450,7 @@ namespace necrowarp {
 		.galvanic_invocation = weak_invocation,
 		.ravenous_invocation = weak_invocation,
 		.wretched_invocation = weak_invocation,
-		.cerebral_invocation = strong_invocation,
+		.cerebral_invocation = supreme_invocation,
 		.infernal_invocation = mild_invocation,
 
 		.necromantic_ascendance = discount_t{ -8, 0, 4 },
@@ -444,18 +460,18 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Praethornyn>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ 0, 0, 1 },
-		.precise_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = weak_locomotion,
+		.precise_warp = strong_locomotion,
 
-		.annihilate = discount_t{ -4, -2, 0 },
-		.repulse = discount_t{ 0, 4, 8 },
-		.calcify = discount_t{ 0, 2, 4 },
-		.incorporealize = discount_t{ -4, -2, 0 },
+		.annihilate = strong_combat_spell,
+		.repulse = weak_combat_spell,
+		.calcify = weak_utility_spell,
+		.incorporealize = weak_utility_spell,
 
 		.calcitic_invocation = weak_invocation,
 		.spectral_invocation = weak_invocation,
 		.sanguine_invocation = strong_invocation,
-		.galvanic_invocation = strong_invocation,
+		.galvanic_invocation = supreme_invocation,
 		.ravenous_invocation = weak_invocation,
 		.wretched_invocation = weak_invocation,
 		.cerebral_invocation = weak_invocation,
@@ -468,19 +484,19 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Tsendikor>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ 0, 0, 1 },
-		.precise_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = strong_locomotion,
+		.precise_warp = weak_locomotion,
 
-		.annihilate = discount_t{ -4, -2, 0 },
-		.repulse = discount_t{ 0, 4, 8 },
-		.calcify = discount_t{ 0, 2, 4 },
-		.incorporealize = discount_t{ -4, -2, 0 },
+		.annihilate = weak_combat_spell,
+		.repulse = strong_combat_spell,
+		.calcify = weak_utility_spell,
+		.incorporealize = weak_utility_spell,
 
 		.calcitic_invocation = weak_invocation,
 		.spectral_invocation = weak_invocation,
 		.sanguine_invocation = mild_invocation,
 		.galvanic_invocation = weak_invocation,
-		.ravenous_invocation = strong_invocation,
+		.ravenous_invocation = supreme_invocation,
 		.wretched_invocation = weak_invocation,
 		.cerebral_invocation = weak_invocation,
 		.infernal_invocation = strong_invocation,
@@ -492,20 +508,20 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Ionna>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ 0, 0, 1 },
-		.precise_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = strong_locomotion,
+		.precise_warp = weak_locomotion,
 
-		.annihilate = discount_t{ -4, -2, 0 },
-		.repulse = discount_t{ 0, 4, 8 },
-		.calcify = discount_t{ 0, 2, 4 },
-		.incorporealize = discount_t{ -4, -2, 0 },
+		.annihilate = weak_combat_spell,
+		.repulse = strong_combat_spell,
+		.calcify = strong_utility_spell,
+		.incorporealize = weak_utility_spell,
 
-		.calcitic_invocation = mild_invocation,
+		.calcitic_invocation = strong_invocation,
 		.spectral_invocation = weak_invocation,
 		.sanguine_invocation = weak_invocation,
 		.galvanic_invocation = weak_invocation,
 		.ravenous_invocation = weak_invocation,
-		.wretched_invocation = strong_invocation,
+		.wretched_invocation = supreme_invocation,
 		.cerebral_invocation = weak_invocation,
 		.infernal_invocation = weak_invocation,
 
@@ -516,22 +532,22 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Moslager>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ 0, 0, 1 },
-		.precise_warp = discount_t{ 0, 0, 2 },
+		.chaotic_warp = strong_locomotion,
+		.precise_warp = strong_locomotion,
 
-		.annihilate = discount_t{ -4, -2, 0 },
-		.repulse = discount_t{ 0, 4, 8 },
-		.calcify = discount_t{ 0, 2, 4 },
-		.incorporealize = discount_t{ -4, -2, 0 },
+		.annihilate = weak_combat_spell,
+		.repulse = weak_combat_spell,
+		.calcify = weak_utility_spell,
+		.incorporealize = weak_utility_spell,
 
 		.calcitic_invocation = weak_invocation,
-		.spectral_invocation = weak_invocation,
+		.spectral_invocation = strong_invocation,
 		.sanguine_invocation = weak_invocation,
 		.galvanic_invocation = weak_invocation,
 		.ravenous_invocation = weak_invocation,
 		.wretched_invocation = weak_invocation,
 		.cerebral_invocation = strong_invocation,
-		.infernal_invocation = strong_invocation,
+		.infernal_invocation = supreme_invocation,
 
 		.necromantic_ascendance = discount_t{ -8, 0, 4 },
 		.calamitous_retaliation = discount_t{ 4, 8, 12 },
@@ -540,8 +556,8 @@ namespace necrowarp {
 	template<> inline patron_t patrons<patron_e::Sudoclor>{
 		.disposition = disposition_e::Apathetic,
 
-		.chaotic_warp = discount_t{ -1, 1, 2 },
-		.precise_warp = discount_t{ -2, 2, 4 },
+		.chaotic_warp = discount_t{ 0, 2, 4 },
+		.precise_warp = discount_t{ -2, 0, 2 },
 
 		.annihilate = discount_t{ -8, 0, 4 },
 		.repulse = discount_t{ -8, 0, 4 },
@@ -557,8 +573,8 @@ namespace necrowarp {
 		.cerebral_invocation = discount_t{ -12, 4, 6 },
 		.infernal_invocation = discount_t{ -12, 4, 6 },
 
-		.necromantic_ascendance = discount_t{ -4, 4, 16 },
-		.calamitous_retaliation = discount_t{ -8, 0, 12 },
+		.necromantic_ascendance = discount_t{ -8, 4, 16 },
+		.calamitous_retaliation = discount_t{ -16, 0, 16 },
 	};
 
 	constexpr discount_type_e get_discount_type(i8 value) {

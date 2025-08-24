@@ -1,4 +1,4 @@
-project('necrowarp', 'cpp', version: '0.1.2rc-3', meson_version: '>=1.3.0')
+project('necrowarp', 'cpp', version: '0.1.2', meson_version: '>=1.3.0')
 
 build_type = get_option('buildtype')
 
@@ -56,9 +56,9 @@ diagnostics = [
 
 executable('necrowarp', 'src/program.cpp',
 	cpp_args: [
-        '-DSTEAMLESS',
+        #'-DSTEAMLESS',
         '-march=x86-64-v3',
-        necrowarp_args, diagnostics
+        necrowarp_args#, diagnostics
     ],
 
     include_directories: [necrowarp_private_includes, necrowarp_internal_includes],
