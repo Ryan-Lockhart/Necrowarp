@@ -74,6 +74,16 @@ namespace necrowarp {
 
 			const bool ignore_objects{ keyboard_s::is_key<input_e::Pressed>(bindings::IgnoreObjects) };
 
+			if constexpr (!IsReleaseBuild) {
+				if (keyboard_s::is_key<input_e::Down>(keys::Function::Eight)) {
+					steam_stats::reset();
+				}
+
+				if (keyboard_s::is_key<input_e::Down>(keys::Function::Nine)) {
+					steam_stats::unlock();
+				}
+			}
+
 			if (keyboard_s::any_keys<input_e::Pressed>(bindings::Wait)) {
 				player.command = command_pack_t{ command_e::None };
 

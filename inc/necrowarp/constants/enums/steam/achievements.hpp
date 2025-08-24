@@ -274,6 +274,7 @@ namespace necrowarp {
 
 	template<> inline constexpr cstr achievements::api_key<achievement_e::LesserHamazSummoning>{ "lesser_hamaz_summoning" };
 	template<> inline constexpr cstr achievements::api_key<achievement_e::GreaterHamazSummoning>{ "greater_hamaz_summoning" };
+	template<> inline constexpr cstr achievements::api_key<achievement_e::ExaltedHamazSummoning>{ "exalted_hamaz_summoning" };
 
 	template<> inline constexpr cstr achievements::api_key<achievement_e::LesserFurtiveHorrorSummoning>{ "lesser_furtive_horror_summoning" };
 	template<> inline constexpr cstr achievements::api_key<achievement_e::GreaterFurtiveHorrorSummoning>{ "greater_furtive_horror_summoning" };

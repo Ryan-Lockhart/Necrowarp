@@ -377,6 +377,8 @@ namespace necrowarp {
 
 				user_stats()->ClearAchievement(achievements::api_key<cval>);
 			});
+
+			store();
 		}
 
 		static inline bool unlock(achievement_e achievement) noexcept {
@@ -397,6 +399,8 @@ namespace necrowarp {
 
 				user_stats()->SetAchievement(achievements::api_key<cval>);
 			});
+
+			store();
 		}
 
 		static inline bool store() noexcept {
