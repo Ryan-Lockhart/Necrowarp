@@ -91,7 +91,9 @@ namespace necrowarp::indices {
 	constexpr const u8 YawningPortal{ CollapsingPortal + 1 };
 	constexpr const u8 EchoingPortal{ YawningPortal + 1 };
 
-	constexpr const u8 Pedestal{ EchoingPortal + 1 };
+	constexpr const u8 Gateway{ EchoingPortal + 1 };
+
+	constexpr const u8 Pedestal{ Gateway + 1 };
 
 	constexpr const u8 Arrow{ Pedestal + 1 };
 

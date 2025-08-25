@@ -301,7 +301,7 @@ namespace necrowarp {
 		};
 		
 		constexpr const map_config_t TunnelsPreset{
-			.fill_percent = 0.5,
+			.fill_percent = 0.475,
 			.automata_iterations = 10,
 			.automata_threshold = 4,
 		};
@@ -332,16 +332,16 @@ namespace necrowarp {
 
 		constexpr i16 StartingBones{ 32 };
 
-		constexpr i16 MinimumBoneDistance{ 32 };
+		constexpr i16 MinimumBoneDistance{ 8 };
 
 		constexpr i16 StartingCrevices{ 4 };
 
-		constexpr i16 MinimumCreviceDistance{ 64 };
+		constexpr i16 MinimumCreviceDistance{ 16 };
 	
 		constexpr i16 StartingUpLadders{ 16 };
 		constexpr i16 StartingDownLadders{ 8 };
 
-		constexpr i16 MinimumLadderDistance{ 32 };
+		constexpr i16 MinimumLadderDistance{ 8 };
 
 		constexpr f32 MinimumWaveSizeMultiplier{ 0.5f };
 		constexpr f32 MaximumWaveSizeMultiplier{ 4.0f };
@@ -365,7 +365,7 @@ namespace necrowarp {
 
 		constexpr i16 FleshPerThetwoPopulation{ 32 };
 
-		constexpr bool CheatsAllowed{ false };
+		constexpr bool CheatsAllowed{ true };
 
 		constexpr bool SpawnTutorialPortal{ false };
 
@@ -376,6 +376,17 @@ namespace necrowarp {
 		constexpr f64 BoonPortalChance{ 0.02 };
 		constexpr f64 TribulationPortalChance{ 0.10 };
 		constexpr f64 AudiencePortalChance{ 0.01 };
+
+		constexpr i16 MinimumApproximateTideSize{ 32 };
+		constexpr i16 MaximumApproximateTideSize{ 128 };
+
+		constexpr i16 MinimumGateways{ 2 };
+		constexpr i16 MaximumGateways{ 32 };
+
+		constexpr i16 KillsPerGateway{ 128 };
+		constexpr i16 FloorsPerGateway{ 3 };
+
+		constexpr i16 MinimumGatewayDistance{ 8 };
 
 		static inline std::bernoulli_distribution boon_portal_chance{ BoonPortalChance };
 		static inline std::bernoulli_distribution tribulation_portal_chance{ TribulationPortalChance };

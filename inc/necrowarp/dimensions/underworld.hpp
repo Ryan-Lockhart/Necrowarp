@@ -504,14 +504,6 @@ namespace necrowarp {
 				break;
 			}
 		}
-
-		if (fluid_map_dirty) {
-			for (cauto position : fluid_map<MapType>.zone_offsets) {
-				fluid_map<MapType>[position].recalculate_index(fluid_map<MapType>, position, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
-			}
-
-			fluid_map_dirty = false;
-		}
 	}
 
 	template<> inline void game_s::unload<dimension_e::Underworld>() noexcept {

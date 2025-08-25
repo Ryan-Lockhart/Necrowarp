@@ -5,6 +5,9 @@
 #include <necrowarp/entity_state.hpp>
 #include <necrowarp/entity_state.tpp>
 
+#include <necrowarp/object_state.hpp>
+#include <necrowarp/object_state.tpp>
+
 namespace necrowarp {
 
 	template<map_type_e MapType> inline void player_t::swell_hexeaters() noexcept {

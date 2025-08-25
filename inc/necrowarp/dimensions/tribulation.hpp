@@ -5,9 +5,17 @@
 #include <necrowarp/game.hpp>
 
 namespace necrowarp {
-	template<> inline void game_s::load<dimension_e::Tribulation>() noexcept {}
+	template<> inline void game_s::load<dimension_e::Tribulation>() noexcept {
+		error_log.add("tribulation dimension should not be loaded into!");
 
-	template<> inline void game_s::descend<dimension_e::Tribulation>() noexcept {}
+		terminate_prematurely();
+	}
+
+	template<> inline void game_s::descend<dimension_e::Tribulation>() noexcept {
+		error_log.add("tribulation dimension should not be descended into!");
+
+		terminate_prematurely();
+	}
 
 	template<> inline void game_s::plunge<dimension_e::Tribulation>() noexcept {
 		constexpr map_type_e MapType = determine_map<dimension_e::Tribulation>();
@@ -54,16 +62,79 @@ namespace necrowarp {
 			error_log.add("could not find open position for player!");
 			terminate_prematurely();
 		}
+		
+		const disposition_e current_disposition{ get_patron_disposition(player.patron) };
+		
+		const i16 gateway_count{ game_stats.current_gateways() };
 
-		cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
+		for (i16 i{ 0 }; i < gateway_count; ++i) {
+			cauto gateway_position{ object_goal_map<MapType, gateway_t>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, globals::MinimumGatewayDistance) };
 
-		if (!portal_pos.has_value() || !object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Collapsing })) {
-			error_log.add("could not find open position for return portal!");
-			terminate_prematurely();
+			if (!gateway_position.has_value()) {
+				if (i == 0) {
+					error_log.add("could not find open position for gateway!");
+					terminate_prematurely();
+				} else {
+					break;
+				}
+			}
+
+			static std::uniform_int_distribution entity_dis{ static_cast<u16>(entity_e::Adventurer), static_cast<u16>(entity_e::Paladin) };
+			
+			object_registry<MapType>.add(gateway_position.value(), gateway_t{ static_cast<entity_e>(entity_dis(random_engine)), current_disposition });
 		}
+
+		object_registry<MapType>.dependent spawn<bones_t>(
+			static_cast<usize>(globals::StartingBones),
+			static_cast<u32>(globals::MinimumBoneDistance),
+
+			decay_e::Animate
+		);
+
+		tribulation_resolved = false;
 	}
 
-	template<> inline void game_s::process_turn<dimension_e::Tribulation>() noexcept {}
+	template<> inline void game_s::process_turn<dimension_e::Tribulation>() noexcept {
+		constexpr map_type_e MapType = determine_map<dimension_e::Tribulation>();
+
+		if (tribulation_resolved) {
+			return;
+		}
+
+		if (!tribulation_resolved && entity_registry<MapType>.dependent empty<ALL_GOOD_NPCS>() && object_registry<MapType>.dependent empty<gateway_t>()) {
+			tribulation_resolved = true;
+
+			cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
+
+			if (!portal_pos.has_value() || !object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Collapsing })) {
+				error_log.add("could not find open position for return portal!");
+				terminate_prematurely();
+			}
+
+			const std::optional<grimoire_e> bounty{ literature::random_unacquired_grimoire(random_engine) };
+
+			if (bounty.has_value()) {
+				cauto pedestal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
+
+				if (!pedestal_pos.has_value() || !object_registry<MapType>.add(pedestal_pos.value(), pedestal_t{ bounty.value() })) {
+					error_log.add("could not find open position for pedestal!");
+					terminate_prematurely();
+				}
+			}
+		}
+
+		if (!object_registry<MapType>.dependent empty<gateway_t>()) {
+			for (rauto [position, gateway] : object_registry_storage<gateway_t>) {
+				if (!gateway.has_stability()) {
+					object_registry<MapType>.dependent remove<gateway_t>(position);
+
+					continue;
+				}
+
+				gateway.spawn<MapType>(position);
+			}
+		}
+	}
 
 	template<> inline void game_s::unload<dimension_e::Tribulation>() noexcept {
 		constexpr map_type_e MapType = determine_map<dimension_e::Tribulation>();

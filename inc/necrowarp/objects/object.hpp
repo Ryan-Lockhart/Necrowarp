@@ -20,6 +20,7 @@ namespace necrowarp {
 	struct crevice_t;
 	struct ladder_t;
 	struct portal_t;
+	struct gateway_t;
 
 	struct pedestal_t;
 
@@ -34,7 +35,8 @@ namespace necrowarp {
 	#define ALL_LOCOMOTION_OBJECTS \
 		crevice_t, \
 		ladder_t, \
-		portal_t
+		portal_t, \
+		gateway_t
 
 	#define ALL_CONSTRUCT_OBJECTS \
 		pedestal_t
@@ -45,7 +47,8 @@ namespace necrowarp {
 	#define ALL_ANIMATED_OBJECTS \
 		metal_t, \
 		ladder_t, \
-		portal_t
+		portal_t, \
+		gateway_t
 
 	#define ALL_OBJECTS \
 		ALL_CATALYST_OBJECTS, \
@@ -64,6 +67,7 @@ namespace necrowarp {
 		Crevice,
 		Ladder,
 		Portal,
+		Gateway,
 
 		Pedestal,
 
@@ -90,6 +94,8 @@ namespace necrowarp {
 				return "ladder";
 			} case object_e::Portal: {
 				return "portal";
+			} case object_e::Gateway: {
+				return "gateway";
 			} case object_e::Pedestal: {
 				return "pedestal";
 			} case object_e::Arrow: {
@@ -116,6 +122,8 @@ namespace necrowarp {
 				return "ladders";
 			} case object_e::Portal: {
 				return "portals";
+			} case object_e::Gateway: {
+				return "gateways";
 			} case object_e::Pedestal: {
 				return "pedestals";
 			} case object_e::Arrow: {
@@ -140,6 +148,8 @@ namespace necrowarp {
 				return mix(colors::materials::Oak, colors::dark::Grey);
 			} case object_e::Ladder: {
 				return colors::materials::Oak;
+			} case object_e::Gateway: {
+				return mix(colors::Blue, colors::Green);
 			} case object_e::Portal: {
 				return colors::light::Green;
 			} case object_e::Pedestal: {
@@ -169,8 +179,9 @@ namespace necrowarp {
 		Crevice = Cerebra << 1,
 		Ladder = Crevice << 1,
 		Portal = Ladder << 1,
+		Gateway = Portal << 1,
 
-		Pedestal = Portal << 1,
+		Pedestal = Gateway << 1,
 
 		Arrow = Pedestal << 1,
 	};

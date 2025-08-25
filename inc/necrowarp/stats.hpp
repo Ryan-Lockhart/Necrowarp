@@ -112,6 +112,22 @@ namespace necrowarp {
 		inline void deactivate() noexcept {
 			enabled = false;
 		}
+
+		inline void enable_all() noexcept {
+			no_hit = true;
+			free_costs = true;
+			bypass_invocations = true;
+
+			activate();
+		}
+
+		inline void disable_all() noexcept {
+			no_hit = false;
+			free_costs = false;
+			bypass_invocations = false;
+
+			deactivate();
+		}
 	};
 
 	enum struct wave_size_e : u8 {
@@ -209,6 +225,8 @@ namespace necrowarp {
 		inline i16 current_reinforcements() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerReinforcement, globals::MinimumReinforcements, globals::MaximumReinforcements); }
 
 		inline i16 current_departure_epoch() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerDepartureEpoch, globals::MinimumDepartureEpoch, globals::MaximumDepartureEpoch); }
+
+		inline i16 current_gateways() const noexcept { return clamp<i16>((game_depth / globals::FloorsPerGateway) + (total_kills() / globals::KillsPerGateway), globals::MinimumGateways, globals::MaximumGateways); }
 		
 		inline bool has_reinforcements() const noexcept { return current_reinforcements() > 0; }
 

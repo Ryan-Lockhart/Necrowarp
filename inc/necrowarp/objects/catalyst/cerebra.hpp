@@ -43,7 +43,7 @@ namespace necrowarp {
 		inline cerebra_t(entity_e entity, bool healthy = true) noexcept : entity{ entity }, healthy{ healthy } {}
 
 		inline std::string to_string() const noexcept {
-			return std::format("{} [] ({})",
+			return std::format("{} ({} | {})",
 				necrowarp::to_string<plurality_e::Multiple>(object_e::Cerebra),
 				necrowarp::to_string(entity),
 				healthy ? "healthy" : "stricken"

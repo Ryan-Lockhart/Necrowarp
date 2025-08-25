@@ -7,9 +7,6 @@
 #include <necrowarp/entities.hpp>
 #include <necrowarp/commands.hpp>
 
-#include <necrowarp/object_state.hpp>
-#include <necrowarp/object_state.tpp>
-
 #include <atomic>
 #include <optional>
 #include <variant>
@@ -172,6 +169,8 @@ namespace necrowarp {
 	static inline volatile std::atomic<dimension_e> plunge_target{ dimension_e::Abyss };
 
 	static inline volatile std::atomic<dimension_e> hijacked_target{ dimension_e::Abyss };
+
+	static inline volatile std::atomic<bool> tribulation_resolved{ false };
 
 	static inline volatile std::atomic<bool> player_turn_invalidated{ false };
 
@@ -629,68 +628,6 @@ namespace necrowarp {
 		freshly_incorporeal = false;
 	}
 
-	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::spawn(usize count) noexcept {
-		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
-
-			if (!maybe_position.has_value()) {
-				return false;
-			}
-
-			add(maybe_position.value(), EntityType{});
-		}
-
-		return true;
-	}
-
-	template<map_type_e MapType> template<NonPlayerEntity EntityType, typename... Args> inline bool entity_registry_t<MapType>::spawn(usize count, Args... args) noexcept {
-		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
-
-			if (!maybe_position.has_value()) {
-				return false;
-			}
-
-			add(maybe_position.value(), EntityType{ args... });
-		}
-
-		return true;
-	}
-
-	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::spawn(usize count, u32 minimum_distance) noexcept {
-		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ entity_goal_map<MapType, EntityType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, minimum_distance) };
-
-			if (!maybe_position.has_value()) {
-				return false;
-			}
-
-			add(maybe_position.value(), EntityType{});
-
-			entity_goal_map<MapType, EntityType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-		}
-
-		return true;
-	}
-
-	template<map_type_e MapType> template<NonPlayerEntity EntityType, typename... Args> inline bool entity_registry_t<MapType>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
-		entity_goal_map<MapType, EntityType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-		
-		for (usize i{ 0 }; i < count; ++i) {
-			cauto maybe_position{ entity_goal_map<MapType, EntityType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, minimum_distance) };
-
-			if (!maybe_position.has_value()) {
-				return false;
-			}
-
-			add(maybe_position.value(), EntityType{ args... });
-
-			entity_goal_map<MapType, EntityType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
-		}
-
-		return true;
-	}
-
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::update(offset_t current, offset_t target) noexcept {
 		if (empty(current) || !game_map<MapType>.dependent within<region_e::Interior>(current) || contains(target) || !game_map<MapType>.dependent within<region_e::Interior>(target)) {
 			return false;
@@ -799,142 +736,6 @@ namespace necrowarp {
 
 		entity_goal_map<MapType, EntityType, false>.update(current, target);
 		entity_goal_map<MapType, EntityType, true>.update(current, target);
-
-		return true;
-	}
-
-	template<map_type_e MapType> template<Entity EntityType, Command CommandType> inline bool entity_registry_t<MapType>::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
-		static constexpr command_e command_enum{ to_command_enum<CommandType>::value };
-
-		if constexpr (is_null_command<CommandType>::value) {
-			return false;
-		}
-
-		if (!game_map<MapType>.dependent within<region_e::Interior>(command.source_position) || !contains<EntityType>(command.source_position)) {
-			return false;
-		}
-
-		if constexpr (!is_entity_command_valid<EntityType, CommandType>::value) {
-			return false;
-		}
-
-		if constexpr (is_binary_command<CommandType>::value) {
-			if (!game_map<MapType>.dependent within<region_e::Interior>(command.target_position)) {
-				return false;
-			}
-
-			switch (command_enum) {
-				case command_e::Move:
-				case command_e::PreciseWarp: {
-					if (contains(command.target_position)) {
-						return false;
-					}
-
-					if (game_map<MapType>[command.target_position].solid) {
-						if constexpr (is_incorporeal<EntityType>::value) {
-							if constexpr (is_incorporeal<EntityType>::conditional) {
-								if (cptr<EntityType> entity{ at<EntityType>(command.source_position) }; entity == nullptr || !entity->is_incorporeal()) {
-									return false;
-								} else {
-									break;
-								}
-							} else {
-								break;
-							}
-						}
-
-						return false;
-					}
-
-					break;
-				} case command_e::Clash:
-				  case command_e::Lunge:
-				  case command_e::Loose:
-				  case command_e::Batter: {
-					if (empty(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Devour: {
-					if (empty(command.target_position) && object_registry<MapType>.dependent empty<flesh_t>(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Descend: {
-					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<ladder_t>(command.target_position)) {
-						return false;
-					}
-
-					cptr<ladder_t> ladder{ object_registry<MapType>.dependent at<ladder_t>(command.target_position) };
-
-					if (ladder == nullptr || ladder->is_up_ladder() || ladder->has_shackle()) {
-						return false;
-					}
-
-					break;
-				} case command_e::Plunge: {
-					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<portal_t>(command.target_position)) {
-						return false;
-					}
-
-					cptr<portal_t> portal{ object_registry<MapType>.dependent at<portal_t>(command.target_position) };
-
-					if (portal == nullptr || portal->stability == current_dimension) {
-						return false;
-					}
-
-					break;
-				} case command_e::Consume:
-				  case command_e::ConsumeWarp: {
-					if (empty(command.target_position) && object_registry<MapType>.empty(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Retrieve:
-				  case command_e::Resuscitate: {
-					if (object_registry<MapType>.empty(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Calcify: {
-					if (!game_map<MapType>[command.target_position].solid && object_registry<MapType>.dependent empty<bones_t>(command.target_position)) {
-						return false;
-					}
-
-					break;
-				} case command_e::Annihilate: {
-					if (empty(command.source_position) || !empty(command.target_position) || command.source_position == command.target_position || (!player.is_incorporeal() && game_map<MapType>.linear_blockage(command.source_position, command.target_position, cell_e::Solid))) {
-						return false;
-					}
-
-					break;
-				} default: {
-					break;
-				}
-			}
-
-			if constexpr (is_ternary_command<CommandType>::value) {
-				if (!game_map<MapType>.dependent within<region_e::Interior>(command.intermediate_position)) {
-					return false;
-				}
-
-				const std::optional<entity_e> intermediate_target{ at(command.intermediate_position) };
-
-				switch (command_enum) {
-					case command_e::Lunge: {
-						if (!empty(command.intermediate_position) || intermediate_target.has_value()) {
-							return false;
-						}
-					} default: {
-						return false;
-					}
-				}
-			}
-		}		
 
 		return true;
 	}
@@ -1110,65 +911,6 @@ namespace necrowarp {
 		(update<EntityTypes>(), ...);
 	}
 
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::update() noexcept {
-		concussed.clear();
-
-		tick_offmap();
-
-		entity_registry<MapType>.recalculate_goal_map();
-		object_registry<MapType>.recalculate_goal_map();
-
-		update<player_t>();
-
-		if (player_turn_invalidated) {
-			player_turn_invalidated = false;
-
-			return;
-		}
-
-		if (descent_flag || plunge_flag) {
-			return;
-		}
-
-		if (camera_locked) {
-			update_camera<MapType>();
-		}
-
-		if (!freshly_divine && player.has_ascended()) {
-			player.erode_divinity();
-		}
-
-		freshly_divine = false;
-
-		if (!freshly_incorporeal && player.is_incorporeal()) {
-			player.erode_phantasm();
-		}
-
-		freshly_incorporeal = false;
-
-		if (game_map<MapType>[player.position].solid && !player.is_incorporeal()) {
-			const death_info_t<death_e::Crushed> info{ player.die<MapType, death_e::Crushed>() };
-
-			if (info.perished) {
-				return;
-			}
-
-			steam_stats::unlock(achievement_e::RecorporealizeDeath);
-		}
-
-		update<ALL_NON_PLAYER>();
-
-		for (rauto [_, draugaz] : entity_registry_storage<draugaz_t>) {
-			draugaz.regenerate();
-		}
-
-		for (rauto [_, dreadwurm] : entity_registry_storage<dreadwurm_t>) {
-			dreadwurm.regenerate();
-		}
-
-		steam_stats::store();
-	}
-
 	template<map_type_e MapType>
 	template<PlayerEntity EntityType, typename Function>
 		requires std::is_invocable<Function, cref<EntityType>>::value
@@ -1234,81 +976,6 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::retreat() noexcept { retreat<ALL_ANIMATED_ENTITIES>(); }
-
-	template<map_type_e MapType> inline void entity_registry_t<MapType>::rescan_medicus_goals() noexcept {
-		medicus_goals_dirty = false;
-
-		medicus_goal_map<MapType>.dependent clear<region_e::All>();
-
-		if (entity_registry<MapType>.dependent empty<medicus_t>() || object_registry<MapType>.dependent empty<cerebra_t>() || object_registry<MapType>.dependent empty<flesh_t>() || object_registry<MapType>.dependent empty<bones_t>()) {
-			return;
-		}
-
-		for (cauto position : game_map<MapType>.interior_offsets) {
-			if (game_map<MapType>[position].solid || !entity_registry<MapType>.empty(position)) {
-				continue;
-			}
-
-			if (object_registry<MapType>.dependent empty<cerebra_t>(position) && object_registry<MapType>.dependent empty<flesh_t>(position) && object_registry<MapType>.dependent empty<bones_t>(position)) {
-				continue;
-			}
-
-			if (cptr<bones_t> maybe_bones{ object_registry<MapType>.dependent at<bones_t>(position) }; maybe_bones == nullptr || !maybe_bones->is<decay_e::Fresh>()) {
-				continue;
-			}
-
-			cptr<cerebra_t> maybe_cerebra{ object_registry<MapType>.dependent at<cerebra_t>(position) };
-
-			if (maybe_cerebra == nullptr) {
-				continue;
-			}
-
-			cref<cerebra_t> cerebra{ *maybe_cerebra };
-
-			switch (cerebra.entity) {
-				case entity_e::Mercenary:
-				case entity_e::Paladin: {
-					if (object_registry<MapType>.dependent empty<metal_t>(position)) {
-						continue;
-					}
-
-					break;
-				} default: {
-					medicus_goal_map<MapType>.add(position);
-
-					continue;
-				}
-			}
-
-			cptr<metal_t> maybe_metal{ object_registry<MapType>.dependent at<metal_t>(position) };
-
-			if (maybe_metal == nullptr) {
-				continue;
-			}
-
-			cref<metal_t> metal{ *maybe_metal };
-
-			switch (cerebra.entity) {
-				case entity_e::Mercenary: {
-					if (metal.state != galvanisation_e::Twisted) {
-						continue;
-					}
-
-					break;
-				} case entity_e::Paladin: {
-					if (metal.state != galvanisation_e::Shimmering) {
-						continue;
-					}
-
-					break;
-				} default: {
-					continue;
-				}
-			}
-
-			medicus_goal_map<MapType>.add(position);
-		}
-	}
 
 	template<map_type_e MapType> template<Entity EntityType> inline void entity_registry_t<MapType>::recalculate_goal_map() noexcept {
 		entity_goal_map<MapType, EntityType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
@@ -1591,7 +1258,342 @@ namespace necrowarp {
 #include <necrowarp/entities.tpp>
 #include <necrowarp/commands.tpp>
 
+#include <necrowarp/object_state.hpp>
+#include <necrowarp/object_state.tpp>
+
 namespace necrowarp {
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::spawn(usize count) noexcept {
+		for (usize i{ 0 }; i < count; ++i) {
+			cauto maybe_position{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
+
+			if (!maybe_position.has_value()) {
+				return false;
+			}
+
+			add(maybe_position.value(), EntityType{});
+		}
+
+		return true;
+	}
+
+	template<map_type_e MapType> template<NonPlayerEntity EntityType, typename... Args> inline bool entity_registry_t<MapType>::spawn(usize count, Args... args) noexcept {
+		for (usize i{ 0 }; i < count; ++i) {
+			cauto maybe_position{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>) };
+
+			if (!maybe_position.has_value()) {
+				return false;
+			}
+
+			add(maybe_position.value(), EntityType{ args... });
+		}
+
+		return true;
+	}
+
+	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline bool entity_registry_t<MapType>::spawn(usize count, u32 minimum_distance) noexcept {
+		for (usize i{ 0 }; i < count; ++i) {
+			cauto maybe_position{ entity_goal_map<MapType, EntityType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, minimum_distance) };
+
+			if (!maybe_position.has_value()) {
+				return false;
+			}
+
+			add(maybe_position.value(), EntityType{});
+
+			entity_goal_map<MapType, EntityType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		}
+
+		return true;
+	}
+
+	template<map_type_e MapType> template<NonPlayerEntity EntityType, typename... Args> inline bool entity_registry_t<MapType>::spawn(usize count, u32 minimum_distance, Args... args) noexcept {
+		entity_goal_map<MapType, EntityType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		
+		for (usize i{ 0 }; i < count; ++i) {
+			cauto maybe_position{ entity_goal_map<MapType, EntityType>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, entity_registry<MapType>, object_registry<MapType>, minimum_distance) };
+
+			if (!maybe_position.has_value()) {
+				return false;
+			}
+
+			add(maybe_position.value(), EntityType{ args... });
+
+			entity_goal_map<MapType, EntityType>.dependent recalculate<region_e::Interior>(game_map<MapType>, cell_e::Open, entity_registry<MapType>);
+		}
+
+		return true;
+	}
+
+	template<map_type_e MapType> template<Entity EntityType, Command CommandType> inline bool entity_registry_t<MapType>::is_command_valid(cref<entity_command_t<EntityType, CommandType>> command) const noexcept {
+		static constexpr command_e command_enum{ to_command_enum<CommandType>::value };
+
+		if constexpr (is_null_command<CommandType>::value) {
+			return false;
+		}
+
+		if (!game_map<MapType>.dependent within<region_e::Interior>(command.source_position) || !contains<EntityType>(command.source_position)) {
+			return false;
+		}
+
+		if constexpr (!is_entity_command_valid<EntityType, CommandType>::value) {
+			return false;
+		}
+
+		if constexpr (is_binary_command<CommandType>::value) {
+			if (!game_map<MapType>.dependent within<region_e::Interior>(command.target_position)) {
+				return false;
+			}
+
+			switch (command_enum) {
+				case command_e::Move:
+				case command_e::PreciseWarp: {
+					if (contains(command.target_position)) {
+						return false;
+					}
+
+					if (game_map<MapType>[command.target_position].solid) {
+						if constexpr (is_incorporeal<EntityType>::value) {
+							if constexpr (is_incorporeal<EntityType>::conditional) {
+								if (cptr<EntityType> entity{ at<EntityType>(command.source_position) }; entity == nullptr || !entity->is_incorporeal()) {
+									return false;
+								} else {
+									break;
+								}
+							} else {
+								break;
+							}
+						}
+
+						return false;
+					}
+
+					break;
+				} case command_e::Clash:
+				  case command_e::Lunge:
+				  case command_e::Loose:
+				  case command_e::Batter: {
+					if (empty(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Devour: {
+					if (empty(command.target_position) && object_registry<MapType>.dependent empty<flesh_t>(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Descend: {
+					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<ladder_t>(command.target_position)) {
+						return false;
+					}
+
+					cptr<ladder_t> ladder{ object_registry<MapType>.dependent at<ladder_t>(command.target_position) };
+
+					if (ladder == nullptr || ladder->is_up_ladder() || ladder->has_shackle()) {
+						return false;
+					}
+
+					break;
+				} case command_e::Plunge: {
+					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<portal_t>(command.target_position)) {
+						return false;
+					}
+
+					cptr<portal_t> portal{ object_registry<MapType>.dependent at<portal_t>(command.target_position) };
+
+					if (portal == nullptr || portal->stability == current_dimension) {
+						return false;
+					}
+
+					break;
+				} case command_e::Consume:
+				  case command_e::ConsumeWarp: {
+					if (empty(command.target_position) && object_registry<MapType>.empty(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Retrieve:
+				  case command_e::Resuscitate: {
+					if (object_registry<MapType>.empty(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Calcify: {
+					if (!game_map<MapType>[command.target_position].solid && object_registry<MapType>.dependent empty<bones_t>(command.target_position)) {
+						return false;
+					}
+
+					break;
+				} case command_e::Annihilate: {
+					if (empty(command.source_position) || !empty(command.target_position) || command.source_position == command.target_position || (!player.is_incorporeal() && game_map<MapType>.linear_blockage(command.source_position, command.target_position, cell_e::Solid))) {
+						return false;
+					}
+
+					break;
+				} default: {
+					break;
+				}
+			}
+
+			if constexpr (is_ternary_command<CommandType>::value) {
+				if (!game_map<MapType>.dependent within<region_e::Interior>(command.intermediate_position)) {
+					return false;
+				}
+
+				const std::optional<entity_e> intermediate_target{ at(command.intermediate_position) };
+
+				switch (command_enum) {
+					case command_e::Lunge: {
+						if (!empty(command.intermediate_position) || intermediate_target.has_value()) {
+							return false;
+						}
+					} default: {
+						return false;
+					}
+				}
+			}
+		}		
+
+		return true;
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::update() noexcept {
+		concussed.clear();
+
+		tick_offmap();
+
+		entity_registry<MapType>.recalculate_goal_map();
+		object_registry<MapType>.recalculate_goal_map();
+
+		update<player_t>();
+
+		if (player_turn_invalidated) {
+			player_turn_invalidated = false;
+
+			return;
+		}
+
+		if (descent_flag || plunge_flag) {
+			return;
+		}
+
+		if (camera_locked) {
+			update_camera<MapType>();
+		}
+
+		if (!freshly_divine && player.has_ascended()) {
+			player.erode_divinity();
+		}
+
+		freshly_divine = false;
+
+		if (!freshly_incorporeal && player.is_incorporeal()) {
+			player.erode_phantasm();
+		}
+
+		freshly_incorporeal = false;
+
+		if (game_map<MapType>[player.position].solid && !player.is_incorporeal()) {
+			const death_info_t<death_e::Crushed> info{ player.die<MapType, death_e::Crushed>() };
+
+			if (info.perished) {
+				return;
+			}
+
+			steam_stats::unlock(achievement_e::RecorporealizeDeath);
+		}
+
+		update<ALL_NON_PLAYER>();
+
+		for (rauto [_, draugaz] : entity_registry_storage<draugaz_t>) {
+			draugaz.regenerate();
+		}
+
+		for (rauto [_, dreadwurm] : entity_registry_storage<dreadwurm_t>) {
+			dreadwurm.regenerate();
+		}
+
+		steam_stats::store();
+	}
+
+	template<map_type_e MapType> inline void entity_registry_t<MapType>::rescan_medicus_goals() noexcept {
+		medicus_goals_dirty = false;
+
+		medicus_goal_map<MapType>.dependent clear<region_e::All>();
+
+		if (entity_registry<MapType>.dependent empty<medicus_t>() || object_registry<MapType>.dependent empty<cerebra_t>() || object_registry<MapType>.dependent empty<flesh_t>() || object_registry<MapType>.dependent empty<bones_t>()) {
+			return;
+		}
+
+		for (cauto position : game_map<MapType>.interior_offsets) {
+			if (game_map<MapType>[position].solid || !entity_registry<MapType>.empty(position)) {
+				continue;
+			}
+
+			if (object_registry<MapType>.dependent empty<cerebra_t>(position) && object_registry<MapType>.dependent empty<flesh_t>(position) && object_registry<MapType>.dependent empty<bones_t>(position)) {
+				continue;
+			}
+
+			if (cptr<bones_t> maybe_bones{ object_registry<MapType>.dependent at<bones_t>(position) }; maybe_bones == nullptr || !maybe_bones->is<decay_e::Fresh>()) {
+				continue;
+			}
+
+			cptr<cerebra_t> maybe_cerebra{ object_registry<MapType>.dependent at<cerebra_t>(position) };
+
+			if (maybe_cerebra == nullptr) {
+				continue;
+			}
+
+			cref<cerebra_t> cerebra{ *maybe_cerebra };
+
+			switch (cerebra.entity) {
+				case entity_e::Mercenary:
+				case entity_e::Paladin: {
+					if (object_registry<MapType>.dependent empty<metal_t>(position)) {
+						continue;
+					}
+
+					break;
+				} default: {
+					medicus_goal_map<MapType>.add(position);
+
+					continue;
+				}
+			}
+
+			cptr<metal_t> maybe_metal{ object_registry<MapType>.dependent at<metal_t>(position) };
+
+			if (maybe_metal == nullptr) {
+				continue;
+			}
+
+			cref<metal_t> metal{ *maybe_metal };
+
+			switch (cerebra.entity) {
+				case entity_e::Mercenary: {
+					if (metal.state != galvanisation_e::Twisted) {
+						continue;
+					}
+
+					break;
+				} case entity_e::Paladin: {
+					if (metal.state != galvanisation_e::Shimmering) {
+						continue;
+					}
+
+					break;
+				} default: {
+					continue;
+				}
+			}
+
+			medicus_goal_map<MapType>.add(position);
+		}
+	}
+
 	template struct entity_registry_t<map_type_e::Pocket>;
 	template struct entity_registry_t<map_type_e::Standard>;
 
