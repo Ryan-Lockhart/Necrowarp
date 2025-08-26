@@ -54,7 +54,7 @@ namespace necrowarp {
 				entity_registry<map_type>.store();
 				object_registry<map_type>.store();
 
-				update_camera<map_type>(camera<map_type>.get_position());
+				update_camera<map_type>(camera<map_type>.get_center());
 		
 				phase.transition(phase_e::Playing);
 		
@@ -110,7 +110,7 @@ namespace necrowarp {
 				entity_registry<map_type>.store();
 				object_registry<map_type>.store();
 
-				update_camera<map_type>(camera<map_type>.get_position());
+				update_camera<map_type>(camera<map_type>.get_center());
 
 				phase.transition(phase_e::Playing);
 
@@ -158,7 +158,7 @@ namespace necrowarp {
 
 				registry_access.unlock();
 
-				update_camera<map_type>(camera<map_type>.get_position());
+				update_camera<map_type>(camera<map_type>.get_center());
 
 				processing_turn = false;
 
