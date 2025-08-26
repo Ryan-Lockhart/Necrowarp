@@ -40,7 +40,7 @@ namespace necrowarp {
 
 		static inline bool is_acquired() noexcept { return acquired; }
 
-		static inline bool can_acquire() noexcept { return !acquired && !Locked; }
+		static inline bool can_acquire() noexcept { return !Locked && !acquired; }
 
 		static inline bool acquire() noexcept {
 			if (!can_acquire()) {
@@ -52,7 +52,7 @@ namespace necrowarp {
 			return acquired;
 		}
 
-		static inline bool can_use() noexcept { return acquired && !Locked; }
+		static inline bool can_use() noexcept { return !Locked && acquired; }
 
 		static inline bool use() noexcept {
 			if (!can_use()) {

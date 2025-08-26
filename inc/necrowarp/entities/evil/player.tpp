@@ -10,35 +10,25 @@
 
 namespace necrowarp {
 
-	template<map_type_e MapType> inline void player_t::swell_hexeaters() noexcept {
+	template<map_type_e MapType> inline void player_t::swell_hexeaters(grimoire_e type) noexcept {
 		if (!hexeater_t::in_range<MapType>()) {
 			return;
 		}
 
 		cauto current_radius{ hexeater_t::get_effect_radius() };
 
-		for (rauto [position, hexeater] : entity_registry_storage<hexeater_t>) {
-			if (entity_goal_map<MapType, player_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(position) > current_radius) {
-				continue;
-			}
-
-			hexeater.swell();
-		}
-	}
-
-	template<map_type_e MapType> inline void player_t::swell_hexeaters(i8 amount) noexcept {
-		if (!hexeater_t::in_range<MapType>()) {
-			return;
-		}
-
-		cauto current_radius{ hexeater_t::get_effect_radius() };
+		cauto [swell_amount, rejuvenate_amount] = magic_enum::enum_switch([&](auto val) {
+			constexpr grimoire_e cval{ val };
+			return std::make_pair(hexeater_t::SwellAmount<cval>, hexeater_t::RejuvenateAmount<cval>);
+		}, type);
 
 		for (rauto [position, hexeater] : entity_registry_storage<hexeater_t>) {
 			if (entity_goal_map<MapType, player_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(position) > current_radius) {
 				continue;
 			}
 
-			hexeater.swell(amount);
+			hexeater.swell(swell_amount);
+			hexeater.rejuvenate(rejuvenate_amount);
 		}
 	}
 
@@ -46,7 +36,7 @@ namespace necrowarp {
 		return magic_enum::enum_switch([&, this](auto val) -> bool {
 			constexpr grimoire_e cval{ val };
 
-			if (!grimoire_s<cval>::can_use()) {
+			if (!endow_knowledge_enabled() && !grimoire_s<cval>::can_use()) {
 				return false;
 			}
 
@@ -68,7 +58,7 @@ namespace necrowarp {
 		return magic_enum::enum_switch([&, this](auto val) -> bool {
 			constexpr grimoire_e cval{ val };
 
-			if (!grimoire_s<cval>::can_use()) {
+			if (!endow_knowledge_enabled() && !grimoire_s<cval>::can_use()) {
 				return false;
 			}
 
@@ -87,11 +77,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void player_t::pay_cost(grimoire_e type) noexcept {
-		magic_enum::enum_switch([&](auto val) {
-			constexpr grimoire_e cval{ val };
-
-			swell_hexeaters<MapType>(hexeater_t::SwellAmount<cval>);
-		}, type);
+		swell_hexeaters<MapType>(type);
 
 		if (free_costs_enabled()) {
 			return;
@@ -101,11 +87,7 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> inline void player_t::pay_cost(grimoire_e type, i8 discount) noexcept {
-		magic_enum::enum_switch([&](auto val) {
-			constexpr grimoire_e cval{ val };
-
-			swell_hexeaters<MapType>(hexeater_t::SwellAmount<cval>);
-		}, type);
+		swell_hexeaters<MapType>(type);
 
 		if (free_costs_enabled()) {
 			return;

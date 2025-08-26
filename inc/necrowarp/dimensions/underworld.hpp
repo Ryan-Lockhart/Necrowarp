@@ -26,6 +26,9 @@ namespace necrowarp {
 
 		game_stats.reset();
 
+		game_stats.cheats.enable_all();
+		game_stats.cheats.endow_knowledge = false;
+
 		player.refresh();
 
 		scorekeeper.reset();
@@ -60,16 +63,7 @@ namespace necrowarp {
 			}
 		}
 
-		for (offset_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
-			for (offset_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
-				const offset_t pos{ x, y };
-
-				game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
-				fluid_map<MapType>[pos].recalculate_index(fluid_map<MapType>, pos, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
-			}
-		}
-
-		fluid_map_dirty = false;
+		recalculate_maps<MapType>();
 
 		cauto player_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
 
@@ -107,8 +101,13 @@ namespace necrowarp {
 		);
 
 		if constexpr (globals::EnableTribulationPortal) {
-			if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; portal_pos.has_value() && (literature::is_softlocked<MapType>() || globals::tribulation_portal_chance(random_engine))) {
-				object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Turbulent });
+			const bool is_softlocked{ literature::is_softlocked<MapType>() };
+
+			if (cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; !portal_pos.has_value() || (!is_softlocked && !globals::tribulation_portal_chance(random_engine)) || !object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Turbulent })) {
+				if (is_softlocked) {
+					error_log.add("could not find open position for tribulation portal!");
+					terminate_prematurely();
+				}
 			}
 		}
 
@@ -203,6 +202,8 @@ namespace necrowarp {
 			}
 		}
 
+		recalculate_cell_map<MapType>();
+
 		for (cauto [position, fluid] : fluid_positions) {
 			if (game_map<MapType>[position] != cell_e::Open || fluid == fluid_e::None) {
 				continue;
@@ -213,16 +214,7 @@ namespace necrowarp {
 
 		fluid_positions.clear();
 
-		for (offset_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
-			for (offset_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
-				const offset_t position{ x, y };
-
-				game_map<MapType>[position].recalculate_index(game_map<MapType>, position, cell_e::Solid);
-				fluid_map<MapType>[position].recalculate_index(fluid_map<MapType>, position, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
-			}
-		}
-
-		fluid_map_dirty = false;
+		recalculate_fluid_map<MapType, true>();
 #if !defined(STEAMLESS)
 		cauto previous_position{ player.position };
 #endif
@@ -345,13 +337,7 @@ namespace necrowarp {
 			}
 		}
 
-		for (offset_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
-			for (offset_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
-				const offset_t pos{ x, y };
-
-				game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
-			}
-		}
+		recalculate_cell_map<MapType>();
 
 		if (cauto player_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) }; !player_pos.has_value() || !entity_registry<MapType>.dependent add<player_t>(player_pos.value())) {
 			error_log.add("could not find open position for player!");

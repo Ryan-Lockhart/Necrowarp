@@ -87,7 +87,6 @@ namespace necrowarp {
 	static constexpr map_type_e determine_map() noexcept {
 		switch (Dimension) {
 			case dimension_e::Underworld:
-			case dimension_e::Tribulation:
 			case dimension_e::Overworld:
 			case dimension_e::AncientVault: {
 				return map_type_e::Standard;

@@ -53,6 +53,8 @@ namespace necrowarp {
 		
 				entity_registry<map_type>.store();
 				object_registry<map_type>.store();
+
+				update_camera<map_type>(camera<map_type>.get_position());
 		
 				phase.transition(phase_e::Playing);
 		
@@ -108,6 +110,8 @@ namespace necrowarp {
 				entity_registry<map_type>.store();
 				object_registry<map_type>.store();
 
+				update_camera<map_type>(camera<map_type>.get_position());
+
 				phase.transition(phase_e::Playing);
 
 				game_running = true;
@@ -153,11 +157,11 @@ namespace necrowarp {
 				}
 
 				registry_access.unlock();
-		
-				update_camera<map_type>();
-		
+
+				update_camera<map_type>(camera<map_type>.get_position());
+
 				processing_turn = false;
-				
+
 				player_acted = false;
 			}
 		}, static_cast<dimension_e>(current_dimension));

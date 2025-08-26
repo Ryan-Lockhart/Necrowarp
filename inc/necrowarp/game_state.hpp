@@ -161,6 +161,37 @@ namespace necrowarp {
 
 	static inline volatile std::atomic<dimension_e> current_dimension{ dimension_e::Underworld };
 
+	template<map_type_e MapType> inline void recalculate_maps() noexcept {
+		for (offset_t::scalar_t y{ 0 }; y < globals::MapSize<MapType>.h; ++y) {
+			for (offset_t::scalar_t x{ 0 }; x < globals::MapSize<MapType>.w; ++x) {
+				const offset_t pos{ x, y };
+
+				game_map<MapType>[pos].recalculate_index(game_map<MapType>, pos, cell_e::Solid);
+				fluid_map<MapType>[pos].recalculate_index(fluid_map<MapType>, pos, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
+			}
+		}
+	}
+
+	template<map_type_e MapType> inline void recalculate_cell_map() noexcept {
+		for (cauto position : game_map<MapType>.zone_offsets) {
+			game_map<MapType>[position].recalculate_index(game_map<MapType>, position, cell_e::Solid);
+		}
+	}
+
+	template<map_type_e MapType, bool Force = false> inline void recalculate_fluid_map() noexcept {
+		if constexpr (!Force) {
+			if (!fluid_map_dirty) {
+				return;
+			}
+		}
+
+		for (cauto position : fluid_map<MapType>.zone_offsets) {
+			fluid_map<MapType>[position].recalculate_index(fluid_map<MapType>, position, [](fluid_cell_t value) -> bool { return value != fluid_cell_t{}; });
+		}
+
+		fluid_map_dirty = false;
+	}
+
 	template<map_type_e MapType> inline bool spill_fluid(offset_t position, fluid_e fluid) noexcept {
 		if (fluid == fluid_e::None || !game_map<MapType>.dependent within<region_e::Interior>(position) || game_map<MapType>[position] != cell_e::Open) {
 			return false;

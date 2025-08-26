@@ -144,6 +144,28 @@ namespace necrowarp {
 		template<> constexpr i8 SwellAmount<grimoire_e::NecromanticAscendance>{ 8 };
 		template<> constexpr i8 SwellAmount<grimoire_e::CalamitousRetaliation>{ 8 };
 
+		template<grimoire_e Grimoire> static constexpr i8 RejuvenateAmount{};
+
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::ChaoticWarp>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::PreciseWarp>{ 1 };
+
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::Annihilate>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::Repulse>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::Calcify>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::Incorporealize>{ 1 };
+
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::CalciticInvocation>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::SpectralInvocation>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::SanguineInvocation>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::GalvanicInvocation>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::RavenousInvocation>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::WretchedInvocation>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::CerebralInvocation>{ 1 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::InfernalInvocation>{ 1 };
+
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::NecromanticAscendance>{ 2 };
+		template<> constexpr i8 RejuvenateAmount<grimoire_e::CalamitousRetaliation>{ 2 };
+
 		static constexpr i8 MaximumHealth{ BaseMaximumHealth + MaximumHexes / HexesPerMaximumHealth };
 		static constexpr i8 MaximumDamage{ BaseMaximumDamage + MaximumHexes / HexesPerMaximumDamage };
 
@@ -318,6 +340,10 @@ namespace necrowarp {
 		inline void exude() { set_hexes(hexes - 1); }
 
 		inline void exude(i8 amount) { set_hexes(hexes - amount); }
+
+		inline void rejuvenate() { set_health(health + 1); }
+
+		inline void rejuvenate(i8 amount) { set_health(health + amount); }
 
 		inline std::string to_string() const noexcept { return std::format("{} [{}/{}] ({})", necrowarp::to_string(entity_e::Hexeater), get_health(), max_health(), necrowarp::to_string(get_exudance())); }
 

@@ -389,7 +389,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType, wave_size_e Size> static inline void spawn_good(offset_t position, u8 chance) noexcept {
 			if constexpr (Size == wave_size_e::Miniscule) {
-				if (chance < 96) {
+				if (chance < 99) {
 					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 99%
 				} else {
 					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 1%

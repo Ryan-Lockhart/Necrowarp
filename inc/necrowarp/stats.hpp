@@ -36,8 +36,8 @@ namespace necrowarp {
 	enum struct attribute_e : u8 {
 		Energy,
 		Armor,
-		Divinity,
-		Phantasm
+		Phantasm,
+		Divinity
 	};
 
 	template<attribute_e Type> struct attribute_t {
@@ -92,11 +92,12 @@ namespace necrowarp {
 	  public:
 	  	attribute_t<attribute_e::Energy> energy;
 	  	attribute_t<attribute_e::Armor> armor;
-	  	attribute_t<attribute_e::Divinity> divinity;
 	  	attribute_t<attribute_e::Phantasm> phantasm;
+	  	attribute_t<attribute_e::Divinity> divinity;
 
 		bool no_hit;
 		bool free_costs;
+		bool endow_knowledge;
 		bool bypass_invocations;
 
 		inline bool is_enabled() const noexcept { return globals::CheatsAllowed && enabled; }
@@ -116,6 +117,7 @@ namespace necrowarp {
 		inline void enable_all() noexcept {
 			no_hit = true;
 			free_costs = true;
+			endow_knowledge = true;
 			bypass_invocations = true;
 
 			activate();
@@ -124,6 +126,7 @@ namespace necrowarp {
 		inline void disable_all() noexcept {
 			no_hit = false;
 			free_costs = false;
+			endow_knowledge = false;
 			bypass_invocations = false;
 
 			deactivate();

@@ -187,9 +187,7 @@ namespace necrowarp {
 
 		static constexpr i8 ProteinValue{ 1 };
 
-		template<map_type_e MapType> static inline void swell_hexeaters() noexcept;
-
-		template<map_type_e MapType> static inline void swell_hexeaters(i8 amount) noexcept;
+		template<map_type_e MapType> static inline void swell_hexeaters(grimoire_e type) noexcept;
 
 	  private:
 		static inline std::bernoulli_distribution apathetic_intervention_dis{ 0.01 };
@@ -532,6 +530,8 @@ namespace necrowarp {
 				}
 			}
 		}
+
+		inline bool endow_knowledge_enabled() const noexcept { return game_stats.cheats.is_enabled() && game_stats.cheats.endow_knowledge; }
 
 		template<map_type_e MapType> inline bool can_perform(grimoire_e type) const noexcept;
 

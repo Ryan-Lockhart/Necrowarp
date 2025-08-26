@@ -85,7 +85,7 @@ namespace necrowarp {
 		}
 
 		object_registry<MapType>.dependent spawn<bones_t>(
-			static_cast<usize>(globals::StartingBones),
+			static_cast<usize>(globals::StartingBones / 2),
 			static_cast<u32>(globals::MinimumBoneDistance),
 
 			decay_e::Animate
@@ -111,7 +111,7 @@ namespace necrowarp {
 				terminate_prematurely();
 			}
 
-			const std::optional<grimoire_e> bounty{ literature::random_unacquired_grimoire(random_engine) };
+			const std::optional<grimoire_e> bounty{ literature::random_unacquired_invocation(random_engine) };
 
 			if (bounty.has_value()) {
 				cauto pedestal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
