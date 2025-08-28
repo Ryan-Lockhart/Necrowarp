@@ -34,16 +34,12 @@ namespace necrowarp {
 
 	  private:
 		template<map_type_e MapType> static inline bool camera_input() noexcept {
-			if (update_camera<MapType>()) {
-				return true;
-			}
-
 			if (keyboard_s::is_key<input_e::Down>(bindings::CameraLock)) {
 				camera_locked = !camera_locked;
 			}
 
 			if (camera_locked) {
-				return false;
+				return update_camera<MapType>();
 			}
 
 			const offset_t direction = []() -> offset_t {
