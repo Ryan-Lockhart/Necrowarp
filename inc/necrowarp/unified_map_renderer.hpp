@@ -46,7 +46,7 @@ namespace necrowarp {
 				return;
 			}
 
-			const usize object_index{ static_cast<usize>(object_slideshow.current_object()) % objects.count(position) };
+			const usize object_index{ static_cast<usize>(slideshow.current_object()) % objects.count(position) };
 
 			const object_e object_enum{ at(objects.at(position), object_index) };
 
@@ -102,7 +102,7 @@ namespace necrowarp {
 				return;
 			}
 
-			const usize object_index{ static_cast<usize>(object_slideshow.current_object()) % objects.count(position) };
+			const usize object_index{ static_cast<usize>(slideshow.current_object()) % objects.count(position) };
 
 			const object_e object_enum{ at(objects.at(position), object_index) };
 
@@ -158,7 +158,7 @@ namespace necrowarp {
 				return;
 			}
 
-			const usize object_index{ static_cast<usize>(object_slideshow.current_object()) % objects.count(position) };
+			const usize object_index{ static_cast<usize>(slideshow.current_object()) % objects.count(position) };
 
 			const object_e object_enum{ at(objects.at(position), object_index) };
 

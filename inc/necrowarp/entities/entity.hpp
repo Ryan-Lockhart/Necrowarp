@@ -439,7 +439,7 @@ namespace necrowarp {
 		);
 	}
 
-	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Thetwo) };
+	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Thetwo) + 1 };
 
 	constexpr usize NPCSizeCap{ 8 };
 

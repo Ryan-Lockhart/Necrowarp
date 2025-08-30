@@ -193,7 +193,7 @@ namespace necrowarp {
 
 		animation_controller.tick<MapType>();
 
-		object_slideshow.tick<MapType>();
+		slideshow.tick<MapType>();
 
 		ui_registry.update<MapType>();
 
