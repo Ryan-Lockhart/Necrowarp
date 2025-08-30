@@ -5,7 +5,7 @@
 
 namespace necrowarp {
 	struct animation_controller_s {
-		static constexpr usize target_fps{ 12 };
+		static constexpr usize target_fps{ 12ULL };
 
 		static constexpr usize interval{ static_cast<usize>(1000.0 / target_fps) };
 
@@ -31,10 +31,10 @@ namespace necrowarp {
 		}
 	} static inline animation_controller;
 
-	static inline constexpr usize slideshow_interval{ 1000 };
+	static inline constexpr usize slideshow_interval{ 750ULL };
 
 	struct object_slideshow_s {
-		static constexpr usize num_objects{ ObjectTypeCount };
+		static constexpr usize num_objects{ ObjectTypeCount - 1 };
 
 		static constexpr usize interval{ slideshow_interval };
 
@@ -50,7 +50,7 @@ namespace necrowarp {
 
 		static inline bool is_suspended() noexcept { return suspended; }
 
-		static inline object_e current_object() noexcept { return static_cast<object_e>(index % num_objects); }
+		static inline object_e current_object() noexcept { return static_cast<object_e>((index % num_objects) + 1); }
 
 		template<map_type_e MapType> static inline void tick() noexcept {
 			if (!timer.ready()) {
