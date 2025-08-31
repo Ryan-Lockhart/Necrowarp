@@ -1,0 +1,18 @@
+Style:
+  AngledHeaders: [".*"]
+
+InlayHints:
+  BlockEnd: true
+  Designators: true
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
+  DefaultArguments: true
+  TypeNameLimit: 0
+
+Completion:
+  AllScopes: Yes
+  ArgumentLists: Delimiters
+
+Hover:
+  ShowAKA: true
