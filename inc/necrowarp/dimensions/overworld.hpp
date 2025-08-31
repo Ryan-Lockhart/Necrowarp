@@ -51,14 +51,16 @@ namespace necrowarp {
 		cauto player_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
 
 		if (!player_pos.has_value() || !entity_registry<MapType>.dependent add<player_t>(player_pos.value())) {
-			error_log.add("could not find open position for player!");
+			error_log.add("[ERROR]: could not find open position for player!");
+
 			terminate_prematurely();
 		}
 
 		cauto portal_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
 
 		if (!portal_pos.has_value() || !object_registry<MapType>.add(portal_pos.value(), portal_t{ stability_e::Echoing })) {
-			error_log.add("could not find open position for return portal!");
+			error_log.add("[ERROR]: could not find open position for return portal!");
+
 			terminate_prematurely();
 		}
 	}

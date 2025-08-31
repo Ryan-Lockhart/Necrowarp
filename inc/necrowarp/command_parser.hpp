@@ -16,20 +16,28 @@ namespace necrowarp {
 	struct command_parser_t {
 		enum struct command_e : u8 {
 			Unknown = 0,
+
 			Energy,
 			Armor,
+			Phantasm,
 			Divinity,
 
 			NoHit,
 			FreeCosts,
-			BypassInvocations
+			BypassInvocations,
+			EndowKnowledge
 		};
+
+		static constexpr usize num_commands{ static_cast<usize>(command_e::EndowKnowledge) };
 
 		enum struct state_e : u8 {
 			Unknown = 0,
+
 			Enable,
 			Disable
 		};
+
+		static constexpr usize num_states{ static_cast<usize>(state_e::Disable) };
 
 		struct command_t {
 			command_e type;
@@ -41,20 +49,24 @@ namespace necrowarp {
 
 		constexpr cstr to_string(command_e type) const noexcept {
 			switch (type) {
-				case command_e::Energy: {
+				case command_e::Unknown: {
+					return "unknown";
+				} case command_e::Energy: {
 					return "vigorous";
 				} case command_e::Armor: {
 					return "bulwark";
+				} case command_e::Phantasm: {
+					return "interstice";
 				} case command_e::Divinity: {
 					return "larian";
 				} case command_e::NoHit: {
-					return "interstice";
+					return "preternatural";
 				} case command_e::FreeCosts: {
 					return "unlimited_power";
 				} case command_e::BypassInvocations: {
 					return "runemaster";
-				} default: {
-					return "";
+				} case command_e::EndowKnowledge: {
+					return "bookworm";
 				}
 			}
 		}
@@ -68,8 +80,8 @@ namespace necrowarp {
 				return false;
 			}
 
-			for (u8 i{ 0 }; i < (u8)command_e::BypassInvocations; ++i) {
-				if (!command_str.contains(to_string((command_e)i))) {
+			for (usize i{ 0 }; i < num_commands; ++i) {
+				if (!command_str.contains(to_string(static_cast<command_e>(i + 1)))) {
 					continue;
 				}
 
@@ -84,12 +96,14 @@ namespace necrowarp {
 				return command_e::Unknown;
 			}
 
-			for (u8 i{ 0 }; i < (u8)command_e::BypassInvocations; ++i) {
-				if (str != to_string((command_e)i)) {
+			for (usize i{ 0 }; i < num_commands; ++i) {
+				const command_e command{ static_cast<command_e>(i + 1) };
+
+				if (str != to_string(command)) {
 					continue;
 				}
 
-				return (command_e)i;
+				return command;
 			}
 
 			return command_e::Unknown;
@@ -102,7 +116,7 @@ namespace necrowarp {
 
 			if (str == "enable") {
 				return state_e::Enable;
-			} else if (str != "disable") {
+			} else if (str == "disable") {
 				return state_e::Disable;
 			} else {
 				return state_e::Unknown;
@@ -133,7 +147,8 @@ namespace necrowarp {
 			switch (command) {
 				case command_e::NoHit:
 				case command_e::FreeCosts:
-				case command_e::BypassInvocations: {
+				case command_e::BypassInvocations:
+				case command_e::EndowKnowledge: {
 					if (tokens.size() != 2 || state == state_e::Unknown) {
 						error_log.add("ERROR: \"{}\" is a unary command; use \"enable\" or \"disable\" in conjunction", command_str);
 
@@ -149,6 +164,7 @@ namespace necrowarp {
 					};
 				} case command_e::Energy:
 				  case command_e::Armor:
+				  case command_e::Phantasm:
 				  case command_e::Divinity: {
 					switch (state) {
 						case state_e::Enable: {
