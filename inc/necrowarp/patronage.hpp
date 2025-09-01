@@ -335,7 +335,7 @@ namespace necrowarp {
 		}
 	};
 
-	template<patron_e Patron> static inline patron_t patrons;
+	template<patron_e Patron> static inline patron_t patrons{};
 
 	template<> inline patron_t patrons<patron_e::None>{
 		.disposition = disposition_e::Apathetic,
@@ -655,5 +655,5 @@ namespace necrowarp {
 		});
 	}
 
-	static inline void randomize_patrons() noexcept;
+	template<RandomEngine Generator> static inline void randomize_patrons(ref<Generator> engine) noexcept;
 } //necrowarp

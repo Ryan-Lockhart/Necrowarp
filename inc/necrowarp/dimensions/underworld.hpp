@@ -125,7 +125,7 @@ namespace necrowarp {
 
 		terminate_process_turn();
 
-		randomize_patrons();
+		randomize_patrons(random_engine);
 #if !defined(STEAMLESS)
 		steam_stats::store();
 

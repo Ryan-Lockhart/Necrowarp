@@ -522,7 +522,7 @@ namespace necrowarp {
 
 			const offset_t spawn_position{ maybe_spawn.value() };
 
-			static std::discrete_distribution<usize> offmap_dis{ static_cast<f64>(reinforcement_count<EntityTypes> * 2)... };
+			std::discrete_distribution<usize> offmap_dis{ static_cast<f64>(reinforcement_count<EntityTypes> * 2)... };
 
 			return magic_enum::enum_switch([&](auto val) -> bool {
 				constexpr entity_e cval{ val };
@@ -560,7 +560,9 @@ namespace necrowarp {
 		static inline void terminate_process_turn() noexcept {
 			game_running = false;
 
-			while (processing_turn) {};
+			while (processing_turn) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			}
 		}
 
 		template<map_type_e MapType> static inline void update() noexcept;
