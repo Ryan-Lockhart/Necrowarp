@@ -68,25 +68,25 @@ namespace necrowarp {
 	};
 
 	enum struct zeal_e : u8 {
-		Downtrodden, // ultra-low zeal; lowest damage attacks with lowest damage reduction (5%)
+		Vengeant, // ultra-low zeal; highest damage attacks with low damage reduction (1%)
 
-		Vengeant, // lowest zeal; highest damage attacks with lowest damage reduction (10%)
-		Fallen, // lower zeal; high damage attacks with low damage reduction (20%)
+		Downtrodden, // lowest zeal; lowest damage attacks with lowest damage reduction (4%)
+		Fallen, // lower zeal; low damage attacks with low damage reduction (20%)
 
-		Alacritous, // middling zeal (30%)
+		Alacritous, // middling zeal; middling damage attacks with middle damage reduction (30%)
 
 		Righteous, // higher zeal; low damage attacks with high damage reduction (20%)
-		Zealous, // highest zeal; lowest damage attacks with highest damage reduction (10%)
+		Zealous, // highest zeal; lowest damage attacks with highest damage reduction (4%)
 
-		Ascendant // ultra-high zeal; highest damage attacks with highest damage reduction (5%)
+		Ascendant // ultra-high zeal; low damage attacks with highest damage reduction (1%)
 	};
 
 	constexpr cstr to_string(zeal_e zeal) noexcept {
 		switch (zeal) {
-			case zeal_e::Downtrodden: {
-				return "downtrodden";
-			} case zeal_e::Vengeant: {
+			case zeal_e::Vengeant: {
 				return "vengeant";
+			} case zeal_e::Downtrodden: {
+				return "downtrodden";
 			} case zeal_e::Fallen: {
 				return "fallen";
 			} case zeal_e::Alacritous: {
@@ -103,10 +103,10 @@ namespace necrowarp {
 
 	constexpr color_t to_color(zeal_e zeal) noexcept {
 		switch (zeal) {
-			case zeal_e::Downtrodden: {
-				return colors::dark::Orange;
-			} case zeal_e::Vengeant: {
+			 case zeal_e::Vengeant: {
 				return colors::Red;
+			}case zeal_e::Downtrodden: {
+				return colors::dark::Orange;
 			} case zeal_e::Fallen: {
 				return colors::Orange;
 			} case zeal_e::Alacritous: {
@@ -175,17 +175,17 @@ namespace necrowarp {
 		template<RandomEngine Generator> static inline zeal_e random_scaled_zeal(ref<Generator> generator) noexcept {
 			const u16 chance{ scaled_zeal_dis(generator) };
 
-			if (chance < 5) {
-				return zeal_e::Downtrodden;
-			} else if (chance < 15) {
+			if (chance < 1) {
 				return zeal_e::Vengeant;
+			} else if (chance < 5) {
+				return zeal_e::Downtrodden;
 			} else if (chance < 35) {
 				return zeal_e::Fallen;
 			} else if (chance < 65) {
 				return zeal_e::Alacritous;
-			} else if (chance < 85) {
-				return zeal_e::Righteous;
 			} else if (chance < 95) {
+				return zeal_e::Righteous;
+			} else if (chance < 99) {
 				return zeal_e::Zealous;
 			} else {
 				return zeal_e::Ascendant;
@@ -194,8 +194,7 @@ namespace necrowarp {
 
 		static constexpr i8 determine_health(zeal_e zeal) noexcept {
 			switch (zeal) {
-				case zeal_e::Downtrodden:
-				case zeal_e::Vengeant: {
+				case zeal_e::Downtrodden: {
 					return MinimumHealth;
 				} case zeal_e::Fallen: {
 					return MiddlingHealth - ((MiddlingHealth - MinimumHealth) / 2);
@@ -204,6 +203,7 @@ namespace necrowarp {
 				} case zeal_e::Righteous: {
 					return MiddlingHealth + ((MaximumHealth - MiddlingHealth) / 2);
 				} case zeal_e::Zealous:
+				  case zeal_e::Vengeant:
 				  case zeal_e::Ascendant: {
 					return MaximumHealth;
 				}
@@ -241,8 +241,7 @@ namespace necrowarp {
 
 		constexpr i8 max_health() const noexcept {
 			switch (zeal) {
-				case zeal_e::Downtrodden:
-				case zeal_e::Vengeant: {
+				case zeal_e::Downtrodden: {
 					return MinimumHealth;
 				} case zeal_e::Fallen: {
 					return MiddlingHealth - ((MiddlingHealth - MinimumHealth) / 2);
@@ -251,7 +250,8 @@ namespace necrowarp {
 				} case zeal_e::Righteous: {
 					return MiddlingHealth + ((MaximumHealth - MiddlingHealth) / 2);
 				} case zeal_e::Zealous:
-				  case zeal_e::Ascendant: {
+				  case zeal_e::Ascendant:
+				  case zeal_e::Vengeant: {
 					return MaximumHealth;
 				}
 			}
@@ -266,10 +266,10 @@ namespace necrowarp {
 					return MiddlingDamageReceived - ((MiddlingDamageReceived - MinimumDamageReceived) / 2);
 				} case zeal_e::Alacritous: {
 					return MiddlingDamageReceived;
-				} case zeal_e::Fallen: {
+				} case zeal_e::Fallen:
+				  case zeal_e::Vengeant: {
 					return MiddlingDamageReceived + ((MaximumDamageReceived - MiddlingDamageReceived) / 2);
-				} case zeal_e::Vengeant: {
-				  case zeal_e::Downtrodden:
+				} case zeal_e::Downtrodden: {
 					return MaximumDamageReceived;
 				}
 			}
