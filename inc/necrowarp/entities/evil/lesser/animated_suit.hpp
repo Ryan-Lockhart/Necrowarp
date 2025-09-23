@@ -122,7 +122,7 @@ namespace necrowarp {
 
 		constexpr i8 max_health() const noexcept { return MaximumHealth; }
 
-		inline i8 get_minimum_damage_received() const noexcept {
+		inline i8 get_maximum_damage_received() const noexcept {
 			switch (state) {
 				case galvanisation_e::Twisted: {
 					return 4;
@@ -136,7 +136,7 @@ namespace necrowarp {
 			}
 		}
 
-		inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(get_minimum_damage_received(), damage_amount); }
+		inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(get_maximum_damage_received(), damage_amount); }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage(damage_amount); }
 
@@ -152,17 +152,17 @@ namespace necrowarp {
 			return true;
 		}
 
-		template<CombatantEntity Attacker> inline i8 get_minimum_damage_received() const noexcept {
-			const i8 min_damage{ get_minimum_damage_received() };
+		template<CombatantEntity Attacker> inline i8 get_maximum_damage_received() const noexcept {
+			const i8 max_damage{ get_maximum_damage_received() };
 
 			if constexpr (is_cleaver<Attacker>::value) {
-				return max<i8>(static_cast<i8>(min_damage * 1.5), 1);
+				return max<i8>(static_cast<i8>(max_damage * 1.5), 1);
 			} else {
-				return min_damage;
+				return max_damage;
 			}
 		}
 
-		template<CombatantEntity Attacker> inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(get_minimum_damage_received<Attacker>(), damage_amount); }
+		template<CombatantEntity Attacker> inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(get_maximum_damage_received<Attacker>(), damage_amount); }
 
 		template<CombatantEntity Attacker> inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage<Attacker>(damage_amount); }
 

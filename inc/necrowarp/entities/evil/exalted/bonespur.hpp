@@ -53,7 +53,7 @@ namespace necrowarp {
 	struct bonespur_t {
 		static constexpr i8 MaximumDamage{ 0 };
 
-		static constexpr i8 MinimumDamageReceived{ 1 };
+		static constexpr i8 MaximumDamageReceived{ 1 };
 
 		static constexpr std::array<entity_e, 13> EntityPriorities{
 			entity_e::Paladin,
@@ -92,7 +92,7 @@ namespace necrowarp {
 
 		inline fluid_e get_spatter() const noexcept { return spatter; }
 
-		inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(MinimumDamageReceived, damage_amount); }
+		inline i8 filter_damage(i8 damage_amount) const noexcept { return min<i8>(MaximumDamageReceived, damage_amount); }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return health > filter_damage(damage_amount); }
 
