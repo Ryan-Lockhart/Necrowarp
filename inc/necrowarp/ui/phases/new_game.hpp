@@ -1,5 +1,6 @@
 #pragma once
 
+#include "necrowarp/globals.hpp"
 #include <necrowarp/ui.hpp>
 
 namespace necrowarp {
@@ -82,13 +83,18 @@ namespace necrowarp {
 				return false;
 			}
 
+			if constexpr (globals::EnableRushMode) {
+				if (rush_toggle.is_hovered()) {
+					return true;
+				}
+			}
+
 			return
 				header_label.is_hovered() ||
 				patron_label.is_hovered() ||
 				patron_selector.is_hovered() ||
 				play_button.is_hovered() ||
-				back_button.is_hovered() || 
-				rush_toggle.is_hovered() ||
+				back_button.is_hovered() ||
 				warning_label.is_hovered();
 		}
 
@@ -123,7 +129,9 @@ namespace necrowarp {
 
 			back_button.update(button_e::Left);
 
-			rush_toggle.update(button_e::Left);
+			if constexpr (globals::EnableRushMode) {
+				rush_toggle.update(button_e::Left);
+			}
 
 			if (play_button.is_active()) {
 				desired_patron = patron_selector.get_selected();
@@ -153,7 +161,9 @@ namespace necrowarp {
 			play_button.draw(renderer);
 			back_button.draw(renderer);
 
-			rush_toggle.draw(renderer);
+			if constexpr (globals::EnableRushMode) {
+				rush_toggle.draw(renderer);
+			}
 		}
 	};
 } //namespace necrowarp

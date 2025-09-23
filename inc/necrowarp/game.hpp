@@ -291,52 +291,20 @@ namespace necrowarp {
 				}
 			}
 
-			static command_pack_t cached_command{};
-
-			if constexpr (globals::EnableRushMode) {
-				if (!globals::rush_mode_toggle && processing_turn) {
-					return;
-				}
-
-				if (processing_turn) {
-					if (character_input<MapType>()) {
-						cached_command = player.command;
-
-						cache_timer.record();
-					}
-
-					return;
-				}
-
-				if (cache_timer.ready()) {
-					cached_command = {};
-				}
-			} else {
-				if (processing_turn) {
-					return;
-				}
+			if (processing_turn || player_acted) {
+				return;
 			}
 
 			if constexpr (globals::EnableRushMode) {
 				if (globals::rush_mode_toggle) {
-					if (epoch_timer.ready() || rush_timer.ready()) {
-						if (character_input<MapType>() && epoch_timer.ready()) {
-							epoch_timer.record();
-							rush_timer.record();
-		
-							player_acted = true;
-						} else if (rush_timer.ready()) {
-							rush_timer.record();
-		
-							if (cached_command.type != command_e::None) {
-								player.command = cached_command;
-							}
-		
-							player_acted = true;
-						}
+					if ((character_input<MapType>() && epoch_timer.ready()) || rush_timer.ready()) {
+						epoch_timer.record();
+						rush_timer.record();
+	
+						player_acted = true;
 					}
 				} else {
-					if (!player_acted && epoch_timer.ready()) {
+					if (epoch_timer.ready()) {
 						player_acted = character_input<MapType>();
 	
 						if (player_acted) {
@@ -345,7 +313,7 @@ namespace necrowarp {
 					}
 				}				
 			} else {
-				if (!player_acted && epoch_timer.ready()) {
+				if (epoch_timer.ready()) {
 					player_acted = character_input<MapType>();
 
 					if (player_acted) {

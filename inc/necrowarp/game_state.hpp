@@ -72,9 +72,6 @@ namespace necrowarp {
 
 	static constexpr usize cursor_interval{ 125ULL };
 	static inline bleak::timer_t cursor_timer{ cursor_interval };
-	
-	static constexpr usize cache_interval{ 25ULL };
-	static inline bleak::timer_t cache_timer{ input_interval };
 
 	enum struct timestep_e : u8 {
 		Slow,
@@ -85,19 +82,19 @@ namespace necrowarp {
 	};
 
 	static constexpr bleak::lut_t<timestep_e, usize, magic_enum::enum_count<timestep_e>()> epoch_interval{
-		pair_t<timestep_e, usize>{ timestep_e::Slow, 325ULL },
-		pair_t<timestep_e, usize>{ timestep_e::Normal, 250ULL },
-		pair_t<timestep_e, usize>{ timestep_e::Fast, 125ULL },
-		pair_t<timestep_e, usize>{ timestep_e::Faster, 50ULL },
-		pair_t<timestep_e, usize>{ timestep_e::Ludicrous, 25ULL }
+		pair_t<timestep_e, usize>{ timestep_e::Slow, 500ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Normal, 375ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Fast, 250ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Faster, 125ULL },
+		pair_t<timestep_e, usize>{ timestep_e::Ludicrous, 50ULL }
 	};
 
 	static constexpr bleak::lut_t<timestep_e, usize, magic_enum::enum_count<timestep_e>()> rush_interval{
-		pair_t<timestep_e, usize>{ timestep_e::Slow, 325ULL },
-		pair_t<timestep_e, usize>{ timestep_e::Normal, 250ULL },
-		pair_t<timestep_e, usize>{ timestep_e::Fast, 125ULL },
-		pair_t<timestep_e, usize>{ timestep_e::Faster, 50ULL },
-		pair_t<timestep_e, usize>{ timestep_e::Ludicrous, 25ULL }
+		pair_t<timestep_e, usize>{ timestep_e::Slow, epoch_interval[timestep_e::Slow] * 2 },
+		pair_t<timestep_e, usize>{ timestep_e::Normal, epoch_interval[timestep_e::Normal] * 2 },
+		pair_t<timestep_e, usize>{ timestep_e::Fast, epoch_interval[timestep_e::Fast] * 2 },
+		pair_t<timestep_e, usize>{ timestep_e::Faster, epoch_interval[timestep_e::Faster] * 2 },
+		pair_t<timestep_e, usize>{ timestep_e::Ludicrous, epoch_interval[timestep_e::Ludicrous] * 2 }
 	};
 
 	static inline timestep_e epoch_timestep{ timestep_e::Normal };
