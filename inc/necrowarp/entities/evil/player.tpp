@@ -46,7 +46,11 @@ namespace necrowarp {
 
 			if constexpr (cval == grimoire_e::CalamitousRetaliation) {
 				return has_ascended() && sufficient_energy;
-			} else if constexpr (cval == grimoire_e::ChaoticWarp || cval == grimoire_e::NecromanticAscendance) {
+			} else if constexpr (cval == grimoire_e::NecromanticAscendance) {
+				return divinity <= 1 && sufficient_energy;
+			} else if constexpr (cval == grimoire_e::Incorporealize) {
+				return phantasm <= 1 && !blocked && sufficient_energy;
+			} else if constexpr (cval == grimoire_e::ChaoticWarp) {
 				return sufficient_energy;
 			} else {
 				return !blocked && sufficient_energy;
@@ -68,7 +72,11 @@ namespace necrowarp {
 
 			if constexpr (cval == grimoire_e::CalamitousRetaliation) {
 				return has_ascended() && sufficient_energy;
-			} else if constexpr (cval == grimoire_e::ChaoticWarp || cval == grimoire_e::NecromanticAscendance) {
+			} else if constexpr (cval == grimoire_e::NecromanticAscendance) {
+				return divinity <= 1 && sufficient_energy;
+			} else if constexpr (cval == grimoire_e::Incorporealize) {
+				return phantasm <= 1 && !blocked && sufficient_energy;
+			} else if constexpr (cval == grimoire_e::ChaoticWarp) {
 				return sufficient_energy;
 			} else {
 				return !blocked && sufficient_energy;

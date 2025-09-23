@@ -11,7 +11,7 @@
 
 namespace necrowarp {
 	template<Entity EntityType> template<map_type_e MapType> inline void entity_command_t<EntityType, necromantic_ascendance_t>::process() const noexcept {
-		if (player.has_ascended() || !player.can_perform<MapType>(grimoire_e::NecromanticAscendance)) {
+		if (!player.can_perform<MapType>(grimoire_e::NecromanticAscendance)) {
 			player_turn_invalidated = true;
 
 			return;
