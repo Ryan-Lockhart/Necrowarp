@@ -94,7 +94,7 @@ namespace necrowarp {
 		static constexpr i8 ProteinValue{ 1 };
 
 	  private:
-		static constexpr u8 VariantCount{ 8 };
+		static constexpr u8 VariantCount{ 9 };
 
 		static inline std::uniform_int_distribution<u16> variant_dis{ 0, VariantCount - 1 };
 
