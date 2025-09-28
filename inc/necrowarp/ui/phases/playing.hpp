@@ -290,7 +290,7 @@ namespace necrowarp {
 			magic_enum::enum_for_each<grimoire_e>([&](auto val) {
 				constexpr grimoire_e cval{ val };
 
-				if (grimoire_s<cval>::can_use()) {
+				if (player.endow_knowledge_enabled() || grimoire_s<cval>::can_use()) {
 					icon_atlas.draw(glyph_t{ static_cast<u16>(cval), player.can_perform<MapType>(cval) ? colors::White : colors::dark::Grey }, icon_position<cval>());
 				}
 			});

@@ -156,7 +156,7 @@ namespace necrowarp {
 
 			colored_string
 				.concatenate(runes_t{ " (" })
-				.concatenate(runes_t{ necrowarp::to_string(stability) })
+				.concatenate(runes_t{ necrowarp::to_colored_string(stability) })
 				.concatenate(runes_t{ ")" });
 			
 			return colored_string;

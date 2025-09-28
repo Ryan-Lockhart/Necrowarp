@@ -152,14 +152,20 @@ namespace necrowarp {
 					return indices::RangerHamaz;
 				} case entity_e::Skulker: {
 					return indices::SkulkerHamaz;
+				} case entity_e::Mansling: {
+					return indices::ManslingHamaz;
 				} case entity_e::MistLady: {
 					return indices::MistLadyHamaz;
 				} case entity_e::BannerBearer: {
 					return indices::BannerBearerHamaz;
 				} case entity_e::BattleMonk: {
 					return indices::BattleMonkHamaz;
+				} case entity_e::Medicus: {
+					return indices::MedicusHamaz;
 				} case entity_e::Berserker: {
 					return indices::BerserkerHamaz;
+				} case entity_e::Hexeater: {
+					return indices::HexeaterHamaz;
 				} case entity_e::Paladin: {
 					return indices::PaladinHamaz;
 				} default: {
