@@ -56,7 +56,7 @@ diagnostics = [
 
 executable('necrowarp', 'src/program.cpp',
 	cpp_args: [
-        #'-DSTEAMLESS',
+        '-DSTEAMLESS',
         '-march=x86-64-v3',
         necrowarp_args, diagnostics
     ],

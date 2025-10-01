@@ -232,7 +232,7 @@ namespace necrowarp {
 			magic_enum::enum_for_each<grimoire_e>([&](auto val) {
 				constexpr grimoire_e cval{ val };
 
-				if (grimoire_s<cval>::can_use() && mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				if ((player.endow_knowledge_enabled() || grimoire_s<cval>::can_use()) && mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 					hovered = true;
 				}
 			});
@@ -246,7 +246,7 @@ namespace necrowarp {
 			magic_enum::enum_for_each<grimoire_e>([&](auto val) {
 				constexpr grimoire_e cval{ val };
 
-				if (grimoire_s<cval>::can_use() && mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
+				if ((player.endow_knowledge_enabled() || grimoire_s<cval>::can_use()) && mouse_s::is_inside(icon_position<cval>() * globals::cell_size<grid_type_e::Icon>, globals::cell_size<grid_type_e::Icon>)) {
 					hovered = cval;
 				}
 			});
