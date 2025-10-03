@@ -359,42 +359,52 @@ namespace necrowarp {
 					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 1%
 				}
 			} else if constexpr (Size == wave_size_e::Tiny) {
-				if (chance < 96) {
-					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 96%
-				} else if (chance < 98) {
+				if (chance < 95) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 95%
+				} else if (chance < 97) {
 					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 2%
-				} else if (chance < 99) {
+				} else if (chance < 98) {
 					entity_registry<MapType>.dependent add<true>(position, ranger_t{}); // 1%
+				} else if (chance < 99) {
+					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 1%
 				} else {
 					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 1%
 				}
 			} else if constexpr (Size == wave_size_e::Small) {
-				if (chance < 90) {
-					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 90%
+				if (chance < 84) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 84%
+				} else if (chance < 94) {
+					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 10%
 				} else if (chance < 96) {
-					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 6%
-				} else if (chance < 98) {
 					entity_registry<MapType>.dependent add<true>(position, ranger_t{}); // 2%
-				} else {
+				} else if (chance < 98) {
 					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 2%
+				} else {
+					entity_registry<MapType>.dependent add<true>(position, mansling_t{}); // 2%
 				}
 			} else if constexpr (Size == wave_size_e::Medium) {
-				if (chance < 80) {
-					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 80%
-				} else if (chance < 92) {
+				if (chance < 76) {
+					entity_registry<MapType>.dependent add<true>(position, adventurer_t{}); // 76%
+				} else if (chance < 88) {
 					entity_registry<MapType>.dependent add<true>(position, mercenary_t{}); // 12%
-				} else if (chance < 94) {
+				} else if (chance < 90) {
 					entity_registry<MapType>.dependent add<true>(position, ranger_t{}); // 2%
-				} else if (chance < 96) {
+				} else if (chance < 92) {
 					entity_registry<MapType>.dependent add<true>(position, skulker_t{}); // 2%
-				} else if (chance < 97) {
+				} else if (chance < 94) {
+					entity_registry<MapType>.dependent add<true>(position, mansling_t{}); // 2%
+				} else if (chance < 95) {
 					entity_registry<MapType>.dependent add<true>(position, mist_lady_t{}); // 1%
-				} else if (chance < 98) {
+				} else if (chance < 96) {
 					entity_registry<MapType>.dependent add<true>(position, banner_bearer_t{}); // 1%
-				} else if (chance < 99) {
+				} else if (chance < 97) {
+					entity_registry<MapType>.dependent add<true>(position, medicus_t{}); // 1%
+				} else if (chance < 98) {
 					entity_registry<MapType>.dependent add<true>(position, battle_monk_t{}); // 1%
-				} else {
+				} else if (chance < 99) {
 					entity_registry<MapType>.dependent add<true>(position, berserker_t{}); // 1%
+				} else {
+					entity_registry<MapType>.dependent add<true>(position, hexeater_t{}); // 1%
 				}
 			} else if constexpr (Size == wave_size_e::Large) {
 				if (chance < 50) {
