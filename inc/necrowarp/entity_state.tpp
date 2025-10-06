@@ -948,8 +948,12 @@ namespace necrowarp {
 	}
 
 	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::advance() noexcept {
-		for (crauto [_, entity] : entity_registry_storage<EntityType>) {
-			entity.idle_animation.advance();
+		if constexpr (is_non_player<EntityType>::value) {
+			for (crauto [_, entity] : entity_registry_storage<EntityType>) {
+				entity.idle_animation.advance();
+			}
+		} else {
+			player.idle_animation.advance();
 		}
 	}
 
@@ -963,8 +967,12 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void entity_registry_t<MapType>::advance() noexcept { advance<ALL_ANIMATED_ENTITIES>(); }
 
 	template<map_type_e MapType> template<AnimatedEntity EntityType> inline void entity_registry_t<MapType>::retreat() noexcept {
-		for (crauto [_, entity] : entity_registry_storage<EntityType>) {
-			entity.idle_animation.retreat();
+		if constexpr (is_non_player<EntityType>::value) {
+			for (crauto [_, entity] : entity_registry_storage<EntityType>) {
+				entity.idle_animation.retreat();
+			}
+		} else {
+			player.idle_animation.retreat();
 		}
 	}
 

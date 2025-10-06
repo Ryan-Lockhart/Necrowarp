@@ -261,7 +261,7 @@ namespace necrowarp {
 	  public:
 	  	inline player_t() noexcept :
 			idle_animation{ random_engine, true },
-			command{}, 
+			command{},
 			position{},
 			patron{},
 			energy{ StartingEnergy },

@@ -168,6 +168,7 @@ namespace necrowarp {
 		ALL_NEUTRAL_NPCS
 
 	#define ALL_ANIMATED_ENTITIES \
+		player_t, \
 		animated_suit_t, \
 		hamaz_t, \
 		chromalese_t, \
@@ -176,7 +177,9 @@ namespace necrowarp {
 		furtive_horror_t, \
 		isoscel_t, \
 		mansling_t, \
-		hexeater_t
+		skulker_t, \
+		hexeater_t, \
+		paladin_t
 	
 	#define ALL_VIGILANT_ENTITIES \
 		player_t, \

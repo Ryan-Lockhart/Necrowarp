@@ -536,11 +536,17 @@ namespace necrowarp {
 		}
 
 		static inline void terminate_process_turn() noexcept {
+			if (!processing_turn) {
+				return;
+			}
+
 			game_running = false;
 
-			while (processing_turn) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
-			}
+			process_access.lock<true>();
+
+			assert(!processing_turn);
+
+			process_access.unlock();
 		}
 
 		template<map_type_e MapType> static inline void update() noexcept;

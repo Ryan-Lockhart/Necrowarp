@@ -123,7 +123,7 @@ namespace necrowarp {
 	template<map_type_e MapType> inline void game_s::plunge_async() noexcept { std::thread([]() -> void { plunge<MapType>(); }).detach(); }
 
 	template<map_type_e MapType> inline void game_s::process_turn() noexcept {
-		if (window.is_closing() || !game_running || !player_acted || descent_flag || plunge_flag) {
+		if (window.is_closing() || !game_running || !player_acted || descent_flag || plunge_flag || !process_access.try_lock()) {
 			return;
 		}
 
@@ -163,6 +163,8 @@ namespace necrowarp {
 				processing_turn = false;
 
 				player_acted = false;
+
+				process_access.unlock();
 			}
 		}, static_cast<dimension_e>(current_dimension));
 	}

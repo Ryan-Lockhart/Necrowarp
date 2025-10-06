@@ -146,6 +146,8 @@ namespace necrowarp {
 
 	static inline mixer_s mixer{};
 
+	static inline priority_mutex process_access{};
+
 	static inline priority_mutex registry_access{};
 
 	static inline priority_mutex buffer_access{};
