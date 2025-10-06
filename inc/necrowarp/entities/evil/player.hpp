@@ -547,21 +547,21 @@ namespace necrowarp {
 
 		inline void receive_unsafe_warp_boon() noexcept { set_energy(energy + clamp<i8>(UnsafeWarpBoon, 0, get_cost(grimoire_e::ChaoticWarp))); }
 
-		inline void max_out_energy() noexcept { energy = max_energy(); }
+		inline void max_out_energy() noexcept { set_energy(max_energy()); }
 
-		inline void max_out_armor() noexcept { armor = max_armor(); }
+		inline void max_out_armor() noexcept { set_armor(max_armor()); }
 
-		inline void max_out_phantasm() noexcept { phantasm = max_phantasm(); }
+		inline void max_out_phantasm() noexcept { set_phantasm(max_phantasm()); }
 
-		inline void max_out_divinity() noexcept { divinity = max_divinity(); }
+		inline void max_out_divinity() noexcept { set_divinity(max_divinity()); }
 
-		inline void zero_out_energy() noexcept { energy = 0; }
+		inline void zero_out_energy() noexcept { set_energy(0); }
 
-		inline void zero_out_armor() noexcept { armor = 0; }
+		inline void zero_out_armor() noexcept { set_armor(0); }
 
-		inline void zero_out_phantasm() noexcept { phantasm = 0; }
+		inline void zero_out_phantasm() noexcept { set_phantasm(0); }
 
-		inline void zero_out_divinity() noexcept { divinity = 0; }
+		inline void zero_out_divinity() noexcept { set_divinity(0); }
 
 		template<CombatantEntity EntityType> inline bool will_perish() const noexcept;
 
