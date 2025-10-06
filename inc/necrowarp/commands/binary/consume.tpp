@@ -69,7 +69,7 @@ namespace necrowarp {
 		
 		switch (object_target) {
 			case object_e::Bones: {
-				const decay_e state{ object_registry<MapType>.dependent at<bones_t>(target_position)->state };
+				const decay_e state{ object_registry<MapType>.dependent at<bones_t>(target_position)->get_state() };
 
 				object_registry<MapType>.dependent remove<bones_t>(target_position);
 				entity_registry<MapType>.add(target_position, skeleton_t{ state });

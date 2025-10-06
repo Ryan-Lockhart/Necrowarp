@@ -48,7 +48,7 @@ namespace necrowarp {
 			}
 
 			if (has_skull) {
-				const decay_e state{ object_registry<MapType>.dependent at<bones_t>(position)->state };
+				const decay_e state{ object_registry<MapType>.dependent at<bones_t>(position)->get_state() };
 
 				object_registry<MapType>.dependent remove<bones_t>(position);
 				++accumulated_skulls;
@@ -82,7 +82,7 @@ namespace necrowarp {
 		if (object_registry<MapType>.dependent contains<bones_t>(target_position)) {
 			const offset_t position{ target_position };
 
-			const decay_e state{ object_registry<MapType>.dependent at<bones_t>(position)->state };
+			const decay_e state{ object_registry<MapType>.dependent at<bones_t>(position)->get_state() };
 
 			object_registry<MapType>.dependent remove<bones_t>(position);
 			++accumulated_skulls;

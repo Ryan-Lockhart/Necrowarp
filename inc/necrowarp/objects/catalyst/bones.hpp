@@ -38,17 +38,42 @@ namespace necrowarp {
 	};
 
 	struct bones_t {
-		const decay_e state;
+		template<decay_e Decay> static constexpr i8 DecayEpoch{};
 
-		static constexpr decay_e DefaultDecay{ decay_e::Fresh };
+		template<> inline constexpr i8 DecayEpoch<decay_e::Fresh>{ 16 };
+		template<> inline constexpr i8 DecayEpoch<decay_e::Animate>{ 32 };
+		template<> inline constexpr i8 DecayEpoch<decay_e::Rotted>{ 64 };
 
-		inline bones_t() noexcept : state{ DefaultDecay } {}
+	  private:
+		decay_e state;
+		i8 lifespan;
 
-		inline bones_t(decay_e state) noexcept : state{ state } {}
+		static constexpr i8 determine_lifespan(decay_e decay) noexcept {
+			return magic_enum::enum_switch([&](auto val) -> i8 {
+				constexpr decay_e cval{ val };
+
+				return DecayEpoch<cval>;
+			}, decay);
+		}
+
+	  public:
+		inline bones_t() noexcept : state{ decay_e::Fresh }, lifespan{ DecayEpoch<decay_e::Fresh> } {}
+
+		inline bones_t(decay_e state) noexcept : state{ state }, lifespan{ determine_lifespan(state) } {}
+
+		inline decay_e get_state() const noexcept { return state; }
+
+		inline i8 get_lifespan() const noexcept { return lifespan; }
+
+		inline f32 get_percentile() const noexcept {
+			return 0.0f;
+		}
+
+		template<map_type_e MapType> inline bool decay(offset_t position) noexcept;
 
 		template<decay_e Decay> inline bool is() const noexcept { return state == Decay; }
 
-		inline std::string to_string() const noexcept { return std::format("{} ({})", necrowarp::to_string<plurality_e::Multiple>(object_e::Bones), necrowarp::to_string(state)); }
+		inline std::string to_string() const noexcept { return std::format("{} ({}, {}%)", necrowarp::to_string<plurality_e::Multiple>(object_e::Bones), necrowarp::to_string(state), get_percentile()); }
 
 		inline runes_t to_colored_string() const noexcept {
 			runes_t colored_string{ necrowarp::to_colored_string<plurality_e::Multiple>(object_e::Bones) };
