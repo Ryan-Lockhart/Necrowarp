@@ -66,23 +66,27 @@ namespace necrowarp {
 		inline i8 get_lifespan() const noexcept { return lifespan; }
 
 		inline f32 get_percentile() const noexcept {
-			return 0.0f;
+			return magic_enum::enum_switch([&](auto val) -> f32 {
+				constexpr decay_e cval{ val };
+
+				return clamp<f32>(static_cast<f32>(lifespan) / static_cast<f32>(DecayEpoch<cval>) * 100.0f, 0.1f, 100.0f);
+			}, state);
 		}
 
 		template<map_type_e MapType> inline bool decay(offset_t position) noexcept;
 
 		template<decay_e Decay> inline bool is() const noexcept { return state == Decay; }
 
-		inline std::string to_string() const noexcept { return std::format("{} ({}, {}%)", necrowarp::to_string<plurality_e::Multiple>(object_e::Bones), necrowarp::to_string(state), get_percentile()); }
+		inline std::string to_string() const noexcept { return std::format("{} {} [{:.1f}%]", necrowarp::to_string(state), necrowarp::to_string<plurality_e::Multiple>(object_e::Bones), get_percentile()); }
 
 		inline runes_t to_colored_string() const noexcept {
-			runes_t colored_string{ necrowarp::to_colored_string<plurality_e::Multiple>(object_e::Bones) };
+			runes_t colored_string{ necrowarp::to_colored_string(state) };
 
 			colored_string
-				.concatenate(runes_t{ " (" })
-				.concatenate(necrowarp::to_colored_string(state))
-				.concatenate(runes_t{ ")" });
-			
+				.concatenate(runes_t{ " " })
+				.concatenate(necrowarp::to_colored_string<plurality_e::Multiple>(object_e::Bones))
+				.concatenate(runes_t{ std::format(" [{:.1f}%]", get_percentile()) });
+
 			return colored_string;
 		}
 

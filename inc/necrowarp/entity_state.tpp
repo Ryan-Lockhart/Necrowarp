@@ -1524,6 +1524,16 @@ namespace necrowarp {
 			dreadwurm.regenerate();
 		}
 
+		for (rauto [position, bones] : object_registry_storage<bones_t>) {
+			const bool disintegrated{ bones.dependent decay<MapType>(position) };
+
+			if (!disintegrated) {
+				continue;
+			}
+
+			object_registry<MapType>.dependent remove<bones_t>(position);
+		}
+
 		steam_stats::store();
 	}
 

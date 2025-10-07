@@ -50,7 +50,7 @@ namespace necrowarp {
 			}
 
 			if (has_metal) {
-				const galvanisation_e state{ object_registry<MapType>.dependent at<metal_t>(position)->get_state() };
+				const galvanisation_e state{ object_registry<MapType>.dependent at<metal_t>(position)->state };
 
 				object_registry<MapType>.dependent remove<metal_t>(position);
 
@@ -82,7 +82,7 @@ namespace necrowarp {
 		}
 
 		if (object_registry<MapType>.dependent contains<metal_t>(target_position)) {
-			const galvanisation_e state{ object_registry<MapType>.dependent at<metal_t>(target_position)->get_state() };
+			const galvanisation_e state{ object_registry<MapType>.dependent at<metal_t>(target_position)->state };
 
 			object_registry<MapType>.dependent remove<metal_t>(target_position);
 

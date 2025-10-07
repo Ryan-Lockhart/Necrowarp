@@ -182,7 +182,7 @@ namespace necrowarp {
 			}
 		}
 		
-		static inline extent_t window_size{ Resolutions[resolution_e::Resolution1920x1080] };
+		static inline extent_t window_size{ Resolutions[resolution_e::Resolution1280x720] };
 
 		template<grid_type_e GridType> static constexpr extent_t cell_size;
 
