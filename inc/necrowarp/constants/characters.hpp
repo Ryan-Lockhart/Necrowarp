@@ -37,13 +37,13 @@ namespace necrowarp::characters {
 	constexpr const u8 BattleMonk{ DepletedMedicus + 1 };
 
 	constexpr const u8 NeonatalThetwo{ BattleMonk + 1 };
-	constexpr const u8 YoungThetwo{ NeonatalThetwo + 1 };
-	constexpr const u8 MatureThetwo{ YoungThetwo + 1 };
-	constexpr const u8 BulkyThetwo{ MatureThetwo + 1 };
-	constexpr const u8 GrossThetwo{ BulkyThetwo + 1 };
-	constexpr const u8 TitanicThetwo{ GrossThetwo + 1 };
+	constexpr const u8 YoungThetwo{ NeonatalThetwo + 3 };
+	constexpr const u8 MatureThetwo{ YoungThetwo + 3 };
+	constexpr const u8 BulkyThetwo{ MatureThetwo + 3 };
+	constexpr const u8 GrossThetwo{ BulkyThetwo + 3 };
+	constexpr const u8 TitanicThetwo{ GrossThetwo + 3 };
 
-	constexpr const u8 FreshBones{ TitanicThetwo + 1 };
+	constexpr const u8 FreshBones{ TitanicThetwo + 3 };
 	constexpr const u8 AnimateBones{ FreshBones + 1 };
 	constexpr const u8 RottedBones{ AnimateBones + 1 };
 

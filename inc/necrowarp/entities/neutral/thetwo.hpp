@@ -13,6 +13,7 @@
 #include <necrowarp/game_state.hpp>
 
 #include <necrowarp/constants/enums/bulk.tpp>
+#include <necrowarp/constants/enums/breed.tpp>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -77,6 +78,8 @@ namespace necrowarp {
 	};
 
 	struct thetwo_t {
+		const breed_e breed : 4;
+
 		static constexpr i8 MaximumHealth{ 32 };
 		static constexpr i8 MinimumHealth{ 1 };
 
@@ -166,7 +169,11 @@ namespace necrowarp {
 
 		template<RandomEngine Generator> static inline bulk_e random_bulk(ref<Generator> generator) noexcept { return static_cast<bulk_e>(bulk_dis(generator)); }
 
-		bulk_e bulk;
+		static inline std::uniform_int_distribution<u16> breed_dis{ static_cast<u16>(breed_e::Scaly), static_cast<u16>(breed_e::Lanky) };
+
+		template<RandomEngine Generator> static inline breed_e random_breed(ref<Generator> generator) noexcept { return static_cast<breed_e>(breed_dis(generator)); }
+
+		bulk_e bulk : 4;
 
 		i8 health;
 		i8 protein;
@@ -177,12 +184,16 @@ namespace necrowarp {
 		inline void set_protein(i8 value) noexcept { protein = clamp<i8>(value, 0, max_protein()); }
 
 	public:
-		inline thetwo_t() noexcept : bulk{ bulk_e::Neonatal }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
+		inline thetwo_t() noexcept : breed{ breed_e::Scaly }, bulk{ bulk_e::Neonatal }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
 
-		inline thetwo_t(bulk_e bulk) noexcept : bulk{ bulk }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
+		inline thetwo_t(bulk_e bulk) noexcept : breed{ breed_e::Scaly }, bulk{ bulk }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
+
+		inline thetwo_t(breed_e breed) noexcept : breed{ breed }, bulk{ bulk_e::Neonatal }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
+
+		inline thetwo_t(breed_e breed, bulk_e bulk) noexcept : breed{ breed }, bulk{ bulk }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false } {}
 
 		template<RandomEngine Generator> inline thetwo_t(ref<Generator> engine) noexcept :
-			bulk{ random_bulk(engine) }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false }
+			breed{ random_breed(engine) }, bulk{ random_bulk(engine) }, health{ determine_health(bulk) }, protein{ 0 }, shedding{ false }
 		{}
 
 		inline bulk_e get_bulk() const noexcept { return bulk; }
@@ -357,7 +368,8 @@ namespace necrowarp {
 		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
-			return std::format("{} [{}/{}] ({}, [{}/{}])",
+			return std::format("{} {} [{}/{}] ({}, [{}/{}])",
+				necrowarp::to_string(breed),
 				necrowarp::to_string(entity_e::Thetwo),
 				get_health(), max_health(),
 				necrowarp::to_string(bulk),
@@ -366,9 +378,11 @@ namespace necrowarp {
 		}
 
 		inline runes_t to_colored_string() const noexcept {
-			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Thetwo) };
+			runes_t colored_string{ necrowarp::to_colored_string(breed) };
 
 			colored_string
+				.concatenate(runes_t{ " " })
+				.concatenate(necrowarp::to_colored_string(entity_e::Thetwo))
 				.concatenate(runes_t{ std::format(" [{}/{}] (", get_health(), max_health()) })
 				.concatenate(necrowarp::to_colored_string(bulk))
 				.concatenate(shedding ?
@@ -379,21 +393,25 @@ namespace necrowarp {
 		}
 
 		inline glyph_t current_glyph() const noexcept {
-			switch (bulk) {
-				case bulk_e::Neonatal: {
-					return glyphs::NeonatalThetwo;
-				} case bulk_e::Young: {
-					return glyphs::YoungThetwo;
-				} case bulk_e::Mature: {
-					return glyphs::MatureThetwo;
-				} case bulk_e::Bulky: {
-					return glyphs::BulkyThetwo;
-				} case bulk_e::Gross: {
-					return glyphs::GrossThetwo;
-				} case bulk_e::Titanic: {
-					return glyphs::TitanicThetwo;
+			return magic_enum::enum_switch([&](auto val) -> glyph_t {
+				constexpr breed_e cval{ val };
+
+				switch (bulk) {
+					case bulk_e::Neonatal: {
+						return glyphs::NeonatalThetwo<cval>;
+					} case bulk_e::Young: {
+						return glyphs::YoungThetwo<cval>;
+					} case bulk_e::Mature: {
+						return glyphs::MatureThetwo<cval>;
+					} case bulk_e::Bulky: {
+						return glyphs::BulkyThetwo<cval>;
+					} case bulk_e::Gross: {
+						return glyphs::GrossThetwo<cval>;
+					} case bulk_e::Titanic: {
+						return glyphs::TitanicThetwo<cval>;
+					}
 				}
-			}
+			}, breed);
 		}
 
 		inline void draw(offset_t position) const noexcept { game_atlas.draw(current_glyph(), position); }

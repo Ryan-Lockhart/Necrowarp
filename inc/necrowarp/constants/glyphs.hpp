@@ -5,6 +5,8 @@
 #include <necrowarp/constants/characters.hpp>
 #include <necrowarp/constants/colors.hpp>
 
+#include <necrowarp/constants/enums/breed.hpp>
+
 namespace necrowarp {
 	using namespace bleak;
 
@@ -62,12 +64,41 @@ namespace necrowarp {
 
 		constexpr const glyph_t BattleMonk{ characters::BattleMonk, colors::White };
 
-		constexpr const glyph_t NeonatalThetwo{ characters::NeonatalThetwo, colors::White };
-		constexpr const glyph_t YoungThetwo{ characters::YoungThetwo, colors::White };
-		constexpr const glyph_t MatureThetwo{ characters::MatureThetwo, colors::White };
-		constexpr const glyph_t BulkyThetwo{ characters::BulkyThetwo, colors::White };
-		constexpr const glyph_t GrossThetwo{ characters::GrossThetwo, colors::White };
-		constexpr const glyph_t TitanicThetwo{ characters::TitanicThetwo, colors::White };
+		template<breed_e Breed> constexpr const glyph_t NeonatalThetwo;
+
+		template<> inline constexpr const glyph_t NeonatalThetwo<breed_e::Scaly>{ characters::NeonatalThetwo, colors::White };
+		template<> inline constexpr const glyph_t NeonatalThetwo<breed_e::Shaggy>{ characters::NeonatalThetwo + 1, colors::White };
+		template<> inline constexpr const glyph_t NeonatalThetwo<breed_e::Lanky>{ characters::NeonatalThetwo + 2, colors::White };
+
+		template<breed_e Breed> constexpr const glyph_t YoungThetwo;
+
+		template<> inline constexpr const glyph_t YoungThetwo<breed_e::Scaly>{ characters::YoungThetwo, colors::White };
+		template<> inline constexpr const glyph_t YoungThetwo<breed_e::Shaggy>{ characters::YoungThetwo + 1, colors::White };
+		template<> inline constexpr const glyph_t YoungThetwo<breed_e::Lanky>{ characters::YoungThetwo + 2, colors::White };
+
+		template<breed_e Breed> constexpr const glyph_t MatureThetwo;
+
+		template<> inline constexpr const glyph_t MatureThetwo<breed_e::Scaly>{ characters::MatureThetwo, colors::White };
+		template<> inline constexpr const glyph_t MatureThetwo<breed_e::Shaggy>{ characters::MatureThetwo + 1, colors::White };
+		template<> inline constexpr const glyph_t MatureThetwo<breed_e::Lanky>{ characters::MatureThetwo + 2, colors::White };
+
+		template<breed_e Breed> constexpr const glyph_t BulkyThetwo;
+
+		template<> inline constexpr const glyph_t BulkyThetwo<breed_e::Scaly>{ characters::BulkyThetwo, colors::White };
+		template<> inline constexpr const glyph_t BulkyThetwo<breed_e::Shaggy>{ characters::BulkyThetwo + 1, colors::White };
+		template<> inline constexpr const glyph_t BulkyThetwo<breed_e::Lanky>{ characters::BulkyThetwo + 2, colors::White };
+
+		template<breed_e Breed> constexpr const glyph_t GrossThetwo;
+
+		template<> inline constexpr const glyph_t GrossThetwo<breed_e::Scaly>{ characters::GrossThetwo, colors::White };
+		template<> inline constexpr const glyph_t GrossThetwo<breed_e::Shaggy>{ characters::GrossThetwo + 1, colors::White };
+		template<> inline constexpr const glyph_t GrossThetwo<breed_e::Lanky>{ characters::GrossThetwo + 2, colors::White };
+
+		template<breed_e Breed> constexpr const glyph_t TitanicThetwo;
+
+		template<> inline constexpr const glyph_t TitanicThetwo<breed_e::Scaly>{ characters::TitanicThetwo, colors::White };
+		template<> inline constexpr const glyph_t TitanicThetwo<breed_e::Shaggy>{ characters::TitanicThetwo + 1, colors::White };
+		template<> inline constexpr const glyph_t TitanicThetwo<breed_e::Lanky>{ characters::TitanicThetwo + 2, colors::White };
 
 		constexpr const glyph_t FreshBones{ characters::FreshBones, colors::White };
 		constexpr const glyph_t AnimateBones{ characters::AnimateBones, colors::White };

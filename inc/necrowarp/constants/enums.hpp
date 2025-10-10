@@ -3,6 +3,7 @@
 // IWYU pragma: begin_exports
 #include <necrowarp/constants/enums/affliction.hpp>
 #include <necrowarp/constants/enums/bulk.hpp>
+#include <necrowarp/constants/enums/breed.hpp>
 #include <necrowarp/constants/enums/cell.hpp>
 #include <necrowarp/constants/enums/death.hpp>
 #include <necrowarp/constants/enums/decay.hpp>
