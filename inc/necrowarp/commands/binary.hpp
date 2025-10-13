@@ -8,6 +8,7 @@
 #include <necrowarp/commands/binary/consume.hpp>
 #include <necrowarp/commands/binary/clash.hpp>
 #include <necrowarp/commands/binary/devour.hpp>
+#include <necrowarp/commands/binary/graze.hpp>
 #include <necrowarp/commands/binary/retrieve.hpp>
 #include <necrowarp/commands/binary/resuscitate.hpp>
 #include <necrowarp/commands/binary/loose.hpp>

@@ -1391,6 +1391,12 @@ namespace necrowarp {
 					}
 
 					break;
+				} case command_e::Graze: {
+					if (empty(command.target_position) && object_registry<MapType>.dependent empty<flora_t>(command.target_position)) {
+						return false;
+					}
+
+					break;
 				} case command_e::Descend: {
 					if (object_registry<MapType>.empty(command.target_position) || !object_registry<MapType>.dependent contains<ladder_t>(command.target_position)) {
 						return false;

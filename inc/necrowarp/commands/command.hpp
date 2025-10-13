@@ -33,6 +33,7 @@ namespace necrowarp {
 	struct consume_t;
 	struct clash_t;
 	struct devour_t;
+	struct graze_t;
 	struct loose_t;
 	struct retrieve_t;
 	struct resuscitate_t;
@@ -79,6 +80,7 @@ namespace necrowarp {
 		consume_t, \
 		clash_t, \
 		devour_t, \
+		graze_t, \
 		loose_t, \
 		retrieve_t, \
 		resuscitate_t, \
@@ -150,6 +152,9 @@ namespace necrowarp {
 	#define ALL_FLESH_GOLEM_COMMANDS \
 		devour_t
 
+	#define ALL_FAUNA_COMMANDS \
+		graze_t
+
 	#define ALL_THETWO_COMMANDS \
 		metabolise_t, \
 		shed_t, \
@@ -176,6 +181,7 @@ namespace necrowarp {
 		ALL_ABOMINATION_COMMANDS, \
 		ALL_WRAITH_COMMANDS, \
 		ALL_FLESH_GOLEM_COMMANDS, \
+		ALL_FAUNA_COMMANDS, \
 		ALL_THETWO_COMMANDS, \
 		ALL_RANGER_COMMANDS, \
 		ALL_MEDICUS_COMMANDS, \
@@ -209,6 +215,7 @@ namespace necrowarp {
 		Consume,
 		Clash,
 		Devour,
+		Graze,
 		Retrieve,
 		Resuscitate,
 		Loose,
@@ -290,6 +297,8 @@ namespace necrowarp {
 				return "clash";
 			} case command_e::Devour: {
 				return "devour";
+			} case command_e::Graze: {
+				return "graze";
 			} case command_e::Retrieve: {
 				return "retrieve";
 			} case command_e::Resuscitate: {

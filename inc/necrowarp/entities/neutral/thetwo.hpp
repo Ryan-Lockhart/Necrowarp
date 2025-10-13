@@ -127,7 +127,6 @@ namespace necrowarp {
 
 		static constexpr std::array<object_e, 1> ObjectPriorities{ object_e::Flesh };
 
-		inline i8 protein_value() const noexcept { return static_cast<i8>(bulk); }
 		static constexpr f16 ProteinRatio{ 0.33f };
 
 		static constexpr i8 DeathBoon{ 1 };
@@ -287,6 +286,8 @@ namespace necrowarp {
 		inline bool can_devour(object_e object) const noexcept { return protein < max_protein() && object == object_e::Flesh; }
 
 		inline bool can_devour(bulk_e bulk) const noexcept { return static_cast<u8>(this->bulk) > static_cast<u8>(bulk); }
+
+		inline i8 protein_value() const noexcept { return static_cast<i8>(static_cast<i8>(bulk) + protein * ProteinRatio); }
 
 		inline void fatten() noexcept { set_protein(protein + 1); }
 

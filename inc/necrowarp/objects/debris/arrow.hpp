@@ -51,7 +51,7 @@ namespace necrowarp {
 
 	  public:
 		inline arrow_t() noexcept : count{ StartingArrows } {}
-		
+
 		inline arrow_t(i8 amount) noexcept : count{ amount } {}
 
 		template<RandomEngine Generator> static inline bool snap(ref<Generator> generator) noexcept { return snap_dis(generator); }

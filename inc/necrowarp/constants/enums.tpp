@@ -2,6 +2,7 @@
 
 // IWYU pragma: begin_exports
 #include <necrowarp/constants/enums/affliction.tpp>
+#include <necrowarp/constants/enums/bloomage.tpp>
 #include <necrowarp/constants/enums/bulk.tpp>
 #include <necrowarp/constants/enums/breed.tpp>
 #include <necrowarp/constants/enums/death.tpp>

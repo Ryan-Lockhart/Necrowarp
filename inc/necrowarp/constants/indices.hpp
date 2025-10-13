@@ -49,7 +49,9 @@ namespace necrowarp::indices {
 	constexpr const u8 FurtiveHorror{ WrithingKnight + 1 };
 	constexpr const u8 Isoscel{ FurtiveHorror + 1 };
 
-	constexpr const u8 Adventurer{ Isoscel + 1 };
+	constexpr const u8 Fauna{ Isoscel + 1 };
+
+	constexpr const u8 Adventurer{ Fauna + 1 };
 	constexpr const u8 Mercenary{ Adventurer + 1 };
 
 	constexpr const u8 VisibleSkulker{ Mercenary + 1 };
@@ -96,6 +98,7 @@ namespace necrowarp::indices {
 	constexpr const u8 Pedestal{ Gateway + 1 };
 
 	constexpr const u8 Arrow{ Pedestal + 1 };
+	constexpr const u8 Flora{ Arrow + 1 };
 
-	constexpr const u8 Count{ Arrow + 1 };
+	constexpr const u8 Count{ Flora + 1 };
 } // namespace necrowarp::indices

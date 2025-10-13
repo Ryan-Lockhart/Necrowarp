@@ -90,6 +90,9 @@ namespace necrowarp {
 
 	// neutral creatures
 
+	// a docile creature that grazes on floral growths
+	struct fauna_t;
+
 	// a common adversary that grows off of the flesh the dead
 	struct thetwo_t;
 
@@ -133,6 +136,7 @@ namespace necrowarp {
 		ALL_GOOD_NPCS
 
 	#define ALL_NEUTRAL_NPCS \
+		fauna_t, \
 		thetwo_t
 
 	#define ALL_NEUTRAL \
@@ -228,7 +232,8 @@ namespace necrowarp {
 		Berserker,
 		Hexeater,
 		Paladin,
-		
+
+		Fauna,
 		Thetwo,
 	};
 
@@ -294,6 +299,8 @@ namespace necrowarp {
 				return "hexeater";
 			} case entity_e::Paladin: {
 				return "paladin";
+			} case entity_e::Fauna: {
+				return "fauna";
 			} case entity_e::Thetwo: {
 				return "thetwo";
 			}
@@ -360,6 +367,8 @@ namespace necrowarp {
 				return "hexeaters";
 			} case entity_e::Paladin: {
 				return "paladins";
+			} case entity_e::Fauna: {
+				return "faunae";
 			} case entity_e::Thetwo: {
 				return "thetwo";
 			}
@@ -426,6 +435,8 @@ namespace necrowarp {
 				return mix(colors::Orange, colors::Blue);
 			} case entity_e::Paladin: {
 				return colors::metals::Steel;
+			} case entity_e::Fauna: {
+				return mix(colors::materials::Oak, colors::Green);
 			} case entity_e::Thetwo: {
 				return colors::metals::Brass;
 			}

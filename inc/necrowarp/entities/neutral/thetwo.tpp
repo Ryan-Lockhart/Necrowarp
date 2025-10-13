@@ -143,7 +143,7 @@ namespace necrowarp {
 	template<map_type_e MapType, death_e Death> inline death_info_t<Death> thetwo_t::die(offset_t position) noexcept {
 		++steam_stats::stats<stat_e::ThetwoSlain>;
 
-		const i8 droppings{ static_cast<i8>(protein_value() + protein * ProteinRatio) };
+		const i8 droppings{ protein_value() };
 
 		if (bulk != bulk_e::Neonatal) {
 			if constexpr (Death == death_e::Killed) {

@@ -25,6 +25,7 @@ namespace necrowarp {
 	struct pedestal_t;
 
 	struct arrow_t;
+	struct flora_t;
 
 	#define ALL_CATALYST_OBJECTS \
 		bones_t, \
@@ -42,7 +43,8 @@ namespace necrowarp {
 		pedestal_t
 
 	#define ALL_DEBRIS_OBJECTS \
-		arrow_t
+		arrow_t, \
+		flora_t
 
 	#define ALL_ANIMATED_OBJECTS \
 		metal_t, \
@@ -72,6 +74,7 @@ namespace necrowarp {
 		Pedestal,
 
 		Arrow,
+		Flora,
 	};
 
 	template<plurality_e Plurality = plurality_e::Singular> static constexpr cstr to_string(object_e object) noexcept;
@@ -100,6 +103,8 @@ namespace necrowarp {
 				return "pedestal";
 			} case object_e::Arrow: {
 				return "arrow";
+			} case object_e::Flora: {
+				return "flora";
 			}
 		}
 	}
@@ -128,6 +133,8 @@ namespace necrowarp {
 				return "pedestals";
 			} case object_e::Arrow: {
 				return "arrows";
+			} case object_e::Flora: {
+				return "florae";
 			}
 		}
 	}
@@ -156,6 +163,8 @@ namespace necrowarp {
 				return mix(colors::dark::Blue, colors::Grey);
 			} case object_e::Arrow: {
 				return colors::materials::Willow;
+			} case object_e::Flora: {
+				return mix(colors::materials::Oak, colors::light::Green);
 			}
 		}
 	}
@@ -164,7 +173,7 @@ namespace necrowarp {
 		return runes_t{ to_string<Plurality>(object), to_color(object) };
 	}
 
-	constexpr usize ObjectTypeCount{ static_cast<usize>(object_e::Arrow) };
+	constexpr usize ObjectTypeCount{ static_cast<usize>(object_e::Flora) };
 
 	using object_group_t = u16;
 
@@ -184,6 +193,7 @@ namespace necrowarp {
 		Pedestal = Gateway << 1,
 
 		Arrow = Pedestal << 1,
+		Flora = Arrow << 1,
 	};
 
 	constexpr object_group_e operator+(object_group_e lhs, object_group_e rhs) noexcept { return static_cast<object_group_e>(static_cast<object_group_t>(lhs) | static_cast<object_group_t>(rhs)); }
