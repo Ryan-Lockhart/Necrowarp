@@ -139,11 +139,11 @@ namespace necrowarp {
 	  private:
 		template<tranquility_e Tranquility> static inline i8 dodge_threshold;
 
-		template<> inline i8 dodge_threshold<tranquility_e::Distraught>{ 25 };
-		template<> inline i8 dodge_threshold<tranquility_e::Focused>{ 50 };
-		template<> inline i8 dodge_threshold<tranquility_e::Zen>{ 75 };
+		template<> inline i8 dodge_threshold<tranquility_e::Distraught>{ 10 };
+		template<> inline i8 dodge_threshold<tranquility_e::Focused>{ 40 };
+		template<> inline i8 dodge_threshold<tranquility_e::Zen>{ 99 };
 
-		static inline std::bernoulli_distribution breach_dis{ 0.10 };
+		static inline std::bernoulli_distribution breach_dis{ 0.01 };
 
 		template<RandomEngine Generator> static inline bool breach(ref<Generator> generator) noexcept { return breach_dis(generator); }
 

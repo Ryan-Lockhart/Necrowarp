@@ -12,11 +12,11 @@ namespace necrowarp {
 	constexpr cstr to_string(breed_e breed) noexcept {
 		switch (breed) {
 			case breed_e::Scaly: {
-				return "neonatal";
+				return "scaly";
 			} case breed_e::Shaggy: {
-				return "young";
+				return "shaggy";
 			} case breed_e::Lanky: {
-				return "mature";
+				return "lanky";
 			}
 		}
 	}
