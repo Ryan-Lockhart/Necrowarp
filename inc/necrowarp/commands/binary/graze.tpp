@@ -19,7 +19,7 @@ namespace necrowarp {
 			return;
 		}
 
-		ref<EntityType> grazeer{ *maybe_grazer };
+		ref<EntityType> grazer{ *maybe_grazer };
 
 		const object_e target_object{ determine_target<EntityType>(object_registry<MapType>.at(target_position)) };
 
@@ -29,6 +29,6 @@ namespace necrowarp {
 
 		object_registry<MapType>.dependent remove<flora_t>(target_position);
 
-		grazeer.fatten();
+		grazer.fatten();
 	}
 } // namespace necrowarp
