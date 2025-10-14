@@ -93,7 +93,8 @@ namespace necrowarp {
 		static constexpr i8 MinimumDamage{ 1 };
 		static constexpr i8 MaximumDamage{ 8 };
 
-		static constexpr std::array<entity_e, 29> EntityPriorities{
+		static constexpr std::array<entity_e, 30> EntityPriorities{
+			entity_e::Fauna,
 			entity_e::Player,
 			entity_e::Abomination,
 			entity_e::FleshGolem,
@@ -164,11 +165,22 @@ namespace necrowarp {
 			}
 		}
 
-		static inline std::uniform_int_distribution<u16> bulk_dis{ static_cast<u16>(bulk_e::Neonatal), static_cast<u16>(bulk_e::Titanic) };
+		static inline std::discrete_distribution<u16> bulk_dis{
+			1000.0f,	// neonatal
+			100.0f,		// young
+			10.0f,		// mature
+			1.0f,		// bulky
+			0.0f,		// gross
+			0.0f		// titanic
+		};
 
 		template<RandomEngine Generator> static inline bulk_e random_bulk(ref<Generator> generator) noexcept { return static_cast<bulk_e>(bulk_dis(generator)); }
 
-		static inline std::uniform_int_distribution<u16> breed_dis{ static_cast<u16>(breed_e::Scaly), static_cast<u16>(breed_e::Lanky) };
+		static inline std::discrete_distribution<u16> breed_dis{
+			200.0f,	// scaly
+			10.0f,	// shaggy
+			1.0f,	// lanky
+		};
 
 		template<RandomEngine Generator> static inline breed_e random_breed(ref<Generator> generator) noexcept { return static_cast<breed_e>(breed_dis(generator)); }
 

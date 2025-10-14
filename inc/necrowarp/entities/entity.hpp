@@ -581,6 +581,14 @@ namespace necrowarp {
 
 	template<typename T> concept DocileEntity = Entity<T> && is_docile<T>::value;
 
+	template<typename T> struct is_grazer {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool is_grazer_v = is_grazer<T>::value;
+
+	template<typename T> concept GrazerEntity = Entity<T> && is_grazer<T>::value;
+
 	template<typename T> struct is_fodder {
 		static constexpr bool value = false;
 	};

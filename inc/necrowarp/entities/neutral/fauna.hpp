@@ -11,6 +11,7 @@
 
 #include <necrowarp/constants/enums/bulk.tpp>
 #include <necrowarp/constants/enums/species.tpp>
+#include <random>
 
 namespace necrowarp {
 	using namespace bleak;
@@ -55,6 +56,10 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
+	template<> struct is_grazer<fauna_t> {
+		static constexpr bool value = true;
+	};
+
 	template<> struct is_bleeder<fauna_t> {
 		static constexpr bool value = true;
 		static constexpr fluid_e type = fluid_e::Blood;
@@ -71,27 +76,42 @@ namespace necrowarp {
 	};
 
 	struct fauna_t {
-		const species_e species : 4;
+		const species_e species;
 
 		static constexpr i8 MaximumProtein{ 16 };
+		static constexpr i8 MaximumBowels{ 8 };
 
-		static constexpr std::array<object_e, 1> ObjectPriorities{ object_e::Flesh };
+		static constexpr std::array<object_e, 1> ObjectPriorities{ object_e::Flora };
 
-		static constexpr f16 ProteinRatio{ 0.25f };
-		
+		static constexpr i8 DigestionAmount{ 2 };
+
+		static constexpr f32 DigestionChancePerProtein{ 0.025f };
+
+		static constexpr f32 ProteinRatio{ 0.25f };
+		static constexpr f32 BowelsRatio{ 0.50f };
+
+		static constexpr f32 DefecationChancePerBowels{ 0.0125f };
+
+		static constexpr f32 CrimsonShartChance{ 0.001f };
+
 	private:
 		static inline std::uniform_int_distribution<u16> species_dis{ static_cast<u16>(species_e::SanguineTetrapod), static_cast<u16>(species_e::InfernalHexapod) };
 
 		template<RandomEngine Generator> static inline species_e random_species(ref<Generator> generator) noexcept { return static_cast<species_e>(species_dis(generator)); }
 
 		i8 protein;
+		i8 bowels;
 
 		inline void set_protein(i8 value) noexcept { protein = clamp<i8>(value, 0, max_protein()); }
 
-	public:
-		inline fauna_t(species_e species) noexcept : species{ species }, protein{ 0 } {}
+		inline void set_bowels(i8 value) noexcept { bowels = clamp<i8>(value, 0, max_bowels()); }
 
-		template<RandomEngine Generator> inline fauna_t(ref<Generator> engine) noexcept : species{ random_species(engine) }, protein{ 0 } {}
+		static inline std::bernoulli_distribution crimson_shart_dis{ CrimsonShartChance };
+
+	public:
+		inline fauna_t(species_e species) noexcept : species{ species }, protein{ 0 }, bowels{ 0 } {}
+
+		template<RandomEngine Generator> inline fauna_t(ref<Generator> engine) noexcept : species{ random_species(engine) }, protein{ 0 }, bowels{ 0 } {}
 		
 		inline i8 get_protein() const noexcept { return protein; }
 
@@ -100,6 +120,12 @@ namespace necrowarp {
 		constexpr i8 max_protein() const noexcept { return MaximumProtein; }
 
 		inline i8 protein_value() const noexcept { return static_cast<i8>(protein * ProteinRatio); }
+		
+		inline i8 get_bowels() const noexcept { return bowels; }
+
+		inline bool has_bowels() const noexcept { return bowels > 0; }
+
+		constexpr i8 max_bowels() const noexcept { return MaximumBowels; }
 
 		inline void fatten() noexcept { set_protein(protein + 1); }
 
@@ -107,21 +133,52 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
+		inline bool can_digest() const noexcept { return protein >= DigestionAmount && bowels < max_bowels(); }
+
+		inline bool can_defecate() const noexcept { return bowels > 0; }
+
+		inline bool digest() noexcept {
+			if (!can_digest()) {
+				return false;
+			}
+
+			set_protein(protein - DigestionAmount);
+			set_bowels(bowels + 1);
+
+			return true;
+		}
+
+		template<RandomEngine Generator> inline bool digest(ref<Generator> engine) noexcept {
+			if (!can_digest() || !std::bernoulli_distribution{ protein * DigestionChancePerProtein }(engine)) {
+				return false;
+			}
+
+			set_protein(protein - DigestionAmount);
+			set_bowels(bowels + 1);
+
+			return true;
+		}
+
+		template<map_type_e MapType> inline bool defecate(offset_t position) noexcept;
+
+		template<map_type_e MapType, RandomEngine Generator> inline bool defecate(offset_t position, ref<Generator> engine) noexcept;
+
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 
 		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
-			return std::format("{} [{}/{}]",
+			return std::format("{} [{}/{}, {}/{}]",
 				necrowarp::to_string(species),
-				get_protein(), max_protein()
+				get_protein(), max_protein(),
+				get_bowels(), max_bowels()
 			);
 		}
 
 		inline runes_t to_colored_string() const noexcept {
 			runes_t colored_string{ necrowarp::to_colored_string(species) };
 
-			colored_string.concatenate(runes_t{ std::format(", [{}/{}]", get_protein(), max_protein()) });
+			colored_string.concatenate(runes_t{ std::format(", [{}/{}, {}/{}]", get_protein(), max_protein(), get_bowels(), max_bowels()) });
 
 			return colored_string;
 		}

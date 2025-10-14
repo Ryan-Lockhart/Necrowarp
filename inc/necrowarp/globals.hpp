@@ -365,6 +365,20 @@ namespace necrowarp {
 
 		constexpr i16 FleshPerThetwoPopulation{ 32 };
 
+		constexpr i16 FloraPerFaunaPopulation{ 8 };
+
+		constexpr f32 FloralGrowthChance{ 0.0125f };
+
+		constexpr f32 FlowerDistribution{ 0.4f };
+		constexpr f32 FernDistribution{ 0.2f };
+		constexpr f32 MossDistribution{ 0.2f };
+		constexpr f32 MushroomDistribution{ 0.2f };
+
+		static_assert(
+			FlowerDistribution + FernDistribution + MossDistribution + MushroomDistribution == 1.0,
+			"floral distribution must sum to 100%"
+		);
+
 		constexpr bool CheatsAllowed{ true };
 
 		constexpr bool SpawnTutorialPortal{ false };

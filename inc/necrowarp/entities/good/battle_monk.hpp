@@ -111,7 +111,7 @@ namespace necrowarp {
 
 		static constexpr i8 StartingTranquility{ QiPoint + 1 };
 
-		static constexpr std::array<entity_e, 18> EntityPriorities{
+		static constexpr std::array<entity_e, 19> EntityPriorities{
 			entity_e::Player,
 			entity_e::Skeleton,
 			entity_e::Cultist,
@@ -130,6 +130,7 @@ namespace necrowarp {
 			entity_e::FurtiveHorror,
 			entity_e::Isoscel,
 			entity_e::Thetwo,
+			entity_e::Fauna,
 		};
 
 		static constexpr i8 DeathBoon{ 3 };

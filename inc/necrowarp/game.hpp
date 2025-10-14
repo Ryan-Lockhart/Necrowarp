@@ -340,7 +340,7 @@ namespace necrowarp {
 				}
 
 				if constexpr (Target == object_e::Crevice) {
-					if (entity_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, ALL_NON_NEUTRAL>(position)) {
+					if (entity_registry<MapType>.dependent nearby<distance_function_e::Chebyshev, ALL_ENTITIES>(position)) {
 						continue;
 					}
 				}
@@ -521,7 +521,7 @@ namespace necrowarp {
 			}, static_cast<entity_e>(static_cast<usize>(entity_e::Adventurer) + offmap_dis(random_engine)));
 		}
 
-		template<map_type_e MapType> static inline bool spawn_neutral() noexcept {
+		template<map_type_e MapType> static inline bool spawn_predator() noexcept {
 			cauto maybe_spawn = find_spawn_position<MapType, object_e::Crevice>();
 
 			if (!maybe_spawn.has_value()) {
@@ -530,7 +530,21 @@ namespace necrowarp {
 
 			const offset_t spawn_position{ maybe_spawn.value() };
 
-			entity_registry<MapType>.dependent add<true>(spawn_position, thetwo_t{});
+			entity_registry<MapType>.dependent add<true>(spawn_position, thetwo_t{ random_engine });
+
+			return true;
+		}
+
+		template<map_type_e MapType> static inline bool spawn_prey() noexcept {
+			cauto maybe_spawn = find_spawn_position<MapType, object_e::Crevice>();
+
+			if (!maybe_spawn.has_value()) {
+				return false;
+			}
+
+			const offset_t spawn_position{ maybe_spawn.value() };
+
+			entity_registry<MapType>.dependent add<true>(spawn_position, fauna_t{ random_engine });
 
 			return true;
 		}

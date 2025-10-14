@@ -44,7 +44,7 @@ namespace necrowarp {
 	  	static constexpr i8 ProteinValue{ 1 };
 
 	  private:
-		static inline std::uniform_int_distribution<u16> bloomage_dis{ static_cast<u16>(bloomage_e::SanguineBush), static_cast<u16>(bloomage_e::InfernalMoss) };
+		static inline std::uniform_int_distribution<u16> bloomage_dis{ static_cast<u16>(bloomage_e::SanguineFlower), static_cast<u16>(bloomage_e::InfernalMushroom) };
 
 		template<RandomEngine Generator> static inline bloomage_e random_bloomage(ref<Generator> generator) noexcept { return static_cast<bloomage_e>(bloomage_dis(generator)); }
 

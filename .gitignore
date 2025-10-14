@@ -25,6 +25,7 @@
 .cache/*
 
 build/**/*
+install/**/*
 
 bin/*
 test/test_runner

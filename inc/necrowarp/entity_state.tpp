@@ -1540,6 +1540,28 @@ namespace necrowarp {
 			object_registry<MapType>.dependent remove<bones_t>(position);
 		}
 
+		for (cauto position : fluid_map<MapType>.dependent offsets<region_e::Interior>) {
+			const fluid_e fluid{ static_cast<fluid_e>(fluid_map<MapType>[position]) };
+
+			if (game_map<MapType>[position].solid || object_registry<MapType>.dependent contains<flora_t>(position) || fluid == fluid_e::None) {
+				continue;
+			}
+
+			static std::bernoulli_distribution floral_growth_dis{ globals::FloralGrowthChance };
+
+			if (!floral_growth_dis(random_engine)) {
+				continue;
+			}
+
+			const std::optional<bloomage_e> maybe_bloom{ random_bloom(random_engine, fluid) };
+
+			if (!maybe_bloom.has_value()) {
+				continue;
+			}
+
+			object_registry<MapType>.add(position, flora_t{ maybe_bloom.value() });
+		}
+
 		steam_stats::store();
 	}
 

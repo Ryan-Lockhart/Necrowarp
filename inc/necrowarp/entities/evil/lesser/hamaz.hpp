@@ -90,7 +90,7 @@ namespace necrowarp {
 		static constexpr f16 EnhancedHealthMultiplier{ 2.0f };
 		static constexpr f16 EnhancedDamageMultiplier{ 1.5f };
 
-		static constexpr std::array<entity_e, 13> EntityPriorities{
+		static constexpr std::array<entity_e, 14> EntityPriorities{
 			entity_e::Adventurer,
 			entity_e::Mercenary,
 			entity_e::Ranger,
@@ -104,6 +104,7 @@ namespace necrowarp {
 			entity_e::Hexeater,
 			entity_e::Paladin,
 			entity_e::Thetwo,
+			entity_e::Fauna,
 		};
 
 	private:

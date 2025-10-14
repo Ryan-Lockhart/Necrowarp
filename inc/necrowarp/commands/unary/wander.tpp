@@ -86,10 +86,24 @@ namespace necrowarp {
 			return;
 		}
 
-		entity_registry<MapType>.dependent update<EntityType>(source_position, wander_pos.value());
+		const offset_t target_position{ wander_pos.value() };
+
+		entity_registry<MapType>.dependent update<EntityType>(source_position, target_position);
+
+		if constexpr (is_grazer<EntityType>::value) {
+			ptr<EntityType> entity{ entity_registry<MapType>.dependent at<EntityType>(target_position) };
+
+			if (entity == nullptr) {
+				return;
+			}
+
+			entity->digest(random_engine);
+
+			entity->dependent defecate<MapType>(target_position, random_engine);
+		}
 
 		if constexpr (is_player<EntityType>::value) {
-			steam_stats::stats<stat_e::MetersMoved> += offset_t::distance<f32>(source_position, wander_pos.value());
+			steam_stats::stats<stat_e::MetersMoved> += offset_t::distance<f32>(source_position, target_position);
 		}
 	}
 } // namespace necrowarp

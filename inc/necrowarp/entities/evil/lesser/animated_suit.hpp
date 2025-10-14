@@ -70,7 +70,7 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 3 };
 		static constexpr i8 MaximumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 13> EntityPriorities{
+		static constexpr std::array<entity_e, 14> EntityPriorities{
 			entity_e::Paladin,
 			entity_e::Hexeater,
 			entity_e::Berserker,
@@ -84,6 +84,7 @@ namespace necrowarp {
 			entity_e::MistLady,
 			entity_e::Adventurer,
 			entity_e::Thetwo,
+			entity_e::Fauna,
 		};
 
 		static constexpr galvanisation_e default_galvanisation{ galvanisation_e::Twisted };

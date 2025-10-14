@@ -485,10 +485,18 @@ namespace necrowarp {
 			}
 		}
 
-		const usize thetwo_target{ object_registry<MapType>.dependent count<flesh_t>() / globals::FleshPerThetwoPopulation };
+		const usize prey_target{ object_registry<MapType>.dependent count<flora_t>() / globals::FloraPerFaunaPopulation };
 
-		while (entity_registry<MapType>.dependent count<thetwo_t>() < thetwo_target) {
-			if (!spawn_neutral<MapType>()) {
+		while (entity_registry<MapType>.dependent count<fauna_t>() < prey_target) {
+			if (!spawn_prey<MapType>()) {
+				break;
+			}
+		}
+
+		const usize predator_target{ object_registry<MapType>.dependent count<flesh_t>() / globals::FleshPerThetwoPopulation };
+
+		while (entity_registry<MapType>.dependent count<thetwo_t>() < predator_target) {
+			if (!spawn_predator<MapType>()) {
 				break;
 			}
 		}
