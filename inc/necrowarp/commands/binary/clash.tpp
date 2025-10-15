@@ -207,11 +207,11 @@ namespace necrowarp {
 			}
 		}
 
-		i8 damage{ victim.get_damage(to_entity_enum<InitiatorType>::value) };
+		i32 damage{ victim.get_damage(to_entity_enum<InitiatorType>::value) };
 
 		if constexpr (is_encouragable<VictimType>::value) {
 			if (entity_goal_map<MapType, banner_bearer_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(source_position) <= banner_bearer_t::EffectRadius) {
-				damage = max<i8>(damage * banner_bearer_t::EffectDamageMultiplier, 1);
+				damage = max<i32>(damage * banner_bearer_t::EffectDamageMultiplier, 1);
 			}
 		}
 
@@ -327,11 +327,11 @@ namespace necrowarp {
 			}
 		}
 
-		i8 damage{ initiator.get_damage(to_entity_enum<VictimType>::value) };
+		i32 damage{ initiator.get_damage(to_entity_enum<VictimType>::value) };
 
 		if constexpr (is_encouragable<InitiatorType>::value) {
 			if (entity_goal_map<MapType, banner_bearer_t>.dependent average<region_e::Interior, distance_function_e::Chebyshev>(source_position) <= banner_bearer_t::EffectRadius) {
-				damage = max<i8>(damage * banner_bearer_t::EffectDamageMultiplier, 1);
+				damage = max<i32>(damage * banner_bearer_t::EffectDamageMultiplier, 1);
 			}
 		}
 

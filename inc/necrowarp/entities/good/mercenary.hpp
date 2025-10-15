@@ -67,6 +67,11 @@ namespace necrowarp {
 
 		static constexpr i8 MaximumDamageReceived{ 2 };
 
+		static constexpr affliction_e AfflictionEquilibrium{ affliction_e::Stable };
+
+		static constexpr f32 BaseDemoralizeChance{ 0.2f };
+		static constexpr f32 BaseEmboldenChance{ 0.1f };
+
 		static constexpr std::array<entity_e, 19> EntityPriorities{
 			entity_e::Player,
 			entity_e::Skeleton,

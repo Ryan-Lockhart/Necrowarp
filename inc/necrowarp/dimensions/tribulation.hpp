@@ -66,9 +66,9 @@ namespace necrowarp {
 		
 		const disposition_e current_disposition{ get_patron_disposition(player.patron) };
 		
-		const i16 gateway_count{ game_stats.current_gateways() };
+		const i32 gateway_count{ game_stats.current_gateways() };
 
-		for (i16 i{ 0 }; i < gateway_count; ++i) {
+		for (i32 i{ 0 }; i < gateway_count; ++i) {
 			cauto gateway_position{ object_goal_map<MapType, gateway_t>.dependent find_random<region_e::Interior>(game_map<MapType>, random_engine, cell_e::Open, object_registry<MapType>, globals::MinimumGatewayDistance) };
 
 			if (!gateway_position.has_value()) {

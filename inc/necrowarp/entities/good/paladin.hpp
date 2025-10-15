@@ -103,9 +103,9 @@ namespace necrowarp {
 
 	constexpr color_t to_color(zeal_e zeal) noexcept {
 		switch (zeal) {
-			 case zeal_e::Vengeant: {
+			case zeal_e::Vengeant: {
 				return colors::Red;
-			}case zeal_e::Downtrodden: {
+			} case zeal_e::Downtrodden: {
 				return colors::dark::Orange;
 			} case zeal_e::Fallen: {
 				return colors::Orange;
@@ -135,6 +135,11 @@ namespace necrowarp {
 		static constexpr i8 MinimumDamage{ 2 };
 		static constexpr i8 MiddlingDamage{ 4 };
 		static constexpr i8 MaximumDamage{ 6 };
+
+		static constexpr affliction_e AfflictionEquilibrium{ affliction_e::Resolute };
+
+		static constexpr f32 BaseDemoralizeChance{ 0.25f };
+		static constexpr f32 BaseEmboldenChance{ 0.125f };
 
 		static constexpr std::array<entity_e, 19> EntityPriorities{
 			entity_e::Player,
@@ -219,10 +224,18 @@ namespace necrowarp {
 			switch (zeal) {
 				case zeal_e::Vengeant: {
 					return indices::VengeantPaladin;
+				} case zeal_e::Downtrodden: {
+					return indices::DowntroddenPaladin;
+				} case zeal_e::Fallen: {
+					return indices::FallenPaladin;
+				} case zeal_e::Alacritous: {
+					return indices::AlacritousPaladin;
+				} case zeal_e::Righteous: {
+					return indices::RighteousPaladin;
+				} case zeal_e::Zealous: {
+					return indices::ZealousPaladin;
 				} case zeal_e::Ascendant: {
 					return indices::AscendantPaladin;
-				} default: {
-					return indices::Paladin;
 				}
 			}
 		}
@@ -343,21 +356,21 @@ namespace necrowarp {
 		template<map_type_e MapType, death_e Death> inline death_info_t<Death> die(offset_t position) noexcept;
 
 		inline std::string to_string() const noexcept {
-			return std::format("{} ({}) [{}/{}]",
-				necrowarp::to_string(entity_e::Paladin),
+			return std::format("{} {} [{}/{}]",
 				necrowarp::to_string(zeal),
+				necrowarp::to_string(entity_e::Paladin),
 				get_health(),
 				max_health()
 			);
 		}
 
 		inline runes_t to_colored_string() const noexcept {
-			runes_t colored_string{ necrowarp::to_colored_string(entity_e::Paladin) };
+			runes_t colored_string{ necrowarp::to_colored_string(zeal) };
 
 			colored_string
-				.concatenate(runes_t{" (" })
-				.concatenate(necrowarp::to_colored_string(zeal))
-				.concatenate(runes_t{ std::format(") [{}/{}]", get_health(), max_health()) });
+				.concatenate(runes_t{" " })
+				.concatenate(necrowarp::to_colored_string(entity_e::Paladin))
+				.concatenate(runes_t{ std::format(" [{}/{}]", get_health(), max_health()) });
 			
 			return colored_string;
 		}

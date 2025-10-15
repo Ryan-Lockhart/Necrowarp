@@ -321,10 +321,10 @@ namespace necrowarp {
 			player_statuses[3].current_value = player.get_divinity();
 			player_statuses[3].max_value = player.max_divinity();
 
-			const i8 kills_energy{ game_stats.kills_until_next_energy_slot() };
-			const i8 kills_armor{ game_stats.kills_until_next_armor_slot() };
-			const i8 kills_phantasm{ game_stats.kills_until_next_phantasm_turn() };
-			const i8 kills_divinity{ game_stats.kills_until_next_divinity_turn() };
+			const i32 kills_energy{ game_stats.kills_until_next_energy_slot() };
+			const i32 kills_armor{ game_stats.kills_until_next_armor_slot() };
+			const i32 kills_phantasm{ game_stats.kills_until_next_phantasm_turn() };
+			const i32 kills_divinity{ game_stats.kills_until_next_divinity_turn() };
 
 			show_advancement = player_statuses.is_hovered() || advancement_label.is_hovered();
 

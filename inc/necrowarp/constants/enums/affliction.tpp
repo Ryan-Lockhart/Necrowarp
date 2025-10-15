@@ -11,7 +11,9 @@ namespace necrowarp {
 
 	static constexpr cstr to_string(affliction_e affliction) noexcept {
 		switch (affliction) {
-			case affliction_e::Resolute: {
+			case affliction_e::Dauntless: {
+				return "dauntless";
+			} case affliction_e::Resolute: {
 				return "resolute";
 			} case affliction_e::Stable: {
 				return "stable";
@@ -27,8 +29,10 @@ namespace necrowarp {
 	
 	static constexpr color_t to_color(affliction_e affliction) noexcept {
 		switch (affliction) {
-			case affliction_e::Resolute: {
+			case affliction_e::Dauntless: {
 				return colors::metals::Gold;
+			} case affliction_e::Resolute: {
+				return colors::light::Blue;
 			} case affliction_e::Stable: {
 				return colors::Green;
 			} case affliction_e::Wavering: {

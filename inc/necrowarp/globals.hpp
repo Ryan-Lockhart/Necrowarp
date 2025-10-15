@@ -285,11 +285,11 @@ namespace necrowarp {
 		template<> inline offset_t::scalar_t camera_speed<map_type_e::Standard>{ 4 };
 		template<> inline offset_t::scalar_t camera_speed<map_type_e::Pocket>{ 2 };
 
-		constexpr u32 ViewDistance{ 8 };
-		constexpr f64 ViewSpawn{ 135.0 };
+		constexpr i32 ViewDistance{ 8 };
+		constexpr f32 ViewSpawn{ 135.0f };
 
 		struct map_config_t {
-			f64 fill_percent;
+			f32 fill_percent;
 			u32 automata_iterations;
 			u32 automata_threshold;
 		};
@@ -324,50 +324,54 @@ namespace necrowarp {
 
 		static inline bool rush_mode_toggle{ false };
 
-		constexpr i16 MinimumDepth{ 0 };
-		constexpr i16 MaximumDepth{ 999 };
+		constexpr i32 MinimumDepth{ 0 };
+		constexpr i32 MaximumDepth{ 999 };
 
 		constexpr f32 MinimumDepthMultiplier{ 1.0f };
 		constexpr f32 MaximumDepthMultiplier{ 10.0f };
 
-		constexpr i16 StartingBones{ 32 };
+		constexpr i32 StartingBones{ 32 };
 
-		constexpr i16 MinimumBoneDistance{ 8 };
+		constexpr i32 MinimumBoneDistance{ 8 };
 
-		constexpr i16 StartingCrevices{ 4 };
+		constexpr i32 StartingCrevices{ 4 };
 
-		constexpr i16 MinimumCreviceDistance{ 16 };
+		constexpr i32 MinimumCreviceDistance{ 16 };
 	
-		constexpr i16 StartingUpLadders{ 16 };
-		constexpr i16 StartingDownLadders{ 8 };
+		constexpr i32 StartingUpLadders{ 16 };
+		constexpr i32 StartingDownLadders{ 8 };
 
-		constexpr i16 MinimumLadderDistance{ 8 };
+		constexpr i32 MinimumLadderDistance{ 8 };
 
 		constexpr f32 MinimumWaveSizeMultiplier{ 0.5f };
 		constexpr f32 MaximumWaveSizeMultiplier{ 4.0f };
 
-		constexpr i16 KillsPerPopulation{ 4 };
+		constexpr i32 KillsPerPopulation{ 4 };
 
-		constexpr i16 KillsPerEnergySlot{ 16 };
-		constexpr i16 KillsPerArmorSlot{ 8 };
-		constexpr i16 KillsPerDivinityTurn{ 64 };
-		constexpr i16 KillsPerPhantasmTurn{ 32 };
+		constexpr i32 KillsPerEnergySlot{ 16 };
+		constexpr i32 KillsPerArmorSlot{ 8 };
+		constexpr i32 KillsPerDivinityTurn{ 64 };
+		constexpr i32 KillsPerPhantasmTurn{ 32 };
 
-		constexpr i16 MinimumReinforcements{ 0 };
-		constexpr i16 MaximumReinforcements{ 8 };
+		constexpr i32 MinimumReinforcements{ 0 };
+		constexpr i32 MaximumReinforcements{ 8 };
 
-		constexpr i16 FloorsPerReinforcement{ 2 };
+		constexpr i32 FloorsPerReinforcement{ 2 };
 
-		constexpr i16 MinimumDepartureEpoch{ 3 };
-		constexpr i16 MaximumDepartureEpoch{ 12 };
+		constexpr i32 MinimumDepartureEpoch{ 3 };
+		constexpr i32 MaximumDepartureEpoch{ 12 };
 
-		constexpr i16 FloorsPerDepartureEpoch{ 4 };
+		constexpr i32 FloorsPerDepartureEpoch{ 4 };
 
-		constexpr i16 FleshPerThetwoPopulation{ 32 };
+		constexpr bool EnableEcosystem{ false };
 
-		constexpr i16 FloraPerFaunaPopulation{ 8 };
+		constexpr i32 FleshPerThetwoPopulation{ 32 };
+		constexpr i32 FaunaPerThetwoPopulation{ 4 };
 
-		constexpr f32 FloralGrowthChance{ 0.0125f };
+		constexpr i32 FloraPerFaunaPopulation{ 8 };
+
+		// flora has a 1.25% chance to grow from fluid every one thousand turns
+		constexpr f32 FloralGrowthChance{ 0.0125f / 1000.0f };
 
 		constexpr f32 FlowerDistribution{ 0.4f };
 		constexpr f32 FernDistribution{ 0.2f };
@@ -387,20 +391,25 @@ namespace necrowarp {
 		constexpr bool EnableTribulationPortal{ true };
 		constexpr bool EnableAudiencePortal{ false };
 
-		constexpr f64 BoonPortalChance{ 0.02 };
-		constexpr f64 TribulationPortalChance{ 0.10 };
-		constexpr f64 AudiencePortalChance{ 0.01 };
+		// a portal to a boon has a 50% chance every ten levels
+		constexpr f32 BoonPortalChance{ 0.50f / 10.0f };
 
-		constexpr i16 MinimumApproximateTideSize{ 32 };
-		constexpr i16 MaximumApproximateTideSize{ 128 };
+		// a portal to tribulation has a 75% chance every ten levels
+		constexpr f32 TribulationPortalChance{ 0.75f / 10.0f };
 
-		constexpr i16 MinimumGateways{ 2 };
-		constexpr i16 MaximumGateways{ 32 };
+		// a portal to an audience has a 25% chance every ten levels
+		constexpr f32 AudiencePortalChance{ 0.25f / 10.0f };
 
-		constexpr i16 KillsPerGateway{ 128 };
-		constexpr i16 FloorsPerGateway{ 3 };
+		constexpr i32 MinimumApproximateTideSize{ 32 };
+		constexpr i32 MaximumApproximateTideSize{ 128 };
 
-		constexpr i16 MinimumGatewayDistance{ 8 };
+		constexpr i32 MinimumGateways{ 2 };
+		constexpr i32 MaximumGateways{ 32 };
+
+		constexpr i32 KillsPerGateway{ 128 };
+		constexpr i32 FloorsPerGateway{ 3 };
+
+		constexpr i32 MinimumGatewayDistance{ 8 };
 
 		static inline std::bernoulli_distribution boon_portal_chance{ BoonPortalChance };
 		static inline std::bernoulli_distribution tribulation_portal_chance{ TribulationPortalChance };
@@ -416,8 +425,8 @@ namespace necrowarp {
 
 		static inline std::uniform_real_distribution<f32> fluid_pool_dis{ FluidPoolMinimumVolume, FluidPoolMaximumVolume };
 
-		constexpr i8 MinimumCatalyst{ 4 };
-		constexpr i8 MaximumCatalyst{ 9 };
+		constexpr i32 MinimumCatalyst{ 4 };
+		constexpr i32 MaximumCatalyst{ 9 };
 
 		template<typename T> struct has_unique_descriptor {
 			static constexpr bool value = false;

@@ -104,10 +104,10 @@ namespace necrowarp {
 
 	struct battle_monk_t {
 		static constexpr i8 MaximumHealth{ 1 };
-		static constexpr i8 MaximumDamage{ 1 };
+		static constexpr i8 MaximumDamage{ 2 };
 
 		static constexpr i8 QiPoint{ 2 };
-		static constexpr i8 MaximumQi{ 6 };
+		static constexpr i8 MaximumQi{ 8 };
 
 		static constexpr i8 StartingTranquility{ QiPoint + 1 };
 
@@ -137,14 +137,17 @@ namespace necrowarp {
 
 		static constexpr i8 ProteinValue{ 1 };
 
+		// battle monk has a 25% chance to breach a gate every ten turns of meditation (2.5% every meditation)
+		static constexpr f32 BreachChance{ 0.25f / 10.0f };
+
 	  private:
 		template<tranquility_e Tranquility> static inline i8 dodge_threshold;
 
-		template<> inline i8 dodge_threshold<tranquility_e::Distraught>{ 10 };
-		template<> inline i8 dodge_threshold<tranquility_e::Focused>{ 40 };
+		template<> inline i8 dodge_threshold<tranquility_e::Distraught>{ 33 };
+		template<> inline i8 dodge_threshold<tranquility_e::Focused>{ 66 };
 		template<> inline i8 dodge_threshold<tranquility_e::Zen>{ 99 };
 
-		static inline std::bernoulli_distribution breach_dis{ 0.01 };
+		static inline std::bernoulli_distribution breach_dis{ BreachChance };
 
 		template<RandomEngine Generator> static inline bool breach(ref<Generator> generator) noexcept { return breach_dis(generator); }
 

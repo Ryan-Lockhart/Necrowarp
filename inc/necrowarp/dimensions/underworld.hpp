@@ -81,10 +81,12 @@ namespace necrowarp {
 			}
 		}
 
-		object_registry<MapType>.dependent spawn<crevice_t>(
-			static_cast<usize>(globals::StartingCrevices),
-			static_cast<u32>(globals::MinimumCreviceDistance)
-		);
+		if constexpr (globals::EnableEcosystem) {
+			object_registry<MapType>.dependent spawn<crevice_t>(
+				static_cast<usize>(globals::StartingCrevices),
+				static_cast<u32>(globals::MinimumCreviceDistance)
+			);
+		}
 
 		object_registry<MapType>.dependent spawn<ladder_t>(
 			static_cast<usize>(globals::StartingUpLadders),
@@ -260,10 +262,12 @@ namespace necrowarp {
 			}
 		}
 
-		object_registry<MapType>.dependent spawn<crevice_t>(
-			static_cast<usize>(globals::StartingCrevices),
-			static_cast<u32>(globals::MinimumCreviceDistance)
-		);
+		if constexpr (globals::EnableEcosystem) {
+			object_registry<MapType>.dependent spawn<crevice_t>(
+				static_cast<usize>(globals::StartingCrevices),
+				static_cast<u32>(globals::MinimumCreviceDistance)
+			);
+		}
 
 		i16 num_up_ladders_needed{ globals::StartingUpLadders };
 
@@ -355,10 +359,13 @@ namespace necrowarp {
 			}
 		}
 
-		object_registry<MapType>.dependent spawn<crevice_t>(
-			static_cast<usize>(globals::StartingCrevices),
-			static_cast<u32>(globals::MinimumCreviceDistance)
-		);
+		
+		if constexpr (globals::EnableEcosystem) {
+			object_registry<MapType>.dependent spawn<crevice_t>(
+				static_cast<usize>(globals::StartingCrevices),
+				static_cast<u32>(globals::MinimumCreviceDistance)
+			);
+		}
 
 		object_registry<MapType>.dependent spawn<ladder_t>(
 			static_cast<usize>(globals::StartingUpLadders),
@@ -485,19 +492,26 @@ namespace necrowarp {
 			}
 		}
 
-		const usize prey_target{ object_registry<MapType>.dependent count<flora_t>() / globals::FloraPerFaunaPopulation };
+		if constexpr (globals::EnableEcosystem) {
+			const usize prey_target{ object_registry<MapType>.dependent count<flora_t>() / globals::FloraPerFaunaPopulation };
 
-		while (entity_registry<MapType>.dependent count<fauna_t>() < prey_target) {
-			if (!spawn_prey<MapType>()) {
-				break;
+			while (entity_registry<MapType>.dependent count<fauna_t>() < prey_target) {
+				if (!spawn_prey<MapType>()) {
+					break;
+				}
 			}
-		}
 
-		const usize predator_target{ object_registry<MapType>.dependent count<flesh_t>() / globals::FleshPerThetwoPopulation };
+			const usize predator_target{
+				max<usize>(
+					object_registry<MapType>.dependent count<flesh_t>() / globals::FleshPerThetwoPopulation,
+					entity_registry<MapType>.dependent count<fauna_t>() / globals::FaunaPerThetwoPopulation
+				)
+			};
 
-		while (entity_registry<MapType>.dependent count<thetwo_t>() < predator_target) {
-			if (!spawn_predator<MapType>()) {
-				break;
+			while (entity_registry<MapType>.dependent count<thetwo_t>() < predator_target) {
+				if (!spawn_predator<MapType>()) {
+					break;
+				}
 			}
 		}
 	}

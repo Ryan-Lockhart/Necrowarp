@@ -33,6 +33,25 @@
 				}
 			},
 			{
+				"name": "(lldb) Launch Debug (optimized)",
+				"type": "lldb",
+				"request": "launch",
+				"windows": {
+					"program": "install/windows/x86_64/debugoptimized/necrowarp.exe",
+					"cwd": "install/windows/x86_64/debugoptimized",
+				},
+				"linux": {
+					"program": "install/linux/x86_64/debugoptimized/necrowarp",
+					"cwd": "install/linux/x86_64/debugoptimized",
+				},
+				"expressions": "native",
+				"presentation": {
+					"hidden": false,
+					"group": "launch",
+					"order": 1
+				}
+			},
+			{
 				"name": "(lldb) Launch Release",
 				"type": "lldb",
 				"request": "launch",
@@ -108,7 +127,7 @@
 						"--cross-file",
 						"cross/x86_64-windows-debug.ini",
 						"--buildtype",
-						"debug",
+						"debugoptimized",
 						"--wipe"
 					],
 				},
@@ -124,7 +143,7 @@
 						"--cross-file",
 						"cross/x86_64-linux-debug.ini",
 						"--buildtype",
-						"debug",
+						"debugoptimized",
 						"--wipe",
 						"-Dpkg_config_path=/usr/local/lib/pkgconfig",
 						"-Dcmake_prefix_path=/usr/local/lib/cmake"

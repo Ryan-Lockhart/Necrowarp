@@ -144,20 +144,20 @@ namespace necrowarp {
 	};
 
 	struct game_stats_t {
-		template<wave_size_e Size> static constexpr i16 WaveSize{ 0 };
+		template<wave_size_e Size> static constexpr i32 WaveSize{ 0 };
 	
-		template<> inline constexpr i16 WaveSize<wave_size_e::Miniscule>{ 4 };
-		template<> inline constexpr i16 WaveSize<wave_size_e::Tiny>{ 8 };
-		template<> inline constexpr i16 WaveSize<wave_size_e::Small>{ 16 };
-		template<> inline constexpr i16 WaveSize<wave_size_e::Medium>{ 32 };
-		template<> inline constexpr i16 WaveSize<wave_size_e::Large>{ 64 };
-		template<> inline constexpr i16 WaveSize<wave_size_e::Huge>{ 128 };
-		template<> inline constexpr i16 WaveSize<wave_size_e::Massive>{ 256 };
+		template<> inline constexpr i32 WaveSize<wave_size_e::Miniscule>{ 4 };
+		template<> inline constexpr i32 WaveSize<wave_size_e::Tiny>{ 8 };
+		template<> inline constexpr i32 WaveSize<wave_size_e::Small>{ 16 };
+		template<> inline constexpr i32 WaveSize<wave_size_e::Medium>{ 32 };
+		template<> inline constexpr i32 WaveSize<wave_size_e::Large>{ 64 };
+		template<> inline constexpr i32 WaveSize<wave_size_e::Huge>{ 128 };
+		template<> inline constexpr i32 WaveSize<wave_size_e::Massive>{ 256 };
 	
-		static constexpr i16 MinimumWaveSize{ WaveSize<wave_size_e::Miniscule> };
-		static constexpr i16 MaximumWaveSize{ WaveSize<wave_size_e::Massive> };
+		static constexpr i32 MinimumWaveSize{ WaveSize<wave_size_e::Miniscule> };
+		static constexpr i32 MaximumWaveSize{ WaveSize<wave_size_e::Massive> };
 	
-		static constexpr i16 StartingWaveSize{ 4 };
+		static constexpr i32 StartingWaveSize{ 4 };
 
 		static constexpr u16 SpawnDistributionLow{ 0 };
 		static constexpr u16 SpawnDistributionHigh{ 100 };
@@ -194,42 +194,42 @@ namespace necrowarp {
 
 		usize spawns_remaining{ static_cast<usize>(StartingWaveSize) };
 
-		inline usize has_spawns() const noexcept { return spawns_remaining > 0; }
+		inline bool has_spawns() const noexcept { return spawns_remaining > 0; }
 
-		i16	player_kills{ 0 };
-		i16	minion_kills{ 0 };
+		i32	player_kills{ 0 };
+		i32	minion_kills{ 0 };
 
-		f16 liters_of_blood{ 0.0f };
-		f16 liters_of_ichor{ 0.0f };
-		f16 liters_of_filth{ 0.0f };
-		f16 liters_of_ectoplasm{ 0.0f };
+		f32 liters_of_blood{ 0.0f };
+		f32 liters_of_ichor{ 0.0f };
+		f32 liters_of_filth{ 0.0f };
+		f32 liters_of_ectoplasm{ 0.0f };
 
-		inline f16 liters_of_fluid() const noexcept { return liters_of_blood + liters_of_ichor + liters_of_filth + liters_of_ectoplasm; }
+		inline f32 liters_of_fluid() const noexcept { return liters_of_blood + liters_of_ichor + liters_of_filth + liters_of_ectoplasm; }
 
-		i16 piles_of_bone{ 0 };
-		i16 piles_of_flesh{ 0 };
-		i16 piles_of_metal{ 0 };
-		i16 piles_of_cerebra{ 0 };
+		i32 piles_of_bone{ 0 };
+		i32 piles_of_flesh{ 0 };
+		i32 piles_of_metal{ 0 };
+		i32 piles_of_cerebra{ 0 };
 
-		inline i16 piles_of_catalyst() const noexcept { return piles_of_bone + piles_of_flesh + piles_of_metal + piles_of_cerebra; }
+		inline i32 piles_of_catalyst() const noexcept { return piles_of_bone + piles_of_flesh + piles_of_metal + piles_of_cerebra; }
 
-		inline i16 total_kills() const noexcept { return player_kills + minion_kills; };
+		inline i32 total_kills() const noexcept { return player_kills + minion_kills; };
 
-		inline void update_wave_size() noexcept { wave_size = clamp(static_cast<i16>(StartingWaveSize + total_kills() / globals::KillsPerPopulation), MinimumWaveSize, MaximumWaveSize); }
+		inline void update_wave_size() noexcept { wave_size = clamp(static_cast<i32>(StartingWaveSize + total_kills() / globals::KillsPerPopulation), MinimumWaveSize, MaximumWaveSize); }
 
-		inline i8 kills_until_next_energy_slot() const noexcept { return abs(minion_kills % globals::KillsPerEnergySlot - globals::KillsPerEnergySlot); }
+		inline i32 kills_until_next_energy_slot() const noexcept { return abs(minion_kills % globals::KillsPerEnergySlot - globals::KillsPerEnergySlot); }
 
-		inline i8 kills_until_next_armor_slot() const noexcept { return abs(player_kills % globals::KillsPerArmorSlot - globals::KillsPerArmorSlot); }
+		inline i32 kills_until_next_armor_slot() const noexcept { return abs(player_kills % globals::KillsPerArmorSlot - globals::KillsPerArmorSlot); }
 
-		inline i8 kills_until_next_divinity_turn() const noexcept { return abs(total_kills() % globals::KillsPerDivinityTurn - globals::KillsPerDivinityTurn); }
+		inline i32 kills_until_next_divinity_turn() const noexcept { return abs(total_kills() % globals::KillsPerDivinityTurn - globals::KillsPerDivinityTurn); }
 		
-		inline i8 kills_until_next_phantasm_turn() const noexcept { return abs(total_kills() % globals::KillsPerPhantasmTurn - globals::KillsPerPhantasmTurn); }
+		inline i32 kills_until_next_phantasm_turn() const noexcept { return abs(total_kills() % globals::KillsPerPhantasmTurn - globals::KillsPerPhantasmTurn); }
 
-		inline i16 current_reinforcements() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerReinforcement, globals::MinimumReinforcements, globals::MaximumReinforcements); }
+		inline i32 current_reinforcements() const noexcept { return clamp<i32>(game_depth / globals::FloorsPerReinforcement, globals::MinimumReinforcements, globals::MaximumReinforcements); }
 
-		inline i16 current_departure_epoch() const noexcept { return clamp<i16>(game_depth / globals::FloorsPerDepartureEpoch, globals::MinimumDepartureEpoch, globals::MaximumDepartureEpoch); }
+		inline i32 current_departure_epoch() const noexcept { return clamp<i32>(game_depth / globals::FloorsPerDepartureEpoch, globals::MinimumDepartureEpoch, globals::MaximumDepartureEpoch); }
 
-		inline i16 current_gateways() const noexcept { return clamp<i16>((game_depth / globals::FloorsPerGateway) + (total_kills() / globals::KillsPerGateway), globals::MinimumGateways, globals::MaximumGateways); }
+		inline i32 current_gateways() const noexcept { return clamp<i32>((game_depth / globals::FloorsPerGateway) + (total_kills() / globals::KillsPerGateway), globals::MinimumGateways, globals::MaximumGateways); }
 		
 		inline bool has_reinforcements() const noexcept { return current_reinforcements() > 0; }
 

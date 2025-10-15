@@ -479,7 +479,13 @@ namespace necrowarp {
 			const offset_t spawn_position{ maybe_spawn.value() };
 
 			if constexpr (globals::OopsAllEnabled) {
-				return entity_registry<MapType>.dependent add<true>(spawn_position, to_entity_type<globals::OopsAllEnum>::type{});
+				using entity_type = to_entity_type<globals::OopsAllEnum>::type;
+
+				if constexpr (is_same<paladin_t, entity_type>::value) {
+					return entity_registry<MapType>.dependent add<true>(spawn_position, paladin_t{ random_engine });
+				} else {
+					return entity_registry<MapType>.dependent add<true>(spawn_position, entity_type{});
+				}
 			}
 
 			magic_enum::enum_switch([&](auto val) {

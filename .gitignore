@@ -31,3 +31,5 @@ install/
 
 bin/*
 test/test_runner
+
+CONOUT$

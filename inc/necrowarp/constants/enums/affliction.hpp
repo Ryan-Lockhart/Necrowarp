@@ -11,6 +11,7 @@ namespace necrowarp {
 	using namespace bleak;
 
 	enum struct affliction_e : u8 {
+		Dauntless,
 		Resolute,
 		Stable,
 		Wavering,
@@ -26,7 +27,8 @@ namespace necrowarp {
 
 	template<affliction_e Affliction> const constexpr u8 defecation_threshold{};
 
-	template<> inline constexpr u8 defecation_threshold<affliction_e::Resolute>{ 100 };
+	template<> inline constexpr u8 defecation_threshold<affliction_e::Dauntless>{ 100 };
+	template<> inline constexpr u8 defecation_threshold<affliction_e::Resolute>{ 98 };
 	template<> inline constexpr u8 defecation_threshold<affliction_e::Stable>{ 90 };
 	template<> inline constexpr u8 defecation_threshold<affliction_e::Wavering>{ 70 };
 	template<> inline constexpr u8 defecation_threshold<affliction_e::Stricken>{ 30 };

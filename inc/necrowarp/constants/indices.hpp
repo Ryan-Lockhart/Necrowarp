@@ -67,9 +67,13 @@ namespace necrowarp::indices {
 	constexpr const u8 SwellingHexeater{ SmolderingHexeater + 1 };
 	constexpr const u8 BlazingHexeater{ SwellingHexeater + 1 };
 
-	constexpr const u8 Paladin{ BlazingHexeater + 1 };
-	constexpr const u8 VengeantPaladin{ Paladin + 1 };
-	constexpr const u8 AscendantPaladin{ VengeantPaladin + 1 };
+	constexpr const u8 VengeantPaladin{ BlazingHexeater + 1 };
+	constexpr const u8 DowntroddenPaladin{ VengeantPaladin + 1 };
+	constexpr const u8 FallenPaladin{ DowntroddenPaladin + 1 };
+	constexpr const u8 AlacritousPaladin{ FallenPaladin + 1 };
+	constexpr const u8 RighteousPaladin{ AlacritousPaladin + 1 };
+	constexpr const u8 ZealousPaladin{ RighteousPaladin + 1 };
+	constexpr const u8 AscendantPaladin{ ZealousPaladin + 1 };
 
 	constexpr const u8 TwistedMetal{ AscendantPaladin + 1 };
 	constexpr const u8 ShimmeringMetal{ TwistedMetal + 1 };

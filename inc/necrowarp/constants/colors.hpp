@@ -39,7 +39,7 @@ namespace necrowarp {
 			template<> inline constexpr color_t Fluids<fluid_e::BloodyFilthyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 			template<> inline constexpr color_t Fluids<fluid_e::IchorousFilthyEctoplasm>{ mix(Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 
-			static constexpr color_t BloodyIchorousFilthyEctoplasm{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
+			template<> inline constexpr color_t Fluids<fluid_e::BloodyIchorousFilthyEctoplasm>{ mix(Fluids<fluid_e::Blood>, Fluids<fluid_e::Ichor>, Fluids<fluid_e::Filth>, Fluids<fluid_e::Ectoplasm>) };
 
 			namespace light {
 				template<fluid_e Fluid> static constexpr color_t Fluids;

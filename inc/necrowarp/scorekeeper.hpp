@@ -65,9 +65,9 @@ namespace necrowarp {
 			);
 		}
 
-		inline isize get_score() const noexcept { return static_cast<isize>(std::ceilf(score)); }
+		inline i32 get_score() const noexcept { return static_cast<i32>(std::ceilf(score)); }
 
-		inline void add(isize value) noexcept {
+		inline void add(f32 value) noexcept {
 			value *= current_multiplier();
 
 			if (value <= 0.0f) {
@@ -80,22 +80,25 @@ namespace necrowarp {
 		inline void add(entity_e slain) noexcept {
 			switch (slain) {
 				case entity_e::Adventurer: {
-					add(10);
+					add(10.0f);
 					break;
 				} case entity_e::Mercenary:
+				  case entity_e::Medicus:
 				  case entity_e::Ranger:
 				  case entity_e::Skulker: {
-					add(25);
+					add(25.0f);
 					break;
 				} case entity_e::Thetwo:
+				  case entity_e::Mansling:
 				  case entity_e::MistLady:
 				  case entity_e::BannerBearer: {
-					add(50);
+					add(50.0f);
 					break;
 				} case entity_e::BattleMonk:
 				  case entity_e::Berserker:
+				  case entity_e::Hexeater:
 				  case entity_e::Paladin: {
-					add(100);
+					add(100.0f);
 					break;
 				} default: {
 					break;
@@ -103,23 +106,28 @@ namespace necrowarp {
 			}
 		}
 
-		inline void add(entity_e slain, i8 multiplier) noexcept {
+		inline void add(entity_e slain, f32 multiplier) noexcept {
 			switch (slain) {
 				case entity_e::Adventurer: {
-					add(10 * multiplier);
-					break;
-				} case entity_e::Ranger:
-				  case entity_e::Skulker: {
-					add(25 * multiplier);
+					add(10.0f * multiplier);
 					break;
 				} case entity_e::Mercenary:
-				  case entity_e::Thetwo:
-				  case entity_e::BattleMonk:
-				  case entity_e::Berserker: {
-					add(50 * multiplier);
+				  case entity_e::Medicus:
+				  case entity_e::Ranger:
+				  case entity_e::Skulker: {
+					add(25.0f * multiplier);
 					break;
-				} case entity_e::Paladin: {
-					add(100 * multiplier);
+				} case entity_e::Thetwo:
+				  case entity_e::Mansling:
+				  case entity_e::MistLady:
+				  case entity_e::BannerBearer: {
+					add(50.0f * multiplier);
+					break;
+				} case entity_e::BattleMonk:
+				  case entity_e::Berserker:
+				  case entity_e::Hexeater:
+				  case entity_e::Paladin: {
+					add(100.0f * multiplier);
 					break;
 				} default: {
 					break;

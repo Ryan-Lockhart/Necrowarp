@@ -176,6 +176,8 @@ namespace necrowarp {
 
 		template<RandomEngine Generator> static inline bulk_e random_bulk(ref<Generator> generator) noexcept { return static_cast<bulk_e>(bulk_dis(generator)); }
 
+		// approximate distribution of thetwo population endemic to the southeastern coast of Raetun
+		// for the expansion, this distribution will shift heaviliy to lanky thetwo as we'll be in Mok
 		static inline std::discrete_distribution<u16> breed_dis{
 			200.0f,	// scaly
 			10.0f,	// shaggy
