@@ -17,10 +17,6 @@ install_dir = '@0@/install/@1@/@2@/@3@'.format(
     build_type
 )
 
-if build_type == 'debug'
-	install_data('steam_appid.txt', install_dir: install_dir)
-endif
-
 cxx = meson.get_compiler('cpp')
 
 if target_machine.system() == 'windows'
@@ -77,3 +73,5 @@ install_data('log/message.log', install_dir: install_dir + '/log')
 install_data('log/error.log', install_dir: install_dir + '/log')
 
 install_data(dyn_libs, install_dir: install_dir, follow_symlinks: true)
+
+install_data('steam_appid.txt', install_dir: install_dir)

@@ -7,7 +7,7 @@
 
 namespace necrowarp {
 	namespace globals {
-		static constexpr entity_e OopsAllEnum{ entity_e::Hexeater };
+		static constexpr entity_e OopsAllEnum{ entity_e::Paladin };
 
 		template<> inline constexpr bool OopsAll<OopsAllEnum>{ false };
 
