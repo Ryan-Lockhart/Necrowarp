@@ -113,10 +113,6 @@ namespace necrowarp {
 			if (cauto evil_pos{ evil_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; evil_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, evil_pos.value() };
 			}
-
-			if (cauto neutral_pos{ neutral_goal_map<MapType>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) }; neutral_pos.has_value()) {
-				return command_pack_t{ command_e::Move, position, neutral_pos.value() };
-			}
 		}
 
 		return command_pack_t{ command_e::Wander, position };

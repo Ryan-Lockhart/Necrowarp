@@ -37,7 +37,6 @@ namespace necrowarp {
 	struct loose_t;
 	struct retrieve_t;
 	struct resuscitate_t;
-	struct batter_t;
 	struct precise_warp_t;
 	struct consume_warp_t;
 	struct calcify_t;
@@ -84,7 +83,6 @@ namespace necrowarp {
 		loose_t, \
 		retrieve_t, \
 		resuscitate_t, \
-		batter_t, \
 		precise_warp_t, \
 		consume_warp_t, \
 		calcify_t, \
@@ -169,8 +167,7 @@ namespace necrowarp {
 		resuscitate_t
 
 	#define ALL_BATTLE_MONK_COMMANDS \
-		meditate_t, \
-		batter_t
+		meditate_t
 
 	#define ALL_ISOSCEL_COMMANDS \
 		eradicate_t
@@ -219,7 +216,6 @@ namespace necrowarp {
 		Retrieve,
 		Resuscitate,
 		Loose,
-		Batter,
 		PreciseWarp,
 		ConsumeWarp,
 		Calcify,
@@ -305,8 +301,6 @@ namespace necrowarp {
 				return "resuscitate";
 			} case command_e::Loose: {
 				return "loose";
-			} case command_e::Batter: {
-				return "batter";
 			} case command_e::PreciseWarp: {
 				return "precise warp";
 			} case command_e::ConsumeWarp: {

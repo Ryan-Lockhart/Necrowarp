@@ -12,7 +12,6 @@
 #include <necrowarp/commands/binary/retrieve.tpp>
 #include <necrowarp/commands/binary/resuscitate.tpp>
 #include <necrowarp/commands/binary/loose.tpp>
-#include <necrowarp/commands/binary/batter.tpp>
 #include <necrowarp/commands/binary/eradicate.tpp>
 #include <necrowarp/commands/binary/precise_warp.tpp>
 #include <necrowarp/commands/binary/consume_warp.tpp>
@@ -64,9 +63,6 @@ namespace necrowarp {
 
 	template struct entity_command_t<ranger_t, loose_t>;
 	template void entity_command_t<ranger_t, loose_t>::process<map_type_e::Pocket>() const noexcept;
-
-	template struct entity_command_t<battle_monk_t, batter_t>;
-	template void entity_command_t<battle_monk_t, batter_t>::process<map_type_e::Pocket>() const noexcept;
 
 	template struct entity_command_t<isoscel_t, eradicate_t>;
 	template void entity_command_t<isoscel_t, eradicate_t>::process<map_type_e::Pocket>() const noexcept;

@@ -127,6 +127,47 @@
 						"--cross-file",
 						"cross/x86_64-windows-debug.ini",
 						"--buildtype",
+						"debug",
+						"--wipe"
+					],
+				},
+				"linux": {
+					"command": "meson",
+					"args": [
+						"setup",
+						"--reconfigure",
+						"build",
+						".",
+						"--native-file",
+						"native.ini",
+						"--cross-file",
+						"cross/x86_64-linux-debug.ini",
+						"--buildtype",
+						"debug",
+						"--wipe",
+						"-Dpkg_config_path=/usr/local/lib/pkgconfig",
+						"-Dcmake_prefix_path=/usr/local/lib/cmake"
+					],
+				},
+			},
+			{
+				"label": "meson-reconfigure-debugoptimized",
+				"group": "build",
+				"type": "shell",
+				"detail": "reconfigures the project for building optimized debug binaries",
+
+				"windows": {
+					"command": "meson",
+					"args": [
+						"setup",
+						"--reconfigure",
+						"build",
+						".",
+						"--native-file",
+						"native.ini",
+						"--cross-file",
+						"cross/x86_64-windows-debug.ini",
+						"--buildtype",
 						"debugoptimized",
 						"--wipe"
 					],

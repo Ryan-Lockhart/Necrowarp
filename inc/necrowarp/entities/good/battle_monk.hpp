@@ -6,7 +6,6 @@
 #include <necrowarp/entity_command.hpp>
 
 #include <necrowarp/commands/unary/meditate.hpp>
-#include <necrowarp/commands/binary/batter.hpp>
 
 #include <necrowarp/game_state.hpp>
 
@@ -64,10 +63,6 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<> struct is_entity_command_valid<battle_monk_t, batter_t> {
-		static constexpr bool value = true;
-	};
-
 	template<> inline constexpr glyph_t entity_glyphs<battle_monk_t>{ glyphs::BattleMonk };
 
 	enum struct tranquility_e : u8 {
@@ -107,7 +102,7 @@ namespace necrowarp {
 		static constexpr i8 MaximumDamage{ 2 };
 
 		static constexpr i8 QiPoint{ 2 };
-		static constexpr i8 MaximumQi{ 8 };
+		static constexpr i8 MaximumQi{ 6 };
 
 		static constexpr i8 StartingTranquility{ QiPoint + 1 };
 

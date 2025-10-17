@@ -38,18 +38,18 @@ namespace necrowarp {
 	};
 
 	struct bones_t {
-		template<decay_e Decay> static constexpr i8 DecayEpoch{};
+		template<decay_e Decay> static constexpr u8 DecayEpoch{};
 
-		template<> inline constexpr i8 DecayEpoch<decay_e::Fresh>{ 16 };
-		template<> inline constexpr i8 DecayEpoch<decay_e::Animate>{ 32 };
-		template<> inline constexpr i8 DecayEpoch<decay_e::Rotted>{ 64 };
+		template<> inline constexpr u8 DecayEpoch<decay_e::Fresh>{ 32 };
+		template<> inline constexpr u8 DecayEpoch<decay_e::Animate>{ 64 };
+		template<> inline constexpr u8 DecayEpoch<decay_e::Rotted>{ 128 };
 
 	  private:
 		decay_e state;
-		i8 lifespan;
+		u8 lifespan;
 
-		static constexpr i8 determine_lifespan(decay_e decay) noexcept {
-			return magic_enum::enum_switch([&](auto val) -> i8 {
+		static constexpr u8 determine_lifespan(decay_e decay) noexcept {
+			return magic_enum::enum_switch([&](auto val) -> u8 {
 				constexpr decay_e cval{ val };
 
 				return DecayEpoch<cval>;

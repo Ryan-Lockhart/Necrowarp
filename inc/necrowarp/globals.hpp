@@ -363,7 +363,7 @@ namespace necrowarp {
 
 		constexpr i32 FloorsPerDepartureEpoch{ 4 };
 
-		constexpr bool EnableEcosystem{ false };
+		constexpr bool EnableEcosystem{ true };
 
 		constexpr i32 FleshPerThetwoPopulation{ 32 };
 		constexpr i32 FaunaPerThetwoPopulation{ 4 };

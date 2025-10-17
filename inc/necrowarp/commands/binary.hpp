@@ -12,7 +12,6 @@
 #include <necrowarp/commands/binary/retrieve.hpp>
 #include <necrowarp/commands/binary/resuscitate.hpp>
 #include <necrowarp/commands/binary/loose.hpp>
-#include <necrowarp/commands/binary/batter.hpp>
 #include <necrowarp/commands/binary/eradicate.hpp>
 #include <necrowarp/commands/binary/precise_warp.hpp>
 #include <necrowarp/commands/binary/consume_warp.hpp>

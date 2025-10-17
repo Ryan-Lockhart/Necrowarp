@@ -169,10 +169,6 @@ namespace necrowarp {
 
 		object_registry<MapType>.clear();
 
-		deceased.clear();
-		concussed.clear();
-		afflicted.clear();
-
 		constexpr map_cell_t open_state{ cell_e::Open, cell_e::Transperant, cell_e::Seen, cell_e::Explored };
 		constexpr map_cell_t closed_state{ cell_e::Solid, cell_e::Opaque, cell_e::Seen, cell_e::Explored };
 

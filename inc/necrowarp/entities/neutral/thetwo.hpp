@@ -261,11 +261,14 @@ namespace necrowarp {
 		
 		template<> inline bool can_devour<bulk_e::Gross>(entity_e entity) const noexcept {
 			switch (entity) {
+				case entity_e::Mercenary:
 				case entity_e::Skulker:
 				case entity_e::Ranger:
 				case entity_e::MistLady:
+				case entity_e::Medicus:
+				case entity_e::Mansling:
 				case entity_e::Adventurer:
-				case entity_e::Mercenary: {
+				case entity_e::Fauna: {
 					return true;
 				} default: {
 					return false;
@@ -275,9 +278,11 @@ namespace necrowarp {
 		
 		template<> inline bool can_devour<bulk_e::Bulky>(entity_e entity) const noexcept {
 			switch (entity) {
-				case entity_e::Ranger:
 				case entity_e::MistLady:
-				case entity_e::Adventurer: {
+				case entity_e::Medicus:
+				case entity_e::Mansling:
+				case entity_e::Adventurer:
+				case entity_e::Fauna: {
 					return true;
 				} default: {
 					return false;
@@ -287,7 +292,7 @@ namespace necrowarp {
 		
 		template<> inline bool can_devour<bulk_e::Mature>(entity_e entity) const noexcept {
 			switch (entity) {
-				case entity_e::Adventurer: {
+				case entity_e::Fauna: {
 					return true;
 				} default: {
 					return false;

@@ -51,13 +51,7 @@ namespace necrowarp {
 						ref<entity_type> target{ *maybe_target };
 
 						cauto try_displace = [&] -> bool {
-							if (!concussive && entity_registry<MapType>.dependent update<entity_type>(current_position, target_position)) {
-								concussed.add(target_position);
-
-								return true;
-							}
-
-							return false;
+							return entity_registry<MapType>.dependent update<entity_type>(current_position, target_position);
 						};
 
 						cauto try_bleed = [&] {

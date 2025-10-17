@@ -89,10 +89,6 @@ namespace necrowarp {
 
 		inline void remove(offset_t position) noexcept;
 
-		inline std::optional<omni_entity_t> extract(offset_t position) noexcept;
-		
-		inline std::optional<omni_entity_t> displace(offset_t position, rval<omni_entity_t> other) noexcept;
-
 		template<PlayerEntity EntityType> inline void clear() noexcept;
 
 		template<NonPlayerEntity EntityType> inline void clear() noexcept;
@@ -236,16 +232,6 @@ namespace necrowarp {
 		inline usize offmap_count() const noexcept;
 
 		inline usize offmap_count() const noexcept;
-
-		inline bool is_deceased(offset_t position) const noexcept;
-
-		inline bool is_concussed(offset_t position) const noexcept;
-
-		inline bool is_afflicted(offset_t position) const noexcept;
-
-		inline std::optional<affliction_e> get_affliction(offset_t position) const noexcept;
-
-		template<affliction_e Affliction> bool has_affliction(offset_t position) const noexcept;
 
 		template<NonPlayerEntity EntityType> inline void draw() const noexcept;
 

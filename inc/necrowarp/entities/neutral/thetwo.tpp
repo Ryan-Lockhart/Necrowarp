@@ -11,13 +11,14 @@ namespace necrowarp {
 			case entity_e::Player: {
 				return !player.no_hit_enabled() && !player.has_ascended();
 			} case entity_e::Abomination:
+			  case entity_e::BattleMonk:
+			  case entity_e::Mercenary:
+			  case entity_e::BannerBearer:
+			  case entity_e::MistLady:
 			  case entity_e::Skulker:
 			  case entity_e::Ranger:
-			  case entity_e::MistLady:
-			  case entity_e::BannerBearer:
 			  case entity_e::Adventurer:
-			  case entity_e::Mercenary:
-			  case entity_e::BattleMonk: {
+			  case entity_e::Fauna: {
 				return true;
 			} default: {
 				return false;
@@ -87,10 +88,10 @@ namespace necrowarp {
 			return command_pack_t{ command_e::Metabolise, position };
 		}
 
-		const bool is_hunting{ is_dauntless && is_healthy && !entity_registry<MapType>.dependent empty<flesh_golem_t>() };
+		const bool is_hunting{ is_dauntless && is_healthy && !entity_registry<MapType>.dependent empty<fauna_t>() };
 
 		if (is_hunting) {
-			cauto stalk_pos{ entity_goal_map<MapType, flesh_golem_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
+			cauto stalk_pos{ entity_goal_map<MapType, fauna_t>.dependent descend<region_e::Interior>(position, entity_registry<MapType>) };
 
 			if (stalk_pos.has_value()) {
 				return command_pack_t{ command_e::Move, position, stalk_pos.value() };

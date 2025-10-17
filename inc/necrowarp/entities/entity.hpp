@@ -811,27 +811,6 @@ namespace necrowarp {
 		requires (!globals::has_animation<EntityType>::value && !globals::has_variants<EntityType>::value)
 	inline constexpr glyph_t entity_glyphs;
 
-	template<Entity EntityType> struct entity_t {
-		offset_t position;
-		ptr<EntityType> entity;
-
-		template<region_e Region> inline bool is_valid() const noexcept;
-
-		inline bool is_newborn() const noexcept;
-
-		inline bool is_deceased() const noexcept;
-
-		inline bool is_concussed() const noexcept;
-
-		inline bool is_afflicted() const noexcept;
-
-		inline std::optional<affliction_e> get_affliction() const noexcept;
-
-		template<affliction_e Affliction> inline bool has_affliction() const noexcept;
-	};
-
-	struct omni_entity_t;
-
 	template<death_e Death> struct death_info_t{
 		const bool perished;
 
