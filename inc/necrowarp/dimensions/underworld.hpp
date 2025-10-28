@@ -28,6 +28,8 @@ namespace necrowarp {
 
 		game_stats.cheats.enable_all();
 
+		game_stats.cheats.endow_knowledge = false;
+
 		player.refresh();
 
 		scorekeeper.reset();
@@ -70,6 +72,16 @@ namespace necrowarp {
 			error_log.add("[ERROR]: could not find open position for player!");
 
 			terminate_prematurely();
+		}
+
+		if (api_state.user_id == globals::PlonzoGuaranteedID || globals::plonzo_chance(random_engine)) {
+			cauto plonzo_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
+
+			if (!plonzo_pos.has_value() || !entity_registry<MapType>.dependent add<plonzo_t>(plonzo_pos.value())) {
+				error_log.add("[ERROR]: could not find open position for plonzo!");
+
+				terminate_prematurely();
+			}
 		}
 
 		if constexpr (globals::SpawnTutorialPortal) {
@@ -124,7 +136,7 @@ namespace necrowarp {
 	template<> inline void game_s::descend<dimension_e::Underworld>() noexcept {
 		constexpr map_type_e MapType = determine_map<dimension_e::Underworld>();
 
-		terminate_process_turn();
+		suspend_process_turn();
 
 		randomize_patrons(random_engine);
 #if !defined(STEAMLESS)
@@ -132,8 +144,6 @@ namespace necrowarp {
 
 		stat_store_timer.record();
 #endif
-		descent_flag = false;
-
 		++game_stats.game_depth;
 #if !defined(STEAMLESS)
 		if (steam_stats_s::stats<stat_e::LowestDepth>.get_value() > -static_cast<i32>(game_stats.game_depth)) {
@@ -515,7 +525,7 @@ namespace necrowarp {
 	template<> inline void game_s::unload<dimension_e::Underworld>() noexcept {
 		constexpr map_type_e MapType = determine_map<dimension_e::Underworld>();
 
-		terminate_process_turn();
+		suspend_process_turn();
 
 		game_map<MapType>.dependent reset<region_e::All>();
 		fluid_map<MapType>.dependent reset<region_e::All>();

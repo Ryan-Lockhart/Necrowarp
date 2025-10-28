@@ -93,6 +93,9 @@ namespace necrowarp {
 	// a docile creature that grazes on floral growths
 	struct fauna_t;
 
+	// a benevolent creature of wildly arbitrary demeanor
+	struct plonzo_t;
+
 	// a common adversary that grows off of the flesh the dead
 	struct thetwo_t;
 
@@ -137,6 +140,7 @@ namespace necrowarp {
 
 	#define ALL_NEUTRAL_NPCS \
 		fauna_t, \
+		plonzo_t, \
 		thetwo_t
 
 	#define ALL_NEUTRAL \
@@ -183,7 +187,8 @@ namespace necrowarp {
 		mansling_t, \
 		skulker_t, \
 		hexeater_t, \
-		paladin_t
+		paladin_t, \
+		plonzo_t
 	
 	#define ALL_VIGILANT_ENTITIES \
 		player_t, \
@@ -234,6 +239,7 @@ namespace necrowarp {
 		Paladin,
 
 		Fauna,
+		Plonzo,
 		Thetwo,
 	};
 
@@ -301,6 +307,8 @@ namespace necrowarp {
 				return "paladin";
 			} case entity_e::Fauna: {
 				return "fauna";
+			} case entity_e::Plonzo: {
+				return "plonzo";
 			} case entity_e::Thetwo: {
 				return "thetwo";
 			}
@@ -369,6 +377,8 @@ namespace necrowarp {
 				return "paladins";
 			} case entity_e::Fauna: {
 				return "faunae";
+			} case entity_e::Plonzo: {
+				return "plonzos";
 			} case entity_e::Thetwo: {
 				return "thetwo";
 			}
@@ -437,6 +447,8 @@ namespace necrowarp {
 				return colors::metals::Steel;
 			} case entity_e::Fauna: {
 				return mix(colors::materials::Oak, colors::Green);
+			} case entity_e::Plonzo: {
+				return mix(colors::light::Orange, colors::light::Yellow);
 			} case entity_e::Thetwo: {
 				return colors::metals::Brass;
 			}
@@ -444,13 +456,7 @@ namespace necrowarp {
 	}
 
 	template<plurality_e Plurality = plurality_e::Singular> static constexpr runes_t to_colored_string(entity_e type) noexcept {
-		return magic_enum::enum_switch(
-			[](auto val) -> runes_t {
-				constexpr entity_e cval{ val };
-
-				return runes_t{ to_string<Plurality>(cval), to_color(cval) };
-			}, type
-		);
+		return runes_t{ to_string<Plurality>(type), to_color(type) };
 	}
 
 	constexpr usize EntityTypeCount{ static_cast<usize>(entity_e::Thetwo) + 1 };
@@ -475,7 +481,7 @@ namespace necrowarp {
 
 	template<entity_e EntityType> using to_entity_type_t = typename to_entity_type<EntityType>::type;
 
-	template<typename T> concept AnimatedEntity = Entity<T> && globals::has_animation<T>::value;
+	template<typename T> concept AnimatedEntity = Entity<T> && has_animation<T>::value;
 
 	template<typename T> struct is_evil {
 		static constexpr bool value = false;
@@ -808,7 +814,7 @@ namespace necrowarp {
 	template<typename T, entity_e EntityType> constexpr bool is_entity_type_v = is_entity_type<T, EntityType>::value;
 
 	template<Entity EntityType>
-		requires (!globals::has_animation<EntityType>::value && !globals::has_variants<EntityType>::value)
+		requires (!has_animation<EntityType>::value && !has_variants<EntityType>::value)
 	inline constexpr glyph_t entity_glyphs;
 
 	template<death_e Death> struct death_info_t{

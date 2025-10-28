@@ -11,7 +11,9 @@
 
 namespace necrowarp {
 	template<map_type_e MapType> inline void game_s::load() noexcept {
-		terminate_process_turn();
+		assert(async_lock.is_locked());
+
+		suspend_process_turn();
 
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr dimension_e cval{ val };
@@ -30,15 +32,20 @@ namespace necrowarp {
 				phase.transition(phase_e::Playing);
 		
 				game_running = true;
-				process_turn_async<map_type>();
 			}
 		}, static_cast<dimension_e>(current_dimension));
+
+		async_lock.unlock();
 	}
 
 	template<map_type_e MapType> inline void game_s::load_async() noexcept { std::thread([]() -> void { load<MapType>(); }).detach(); }
 
 	template<map_type_e MapType> inline void game_s::descend() noexcept {
-		terminate_process_turn();
+		assert(async_lock.is_locked());
+
+		suspend_process_turn();
+
+		descent_flag = false;
 
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr dimension_e cval{ val };
@@ -59,15 +66,20 @@ namespace necrowarp {
 				phase.transition(phase_e::Playing);
 		
 				game_running = true;
-				process_turn_async<map_type>();
 			}
 		}, static_cast<dimension_e>(current_dimension));
+
+		async_lock.unlock();
 	}
 
 	template<map_type_e MapType> inline void game_s::descend_async() noexcept { std::thread([]() -> void { descend<MapType>(); }).detach(); }
 
 	template<map_type_e MapType> inline void game_s::plunge() noexcept {
-		terminate_process_turn();
+		assert(async_lock.is_locked());
+
+		suspend_process_turn();
+
+		plunge_flag = false;
 
 		const bool trap_triggered{ current_dimension != dimension_e::Tribulation && plunge_target != dimension_e::Tribulation && tribulation_s::aggravate(random_engine) };
 
@@ -84,7 +96,6 @@ namespace necrowarp {
 		}
 
 		plunge_target = dimension_e::Abyss;
-		plunge_flag = false;
 
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr dimension_e cval{ val };
@@ -115,15 +126,16 @@ namespace necrowarp {
 				phase.transition(phase_e::Playing);
 
 				game_running = true;
-				process_turn_async<map_type>();
 			}
 		}, static_cast<dimension_e>(current_dimension));
+
+		async_lock.unlock();
 	}
 
 	template<map_type_e MapType> inline void game_s::plunge_async() noexcept { std::thread([]() -> void { plunge<MapType>(); }).detach(); }
 
 	template<map_type_e MapType> inline void game_s::process_turn() noexcept {
-		if (window.is_closing() || !game_running || !player_acted || descent_flag || plunge_flag || !process_access.try_lock()) {
+		if (window.is_closing() || !game_running || !player_acted || descent_flag || plunge_flag || async_lock.is_locked()) {
 			return;
 		}
 
@@ -163,20 +175,34 @@ namespace necrowarp {
 				processing_turn = false;
 
 				player_acted = false;
-
-				process_access.unlock();
 			}
 		}, static_cast<dimension_e>(current_dimension));
 	}
 
-	template<map_type_e MapType> inline void game_s::process_turn_async() noexcept {
+	inline void game_s::process_turn_async() noexcept {
 		std::thread([]() -> void {
-			do { process_turn<MapType>(); } while (game_running);
+			do {
+				if (game_running) {
+					magic_enum::enum_switch([&](auto val) -> void {
+						constexpr dimension_e cval{ val };
+
+						if constexpr (is_material<cval>::value) {
+							constexpr map_type_e map_type{ determine_map<cval>() };
+
+							process_turn<map_type>();
+						}
+					}, static_cast<dimension_e>(current_dimension));
+				} else {
+					std::this_thread::yield();
+				}
+			} while (!window.is_closing());
 		}).detach();
 	}
 
 	template<map_type_e MapType> inline void game_s::unload() noexcept {
-		terminate_process_turn();
+		assert(async_lock.is_locked());
+
+		suspend_process_turn();
 
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr dimension_e cval{ val };
@@ -185,6 +211,8 @@ namespace necrowarp {
 				unload<cval>();
 			}
 		}, static_cast<dimension_e>(current_dimension));
+
+		async_lock.unlock();
 	}
 
 	template<map_type_e MapType> inline void game_s::unload_async() noexcept { std::thread([]() -> void { unload<MapType>(); }).detach(); }
@@ -199,30 +227,28 @@ namespace necrowarp {
 
 		ui_registry.update<MapType>();
 
-		if (descent_flag) {
-			phase.transition(phase_e::Loading);
-			phase.previous_phase = phase_e::Loading;
+		if (async_lock.try_lock()) {
+			if (descent_flag) {
+				phase.transition(phase_e::Loading);
+				phase.previous_phase = phase_e::Loading;
 
-			descend_async<MapType>();
-		}
+				descend_async<MapType>();
+			} else if (plunge_flag && plunge_target != dimension_e::Abyss && plunge_target != current_dimension) {
+				phase.transition(phase_e::Loading);
+				phase.previous_phase = phase_e::Loading;
 
-		if (plunge_flag && plunge_target != dimension_e::Abyss && plunge_target != current_dimension) {
-			phase.transition(phase_e::Loading);
-			phase.previous_phase = phase_e::Loading;
+				plunge_async<MapType>();
+			} else if (phase.current_phase == phase_e::Loading && phase.previous_phase != phase_e::Loading) {
+				phase.previous_phase = phase_e::Loading;
 
-			plunge_async<MapType>();
-		}
+				load_async<MapType>();
+			} else if (phase.current_phase == phase_e::GameOver && phase.previous_phase != phase_e::GameOver) {
+				phase.previous_phase = phase_e::GameOver;
 
-		if (phase.current_phase == phase_e::Loading && phase.previous_phase != phase_e::Loading) {
-			phase.previous_phase = phase_e::Loading;
-
-			load_async<MapType>();
-		}
-
-		if (phase.current_phase == phase_e::GameOver && phase.previous_phase != phase_e::GameOver) {
-			phase.previous_phase = phase_e::GameOver;
-
-			unload_async<MapType>();
+				unload_async<MapType>();
+			} else {
+				async_lock.unlock();
+			}
 		}
 
 #if !defined(STEAMLESS)
@@ -242,6 +268,8 @@ namespace necrowarp {
 		}
 
 		startup();
+
+		process_turn_async();
 
 		do {
 			magic_enum::enum_switch([&](auto val) -> void {

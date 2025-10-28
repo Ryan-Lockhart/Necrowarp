@@ -150,6 +150,8 @@ namespace necrowarp {
 				} case entity_e::Skeleton:
 				  case entity_e::Bonespur: {
 					return command_e::Consume;
+				} case entity_e::Plonzo: {
+					return command_e::Pet;
 				} default: {
 					return command_e::None;
 				}

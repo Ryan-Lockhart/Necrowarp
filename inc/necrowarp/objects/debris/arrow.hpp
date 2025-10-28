@@ -7,11 +7,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<arrow_t> {
+	template<> struct has_unique_descriptor<arrow_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_variants<arrow_t> {
+	template<> struct has_variants<arrow_t> {
 		static constexpr bool value = true;
 	};
 
@@ -54,7 +54,7 @@ namespace necrowarp {
 
 		inline arrow_t(i8 amount) noexcept : count{ amount } {}
 
-		template<RandomEngine Generator> static inline bool snap(ref<Generator> generator) noexcept { return snap_dis(generator); }
+		template<RandomEngine Generator> static inline bool snap(ref<Generator> engine) noexcept { return snap_dis(engine); }
 
 		inline i8 stack_size() const noexcept { return count; }
 

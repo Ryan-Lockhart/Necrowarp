@@ -8,11 +8,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<chromalese_t> {
+	template<> struct has_unique_descriptor<chromalese_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_animation<chromalese_t> {
+	template<> struct has_animation<chromalese_t> {
 		static constexpr bool value = true;
 	};
 	
@@ -111,7 +111,7 @@ namespace necrowarp {
 
 		static constexpr bool HasStaticDodge{ true };
 
-		template<RandomEngine Generator> static inline bool dodge(ref<Generator> generator) noexcept { return dodge_dis(generator); }
+		template<RandomEngine Generator> static inline bool dodge(ref<Generator> engine) noexcept { return dodge_dis(engine); }
 
 		inline bool receive_damage(i8 damage_amount) noexcept {
 			if (damage_amount <= 0) {

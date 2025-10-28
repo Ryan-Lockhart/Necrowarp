@@ -7,6 +7,7 @@
 #include <necrowarp/commands/binary/depart.tpp>
 #include <necrowarp/commands/binary/consume.tpp>
 #include <necrowarp/commands/binary/clash.tpp>
+#include <necrowarp/commands/binary/nuzzle.tpp>
 #include <necrowarp/commands/binary/devour.tpp>
 #include <necrowarp/commands/binary/graze.tpp>
 #include <necrowarp/commands/binary/retrieve.tpp>
@@ -25,6 +26,7 @@
 #include <necrowarp/commands/binary/wretched_invocation.tpp>
 #include <necrowarp/commands/binary/cerebral_invocation.tpp>
 #include <necrowarp/commands/binary/infernal_invocation.tpp>
+#include <necrowarp/commands/binary/pet.tpp>
 // IWYU pragma: end_exports
 
 namespace necrowarp {
@@ -45,6 +47,9 @@ namespace necrowarp {
 
 	template struct entity_command_t<adventurer_t, clash_t>;
 	template void entity_command_t<adventurer_t, clash_t>::process<map_type_e::Pocket>() const noexcept;
+
+	template struct entity_command_t<plonzo_t, nuzzle_t>;
+	template void entity_command_t<plonzo_t, nuzzle_t>::process<map_type_e::Pocket>() const noexcept;
 
 	template struct entity_command_t<thetwo_t, devour_t>;
 	template void entity_command_t<thetwo_t, devour_t>::process<map_type_e::Pocket>() const noexcept;
@@ -102,4 +107,7 @@ namespace necrowarp {
 
 	template struct entity_command_t<player_t, infernal_invocation_t>;
 	template void entity_command_t<player_t, infernal_invocation_t>::process<map_type_e::Pocket>() const noexcept;
+
+	template struct entity_command_t<player_t, pet_t>;
+	template void entity_command_t<player_t, pet_t>::process<map_type_e::Pocket>() const noexcept;
 } // namespace necrowarp

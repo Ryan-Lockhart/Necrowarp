@@ -8,11 +8,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<paladin_t> {
+	template<> struct has_unique_descriptor<paladin_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_animation<paladin_t> {
+	template<> struct has_animation<paladin_t> {
 		static constexpr bool value = true;
 	};
 
@@ -176,10 +176,10 @@ namespace necrowarp {
 
 		static inline std::uniform_int_distribution<u16> scaled_zeal_dis{ 0, 100 };
 
-		template<RandomEngine Generator> static inline zeal_e random_zeal(ref<Generator> generator) noexcept { return static_cast<zeal_e>(zeal_dis(generator)); }
+		template<RandomEngine Generator> static inline zeal_e random_zeal(ref<Generator> engine) noexcept { return static_cast<zeal_e>(zeal_dis(engine)); }
 
-		template<RandomEngine Generator> static inline zeal_e random_scaled_zeal(ref<Generator> generator) noexcept {
-			const u16 chance{ scaled_zeal_dis(generator) };
+		template<RandomEngine Generator> static inline zeal_e random_scaled_zeal(ref<Generator> engine) noexcept {
+			const u16 chance{ scaled_zeal_dis(engine) };
 
 			if (chance < 1) {
 				return zeal_e::Vengeant;
@@ -245,8 +245,8 @@ namespace necrowarp {
 
 		inline paladin_t(zeal_e zeal) noexcept : zeal{ zeal }, idle_animation{ get_index(), random_engine, true }, health{ determine_health(zeal) } {}
 
-		template<RandomEngine Generator> inline paladin_t(ref<Generator> generator) noexcept :
-			zeal{ random_scaled_zeal(generator) }, idle_animation{ get_index(), random_engine, true }, health{ determine_health(zeal) }
+		template<RandomEngine Generator> inline paladin_t(ref<Generator> engine) noexcept :
+			zeal{ random_scaled_zeal(engine) }, idle_animation{ get_index(), random_engine, true }, health{ determine_health(zeal) }
 		{}
 
 		inline i8 get_health() const noexcept { return health; }

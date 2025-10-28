@@ -9,11 +9,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<flora_t> {
+	template<> struct has_unique_descriptor<flora_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_variants<flora_t> {
+	template<> struct has_variants<flora_t> {
 		static constexpr bool value = true;
 	};
 
@@ -46,7 +46,7 @@ namespace necrowarp {
 	  private:
 		static inline std::uniform_int_distribution<u16> bloomage_dis{ static_cast<u16>(bloomage_e::SanguineFlower), static_cast<u16>(bloomage_e::InfernalMushroom) };
 
-		template<RandomEngine Generator> static inline bloomage_e random_bloomage(ref<Generator> generator) noexcept { return static_cast<bloomage_e>(bloomage_dis(generator)); }
+		template<RandomEngine Generator> static inline bloomage_e random_bloomage(ref<Generator> engine) noexcept { return static_cast<bloomage_e>(bloomage_dis(engine)); }
 
 	  public:
 		inline flora_t(bloomage_e bloomage) noexcept : bloomage{ bloomage } {}

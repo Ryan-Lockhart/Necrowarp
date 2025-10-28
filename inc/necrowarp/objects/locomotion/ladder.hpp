@@ -11,11 +11,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<ladder_t> {
+	template<> struct has_unique_descriptor<ladder_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_animation<ladder_t> {
+	template<> struct has_animation<ladder_t> {
 		static constexpr bool value = true;
 	};
 
@@ -68,7 +68,7 @@ namespace necrowarp {
 	  private:
 		static inline std::uniform_int_distribution<u16> shackle_dis{ static_cast<u16>(shackle_e::Calcitic), static_cast<u16>(shackle_e::Infernal) };
 
-		template<RandomEngine Generator> static inline shackle_e random_shackle(ref<Generator> generator) noexcept { return static_cast<shackle_e>(shackle_dis(generator)); }
+		template<RandomEngine Generator> static inline shackle_e random_shackle(ref<Generator> engine) noexcept { return static_cast<shackle_e>(shackle_dis(engine)); }
 
 		static constexpr u8 get_index(shackle_e shackle) noexcept {
 			switch (shackle) {
@@ -113,7 +113,7 @@ namespace necrowarp {
 			sync_animation();
 		}
 
-		template<RandomEngine Generator> inline ladder_t(verticality_e verticality, ref<Generator> generator) noexcept : idle_animation{ random_engine }, verticality{ verticality }, shackle{ random_shackle(generator) } {
+		template<RandomEngine Generator> inline ladder_t(verticality_e verticality, ref<Generator> engine) noexcept : idle_animation{ random_engine }, verticality{ verticality }, shackle{ random_shackle(engine) } {
 			sync_animation();
 		}
 

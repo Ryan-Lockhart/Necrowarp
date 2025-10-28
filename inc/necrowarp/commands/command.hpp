@@ -32,6 +32,7 @@ namespace necrowarp {
 	struct depart_t;
 	struct consume_t;
 	struct clash_t;
+	struct nuzzle_t;
 	struct devour_t;
 	struct graze_t;
 	struct loose_t;
@@ -50,6 +51,8 @@ namespace necrowarp {
 	struct wretched_invocation_t;
 	struct cerebral_invocation_t;
 	struct infernal_invocation_t;
+
+	struct pet_t;
 
 	struct lunge_t;
 	struct eradicate_t;
@@ -78,6 +81,7 @@ namespace necrowarp {
 		depart_t, \
 		consume_t, \
 		clash_t, \
+		nuzzle_t, \
 		devour_t, \
 		graze_t, \
 		loose_t, \
@@ -94,7 +98,8 @@ namespace necrowarp {
 		ravenous_invocation_t, \
 		wretched_invocation_t, \
 		cerebral_invocation_t, \
-		infernal_invocation_t
+		infernal_invocation_t, \
+		pet_t
 
 	#define ALL_TERNARY_COMMANDS \
 		lunge_t, \
@@ -134,6 +139,7 @@ namespace necrowarp {
 		wretched_invocation_t, \
 		cerebral_invocation_t, \
 		infernal_invocation_t, \
+		pet_t, \
 		necromantic_ascendance_t, \
 		calamitous_retaliation_t
 
@@ -152,6 +158,9 @@ namespace necrowarp {
 
 	#define ALL_FAUNA_COMMANDS \
 		graze_t
+
+	#define ALL_PLONZO_COMMANDS \
+		nuzzle_t
 
 	#define ALL_THETWO_COMMANDS \
 		metabolise_t, \
@@ -179,6 +188,7 @@ namespace necrowarp {
 		ALL_WRAITH_COMMANDS, \
 		ALL_FLESH_GOLEM_COMMANDS, \
 		ALL_FAUNA_COMMANDS, \
+		ALL_PLONZO_COMMANDS, \
 		ALL_THETWO_COMMANDS, \
 		ALL_RANGER_COMMANDS, \
 		ALL_MEDICUS_COMMANDS, \
@@ -211,6 +221,7 @@ namespace necrowarp {
 		Depart,
 		Consume,
 		Clash,
+		Nuzzle,
 		Devour,
 		Graze,
 		Retrieve,
@@ -228,6 +239,7 @@ namespace necrowarp {
 		WretchedInvocation,
 		CerebralInvocation,
 		InfernalInvocation,
+		Pet,
 
 		Lunge,
 		Eradicate,
@@ -291,6 +303,8 @@ namespace necrowarp {
 				return "consume";
 			} case command_e::Clash: {
 				return "clash";
+			} case command_e::Nuzzle: {
+				return "nuzzle";
 			} case command_e::Devour: {
 				return "devour";
 			} case command_e::Graze: {
@@ -325,6 +339,8 @@ namespace necrowarp {
 				return "cerebral invocation";
 			} case command_e::InfernalInvocation: {
 				return "infernal invocation";
+			} case command_e::Pet: {
+				return "pet";
 			} case command_e::Lunge: {
 				return "lunge";
 			} case command_e::Eradicate: {

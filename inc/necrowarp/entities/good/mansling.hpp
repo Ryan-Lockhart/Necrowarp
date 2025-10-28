@@ -10,7 +10,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_animation<mansling_t> {
+	template<> struct has_animation<mansling_t> {
 		static constexpr bool value = true;
 	};
 

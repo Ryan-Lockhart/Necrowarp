@@ -39,6 +39,16 @@ namespace necrowarp {
 			}
 		}
 
+		if constexpr (is_same<EntityType, plonzo_t>::value) {
+			ptr<EntityType> entity{ entity_registry<MapType>.dependent at<EntityType>(source_position) };
+
+			if (entity == nullptr) {
+				return;
+			}
+
+			entity->randomize(random_engine);
+		}
+
 		const std::optional<offset_t> wander_pos{
 			[&]() -> std::optional<offset_t> {
 				static std::uniform_int_distribution<usize> wander_dis{ 0, 7 };

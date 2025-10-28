@@ -10,15 +10,15 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<hexeater_t> {
+	template<> struct has_unique_descriptor<hexeater_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_animation<hexeater_t> {
+	template<> struct has_animation<hexeater_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_variants<hexeater_t> {
+	template<> struct has_variants<hexeater_t> {
 		static constexpr bool value = true;
 	};
 

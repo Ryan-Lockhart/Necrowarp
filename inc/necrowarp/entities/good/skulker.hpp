@@ -8,15 +8,15 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<skulker_t> {
+	template<> struct has_unique_descriptor<skulker_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_animation<skulker_t> {
+	template<> struct has_animation<skulker_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_variants<skulker_t> {
+	template<> struct has_variants<skulker_t> {
 		static constexpr bool value = true;
 	};
 
@@ -161,7 +161,7 @@ namespace necrowarp {
 		template<> inline i8 dodge_threshold<concealment_e::Shrouded>{ 75 };
 		template<> inline i8 dodge_threshold<concealment_e::Imperceptible>{ 90 };
 
-		template<RandomEngine Generator> static inline i8 get_dodge_chance(ref<Generator> generator) noexcept { return static_cast<i8>(skulker_t::dodge_dis(generator)); }
+		template<RandomEngine Generator> static inline i8 get_dodge_chance(ref<Generator> engine) noexcept { return static_cast<i8>(skulker_t::dodge_dis(engine)); }
 
 		inline u8 get_index() const noexcept {
 			switch (concealment) {
@@ -200,8 +200,8 @@ namespace necrowarp {
 
 		static constexpr bool HasStaticDodge{ false };
 
-		template<RandomEngine Generator> inline bool dodge(ref<Generator> generator) noexcept {
-			const i8 chance{ skulker_t::get_dodge_chance(generator) };
+		template<RandomEngine Generator> inline bool dodge(ref<Generator> engine) noexcept {
+			const i8 chance{ skulker_t::get_dodge_chance(engine) };
 
 			return magic_enum::enum_switch([&](auto val) -> bool {
 				constexpr concealment_e cval{ val };

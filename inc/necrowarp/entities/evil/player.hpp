@@ -27,6 +27,7 @@
 #include <necrowarp/commands/binary/wretched_invocation.hpp>
 #include <necrowarp/commands/binary/cerebral_invocation.hpp>
 #include <necrowarp/commands/binary/infernal_invocation.hpp>
+#include <necrowarp/commands/binary/pet.hpp>
 
 #include <magic_enum/magic_enum_switch.hpp>
 
@@ -38,11 +39,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	TYPE_TRAIT_VALUE(globals::has_unique_descriptor, player_t, true);
+	TYPE_TRAIT_VALUE(has_unique_descriptor, player_t, true);
 
-	TYPE_TRAIT_VALUE(globals::has_animation, player_t, true);
+	TYPE_TRAIT_VALUE(has_animation, player_t, true);
 
-	TYPE_TRAIT_VALUE(globals::has_variants, player_t, true);
+	TYPE_TRAIT_VALUE(has_variants, player_t, true);
 
 	TYPE_TRAIT_VALUE(is_entity, player_t, true);
 
@@ -97,6 +98,8 @@ namespace necrowarp {
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, cerebral_invocation_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, infernal_invocation_t, true);
 
+	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, pet_t, true);
+
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, necromantic_ascendance_t, true);
 	TYPE_TRAIT_COMPARATOR(is_entity_command_valid, player_t, calamitous_retaliation_t, true);
 
@@ -131,7 +134,8 @@ namespace necrowarp {
 		static constexpr i8 MaximumDamage{ 1 };
 		static constexpr i8 MinimumDamage{ 1 };
 
-		static constexpr std::array<entity_e, 16> EntityPriorities{
+		static constexpr std::array<entity_e, 17> EntityPriorities{
+			entity_e::Plonzo,
 			entity_e::Skeleton,
 			entity_e::Bonespur,
 			entity_e::Adventurer,
@@ -185,6 +189,8 @@ namespace necrowarp {
 
 		static constexpr i8 UnsafeWarpBoon{ 1 };
 		static constexpr i8 FailedWarpBoon{ 2 };
+
+		static constexpr i8 NuzzleBoon{ 1 };
 
 		static constexpr i8 ProteinValue{ 1 };
 
@@ -588,7 +594,11 @@ namespace necrowarp {
 			}
 		}
 
+		inline void reinvigorate() noexcept { set_energy(energy + 1); }
+
 		inline void reinvigorate(i8 value) noexcept { set_energy(energy + value); }
+
+		inline void bolster_armor() noexcept { set_armor(armor + 1); }
 
 		inline void bolster_armor(i8 value) noexcept { set_armor(armor + value); }
 

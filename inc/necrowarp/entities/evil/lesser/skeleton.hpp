@@ -11,11 +11,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<skeleton_t> {
+	template<> struct has_unique_descriptor<skeleton_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_variants<skeleton_t> {
+	template<> struct has_variants<skeleton_t> {
 		static constexpr bool value = true;
 	};
 	
@@ -103,7 +103,7 @@ namespace necrowarp {
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
-		template<RandomEngine Generator> static inline bool fumble(ref<Generator> generator) noexcept { return fumble_dis(generator); }
+		template<RandomEngine Generator> static inline bool fumble(ref<Generator> engine) noexcept { return fumble_dis(engine); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

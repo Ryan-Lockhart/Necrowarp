@@ -11,16 +11,15 @@
 
 #include <necrowarp/constants/enums/bulk.tpp>
 #include <necrowarp/constants/enums/species.tpp>
-#include <random>
 
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<fauna_t> {
+	template<> struct has_unique_descriptor<fauna_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_variants<fauna_t> {
+	template<> struct has_variants<fauna_t> {
 		static constexpr bool value = true;
 	};
 	
@@ -97,7 +96,7 @@ namespace necrowarp {
 	private:
 		static inline std::uniform_int_distribution<u16> species_dis{ static_cast<u16>(species_e::SanguineTetrapod), static_cast<u16>(species_e::InfernalHexapod) };
 
-		template<RandomEngine Generator> static inline species_e random_species(ref<Generator> generator) noexcept { return static_cast<species_e>(species_dis(generator)); }
+		template<RandomEngine Generator> static inline species_e random_species(ref<Generator> engine) noexcept { return static_cast<species_e>(species_dis(engine)); }
 
 		i8 protein;
 		i8 bowels;

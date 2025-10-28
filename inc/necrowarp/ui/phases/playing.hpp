@@ -67,8 +67,12 @@ namespace necrowarp {
 			extent_t{ 1, 1 }
 		};
 
+		static inline offset_t command_label_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>() };
+		}
+
 		static inline label_t command_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() }, cardinal_e::Southeast },
+			anchor_t{ command_label_position(), cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{},
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -76,8 +80,12 @@ namespace necrowarp {
 			}
 		};
 
+		static inline offset_t depth_hidden_label_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h };
+		}
+		
 		static inline label_t depth_hidden_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::South },
+			anchor_t{ depth_hidden_label_position(), cardinal_e::South },
 			embedded_label_t{
 				runes_t{ depth_hidden_text, colors::White },
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -85,8 +93,12 @@ namespace necrowarp {
 			}
 		};
 
+		static inline offset_t depth_expanded_label_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h };
+		}
+		
 		static inline label_t depth_expanded_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::South },
+			anchor_t{ depth_expanded_label_position(), cardinal_e::South },
 			embedded_label_t{
 				runes_t{ depth_expanded_text, colors::White },
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -94,8 +106,12 @@ namespace necrowarp {
 			}
 		};
 
+		static inline offset_t favor_hidden_label_position() noexcept {
+			return offset_t{ 1, globals::grid_size<grid_type_e::UI>().h };
+		}
+		
 		static inline label_t favor_hidden_label{
-			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
+			anchor_t{ favor_hidden_label_position(), cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ favor_hidden_text, colors::White },
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -103,8 +119,12 @@ namespace necrowarp {
 			}
 		};
 
+		static inline offset_t favor_expanded_label_position() noexcept {
+			return offset_t{ 1, globals::grid_size<grid_type_e::UI>().h };
+		}
+		
 		static inline label_t favor_expanded_label{
-			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
+			anchor_t{ favor_expanded_label_position(), cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ favor_expanded_text, colors::White },
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -126,20 +146,32 @@ namespace necrowarp {
 		static constexpr extent_t MinimapPixelSize{ 2, 2 };
 		static constexpr extent_t BigMapPixelSize{ 4, 4 };
 
+		static inline offset_t minimap_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>().w * globals::cell_size<grid_type_e::UI>.w, 1 };
+		}
+		
 		template<map_type_e MapType> static inline minimap_t<MapType, MinimapPixelSize> minimap{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w * globals::cell_size<grid_type_e::UI>.w, 1 }, cardinal_e::Northeast },
+			anchor_t{ minimap_position(), cardinal_e::Northeast },
 			embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
 			extent_t{ 1, 1 }
 		};
 
+		static inline offset_t big_map_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>().w * globals::cell_size<grid_type_e::UI>.w, 1 };
+		}
+		
 		template<map_type_e MapType> static inline minimap_t<MapType, BigMapPixelSize> big_map{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>().w * globals::cell_size<grid_type_e::UI>.w, 1 }, cardinal_e::Northeast },
+			anchor_t{ big_map_position(), cardinal_e::Northeast },
 			embedded_box_t{ colors::Black, border_t{ colors::White, 2 } },
 			extent_t{ 2, 2 }
 		};
 
+		static inline offset_t tooltip_label_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>() };
+		}
+		
 		template<map_type_e MapType> static inline label_t tooltip_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() }, cardinal_e::Southeast },
+			anchor_t{ tooltip_label_position(), cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{},
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -435,7 +467,7 @@ namespace necrowarp {
 
 										using entity_type = typename to_entity_type<cval>::type;
 
-										if constexpr (globals::has_unique_descriptor<entity_type>::value) {
+										if constexpr (has_unique_descriptor<entity_type>::value) {
 											cauto entity_ptr{ entity_registry<MapType>.dependent at<entity_type>(grid_cursor<MapType>.current_position) };
 
 											if (entity_ptr != nullptr) {
@@ -510,7 +542,7 @@ namespace necrowarp {
 
 										using entity_type = typename to_entity_type<cval>::type;
 
-										if constexpr (globals::has_unique_descriptor<entity_type>::value) {
+										if constexpr (has_unique_descriptor<entity_type>::value) {
 											cauto entity_ptr{ entity_buffer<MapType>.dependent at<entity_type>(grid_cursor<MapType>.current_position) };
 
 											if (entity_ptr != nullptr) {
@@ -570,6 +602,21 @@ namespace necrowarp {
 			} else {
 				minimap<MapType>.update(button_e::Left);
 			}
+		}
+
+		template<map_type_e MapType> static inline void resize() noexcept {
+			command_label.position = command_label_position();
+
+			depth_hidden_label.position = depth_hidden_label_position();
+			depth_expanded_label.position = depth_expanded_label_position();
+
+			favor_hidden_label.position = favor_hidden_label_position();
+			favor_expanded_label.position = favor_expanded_label_position();
+
+			minimap<MapType>.position = minimap_position();
+			big_map<MapType>.position = big_map_position();
+
+			tooltip_label<MapType>.position = tooltip_label_position();
 		}
 
 		template<map_type_e MapType> static inline void draw(ref<renderer_t> renderer) noexcept {

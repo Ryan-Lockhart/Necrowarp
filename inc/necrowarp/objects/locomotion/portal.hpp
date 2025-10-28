@@ -9,11 +9,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<portal_t> {
+	template<> struct has_unique_descriptor<portal_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_animation<portal_t> {
+	template<> struct has_animation<portal_t> {
 		static constexpr bool value = true;
 	};
 
@@ -111,7 +111,7 @@ namespace necrowarp {
 
 	static inline std::uniform_int_distribution<u16> stability_dis{ static_cast<u16>(stability_e::Calm), static_cast<u16>(stability_e::Yawning) };
 
-	template<RandomEngine Generator> static inline stability_e random_stability(ref<Generator> generator) noexcept { return static_cast<stability_e>(stability_dis(generator)); }
+	template<RandomEngine Generator> static inline stability_e random_stability(ref<Generator> engine) noexcept { return static_cast<stability_e>(stability_dis(engine)); }
 
 	struct portal_t {
 		const stability_e stability;

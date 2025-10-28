@@ -24,7 +24,7 @@ namespace necrowarp {
 
 	static inline phase_t phase{};
 
-	static inline window_t window{ globals::GameName, globals::window_size, globals::WindowFlags };
+	static inline window_t window{ globals::GameName, globals::window_size(), globals::WindowFlags };
 	static inline renderer_t renderer{ window, globals::RendererFlags };
 
 	static inline atlas_t<globals::GlyphsetSize> ui_atlas{ renderer, "res/gfx/glyphs/glyphs_8x8.png" };
@@ -146,7 +146,7 @@ namespace necrowarp {
 
 	static inline mixer_s mixer{};
 
-	static inline priority_mutex process_access{};
+	static inline priority_mutex async_lock{};
 
 	static inline priority_mutex registry_access{};
 

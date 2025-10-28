@@ -7,6 +7,24 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	template<typename T> struct has_unique_descriptor {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool has_unique_descriptor_v = has_unique_descriptor<T>::value;
+
+	template<typename T> struct has_animation {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool has_animation_v = has_animation<T>::value;
+
+	template<typename T> struct has_variants {
+		static constexpr bool value = false;
+	};
+
+	template<typename T> constexpr bool has_variants_v = has_variants<T>::value;
+
 	enum struct map_type_e : u8 {
 		Standard,
 		Pocket
@@ -181,8 +199,14 @@ namespace necrowarp {
 				}
 			}
 		}
+
+		static constexpr color_t to_color(resolution_e resolution) noexcept { return colors::White; }
+
+		static constexpr runes_t to_colored_string(resolution_e resolution) noexcept { return runes_t{ to_string(resolution), to_color(resolution) }; }
+
+		static inline resolution_e current_resolution{ resolution_e::Resolution640x480 };
 		
-		static inline extent_t window_size{ Resolutions[resolution_e::Resolution1280x720] };
+		static inline extent_t window_size() noexcept { return Resolutions[current_resolution]; }
 
 		template<grid_type_e GridType> static constexpr extent_t cell_size;
 
@@ -190,11 +214,11 @@ namespace necrowarp {
 		template<> inline constexpr extent_t cell_size<grid_type_e::Game>{ 64, 64 };
 		template<> inline constexpr extent_t cell_size<grid_type_e::Icon>{ 64, 64 };
 
-		template<grid_type_e GridType> inline extent_t grid_overflow() noexcept { return window_size % cell_size<GridType>; }
+		template<grid_type_e GridType> inline extent_t grid_overflow() noexcept { return window_size() % cell_size<GridType>; }
 
 		template<grid_type_e GridType> inline bool is_grid_flush() noexcept { return grid_overflow<GridType>() == extent_t::Zero; }
 
-		template<grid_type_e GridType> inline extent_t grid_size() noexcept { return window_size / cell_size<GridType>; }
+		template<grid_type_e GridType> inline extent_t grid_size() noexcept { return window_size() / cell_size<GridType>; }
 
 		template<grid_type_e GridType> constexpr bool use_grid_offset{ false };
 
@@ -212,7 +236,7 @@ namespace necrowarp {
 
 		template<grid_type_e GridType> inline offset_t grid_extent() noexcept {
 			if constexpr (use_grid_offset<GridType>) {
-				return offset_t{ window_size - grid_overflow<GridType>() / 2 - 1 };
+				return offset_t{ window_size() - grid_overflow<GridType>() / 2 - 1 };
 			} else {
 				return offset_t::Zero;
 			}
@@ -220,7 +244,7 @@ namespace necrowarp {
 
 		template<grid_type_e GridType> inline offset_t grid_center() noexcept {
 			if constexpr (use_grid_offset<GridType>) {
-				return offset_t{ window_size / 2 - grid_overflow<GridType>() / 2 - 1 };
+				return offset_t{ window_size() / 2 - grid_overflow<GridType>() / 2 - 1 };
 			} else {
 				return offset_t::Zero;
 			}
@@ -295,32 +319,32 @@ namespace necrowarp {
 		};
 		
 		constexpr const map_config_t CavernPreset{
-			.fill_percent = 0.45,
-			.automata_iterations = 10,
+			.fill_percent = 0.475,
+			.automata_iterations = 512,
 			.automata_threshold = 4,
 		};
 		
 		constexpr const map_config_t TunnelsPreset{
-			.fill_percent = 0.475,
-			.automata_iterations = 10,
+			.fill_percent = 0.5125,
+			.automata_iterations = 512,
 			.automata_threshold = 4,
 		};
 		
-		constexpr const map_config_t FieldPreset{
-			.fill_percent = 0.425,
-			.automata_iterations = 10,
+		constexpr const map_config_t ChamberPreset{
+			.fill_percent = 0.4375,
+			.automata_iterations = 512,
 			.automata_threshold = 4,
 		};
 
 		static inline map_config_t map_config{ CavernPreset };
 
-		static inline std::bernoulli_distribution map_config_dis{ 0.66 };
+		static inline std::bernoulli_distribution map_config_dis{ 0.666 };
 
 		template<RandomEngine Generator> static inline void randomize_map_config(ref<Generator> engine) noexcept {
 			map_config = map_config_dis(engine) ? CavernPreset : TunnelsPreset;
 		}
 
-		constexpr bool EnableRushMode{ true };
+		constexpr bool EnableRushMode{ false };
 
 		static inline bool rush_mode_toggle{ false };
 
@@ -400,6 +424,9 @@ namespace necrowarp {
 		// a portal to an audience has a 25% chance every ten levels
 		constexpr f32 AudiencePortalChance{ 0.25f / 10.0f };
 
+		// plonzo has a 5% chance to spawn every ten levels
+		constexpr f32 PlonzoSpawnChance{ 0.05f / 10.0f };
+
 		constexpr i32 MinimumApproximateTideSize{ 32 };
 		constexpr i32 MaximumApproximateTideSize{ 128 };
 
@@ -415,6 +442,14 @@ namespace necrowarp {
 		static inline std::bernoulli_distribution tribulation_portal_chance{ TribulationPortalChance };
 		static inline std::bernoulli_distribution audience_portal_chance{ AudiencePortalChance };
 
+		static inline std::bernoulli_distribution plonzo_chance{ PlonzoSpawnChance };
+
+		static constexpr usize PlonzoGuaranteedID{
+			// Target's Steam ID: 76561198068126763ULL
+			//       My Steam ID: 76561198045019734ULL
+			0ULL
+		};
+
 		constexpr offset_t CavernTileNudge{ 0, 0 };
 		constexpr offset_t FluidTileNudge{ 0, 0 };
 
@@ -427,23 +462,5 @@ namespace necrowarp {
 
 		constexpr i32 MinimumCatalyst{ 4 };
 		constexpr i32 MaximumCatalyst{ 9 };
-
-		template<typename T> struct has_unique_descriptor {
-			static constexpr bool value = false;
-		};
-
-		template<typename T> constexpr bool has_unique_descriptor_v = has_unique_descriptor<T>::value;
-
-		template<typename T> struct has_animation {
-			static constexpr bool value = false;
-		};
-
-		template<typename T> constexpr bool has_animation_v = has_animation<T>::value;
-
-		template<typename T> struct has_variants {
-			static constexpr bool value = false;
-		};
-
-		template<typename T> constexpr bool has_variants_v = has_variants<T>::value;
 	} // namespace globals
 } // namespace necrowarp

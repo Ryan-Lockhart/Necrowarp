@@ -561,6 +561,21 @@ namespace necrowarp {
 		remove<ALL_NON_PLAYER>(position);
 	}
 
+	template<map_type_e MapType> template<NonPlayerEntity EntityType, NonNullCommand CommandType> inline void entity_registry_t<MapType>::clear() noexcept {
+		if constexpr (is_entity_command_valid<EntityType, CommandType>::value) {
+			while (!entity_commands<EntityType, CommandType>.empty()) {
+				entity_commands<EntityType, CommandType>.pop();
+			}
+		}
+	}
+
+	template<map_type_e MapType>
+	template<NonPlayerEntity EntityType, NonNullCommand... CommandTypes>
+		requires is_plurary<CommandTypes...>::value
+	inline void entity_registry_t<MapType>::clear() noexcept {
+		(clear<EntityType, CommandTypes>(), ...);
+	}
+
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline void entity_registry_t<MapType>::clear() noexcept {
 		player.reset();
 
@@ -569,6 +584,8 @@ namespace necrowarp {
 
 	template<map_type_e MapType> template<NonPlayerEntity EntityType> inline void entity_registry_t<MapType>::clear() noexcept {
 		entity_registry_storage<EntityType>.clear();
+
+		clear<EntityType, ALL_NON_NULL_COMMANDS>();
 
 		reset_goal_map<EntityType>();
 
@@ -726,6 +743,8 @@ namespace necrowarp {
 
 	template<map_type_e MapType> template<PlayerEntity EntityType> inline void entity_registry_t<MapType>::update() noexcept {
 		const command_pack_t pack{ player.command };
+
+		player.command = {};
 
 		magic_enum::enum_switch([&](auto val) -> void {
 			constexpr command_e cval{ val };
@@ -1412,10 +1431,6 @@ namespace necrowarp {
 			return;
 		}
 
-		if (descent_flag || plunge_flag) {
-			return;
-		}
-
 		if (camera_locked) {
 			update_camera<MapType>();
 		}
@@ -1440,6 +1455,10 @@ namespace necrowarp {
 			}
 
 			steam_stats::unlock(achievement_e::RecorporealizeDeath);
+		}
+
+		if (descent_flag || plunge_flag) {
+			return;
 		}
 
 		update<ALL_NON_PLAYER>();

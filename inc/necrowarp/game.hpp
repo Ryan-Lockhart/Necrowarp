@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <thread>
 
 #include <necrowarp/entities.hpp>
 #include <necrowarp/commands.hpp>
@@ -66,6 +67,8 @@ namespace necrowarp {
 		}
 
 		template<map_type_e MapType> static inline bool character_input() noexcept {
+			constexpr input_e NormallyOneshot{ globals::EnableRushMode ? input_e::Pressed : input_e::Down };
+
 			player.command = command_pack_t{};
 
 			const bool ignore_objects{ keyboard_s::is_key<input_e::Pressed>(bindings::IgnoreObjects) };
@@ -84,9 +87,9 @@ namespace necrowarp {
 				player.command = command_pack_t{ command_e::None };
 
 				return true;
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::ChaoticWarp)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::ChaoticWarp)) {
 				player.command = command_pack_t{ command_e::ChaoticWarp, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::PreciseWarp)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::PreciseWarp)) {
 				const offset_t target_position{ grid_cursor<MapType>.get_position() };
 
 				const std::optional<entity_e> maybe_entity{ entity_registry<MapType>.at(target_position) };
@@ -110,33 +113,33 @@ namespace necrowarp {
 						target_position
 					};	
 				}
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::Annihilate)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::Annihilate)) {
 				player.command = command_pack_t{ command_e::Annihilate, player.position, grid_cursor<MapType>.get_position() };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::Repulse)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::Repulse)) {
 				player.command = command_pack_t{ command_e::Repulse, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::Calcify)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::Calcify)) {
 				player.command = command_pack_t{ command_e::Calcify, player.position, grid_cursor<MapType>.get_position() };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::Incorporealize)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::Incorporealize)) {
 				player.command = command_pack_t{ command_e::Incorporealize, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::CalciticInvocation)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::CalciticInvocation)) {
 				player.command = command_pack_t{ command_e::CalciticInvocation, player.position, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::SpectralInvocation)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::SpectralInvocation)) {
 				player.command = command_pack_t{ command_e::SpectralInvocation, player.position, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::SanguineInvocation)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::SanguineInvocation)) {
 				player.command = command_pack_t{ command_e::SanguineInvocation, player.position, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::GalvanicInvocation)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::GalvanicInvocation)) {
 				player.command = command_pack_t{ command_e::GalvanicInvocation, player.position, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::RavenousInvocation)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::RavenousInvocation)) {
 				player.command = command_pack_t{ command_e::RavenousInvocation, player.position, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::WretchedInvocation)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::WretchedInvocation)) {
 				player.command = command_pack_t{ command_e::WretchedInvocation, player.position, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::CerebralInvocation)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::CerebralInvocation)) {
 				player.command = command_pack_t{ command_e::CerebralInvocation, player.position, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::InfernalInvocation)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::InfernalInvocation)) {
 				player.command = command_pack_t{ command_e::InfernalInvocation, player.position, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::NecromanticAscendance)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::NecromanticAscendance)) {
 				player.command = command_pack_t{ command_e::NecromanticAscendance, player.position };
-			} else if (keyboard_s::is_key<input_e::Pressed>(bindings::CalamitousRetaliation)) {
+			} else if (keyboard_s::is_key<NormallyOneshot>(bindings::CalamitousRetaliation)) {
 				player.command = command_pack_t{ command_e::CalamitousRetaliation, player.position };
 			}
 
@@ -233,7 +236,7 @@ namespace necrowarp {
 
 		template<map_type_e MapType> static inline void plunge_async() noexcept;
 
-		template<map_type_e MapType> static inline void process_turn_async() noexcept;
+		static inline void process_turn_async() noexcept;
 
 		template<map_type_e MapType> static inline void unload_async() noexcept;
 
@@ -555,18 +558,18 @@ namespace necrowarp {
 			return true;
 		}
 
-		static inline void terminate_process_turn() noexcept {
+		static inline void suspend_process_turn() noexcept {
 			if (!processing_turn) {
 				return;
 			}
 
 			game_running = false;
 
-			process_access.lock<true>();
+			while (processing_turn) {
+				std::this_thread::yield();
+			}
 
 			assert(!processing_turn);
-
-			process_access.unlock();
 		}
 
 		template<map_type_e MapType> static inline void update() noexcept;
@@ -585,13 +588,13 @@ namespace necrowarp {
 				const extent_t excess_size{ (globals::grid_size<grid_type_e::Game>() - globals::MapSize<MapType> + 1) * globals::cell_size<grid_type_e::Game> / 2 };
 
 				if (exceeds_width) {
-					renderer.draw_fill_rect(rect_t{ offset_t::Zero, extent_t{ excess_size.w, globals::window_size.h } }, color_t{ u8{ 0xC0 } });
-					renderer.draw_fill_rect(rect_t{ offset_t{ globals::window_size.w - excess_size.w - 1, 0}, extent_t{ excess_size.w, globals::window_size.h } }, color_t{ u8{ 0xC0 } });
+					renderer.draw_fill_rect(rect_t{ offset_t::Zero, extent_t{ excess_size.w, globals::window_size().h } }, color_t{ u8{ 0xC0 } });
+					renderer.draw_fill_rect(rect_t{ offset_t{ globals::window_size().w - excess_size.w - 1, 0}, extent_t{ excess_size.w, globals::window_size().h } }, color_t{ u8{ 0xC0 } });
 				}
 
 				if (exceeds_height) {
-					renderer.draw_fill_rect(rect_t{ offset_t::Zero, extent_t{ globals::window_size.w, excess_size.h } }, color_t{ u8{ 0xC0 } });
-					renderer.draw_fill_rect(rect_t{ offset_t{ 0, globals::window_size.h - excess_size.h - 1 }, extent_t{ globals::window_size.w, excess_size.h } }, color_t{ u8{ 0xC0 } });
+					renderer.draw_fill_rect(rect_t{ offset_t::Zero, extent_t{ globals::window_size().w, excess_size.h } }, color_t{ u8{ 0xC0 } });
+					renderer.draw_fill_rect(rect_t{ offset_t{ 0, globals::window_size().h - excess_size.h - 1 }, extent_t{ globals::window_size().w, excess_size.h } }, color_t{ u8{ 0xC0 } });
 				}
 
 				if (registry_access.try_lock()) {
@@ -611,7 +614,7 @@ namespace necrowarp {
 		}
 
 		static inline void shutdown() noexcept {
-			terminate_process_turn();
+			suspend_process_turn();
 
 			keyboard_s::terminate();
 			mouse_s::terminate();

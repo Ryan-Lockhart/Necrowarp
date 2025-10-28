@@ -50,8 +50,9 @@ namespace necrowarp::indices {
 	constexpr const u8 Isoscel{ FurtiveHorror + 1 };
 
 	constexpr const u8 Fauna{ Isoscel + 1 };
+	constexpr const u8 Plonzo{ Fauna + 1 };
 
-	constexpr const u8 Adventurer{ Fauna + 1 };
+	constexpr const u8 Adventurer{ Plonzo + 1 };
 	constexpr const u8 Mercenary{ Adventurer + 1 };
 
 	constexpr const u8 VisibleSkulker{ Mercenary + 1 };

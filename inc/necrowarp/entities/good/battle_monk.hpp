@@ -12,7 +12,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<battle_monk_t> {
+	template<> struct has_unique_descriptor<battle_monk_t> {
 		static constexpr bool value = true;
 	};
 
@@ -132,8 +132,8 @@ namespace necrowarp {
 
 		static constexpr i8 ProteinValue{ 1 };
 
-		// battle monk has a 25% chance to breach a gate every ten turns of meditation (2.5% every meditation)
-		static constexpr f32 BreachChance{ 0.25f / 10.0f };
+		// battle monk has a 50% chance to breach a gate every ten turns of meditation (5% every meditation)
+		static constexpr f32 BreachChance{ 0.5f / 10.0f };
 
 	  private:
 		template<tranquility_e Tranquility> static inline i8 dodge_threshold;
@@ -144,11 +144,11 @@ namespace necrowarp {
 
 		static inline std::bernoulli_distribution breach_dis{ BreachChance };
 
-		template<RandomEngine Generator> static inline bool breach(ref<Generator> generator) noexcept { return breach_dis(generator); }
+		template<RandomEngine Generator> static inline bool breach(ref<Generator> engine) noexcept { return breach_dis(engine); }
 
 		static inline std::uniform_int_distribution<i16> dodge_dis{ 0, 100 };
 
-		template<RandomEngine Generator> static inline i8 get_dodge_chance(ref<Generator> generator) noexcept { return static_cast<i8>(battle_monk_t::dodge_dis(generator)); }
+		template<RandomEngine Generator> static inline i8 get_dodge_chance(ref<Generator> engine) noexcept { return static_cast<i8>(battle_monk_t::dodge_dis(engine)); }
 		
 		i8 qi;
 
@@ -185,8 +185,8 @@ namespace necrowarp {
 
 		static constexpr bool HasStaticDodge{ false };
 
-		template<RandomEngine Generator> inline bool dodge(ref<Generator> generator) noexcept {
-			const i8 chance{ battle_monk_t::get_dodge_chance(generator) };
+		template<RandomEngine Generator> inline bool dodge(ref<Generator> engine) noexcept {
+			const i8 chance{ battle_monk_t::get_dodge_chance(engine) };
 
 			return magic_enum::enum_switch([&](auto val) -> bool {
 				constexpr tranquility_e cval{ val };

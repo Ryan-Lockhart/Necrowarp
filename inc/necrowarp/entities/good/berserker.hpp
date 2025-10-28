@@ -10,11 +10,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<berserker_t> {
+	template<> struct has_unique_descriptor<berserker_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_variants<berserker_t> {
+	template<> struct has_variants<berserker_t> {
 		static constexpr bool value = true;
 	};
 

@@ -276,7 +276,7 @@ namespace necrowarp {
 		static constexpr bool value = true;
 	};
 
-	template<typename T> concept AnimatedObject = NonNullObject<T> && globals::has_animation<T>::value;
+	template<typename T> concept AnimatedObject = NonNullObject<T> && has_animation<T>::value;
 
 	template<typename T, object_e ObjectType> struct is_object_type {
 		static constexpr bool value = false;
@@ -289,6 +289,6 @@ namespace necrowarp {
 	template<typename T, object_e ObjectType> constexpr bool is_object_type_v = is_object_type<T, ObjectType>::value;
 
 	template<NonNullObject ObjectType>
-		requires (!globals::has_animation<ObjectType>::value && !globals::has_variants<ObjectType>::value)
+		requires (!has_animation<ObjectType>::value && !has_variants<ObjectType>::value)
 	inline constexpr glyph_t object_glyphs;
 } // namespace necrowarp

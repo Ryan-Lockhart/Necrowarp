@@ -89,6 +89,12 @@ namespace necrowarp {
 
 		inline void remove(offset_t position) noexcept;
 
+		template<NonPlayerEntity EntityType, NonNullCommand CommandType> inline void clear() noexcept;
+
+		template<NonPlayerEntity EntityType, NonNullCommand... CommandTypes>
+			requires is_plurary<CommandTypes...>::value
+		inline void clear() noexcept;
+
 		template<PlayerEntity EntityType> inline void clear() noexcept;
 
 		template<NonPlayerEntity EntityType> inline void clear() noexcept;

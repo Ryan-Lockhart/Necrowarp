@@ -120,7 +120,7 @@ namespace necrowarp {
 
 			using object_type = to_object_type<cval>::type;
 
-			if constexpr (globals::has_unique_descriptor<object_type>::value) {
+			if constexpr (has_unique_descriptor<object_type>::value) {
 				cauto object_ptr{ object_registry<MapType>.dependent at<object_type>(position) };
 
 				if (object_ptr != nullptr) {

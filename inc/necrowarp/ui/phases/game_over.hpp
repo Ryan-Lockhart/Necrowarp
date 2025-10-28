@@ -6,8 +6,12 @@ namespace necrowarp {
 template<> struct phase_state_t<phase_e::GameOver> {
 		static inline bool show_statistics{ false };
 
+		static inline offset_t game_over_label_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } };
+		}
+		
 		static inline label_t game_over_label{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
+			anchor_t{ game_over_label_position(), cardinal_e::South },
 			embedded_label_t{
 				runes_t{
 					runes_t{
@@ -25,8 +29,12 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			}
 		};
 
+		static inline offset_t retry_button_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ -1, 1 } };
+		}
+		
 		static inline labeled_button_t retry_button{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ -1, 1 } }, cardinal_e::Northeast },
+			anchor_t{ retry_button_position(), cardinal_e::Northeast },
 			embedded_label_t{
 				runes_t{ "Retry", colors::Green },
 				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
@@ -34,8 +42,12 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			}
 		};
 
+		static inline offset_t quit_button_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 1, 1 } };
+		}
+		
 		static inline labeled_button_t quit_button{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 1, 1 } }, cardinal_e::Northwest },
+			anchor_t{ quit_button_position(), cardinal_e::Northwest },
 			embedded_label_t{
 				runes_t{ "Quit", colors::Red },
 				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
@@ -43,8 +55,11 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			}
 		};
 
+		static inline offset_t statistics_hidden_label_position() noexcept {
+			return offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }; }
+		
 		static inline label_t statistics_hidden_label{
-			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
+			anchor_t{ statistics_hidden_label_position(), cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ " Statistics ", colors::White },
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -52,8 +67,12 @@ template<> struct phase_state_t<phase_e::GameOver> {
 			}
 		};
 
+		static inline offset_t statistics_expanded_label_position() noexcept {
+			return offset_t{ 1, globals::grid_size<grid_type_e::UI>().h };
+		}
+		
 		static inline label_t statistics_expanded_label{
-			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
+			anchor_t{ statistics_expanded_label_position(), cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ " Statistics ", colors::White },
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -118,6 +137,15 @@ template<> struct phase_state_t<phase_e::GameOver> {
 
 				statistics_expanded_label.text = stats_str;
 			}
+		}
+
+		static inline void resize() noexcept {
+			game_over_label.position = game_over_label_position();
+			retry_button.position = retry_button_position();
+			quit_button.position = quit_button_position();
+
+			statistics_hidden_label.position = statistics_hidden_label_position();
+			statistics_expanded_label.position = statistics_expanded_label_position();
 		}
 
 		static inline void draw(ref<renderer_t> renderer) noexcept {

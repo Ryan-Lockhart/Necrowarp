@@ -16,7 +16,7 @@ namespace necrowarp {
 	template<> inline void game_s::unload<dimension_e::AncientVault>() noexcept {
 		constexpr map_type_e MapType = determine_map<dimension_e::AncientVault>();
 
-		terminate_process_turn();
+		suspend_process_turn();
 
 		game_map<MapType>.dependent reset<region_e::All>();
 		fluid_map<MapType>.dependent reset<region_e::All>();

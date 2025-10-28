@@ -18,11 +18,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<thetwo_t> {
+	template<> struct has_unique_descriptor<thetwo_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_variants<thetwo_t> {
+	template<> struct has_variants<thetwo_t> {
 		static constexpr bool value = true;
 	};
 	
@@ -174,7 +174,7 @@ namespace necrowarp {
 			0.0f		// titanic
 		};
 
-		template<RandomEngine Generator> static inline bulk_e random_bulk(ref<Generator> generator) noexcept { return static_cast<bulk_e>(bulk_dis(generator)); }
+		template<RandomEngine Generator> static inline bulk_e random_bulk(ref<Generator> engine) noexcept { return static_cast<bulk_e>(bulk_dis(engine)); }
 
 		// approximate distribution of thetwo population endemic to the southeastern coast of Raetun
 		// for the expansion, this distribution will shift heaviliy to lanky thetwo as we'll be in Mok
@@ -184,7 +184,7 @@ namespace necrowarp {
 			1.0f,	// lanky
 		};
 
-		template<RandomEngine Generator> static inline breed_e random_breed(ref<Generator> generator) noexcept { return static_cast<breed_e>(breed_dis(generator)); }
+		template<RandomEngine Generator> static inline breed_e random_breed(ref<Generator> engine) noexcept { return static_cast<breed_e>(breed_dis(engine)); }
 
 		bulk_e bulk : 4;
 

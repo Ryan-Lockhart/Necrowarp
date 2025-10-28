@@ -12,11 +12,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<wraith_t> {
+	template<> struct has_unique_descriptor<wraith_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_animation<wraith_t> {
+	template<> struct has_animation<wraith_t> {
 		static constexpr bool value = true;
 	};
 
@@ -119,7 +119,7 @@ namespace necrowarp {
 
 		static constexpr bool HasStaticDodge{ true };
 
-		template<RandomEngine Generator> static inline bool dodge(ref<Generator> generator) noexcept { return dodge_dis(generator); }
+		template<RandomEngine Generator> static inline bool dodge(ref<Generator> engine) noexcept { return dodge_dis(engine); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 

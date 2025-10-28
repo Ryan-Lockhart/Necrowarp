@@ -12,7 +12,7 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<flesh_golem_t> {
+	template<> struct has_unique_descriptor<flesh_golem_t> {
 		static constexpr bool value = true;
 	};
 

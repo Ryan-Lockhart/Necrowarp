@@ -33,8 +33,12 @@ namespace necrowarp {
 	};
 
 	template<> struct phase_state_t<phase_e::Paused> {
+		static inline offset_t resume_button_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } };
+		}
+		
 		static inline labeled_button_t resume_button{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 - offset_t{ 0, 1 } }, cardinal_e::South },
+			anchor_t{ resume_button_position(), cardinal_e::South },
 			embedded_label_t{
 				runes_t{ "Resume", colors::Green },
 				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
@@ -42,8 +46,12 @@ namespace necrowarp {
 			}
 		};
 
+		static inline offset_t quit_button_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 0, 1 } };
+		}
+		
 		static inline labeled_button_t quit_button{
-			anchor_t{ offset_t{ globals::grid_size<grid_type_e::UI>() / 2 + offset_t{ 0, 1 } }, cardinal_e::North },
+			anchor_t{ quit_button_position(), cardinal_e::North },
 			embedded_label_t{
 				runes_t{ "Quit", colors::White },
 				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
@@ -53,8 +61,12 @@ namespace necrowarp {
 
 		static inline bool show_help{ true };
 
+		static inline offset_t help_label_position() noexcept {
+			return offset_t{ 1, globals::grid_size<grid_type_e::UI>().h };
+		}
+		
 		static inline label_t help_label{
-			anchor_t{ offset_t{ 1, globals::grid_size<grid_type_e::UI>().h }, cardinal_e::Southwest },
+			anchor_t{ help_label_position(), cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ show_help ? help_expanded_text : help_hidden_text, colors::White },
 				embedded_box_t{ colors::Black, border_t{ colors::White, 1 } },
@@ -89,6 +101,12 @@ namespace necrowarp {
 			} else if (quit_button.is_active()) {
 				phase.transition(phase_e::Exiting);
 			}
+		}
+
+		static inline void resize() noexcept {
+			resume_button.position = resume_button_position();
+			quit_button.position = quit_button_position();
+			help_label.position = help_label_position();
 		}
 
 		static inline void draw(ref<renderer_t> renderer) noexcept {

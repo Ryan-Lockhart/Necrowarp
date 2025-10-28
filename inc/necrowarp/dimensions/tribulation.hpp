@@ -29,9 +29,9 @@ namespace necrowarp {
 			.dependent set<region_e::Border>(closed_state)
 			.dependent generate<region_e::Interior>(
 				map_engine,
-				globals::CavernPreset.fill_percent,
-				globals::CavernPreset.automata_iterations,
-				globals::CavernPreset.automata_threshold,
+				globals::ChamberPreset.fill_percent,
+				globals::ChamberPreset.automata_iterations,
+				globals::ChamberPreset.automata_threshold,
 				cell_applicator
 			)
 			.dependent collapse<region_e::Interior>(cell_e::Solid, 0x00, cell_e::Open);
@@ -63,7 +63,17 @@ namespace necrowarp {
 
 			terminate_prematurely();
 		}
-		
+
+		if (api_state.user_id == globals::PlonzoGuaranteedID || globals::plonzo_chance(random_engine)) {
+			cauto plonzo_pos{ game_map<MapType>.dependent find_random<region_e::Interior>(random_engine, cell_e::Open) };
+
+			if (!plonzo_pos.has_value() || !entity_registry<MapType>.dependent add<plonzo_t>(plonzo_pos.value())) {
+				error_log.add("[ERROR]: could not find open position for plonzo!");
+
+				terminate_prematurely();
+			}
+		}
+
 		const disposition_e current_disposition{ get_patron_disposition(player.patron) };
 		
 		const i32 gateway_count{ game_stats.current_gateways() };
@@ -140,7 +150,7 @@ namespace necrowarp {
 	template<> inline void game_s::unload<dimension_e::Tribulation>() noexcept {
 		constexpr map_type_e MapType = determine_map<dimension_e::Tribulation>();
 
-		terminate_process_turn();
+		suspend_process_turn();
 
 		game_map<MapType>.dependent reset<region_e::All>();
 		fluid_map<MapType>.dependent reset<region_e::All>();

@@ -14,11 +14,11 @@
 namespace necrowarp {
 	using namespace bleak;
 
-	template<> struct globals::has_unique_descriptor<ranger_t> {
+	template<> struct has_unique_descriptor<ranger_t> {
 		static constexpr bool value = true;
 	};
 
-	template<> struct globals::has_variants<ranger_t> {
+	template<> struct has_variants<ranger_t> {
 		static constexpr bool value = true;
 	};
 
@@ -195,9 +195,9 @@ namespace necrowarp {
 
 		static constexpr bool HasStaticDodge{ true };
 
-		template<RandomEngine Generator> static inline bool dodge(ref<Generator> generator) noexcept { return dodge_dis(generator); }
+		template<RandomEngine Generator> static inline bool dodge(ref<Generator> engine) noexcept { return dodge_dis(engine); }
 
-		template<RandomEngine Generator> static inline bool fumble(ref<Generator> generator) noexcept { return fumble_dis(generator); }
+		template<RandomEngine Generator> static inline bool fumble(ref<Generator> engine) noexcept { return fumble_dis(engine); }
 
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
