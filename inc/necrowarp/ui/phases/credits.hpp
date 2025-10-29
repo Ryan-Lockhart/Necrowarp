@@ -11,7 +11,8 @@ namespace necrowarp {
 			embedded_label_t{
 				runes_t{
 					"               Mateus Santos de Oliveira, the pixel artist responsible for the game's sprite artwork               \n\n\n"
-					"             Steve \"Skooba\" Myers, the digital artist responsible for the game's promotional artwork             \n\n\n\n\n"
+					"             Steve \"Skooba\" Myers, the digital artist responsible for the game's promotional artwork             \n\n\n"
+					"             Eliecer \"EliccStaley\" Morales, the pixel artist responsible for the game's scene artwork            \n\n\n\n\n"
 					"             Tejon, the author of the 8x8 Potash bitmap font from the Dwarf Fortress Tileset Repository            \n\n\n\n\n"
 					"                          Various design contributions by Zachary Shelton and Humza Malik                          \n\n\n"
 					"             The support of my father, Jeff, and my friends Jackson, Donald, Robert, Beaches and Hunter            \n\n\n\n\n"

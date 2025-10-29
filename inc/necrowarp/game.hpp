@@ -191,6 +191,8 @@ namespace necrowarp {
 
 			api_state.user_id = steam::user::get_steam_id();
 
+			api_state.owns_dlc = steam::apps::has_dlc(api_state.app_id<app_e::Insurrection>);
+
 			steam_stats::transcribe();
 #endif
 
@@ -208,6 +210,7 @@ namespace necrowarp {
 #if !defined(STEAMLESS)
 			stat_store_timer.reset();
 #endif
+			resolution_selector.set_selected(globals::current_resolution);
 		}
 
 		template<dimension_e Dimension> requires is_material<Dimension>::value static inline void load() noexcept;

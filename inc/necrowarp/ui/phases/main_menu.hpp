@@ -4,25 +4,12 @@
 
 namespace necrowarp {
 	template<> struct phase_state_t<phase_e::MainMenu> {
-		static inline offset_t credits_button_position() noexcept {
-			return offset_t{ globals::grid_size<grid_type_e::UI>() / 2 };
-		}
-		
-		static inline labeled_button_t credits_button{
-			anchor_t{ credits_button_position(), cardinal_e::Central },
-			embedded_label_t{
-				runes_t{ "Credits", colors::Orange },
-				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
-				extent_t{ 1, 1 }
-			}
-		};
-
 		static inline offset_t new_game_button_position() noexcept {
-			return credits_button_position() - offset_t{ credits_button.calculate_size().w / 2 + 2, 0 };
+			return offset_t{ 2, globals::grid_size<grid_type_e::UI>().h - 1 };
 		}
 		
 		static inline labeled_button_t new_game_button{
-			anchor_t{ new_game_button_position(), cardinal_e::East },
+			anchor_t{ new_game_button_position(), cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ "New Game", colors::Green },
 				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
@@ -30,12 +17,25 @@ namespace necrowarp {
 			}
 		};
 
+		static inline offset_t credits_button_position() noexcept {
+			return offset_t{ globals::grid_size<grid_type_e::UI>().w - 1, 2 };
+		}
+		
+		static inline labeled_button_t credits_button{
+			anchor_t{ credits_button_position(), cardinal_e::Northeast },
+			embedded_label_t{
+				runes_t{ "Credits", colors::Orange },
+				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
+				extent_t{ 1, 1 }
+			}
+		};
+
 		static inline offset_t quit_button_position() noexcept {
-			return credits_button_position() + offset_t{ credits_button.calculate_size().w / 2 + 2, 0 };
+			return offset_t{ globals::grid_size<grid_type_e::UI>() - 1 };
 		}
 		
 		static inline labeled_button_t quit_button{
-			anchor_t{ quit_button_position(), cardinal_e::West },
+			anchor_t{ quit_button_position(), cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{ "Quit", colors::White },
 				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },

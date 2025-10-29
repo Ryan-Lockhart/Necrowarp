@@ -38,7 +38,7 @@ namespace necrowarp {
 
 	namespace globals {
 		constexpr cstr GameName{ "Necrowarp" };
-		constexpr cstr GameVersion{ "0.1.2" };
+		constexpr cstr GameVersion{ "0.1.3" };
 		constexpr cstr GameAuthor{ "Ryan Lockhart" };
 
 		const std::string GameTitle{ std::format("{} v{} by {}", GameName, GameVersion, GameAuthor) };
@@ -204,7 +204,7 @@ namespace necrowarp {
 
 		static constexpr runes_t to_colored_string(resolution_e resolution) noexcept { return runes_t{ to_string(resolution), to_color(resolution) }; }
 
-		static inline resolution_e current_resolution{ resolution_e::Resolution640x480 };
+		static inline resolution_e current_resolution{ resolution_e::Resolution1280x720 };
 		
 		static inline extent_t window_size() noexcept { return Resolutions[current_resolution]; }
 
@@ -446,8 +446,7 @@ namespace necrowarp {
 
 		static constexpr usize PlonzoGuaranteedID{
 			// Target's Steam ID: 76561198068126763ULL
-			//       My Steam ID: 76561198045019734ULL
-			0ULL
+			76561198045019734ULL
 		};
 
 		constexpr offset_t CavernTileNudge{ 0, 0 };

@@ -17,7 +17,7 @@ namespace necrowarp {
 	using namespace bleak;
 
 #if defined(BLEAK_RELEASE)
-	static inline subsystem_s subsystem{ api_state_s::app_id };
+	static inline subsystem_s subsystem{ api_state_s::app_id<app_e::Base> };
 #elif defined(BLEAK_DEBUG)
 	static inline subsystem_s subsystem{};
 #endif
@@ -36,7 +36,20 @@ namespace necrowarp {
 
 	static inline texture_t ui_cursor_texture{ renderer, "res/gfx/sprites/cursor.png" };
 	static inline texture_t grid_cursor_texture{ renderer, "res/gfx/sprites/grid_cursor.png" };
-	
+
+	struct backgrounds_t {
+		texture_t base_start;
+		texture_t base_end;
+
+		texture_t expansion_start;
+		texture_t expansion_end;
+	} static inline backgrounds{
+		texture_t{ renderer, "res/gfx/sprites/ui/backgrounds/base_start.png" },
+		texture_t{ renderer, "res/gfx/sprites/ui/backgrounds/base_end.png" },
+		texture_t{ renderer, "res/gfx/sprites/ui/backgrounds/expansion_start.png" },
+		texture_t{ renderer, "res/gfx/sprites/ui/backgrounds/expansion_end.png" }
+	};
+
 	static inline game_stats_t game_stats{};
 
 	static inline std::bernoulli_distribution coinflip{};

@@ -27,10 +27,21 @@ namespace necrowarp {
 
 	static inline std::mt19937_64 map_engine{ use_fixed_seed ? default_seed : random_seed };
 
+	enum struct app_e : u8 {
+		Base,
+		Insurrection
+	};
+
 	struct api_state_s {
-		static constexpr u32 app_id{ 3631430 };
+		template<app_e App> static constexpr usize app_id{};
+
+		template<> inline constexpr usize app_id<app_e::Base>{ 3631430 };
+		template<> inline constexpr usize app_id<app_e::Insurrection>{ 4130220 };
+
 		static inline usize user_id{ 0 };
 		static inline i32 pipe_id{ 0 };
+
+		static inline bool owns_dlc{ false };
 	} static inline api_state;
 
 	enum struct attribute_e : u8 {
@@ -448,9 +459,9 @@ namespace necrowarp {
 
 		static inline bool is_user_id_valid(CSteamID user_id) noexcept { return steam::user::cast_steam_id(user_id) == api_state.user_id; }
 
-		static inline bool is_game_id_valid(usize game_id) noexcept { return game_id == api_state.app_id; }
+		static inline bool is_game_id_valid(usize game_id) noexcept { return game_id == api_state.app_id<app_e::Base>; }
 
-		static inline bool is_valid(usize game_id, CSteamID user_id) noexcept { return game_id == api_state.app_id && user_id == api_state.user_id; }
+		static inline bool is_valid(usize game_id, CSteamID user_id) noexcept { return game_id == api_state.app_id<app_e::Base> && user_id == api_state.user_id; }
 	};
 
 	using steam_stats = steam_stats_s;

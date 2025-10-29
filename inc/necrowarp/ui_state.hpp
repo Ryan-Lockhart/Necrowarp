@@ -15,8 +15,32 @@
 namespace necrowarp {
 	using namespace bleak;
 
+	static inline offset_t background_image_position() noexcept {
+		return offset_t{ globals::window_size().w / 2, globals::window_size().h / 2 };
+	}
+
+	static inline image_t base_start_background_image{
+		anchor_t{ background_image_position(), cardinal_e::Central },
+		embedded_image_t{ backgrounds.base_start }
+	};
+
+	static inline image_t base_end_background_image{
+		anchor_t{ background_image_position(), cardinal_e::Central },
+		embedded_image_t{ backgrounds.base_end }
+	};
+
+	static inline image_t expansion_start_background_image{
+		anchor_t{ background_image_position(), cardinal_e::Central },
+		embedded_image_t{ backgrounds.expansion_start }
+	};
+
+	static inline image_t expansion_end_background_image{
+		anchor_t{ background_image_position(), cardinal_e::Central },
+		embedded_image_t{ backgrounds.expansion_end }
+	};
+
 	static inline offset_t title_label_position() noexcept {
-		return offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, 1 };
+		return offset_t{ globals::grid_size<grid_type_e::UI>().w / 2, 2 };
 	}
 	
 	static inline label_t title_label{
@@ -125,6 +149,12 @@ namespace necrowarp {
 		}
 
 		inline void resize() noexcept {
+			base_start_background_image.position = background_image_position();
+			base_end_background_image.position = background_image_position();
+
+			expansion_start_background_image.position = background_image_position();
+			expansion_end_background_image.position = background_image_position();
+
 			title_label.position = title_label_position();
 
 			fps_label.position = fps_label_position();
@@ -182,6 +212,22 @@ namespace necrowarp {
 					if constexpr (cval == phase_e::Playing) {
 						phase_state_t<cval>::dependent draw<MapType>(renderer);
 					} else {
+						if constexpr (cval == phase_e::MainMenu || cval == phase_e::Paused) {
+							if (api_state.owns_dlc) {
+								if (steam_stats::is_unlocked(achievement_e::DefeatPraethornyn)) {
+									expansion_end_background_image.draw();
+								} else if (steam_stats::is_unlocked(achievement_e::CompleteAdvancedTutorial)) {
+									expansion_start_background_image.draw();
+								}
+							} else {
+								if (steam_stats::is_unlocked(achievement_e::DefeatElbikezzir)) {
+									base_end_background_image.draw();
+								} else {
+									base_start_background_image.draw();
+								}
+							}
+						}
+
 						phase_state_t<cval>::draw(renderer);
 
 						if constexpr (cval == phase_e::MainMenu || cval == phase_e::Paused) {

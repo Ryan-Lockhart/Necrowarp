@@ -194,7 +194,7 @@ namespace necrowarp {
 		template<> inline constexpr offset_t icon_position<grimoire_e::SpectralInvocation>() {
 			return offset_t{
 				globals::grid_size<grid_type_e::Icon>().w * 0.5 - 1,
-				globals::grid_size<grid_type_e::Icon>().h - 1
+				globals::grid_size<grid_type_e::Icon>().h - 2
 			};
 		}
 

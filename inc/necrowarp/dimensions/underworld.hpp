@@ -28,8 +28,6 @@ namespace necrowarp {
 
 		game_stats.cheats.enable_all();
 
-		game_stats.cheats.endow_knowledge = false;
-
 		player.refresh();
 
 		scorekeeper.reset();
