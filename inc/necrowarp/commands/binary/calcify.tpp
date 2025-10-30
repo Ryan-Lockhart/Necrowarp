@@ -50,7 +50,11 @@ namespace necrowarp {
 				}
 
 				if constexpr (is_player<entity_type>::value) {
-					entity->dependent die<MapType, death_e::Crushed>();
+					const death_info_t<death_e::Crushed> info { entity->dependent die<MapType, death_e::Crushed>() };
+
+					if (info.perished) {
+						steam_stats::unlock(achievement_e::CalcifyBonesUnderSelf);
+					}
 				} else {
 					if constexpr (is_non_evil<entity_type>::value) {
 						steam_stats::unlock(achievement_e::CalcifyBonesWithEnemy);

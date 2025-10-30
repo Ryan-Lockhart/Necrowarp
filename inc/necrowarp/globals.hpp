@@ -430,6 +430,16 @@ namespace necrowarp {
 		constexpr i32 MinimumApproximateTideSize{ 32 };
 		constexpr i32 MaximumApproximateTideSize{ 128 };
 
+		constexpr i32 MinimumTideSize{ 1 };
+		constexpr i32 MaximumTideSize{ 256 };
+
+		constexpr f32 MinimumGatewayIntensity{ 0.125f };
+		constexpr f32 MaximumGatewayIntensity{ 4.0f };
+
+		constexpr f32 GatewayIntensityGrowthRate{ 0.125f };
+
+		constexpr i32 FloorsPerGatewayIntensification{ 10 };
+
 		constexpr i32 MinimumGateways{ 2 };
 		constexpr i32 MaximumGateways{ 32 };
 

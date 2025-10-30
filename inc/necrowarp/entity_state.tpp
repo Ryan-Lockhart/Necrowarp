@@ -1451,10 +1451,10 @@ namespace necrowarp {
 			const death_info_t<death_e::Crushed> info{ player.die<MapType, death_e::Crushed>() };
 
 			if (info.perished) {
+				steam_stats::unlock(achievement_e::RecorporealizeDeath);
+
 				return;
 			}
-
-			steam_stats::unlock(achievement_e::RecorporealizeDeath);
 		}
 
 		if (descent_flag || plunge_flag) {

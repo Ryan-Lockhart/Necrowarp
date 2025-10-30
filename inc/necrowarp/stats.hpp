@@ -241,6 +241,8 @@ namespace necrowarp {
 		inline i32 current_departure_epoch() const noexcept { return clamp<i32>(game_depth / globals::FloorsPerDepartureEpoch, globals::MinimumDepartureEpoch, globals::MaximumDepartureEpoch); }
 
 		inline i32 current_gateways() const noexcept { return clamp<i32>((game_depth / globals::FloorsPerGateway) + (total_kills() / globals::KillsPerGateway), globals::MinimumGateways, globals::MaximumGateways); }
+
+		inline f32 gateway_intensity() const noexcept { return clamp<f32>((static_cast<f32>(game_depth) / globals::FloorsPerGatewayIntensification + 1) * globals::GatewayIntensityGrowthRate, globals::MinimumGatewayIntensity, globals::MaximumGatewayIntensity); }
 		
 		inline bool has_reinforcements() const noexcept { return current_reinforcements() > 0; }
 

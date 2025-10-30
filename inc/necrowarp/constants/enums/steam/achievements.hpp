@@ -27,6 +27,7 @@ namespace necrowarp {
 		CalcifyWallIntoBones,
 		CalcifyBonesIntoWall,
 		CalcifyBonesWithEnemy,
+		CalcifyBonesUnderSelf,
 
 		BasicIncorporealizeUsage,
 		ExceptionalIncorporealizeUsage,
@@ -178,6 +179,7 @@ namespace necrowarp {
 	template<> inline constexpr cstr achievements::api_key<achievement_e::CalcifyWallIntoBones>{ "calcify_wall_into_bones" };
 	template<> inline constexpr cstr achievements::api_key<achievement_e::CalcifyBonesIntoWall>{ "calcify_bones_into_wall" };
 	template<> inline constexpr cstr achievements::api_key<achievement_e::CalcifyBonesWithEnemy>{ "calcify_bones_with_enemy" };
+	template<> inline constexpr cstr achievements::api_key<achievement_e::CalcifyBonesUnderSelf>{ "calcify_bones_under_self" };
 
 	template<> inline constexpr cstr achievements::api_key<achievement_e::BasicIncorporealizeUsage>{ "basic_incorporealize_usage" };
 	template<> inline constexpr cstr achievements::api_key<achievement_e::ExceptionalIncorporealizeUsage>{ "exceptional_incorporealize_usage" };
@@ -320,6 +322,7 @@ namespace necrowarp {
 	template<> inline constexpr cstr achievements::display_name<achievement_e::CalcifyWallIntoBones>{ "Calcium Deposit" };
 	template<> inline constexpr cstr achievements::display_name<achievement_e::CalcifyBonesIntoWall>{ "Constructive Influence" };
 	template<> inline constexpr cstr achievements::display_name<achievement_e::CalcifyBonesWithEnemy>{ "Petrifying!" };
+	template<> inline constexpr cstr achievements::display_name<achievement_e::CalcifyBonesUnderSelf>{ "The Training Wheels Were Off" };
 
 	template<> inline constexpr cstr achievements::display_name<achievement_e::BasicIncorporealizeUsage>{ "Abyssal Adventure" };
 	template<> inline constexpr cstr achievements::display_name<achievement_e::ExceptionalIncorporealizeUsage>{ "Toodles!" };

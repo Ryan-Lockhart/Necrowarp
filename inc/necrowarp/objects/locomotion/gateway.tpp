@@ -46,7 +46,7 @@ namespace necrowarp {
 	template<> inline constexpr i16 gateway_t::MaximumStability<entity_e::Paladin>{ static_cast<i16>(globals::MaximumApproximateTideSize * 0.05) };
 
 	template<RandomEngine Generator> inline constexpr i16 gateway_t::determine_stability(entity_e entity, disposition_e disposition, ref<Generator> engine) noexcept {
-		const i16 multiplier{ static_cast<i16>(disposition == disposition_e::Sadistic ? 2 : 1) };
+		const f32 multiplier{ (disposition == disposition_e::Sadistic ? 2.0f : 1.0f) * game_stats.gateway_intensity() };
 
 		return magic_enum::enum_switch([&](auto val) -> i16 {
 			constexpr entity_e cval{ val };
@@ -55,8 +55,8 @@ namespace necrowarp {
 
 			if constexpr (is_good<entity_type>::value) {
 				return std::uniform_int_distribution<i16>{
-					static_cast<i16>(max<i16>(MinimumStability<cval>, 1) * multiplier),
-					static_cast<i16>(min<i16>(MaximumStability<cval>, globals::MaximumApproximateTideSize) * multiplier)
+					max<i16>(static_cast<i16>(MinimumStability<cval> * multiplier), 1),
+					min<i16>(static_cast<i16>(MaximumStability<cval> * multiplier), globals::MaximumTideSize)
 				}(engine);
 			} else {
 				return 0;

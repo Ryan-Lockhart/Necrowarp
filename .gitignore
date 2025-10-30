@@ -33,3 +33,5 @@ bin/*
 test/test_runner
 
 CONOUT$
+
+.VSCodeCounter/**/*
