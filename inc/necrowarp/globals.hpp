@@ -409,11 +409,25 @@ namespace necrowarp {
 
 		constexpr bool CheatsAllowed{ true };
 
-		constexpr bool SpawnTutorialPortal{ false };
+		constexpr bool EnableTutorialPortal{ false };
+		constexpr bool GuaranteeTutorialPortal{ false };
+
+		constexpr bool OverrideTutorialPortal{ EnableTutorialPortal && GuaranteeTutorialPortal };
 
 		constexpr bool EnableBoonPortal{ true };
+		constexpr bool GuaranteeBoonPortal{ false };
+
+		constexpr bool OverrideBoonPortal{ EnableBoonPortal && GuaranteeBoonPortal };
+
 		constexpr bool EnableTribulationPortal{ true };
+		constexpr bool GuaranteeTribulationPortal{ true };
+
+		constexpr bool OverrideTribulationPortal{ EnableTribulationPortal && GuaranteeTribulationPortal };
+
 		constexpr bool EnableAudiencePortal{ false };
+		constexpr bool GuaranteeAudiencePortal{ false };
+
+		constexpr bool OverrideAudiencePortal{ EnableAudiencePortal && GuaranteeAudiencePortal };
 
 		// a portal to a boon has a 50% chance every ten levels
 		constexpr f32 BoonPortalChance{ 0.50f / 10.0f };
