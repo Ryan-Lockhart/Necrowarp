@@ -5,11 +5,11 @@
 namespace necrowarp {
 	template<> struct phase_state_t<phase_e::MainMenu> {
 		static inline offset_t new_game_button_position() noexcept {
-			return offset_t{ 2, globals::grid_size<grid_type_e::UI>().h - 1 };
+			return offset_t{ globals::grid_size<grid_type_e::UI>() - 1 };
 		}
 		
 		static inline labeled_button_t new_game_button{
-			anchor_t{ new_game_button_position(), cardinal_e::Southwest },
+			anchor_t{ new_game_button_position(), cardinal_e::Southeast },
 			embedded_label_t{
 				runes_t{ "New Game", colors::Green },
 				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },
@@ -31,11 +31,11 @@ namespace necrowarp {
 		};
 
 		static inline offset_t quit_button_position() noexcept {
-			return offset_t{ globals::grid_size<grid_type_e::UI>() - 1 };
+			return offset_t{ 2, globals::grid_size<grid_type_e::UI>().h - 1 };
 		}
 		
 		static inline labeled_button_t quit_button{
-			anchor_t{ quit_button_position(), cardinal_e::Southeast },
+			anchor_t{ quit_button_position(), cardinal_e::Southwest },
 			embedded_label_t{
 				runes_t{ "Quit", colors::White },
 				embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } },

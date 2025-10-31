@@ -37,7 +37,7 @@ namespace necrowarp {
 		static inline enum_dropdown_t<patron_e> patron_selector{
 			transform_t{
 				anchor_t{ patron_selector_position(), cardinal_e::North },
-				extent_t{ 24, 3 }
+				extent_t{ 25, 3 }
 			},
 			embedded_box_t{ colors::Grey, border_t{ colors::White, 1 } }
 		};
