@@ -56,6 +56,8 @@ namespace necrowarp {
 	struct mist_lady_t {
 		static constexpr i8 EffectRadius{ 8 };
 
+		static constexpr f32 DemoralizeMultiplier{ 0.75f };
+
 		static constexpr i8 MaximumHealth{ 1 };
 
 		static constexpr i8 DeathBoon{ 2 };

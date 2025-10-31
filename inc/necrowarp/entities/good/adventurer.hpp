@@ -65,7 +65,12 @@ namespace necrowarp {
 		static constexpr i8 MaximumHealth{ 1 };
 		static constexpr i8 MaximumDamage{ 1 };
 
+		static constexpr affliction_e BaseAffliction{ affliction_e::Stable };
+
 		static constexpr affliction_e AfflictionEquilibrium{ affliction_e::Stable };
+
+		static constexpr affliction_e AfflictionFloor{ affliction_e::Terrified };
+		static constexpr affliction_e AfflictionCeiling{ affliction_e::Stable };
 
 		static constexpr f32 BaseDemoralizeChance{ 0.25f };
 		static constexpr f32 BaseEmboldenChance{ 0.125f };
@@ -100,16 +105,30 @@ namespace necrowarp {
 		static constexpr i8 ProteinValue{ 1 };
 
 	  private:
+		affliction_e affliction;
+
+		bool shattered;
+
 		static constexpr u8 VariantCount{ 9 };
 
 		static inline std::uniform_int_distribution<u16> variant_dis{ 0, VariantCount - 1 };
 
-		static inline std::bernoulli_distribution fumble_dis{ 0.25 };
+		static constexpr f32 HeartAttackChance{ 0.02f };
+
+		static inline std::bernoulli_distribution heart_attack_dis{ HeartAttackChance };
+
+		static constexpr f32 FumbleChance{ 0.25f };
+
+		static inline std::bernoulli_distribution fumble_dis{ FumbleChance };
 
 		template<RandomEngine Generator> static inline u8 random_variant(ref<Generator> engine) noexcept { return static_cast<u8>(variant_dis(engine)); }
 
 	  public:
-		inline adventurer_t() noexcept : variant{ random_variant(random_engine) } {}
+		inline adventurer_t() noexcept : variant{ random_variant(random_engine) }, affliction{ BaseAffliction } {}
+
+		inline affliction_e get_affliction() const noexcept { return affliction; }
+
+		inline bool has_shattered() const noexcept { return shattered; }
 
 		inline bool can_survive(i8 damage_amount) const noexcept { return damage_amount <= 0; }
 
@@ -118,6 +137,10 @@ namespace necrowarp {
 		inline i8 get_damage() const noexcept { return MaximumDamage; }
 
 		inline i8 get_damage(entity_e target) const noexcept { return MaximumDamage; }
+
+		template<map_type_e MapType> inline void embolden(offset_t position) noexcept;
+
+		template<map_type_e MapType> inline void demoralize(offset_t position) noexcept;
 
 		template<map_type_e MapType> inline command_pack_t think(offset_t position) const noexcept;
 

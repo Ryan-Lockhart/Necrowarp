@@ -61,6 +61,8 @@ namespace necrowarp {
 		static constexpr i8 EffectRadius{ 8 };
 		static constexpr f32 EffectDamageMultiplier{ 1.5f };
 
+		static constexpr f32 EmboldenMultiplier{ 1.5f };
+
 		static constexpr i8 MaximumHealth{ 4 };
 		static constexpr i8 MaximumDamage{ 2 };
 
